@@ -9,7 +9,7 @@ uses
   DanteClasses;
 
 type
-  TTestIncVerRcTask = class(TTestRcUnit)
+  TTestVersioninfoTask = class(TTestRcUnit)
   private
     FIncVerRcTask: TVersionInfoTask;
     FProject:TProject;
@@ -23,7 +23,7 @@ type
 
 implementation
 
-procedure TTestIncVerRcTask.Setup;
+procedure TTestVersioninfoTask.Setup;
 var
   T: TTarget;
 begin
@@ -33,13 +33,13 @@ begin
   FIncVerRcTask := TVersionInfoTask.Create(T);
 end;
 
-procedure TTestIncVerRcTask.TearDown;
+procedure TTestVersioninfoTask.TearDown;
 begin
   FProject.Free;
   inherited;
 end;
 
-procedure TTestIncVerRcTask.TestIncVerRcTask;
+procedure TTestVersioninfoTask.TestIncVerRcTask;
 begin
   FIncVerRcTask.RcFileName := FIncVerRcTask.ToDantePath(FTestRcName);
   FIncVerRcTask.Increment  := True;
@@ -49,7 +49,7 @@ begin
 end;
 
 initialization
-  RegisterTests('Version Info Tasks', [TTestIncVerRcTask.Suite]);
+  RegisterTests('Version Info Tasks', [TTestVersioninfoTask.Suite]);
 
 
 end.
