@@ -29,6 +29,7 @@ type
     FCompress  :boolean;
 
     FZipStream :TZipStream;
+    FPreservePath: boolean;
 
   public
     constructor Create(Owner :TScriptElement); override;
@@ -45,6 +46,7 @@ type
 
     property includes :string write AddCommaSeparatedIncludes;
     property excludes :string write AddCommaSeparatedExcludes;
+    property preservePath :boolean read FPreservePath write FPreservePath default true;
   end;
 
   TUnzipTask = class(TTask)
@@ -73,6 +75,7 @@ constructor TZipTask.Create(Owner: TScriptElement);
 begin
   inherited Create(Owner);
   FCompress := true;
+  FPreservePath := true;
 end;
 
 procedure TZipTask.Init;
@@ -101,7 +104,7 @@ begin
   for p := Low(Paths) to High(Paths) do
   begin
     Log(vlDebug, Paths[p]);
-    FZipStream.WriteFile(Paths[p]);
+    FZipStream.WriteFile(Paths[p],'',preservePath);
   end;
 end;
 

@@ -81,7 +81,8 @@ type
                                 Time       :TDateTime;
                                 Comment    :string = ''); overload;
 
-    procedure WriteFile(const FileName :TPath;  Comment :string = '');
+    procedure WriteFile(const FileName :TPath;  Comment :string = '';
+                              preservePath :boolean = true ); overload;
 
   public
     property ZipFileName      :TPath    read FZipFileName write FZipFileName;
@@ -325,8 +326,12 @@ begin
   end;
 end;
 
-
 procedure TZipStream.WriteFile(const FileName: TPath;  Comment :string);
+begin
+  WriteFile(FileName,Comment,true);
+end;
+
+procedure TZipStream.WriteFile(const FileName: TPath;  Comment :string; preservePath: boolean);
 var
   Stream  :TFileStream;
   Path    :IPath;
@@ -338,22 +343,25 @@ begin
   else
   begin
     Dir := Path.Super;
-    if Dir.IsDirectory then
+    if Dir.IsDirectory and preservePath then
        WriteDirEntry(Dir);
     Stream := TFileStream.Create(Path.asLocalPath, fmOpenRead or fmShareDenyWrite);
     try
-      WriteStream( FileName, Stream,
-                             Path.Attributes,
-                             CheckFileTime(Path),
-                             Comment);
+      if preservePath then
+        WriteStream( FileName, Stream,
+                               Path.Attributes,
+                               CheckFileTime(Path),
+                               Comment)
+      else
+        WriteStream( Path.Resource , Stream,
+                               Path.Attributes,
+                               CheckFileTime(Path),
+                               Comment)
     finally
       FreeAndNil(Stream);
     end;
   end;
 end;
-
-
-
 
 procedure TZipStream.WriteDirEntry(const Dir: IPath; Time:TDateTime; Comment :string);
 begin
