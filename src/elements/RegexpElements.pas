@@ -24,7 +24,7 @@ type
     FSubst    :string;
     FTrim     :boolean;
 
-    function Substitute(Text, Pattern, Subst :string) :string;
+    function Substitute(Pattern, Subst, Text :string) :string;
   public
     procedure Init; override;
   published
@@ -48,12 +48,12 @@ begin
   // this task sets a property
   // that needs to be implemented here, in the Init method.
   if subst = '' then
-    Owner.SetProperty(_property, Substitute(_text, '.*('+pattern+').*', '\1'))
+    Owner.SetProperty(_property, Substitute('.*('+pattern+').*', '\1', _text))
   else
-    Owner.SetProperty(_property, Substitute(_text, pattern, subst));
+    Owner.SetProperty(_property, Substitute(pattern, subst, _text));
 end;
 
-function TRegexpElement.Substitute(Text, Pattern, Subst: string): string;
+function TRegexpElement.Substitute(Pattern, Subst, Text : string): string;
 begin
   Log(vlVerbose, 'Replacing /%s/ with /%s/', [Pattern, Subst]);
   Result := XPerlRe.Replace(Pattern, Subst, Text, True);
