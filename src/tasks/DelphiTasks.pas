@@ -37,6 +37,8 @@ const
   DelphiRegRoot  = 'SOFTWARE\Borland\Delphi';
   DelphiRootKey  = 'RootDir';
 
+  __RENAMED_CFG_EXT = '.want.cfg';
+  
 type
   EDelphiTaskError       = class(ETaskError);
   EDelphiNotFoundError   = class(EDelphiTaskError);
@@ -87,12 +89,15 @@ type
     FConsole        : boolean;
     FWarnings       : boolean;
     FUseLibraryPath : boolean;
+    FUseCFG         : boolean;
 
     FUnitPaths      : TUnitPathElement;
     FResourcePaths  : TResourcePathElement;
     FIncludePaths   : TIncludePathElement;
 
     FDefines        : TStrings;
+
+    FRenamedCFGs    :boolean;
 
     function BuildExecutable: string; override;
     function BuildArguments: string; override;
@@ -115,6 +120,8 @@ type
     procedure AddResourcePath(Path: TPath);
     procedure AddIncludePath(Path: TPath);
     procedure AddDefine(Name, Value :string);
+
+    procedure RestoreCFGs;
 
   published
     property basedir; // from TTask
@@ -139,6 +146,7 @@ type
     property debug:    boolean read FDebug    write FDebug;
     property console:  boolean read FConsole  write FConsole;
     property warnings: boolean read FWarnings write FWarnings default true;
+    property usecfg:   boolean read FUseCFG   write FUseCFG;
 
     property uselibrarypath : boolean read FUseLibraryPath write FUseLibraryPath;
 
@@ -174,6 +182,7 @@ type
   TConsoleElement        = class(TBooleanAttributeElement);
   TWarningsElement       = class(TBooleanAttributeElement);
   TUseLibraryPathElement = class(TBooleanAttributeElement);
+  TUseCFGElement         = class(TBooleanAttributeElement);
 
   TDCUOutputElement = class(TPathAttributeElement);
   TEXEOutputElement = class(TPathAttributeElement);
@@ -318,7 +327,11 @@ end;
 procedure TDelphiCompileTask.Execute;
 begin
   Log(ToRelativePath(Source));
-  inherited Execute;
+  try
+    inherited Execute;
+  finally
+    RestoreCFGs;
+  end;
 end;
 
 function TDelphiCompileTask.FindCompiler: string;
@@ -347,6 +360,7 @@ var
   p      : Integer;
   PS     : TStrings;
   Paths  : TPaths;
+  cfg    : TPath;
 begin
   Result := inherited BuildArguments;
 
@@ -360,6 +374,25 @@ begin
     Log(vlVerbose, 'source %s', [ToRelativePath(Sources[s])]);
     Result := Result + ' ' + ToSystemPath(Sources[s]);
   end;
+
+  if not usecfg then
+  begin
+    for s := Low(Sources) to High(Sources) do
+    begin
+      if LowerCase(StrRight(Sources[s], 4)) = '.dpr' then
+      begin
+        cfg := Sources[s];
+        Delete(cfg, Length(cfg)-3, 4);
+        if PathIsFile(cfg + '.cfg') then
+        begin
+          Log(vlVerbose, 'Renaming configuration file for %s', [ Sources[s] ]);
+          WildPaths.MoveFile(cfg + '.cfg', cfg + __RENAMED_CFG_EXT);
+        end;
+      end;
+    end;
+  end
+  else
+    Log(vlVerbose, 'usecfg=true');
 
   if exeoutput <> '' then
   begin
@@ -514,6 +547,26 @@ begin
   Result := FResourcePaths;
 end;
 
+procedure TDelphiCompileTask.RestoreCFGs;
+var
+  cfgs :TPaths;
+  cfg  :TPath;
+  c    :Integer;
+begin
+  cfgs := nil;
+  if not usecfg then
+  begin
+    cfgs := Wild('*' +__RENAMED_CFG_EXT);
+    for c := Low(cfgs) to High(cfgs) do
+    begin
+      cfg := cfgs[c];
+      Delete(cfg, 1+Length(cfg) - Length(__RENAMED_CFG_EXT), Length(__RENAMED_CFG_EXT));
+      WildPaths.MoveFile(cfgs[c], cfg + '.cfg');
+    end;
+  end;
+end;
+
+
 { TResourceCompileTask }
 
 function TResourceCompileTask.BuildArguments: string;
@@ -614,6 +667,7 @@ initialization
                          TConsoleElement,
                          TWarningsElement,
                          TUseLibraryPathElement,
+                         TUseCFGElement,
 
                          TDCUOutputElement,
                          TEXEOutputElement
