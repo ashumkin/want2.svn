@@ -67,6 +67,7 @@ type
   published
     procedure TestVssGetTask;
     procedure TestVssGetTaskLabel;
+    procedure TestVssGetTaskRelPath;
   end;
 
 implementation
@@ -176,13 +177,13 @@ end;
 
 procedure TTestVssGetTask.TestVssGetTask;
 begin
-(*  try
-    FVssGetTask.Validate;
+  try
+    FVssGetTask.Init;
     Fail('validation should have failed');
   except
     on EDanteError do { nada }
   end;
-  *)
+
   FVssGetTask.VssPath := FVssPath;
   FVssGetTask.Init;
 
@@ -237,6 +238,16 @@ begin
   FVssGetTask._Label := LabelName;
   FVssGetTask.Execute;
   CheckEquals(FRevOneContents, ReadSampleContents, 'wrong version retrieved');
+end;
+
+procedure TTestVssGetTask.TestVssGetTaskRelPath;
+begin
+  FLongFNTestDir := '.\my test dir';
+  FVssGetTask.VssPath := FVssPath;
+  FVssGetTask.Login := FUserPwd;
+  FVssGetTask.LocalPath := FLongFNTestDir;
+  FVssGetTask.Execute;
+  Check(FileExists(FLongFNTestDir + '\' + FSampleFileName), 'file not retrieved');
 end;
 
 initialization
