@@ -469,7 +469,7 @@ begin
   // absorb all non-wildcard patterns
   while (Index < High(Patterns))
   and ((LastDelimiter(WildChars, Patterns[Index]) = 0)
-       or (Patterns[Index] <> '.')
+       or (Patterns[Index] = '.')
       ) 
   do
   begin
