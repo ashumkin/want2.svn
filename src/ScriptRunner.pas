@@ -124,7 +124,8 @@ begin
   except
     on e: Exception do
     begin
-      Log(vlErrors, E.ClassName + ': ' + E.Message);
+      if not (e is EDanteException) then
+        Log(vlErrors, E.ClassName + ': ' + E.Message);
       Log;
       Log(vlErrors, 'BUILD FAILED');
       raise;
