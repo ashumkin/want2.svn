@@ -6,6 +6,8 @@
 *******************************************************************)
 
 { $Id$ }
+
+{$LONGSTRINGS ON}
 unit Win32ChildProcesses;
 
 interface

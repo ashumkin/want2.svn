@@ -7,6 +7,8 @@
 
 { $Id$ }
 
+{$LONGSTRINGS ON}
+
 unit ChildProcesses;
 
 interface

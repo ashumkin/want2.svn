@@ -96,6 +96,8 @@ See http://www.suigeneris.org/want/ for details.
       <debug     value="true" />
       <console   value="true" />
 
+      <longstrings value="true" />
+
       <define name="USE_JEDI_JCL" />
 
       <unitpath     refid="sources"   />
