@@ -104,25 +104,31 @@ function  IsSystemIndependentPath(const Path :TPath) :boolean;
 procedure AssertIsSystemIndependentPath(const Path :TPath);
 
 function IsWindowsPath(const Path :TPath):boolean;
-function PathDrive(const Path :TPath) :TPath;
+
+function PathDrive(const Path :TPath) :string;
+function PathServer(const Path :TPath) :string;
+
+function RemovePathDrive(Path :TPath):TPath;
+function RemovePathServer(Path :TPath):TPath;
 
 function PathConcat(const Path1, Path2 :TPath) :TPath;
 
 function ToSystemPath(const Path :TPath; const BasePath :TPath = ''):TSystemPath;
 function ToPath(SystemPath :TSystemPath;  const BasePath :TPath = ''):TPath;
 
-function ToSystemPaths(const Paths :TPaths; const BasePath :TPath = '') :TSystemPaths;
+function ToSystemPaths(const Paths :TPaths; const BasePath :TPath = '') :TSystemPaths; overload;
 function ToPaths(OSPaths :TSystemPaths; const BasePath :TPath = '') :TPaths;
 
+procedure ToSystemPaths(Paths :TStrings; const BasePath :TPath = ''); overload;
 
 
 function StringsToPaths(S :TStrings):TPaths;
-function SplitPath(const Path :TPath) :TPaths;
+function SplitPath(Path :TPath) :TPaths;
 
 function  MovePath(const Path :TPath; const FromBase :TPath; const ToBase :TPath = '') :TPath;
 function  MovePaths(const Paths :TPaths; const FromBase :TPath; const ToBase :TPath = '') :TPaths;
 function  ToRelativePath(const Path, BasePath :TPath):TPath;
-function  ToRelativePaths(const Paths :TPaths; const BasePath :TPath):TPaths;
+function  ToRelativePaths(const Paths :TPaths; const BasePath :TPath):TPaths; overload;
 function  PathIsAbsolute(const Path :TPath) :boolean;
 procedure ForceRelativePath(var Path, BasePath :TPath);
 
@@ -195,16 +201,54 @@ end;
 
 function IsWindowsPath(const Path :TPath):boolean;
 begin
-  Result := (Length(Path) >= 3) and (Path[1] = '/') and (Path[3] = ':');
+  Result := Pos(':', Path) <> 0;
 end;
 
-function PathDrive(const Path :TPath) :TPath;
+function PathDrive(const Path :TPath) :string;
+var
+  p :Integer;
 begin
-  if IsWindowsPath(Path) then
-    Result := Copy(Path, 2, 1)
+  if not IsWindowsPath(Path) then
+    Result := ''
   else
-    Result := '';
+  begin
+    p := Pos(':', Path);
+    Result := Copy(Path, p-1, 1);
+  end;
 end;
+
+function PathServer(const Path :TPath) :string;
+var
+  P :string;
+begin
+  if StrLeft(Path, 2) <> '//' then
+    Result := ''
+  else
+  begin
+    P := Copy(Path, 3, Length(Path));
+    Result := StrToken(P, '/');
+  end;
+end;
+
+function RemovePathDrive(Path :TPath):TPath;
+var
+  p :Integer;
+begin
+  Result := Path;
+  p := Pos(':', Result);
+  Delete(Result, 1, p);
+end;
+
+function RemovePathServer(Path :TPath):TPath;
+var
+  Server :string;
+begin
+  Result := Path;
+  Server := PathServer(Path);
+  if Server <> '' then
+    Delete(Result, 1, 3 + Length(Server));
+end;
+
 
 procedure AssertIsSystemIndependentPath(const Path :TPath);
 begin
@@ -296,6 +340,16 @@ begin
     Result[i] := ToSystemPath(Paths[i], BasePath);
 end;
 
+procedure ToSystemPaths(Paths :TStrings; const BasePath :TPath = '');
+var
+  i :Integer;
+begin
+  for i := 0 to Paths.Count-1 do
+    Paths[i] := ToSystemPath(Paths[i], BasePath);
+end;
+
+
+
 function ToPaths(OSPaths :TSystemPaths; const BasePath :TPath = '') :TPaths;
 var
   i :Integer;
@@ -350,23 +404,31 @@ begin
    Result := FindPaths(Path, BasePath, faAnyFile, faDirectory);
 end;
 
-function SplitPath(const Path: TPath): TPaths;
+function SplitPath(Path: TPath): TPaths;
 var
-  S :TStrings;
-  i :Integer;
+  S    :TStrings;
+  n,
+  i    :Integer;
+  Base :TPath;
 begin
   AssertIsSystemIndependentPath(Path);
 
   S := TStringList.Create;
   try
-    StrToStrings(path, '/', S);
-    { CommaText breaks on spaces in a dir name. "My Dir" becomes My/Dir
-    S.CommaText := StringReplace(path, '/', ',', [rfReplaceAll]);}
-    Result := StringsToPaths(S);
-    // preserve absolute (including) UNC paths
-    for i := 0 to High(Result) do
-      if Result[i] = '' then
-        Result[i] := '/';
+    n := 0;
+    if PathIsAbsolute(Path) then
+    begin
+      ForceRelativePath(Path, Base);
+      SetLength(Result, 1);
+      Result[0] := Base;
+      n := 1;
+    end;
+
+    StrToStrings(Path, '/', S);
+
+    SetLength(Result, n+S.Count);
+    for i := 0 to S.Count-1 do
+      Result[i+n] := S[i];
   finally
     S.Free;
   end;
@@ -473,7 +535,7 @@ var
 begin
   AssertIsSystemIndependentPath(Path);
   AssertIsSystemIndependentPath(BasePath);
-  
+
   if PathIsAbsolute(Path) then
   begin
     BasePath := '';
@@ -676,6 +738,8 @@ begin
   begin
     MakeDir(SuperPath(Path));
     SysUtils.CreateDir(ToSystemPath(Path));
+    if not IsDir(Path) then
+      raise EFileOpException.Create(Format('Could not create directory "%s"', [Path]));
   end;
 end;
 
@@ -725,10 +789,16 @@ end;
 
 procedure MoveFile(const Src, Dst :TPath);
 begin
-   MakeDir(SuperPath(Dst));
-   if not Windows.MoveFile(PChar(ToSystemPath(Src)),
-                           PChar(ToSystemPath(Dst))) then
-     raise EFileOpException.Create(SysErrorMessage(GetLastError));
+   if IsDir(Src) then
+   begin
+     raise EFileOpException.Create(Format('Don''t know how to move dir "%s" to "%s"', [Src, Dst]));
+   end;
+   if not Windows.MoveFileEx(PChar(ToSystemPath(Src)), PChar(ToSystemPath(Dst)),
+                             MOVEFILE_COPY_ALLOWED or
+                             MOVEFILE_REPLACE_EXISTING or
+                             MOVEFILE_WRITE_THROUGH)
+   then
+     raise EFileOpException.Create('move:'+ SysErrorMessage(GetLastError));
 end;
 
 procedure MoveFiles(const Pattern :TPattern; const FromPath, ToPath :TPath);

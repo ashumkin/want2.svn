@@ -70,8 +70,15 @@ type
 
 implementation
 
-uses JclFileUtils, Classes, Windows, SysUtils, DanteMain, JclMiscel,
-  JclShell;
+uses
+  JclFileUtils,
+  Classes,
+  Windows,
+  SysUtils,
+  DanteMain,
+  JclMiscel,
+  JclShell,
+  WildPaths;
 
 procedure LoadTests;
 var
@@ -117,10 +124,17 @@ begin
   SetupList := TStringList.Create;
   FinalList := TStringList.Create;
   try
+    (* these calls hang under my setup -- Juanco
     JclFileUtils.AdvBuildFileList(FTestExeSetupDir + '*.*', faAnyFile,
       SetupList, [flRecursive, flFullNames]);
     JclFileUtils.AdvBuildFileList(FTestExeFinalDir + '*.*', faAnyFile,
       FinalList, [flRecursive, flFullNames]);
+    *)
+
+    WildPaths.Wild(SetupList, '**', ToPath(FTestExeSetupDir));
+    WildPaths.Wild(FinalList, '**', ToPath(FTestExeFinalDir));
+    ToSystemPaths(SetupList, ToPath(FTestExeSetupDir));
+    ToSystemPaths(FinalList, ToPath(FTestExeFinalDir));
 
     { need flFullNames to make sure directory structure is also checked, but
       we need to chop off the different bases }

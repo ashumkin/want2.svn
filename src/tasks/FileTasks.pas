@@ -324,6 +324,7 @@ procedure TMoveCopyTask.DoPaths(Fileset :TFileSet; FromPaths, ToPaths: TPaths);
 var
   p       :Integer;
 begin
+  Assert(Length(FromPaths) = Length(ToPaths));
   for p := Low(FromPaths) to High(FromPaths) do
     DoFiles(Fileset, FromPaths[p], ToPaths[p]);
 end;
@@ -373,15 +374,25 @@ procedure TMoveTask.DoFiles(Fileset :TFileSet; FromPath, ToPath: TPath);
 begin
   Log(vlVerbose, Format('move %s -> %s', [ToSystemPath(FromPath), ToSystemPath(ToPath)]));
   AboutToScratchPath(ToPath);
-  WildPaths.MoveFile(FromPath, ToPath);
-  if not FileExists(ToSystemPath(ToPath)) then
-    TaskFailure(ToPath);
+  if not IsDir(FromPath) then
+  begin
+    MakeDir(SuperPath(ToPath));
+    WildPaths.MoveFile(FromPath, ToPath);
+    if not PathExists(ToPath) then
+      TaskFailure(Format('Could not move "%s" to "%s', [ToRelativepath(FromPath), ToRelativepath(ToPath)]));
+  end;
 end;
 
 procedure TMoveTask.DoPaths(Fileset :TFileSet; FromPaths, ToPaths: TPaths);
+var
+  i :Integer;
 begin
+  Assert(Length(FromPaths) = Length(ToPaths));
   Log(Format('moving %d files from %s to %s', [Length(FromPaths), FileSet.dir, todir]));
   inherited DoPaths(Fileset, FromPaths, ToPaths);
+
+  for i := 0 to High(FromPaths) do
+    RemoveDir(FromPaths[i]);
 end;
 
 
