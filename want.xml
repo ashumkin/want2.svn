@@ -15,7 +15,7 @@ See http://www.suigeneris.org/want/ for details.
          basedir="."
          default="dist" >
 
-  <property name="version" value="0.9.0" />
+  <property name="version" value="0.1.0.1" />
   <property name="increment.build" value="false" />
 
   <property name="src"       value="${basedir}/src" />
@@ -40,6 +40,7 @@ See http://www.suigeneris.org/want/ for details.
 
   <patternset id="resources" >
     <patternset refid="sources"/>
+    <include name="${bin}" />
   </patternset>
 
 
@@ -54,12 +55,25 @@ See http://www.suigeneris.org/want/ for details.
     <delete dir="${bin}/**" />
   </target>
 
-  <target name="resources" depends="prepare" >
-    <brcc file="${src}/wantver.rc" output="${bin}/wantver.res" />
-    <brcc file="${src}/license.rc" output="${bin}/license.res" />
+  <target name="versioninfo" depends="prepare">
+    <regexp property="comma.version" 
+            pattern="\.0*([1-9]*[0-9])" subst=",\1" 
+            text="${version}" />
+    <edit file="${src}/wantver.template.rc" >
+      <global pattern="version" >
+         <eval />
+      </global>
+      <write file="${src}/wantver.rc" />
+      <print all="true" ifdef="debug" />
+    </edit>
   </target>
 
-  <target name="compile" depends="clean,prepare,resources">
+  <target name="resources" depends="prepare,versioninfo" >
+    <brcc file="${src}/license.rc" output="${bin}/license.res" />
+    <brcc file="${src}/wantver.rc" output="${bin}/wantver.res" />
+  </target>
+
+  <target name="compile" depends="clean,prepare,versioninfo,resources">
 
     <!-- Delete want.cfg first to get a reproducible build.
          (Should this be automated?)

@@ -197,10 +197,19 @@ var
   EqPos:     Integer;
 begin
   Result := True;
-  if (Switch = 'h') or (Switch = '?') then
+  if (Switch = 'h')
+  or (Switch = '?')
+  then
   begin
     WriteLn(Copyright );
     Usage;
+    Halt(2);
+  end
+  else if (Switch = 'v')
+  or (Switch = 'version')
+  or (Switch = '-version') then
+  begin
+    WriteLn(Copyright );
     Halt(2);
   end
   else if (Switch = 'L') then

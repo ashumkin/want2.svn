@@ -26,15 +26,9 @@ const
   BooleanToString : array[boolean] of string = ('false', 'true');
 
 resourcestring
-  CopyrightText =
-             'WANT - A build management tool.'
-   + C_EOL + 'Copyright (c) 2001 Juancarlo Anez, Caracas, Venezuela.'
-   + C_EOL + 'All rights reserved.'
-   + C_EOL;
-
   WantUsageText   =
              'Usage:'                                                     + C_EOL +
-             '  Want.exe [options] [target]'                             + C_EOL +
+             '  want [options] [target]'                                  + C_EOL +
                                                                             C_EOL +
              'Options:'                                                   + C_EOL +
              '  -h, -H, -?          Displays this help text.'             + C_EOL +
@@ -167,11 +161,10 @@ end;
 
 function Copyright: string;
 begin
-  try
-    Result := GetStringResource('COPYRIGHT');
-  except
-    Result := CopyrightText;
-  end;
+  Result :=
+   'WANT - A Build Management tool. v' + GetVersionString       + C_EOL +
+   'Copyright (c) 2001 Juancarlo Anez, Caracas, Venezuela.'    + C_EOL +
+   'All rights reserved'                                        + C_EOL;
 end;
 
 function License :string;
@@ -179,7 +172,7 @@ begin
   try
     Result := GetStringResource('LICENSE');
   except
-    Result := CopyrightText;
+    Result := Copyright;
   end;
 end;
 
