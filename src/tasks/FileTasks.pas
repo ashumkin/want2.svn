@@ -214,7 +214,7 @@ end;
 procedure TMkDirTask.Validate;
 begin
   inherited Validate;
-  RequireAttribute('dir', dir);
+  RequireAttribute('dir');
 end;
 
 
@@ -249,7 +249,7 @@ end;
 procedure TTouchTask.Validate;
 begin
   inherited Validate;
-  RequireAttribute('file', _file);
+  RequireAttribute('file');
 end;
 
 { TDeleteTask }
@@ -343,7 +343,7 @@ end;
 procedure TMoveCopyTask.Validate;
 begin
   inherited Validate;
-  RequireAttribute('todir', todir);
+  RequireAttribute('todir');
 end;
 
 { TCopyTask }

@@ -118,6 +118,8 @@ type
     FBaseDir: string;      // wher paths for this object are based
     FId     : string;      // element Id
 
+    FAttributes :TStringList;
+
 
     function  GetBaseDir: string;          virtual;
     procedure SetBaseDir(Value: string);   virtual;
@@ -130,7 +132,7 @@ type
 
     procedure GetChildren(Proc: TGetChildProc; Root: TComponent); override;
     function  GetChildOwner: TComponent; override;
-    function  GetChildrenTyped(AClass: TDanteElementClass):  TDanteElementArray;
+    function  GetChildrenTyped(AClass: TDanteElementClass = nil):  TDanteElementArray;
 
     procedure Log(Msg: string = ''; Verbosity: TVerbosityLevel = vlNormal);           overload; virtual;
     procedure Log(Verbosity: TVerbosityLevel; Msg: string = ''); overload;
@@ -140,11 +142,13 @@ type
 
     procedure Log(Tag: string; Msg: string; Verbosity: TVerbosityLevel = vlNormal);  overload; virtual;
 
-    procedure RequireAttribute(Name: string; Value: string);
+    procedure RequireAttribute(Name: string);
     procedure AttributeRequiredError(AttName: string);
   public
     constructor Create(Owner: TComponent);    overload; override;
     constructor Create(Owner: TDanteElement); reintroduce; overload; virtual;
+
+    destructor Destroy; override;
 
     class function XMLTag: string; virtual;
 
@@ -163,6 +167,11 @@ type
     function  ExpandMacros(Value: string): string;       virtual;
 
     function  SetAttribute(Name, Value: string): boolean; virtual;
+    function  GetAttribute(Name :string) : string;        virtual;
+    function  EvaluateAttribute(Name: string): boolean; virtual;
+    procedure EvaluateAttributes(Depth :Integer = 0);
+    function  GetDelphiProperty(Name :string) :Variant;
+    function  SetDelphiProperty(Name, Value :string) :boolean;
 
     // use this to get the fully qualified base path
     function  BasePath: string; virtual;
@@ -196,8 +205,6 @@ type
     FRunPath:       string;
     FDescription:   string;
     FProperties:    TStrings;
-
-    FPropertyElement: TPropertyElement;
 
     FOnLog: TLogMethod;
 
@@ -264,7 +271,6 @@ type
     property OnLog: TLogMethod read FOnLog write FOnLog;
   published
     function CreateTarget    : TTarget;
-    function CreateProperty  : TPropertyElement; override;
     function CreatePatternSet: TPatternSet;      virtual;
 
 
@@ -358,9 +364,6 @@ type
   protected
     FIncludes: TStrings;
     FExcludes: TStrings;
-
-    FIncluder: TIncludeElement;
-    FExcluder: TExcludeElement;
 
     FPatternSets: array of TPatternSet;
 
@@ -464,11 +467,18 @@ end;
 constructor TDanteElement.Create(Owner: TDanteElement);
 begin
   inherited Create(Owner);
+  FAttributes := TStringList.Create;
 end;
 
 constructor TDanteElement.Create(Owner: TComponent);
 begin
   Self.Create(Owner as TDanteElement);
+end;
+
+destructor TDanteElement.Destroy;
+begin
+  FAttributes.Free;
+  inherited Destroy;
 end;
 
 function TDanteElement.GetChildOwner: TComponent;
@@ -554,7 +564,7 @@ begin
     begin
       valid := False;
       try
-        valid := Self.SetAttribute(Name, ExpandMacros(Value));
+        valid := Self.SetAttribute(Name, Value);
       except
         on e: Exception do
           ParseError(e.Message, Node.LineNo);
@@ -563,8 +573,6 @@ begin
         ParseError(Format('Unknown attribute <%s>.%s', [XMLTag, Name]), Node.LineNo);
     end;
   end;
-
-  Self.Validate;
 
   i := Node.Children.Iterator;
   while i.HasNext do
@@ -577,46 +585,65 @@ begin
     end
     else if 0 = child.QueryInterface(ITextNode, text)  then
     begin
-      if not SetAttribute('text', ExpandMacros(trim(text.text))) then
+      if not SetAttribute('text', trim(text.text)) then
         ParseError(Format('Element <%s> does not accept text', [XMLTag]), Child.LineNo);
     end;
   end;
 end;
 
 function TDanteElement.SetAttribute(Name, Value: string): boolean;
-var
-  TypeInfo: PTypeInfo;
-  PropInfo: PPropInfo;
 begin
+  FAttributes.Values[Name] := Value;
+  SetDelphiProperty(Name, Value);
   Result := True;
+end;
 
-  TypeInfo := Self.ClassInfo;
-  PropInfo := GetPropInfo(TypeInfo, Name);
-  if PropINfo = nil then
-    PropInfo := GetPropInfo(TypeInfo, '_' + Name);
-  if PropInfo = nil then
-     Result := False
-  else if not IsStoredProp(Self, PropInfo) then
-    Result := True
-  else begin
-    try
-      with PropInfo^, PropType^^ do
-      begin
-        if Kind in [tkString, tkLString, tkWString] then
-          SetStrProp(Self, PropInfo, Value)
-        else if Kind in [tkInteger] then
-          SetOrdProp(Self, PropInfo, StrToInt(Value))
-        else if Kind in [tkEnumeration] then
-          SetOrdProp(Self, PropInfo, GetEnumValue(PropType^, Value))
-        else
-          Result := False;
+function TDanteElement.GetAttribute(Name: string): string;
+begin
+  Result := FAttributes.Values[Name];
+  if Result = '' then
+    Result := GetDelphiProperty(Name);
+
+  Result := ExpandMacros(Result);
+end;
+
+function TDanteElement.EvaluateAttribute(Name :string): boolean;
+begin
+  Result := SetDelphiProperty(Name, GetAttribute(Name));
+end;
+
+
+procedure TDanteElement.EvaluateAttributes(Depth :Integer);
+var
+  a, c:       Integer;
+  Valid:    boolean;
+  Children: TDanteElementArray;
+begin
+  Children := nil;
+
+  with FAttributes do
+  begin
+    for a := 0 to Count-1 do
+    begin
+      valid := False;
+      try
+         Valid := EvaluateAttribute(Names[a]);
+      except
+        on e: Exception do
+          ParseError(e.Message, 0);
       end;
-    except
-      on e: EDanteParseException do
-        raise;
-      on e: Exception do
-        raise EDanteException.Create(Format('ERROR: "%s", setting value of attribute %s.%s', [e.Message, XMLTag, Name]));
+      if not Valid then
+        ParseError(Format('Unknown attribute <%s>.%s', [XMLTag, Names[a]]), 0);
     end;
+  end;
+
+  Validate;
+  
+  if (Depth > 0) then
+  begin
+    Children := GetChildrenTyped(TDanteElement);
+    for c := Low(Children) to High(children) do
+      Children[c].EvaluateAttributes(Depth-1);
   end;
 end;
 
@@ -761,13 +788,13 @@ begin
     for i := 0 to ComponentCount-1 do
     begin
       C := Components[i];
-      if C.InheritsFrom(AClass) then
+      if (AClass = nil) or C.InheritsFrom(AClass) then
         List.Add(C);
     end;
     SetLength(Result, List.Count);
     for i := 0 to List.Count-1 do
       Result[i] := List[i];
-    finally
+  finally
     List.Free
   end;
 end;
@@ -825,6 +852,7 @@ end;
 
 procedure TDanteElement.SetProperty(Name, Value: string);
 begin
+  assert(Name <> '');
   Project.SetProperty(Name, Value);
 end;
 
@@ -854,15 +882,15 @@ begin
   DanteError(Format('"%s" attribute is required', [AttName]));
 end;
 
-procedure TDanteElement.RequireAttribute(Name, Value: string);
+procedure TDanteElement.RequireAttribute(Name: string);
 begin
-  if Value = '' then
+  if GetAttribute(Name) = '' then
     AttributeRequiredError(Name);
 end;
 
 function TDanteElement.CreateProperty: TPropertyElement;
 begin
-  Result := Project.CreateProperty;
+  Result := TPropertyElement.Create(Self);
 end;
 
 
@@ -888,6 +916,76 @@ procedure TDanteElement.SetID(Value: string);
 begin
   FId := Value;
 end;
+
+
+
+function TDanteElement.GetDelphiProperty(Name: string): Variant;
+var
+  TypeInfo :PTypeInfo;
+  PropInfo :PPropInfo;
+begin
+  Result := '';
+  TypeInfo := Self.ClassInfo;
+  PropInfo := TypInfo.GetPropInfo(Self.ClassInfo, Name);
+  if PropINfo = nil then
+    PropInfo := GetPropInfo(TypeInfo, '_' + Name);
+
+  if PropInfo <> nil then
+  begin
+    with PropInfo^, PropType^^ do
+    begin
+      if IsStoredProp(Self, PropInfo)
+      and (SetProc <> nil)
+      and (GetProc <> nil)
+      and (Kind in SupportedPropertyTypes)
+      then
+      begin
+        if Kind in [tkString, tkLString, tkWString] then
+          Result := GetStrProp(Self, PropInfo)
+        else if Kind in [tkInteger] then
+          Result := IntToStr(GetOrdProp(Self, PropInfo))
+        else if Kind in [tkEnumeration] then
+          Result := GetEnumName(PropType^, GetOrdProp(Self, PropInfo))
+        else
+        begin
+          // do nothing
+        end
+      end;
+    end;
+  end;
+end;
+
+function TDanteElement.SetDelphiProperty(Name, Value: string) :boolean;
+var
+  TypeInfo: PTypeInfo;
+  PropInfo: PPropInfo;
+begin
+  Result := True;
+
+  TypeInfo := Self.ClassInfo;
+  PropInfo := GetPropInfo(TypeInfo, Name);
+  if PropINfo = nil then
+    PropInfo := GetPropInfo(TypeInfo, '_' + Name);
+  if PropInfo = nil then
+     Result := False
+  else if not IsStoredProp(Self, PropInfo) then
+    Result := False
+  else
+  begin
+    with PropInfo^, PropType^^ do
+    begin
+      if Kind in [tkString, tkLString, tkWString] then
+        SetStrProp(Self, PropInfo, Value)
+      else if Kind in [tkInteger] then
+        SetOrdProp(Self, PropInfo, StrToInt(Value))
+      else if Kind in [tkEnumeration] then
+        SetOrdProp(Self, PropInfo, GetEnumValue(PropType^, Value))
+      else
+        Result := False;
+    end;
+  end;
+end;
+
 
 
 { TProject }
@@ -1082,16 +1180,21 @@ var
   i    : Integer;
   Sched: TTargetArray;
 begin
-  if Target = '' then
-  begin
-    if Default = '' then
-       raise ENoDefaultTargetError.Create('No default target')
-    else
-      Target := Default;
-  end;
+
   Sched := nil;
   try
+    Self.EvaluateAttributes(1);
+    
+    if Target = '' then
+    begin
+      if Default = '' then
+         raise ENoDefaultTargetError.Create('No default target')
+      else
+        Target := Default;
+    end;
+
     Sched := Schedule(Target);
+
     for i := Low(Sched) to High(Sched) do
     begin
       try
@@ -1115,9 +1218,7 @@ end;
 procedure TProject.Build(Targets: array of string);
 var
   t    : Integer;
-  Sched: TTargetArray;
 begin
-  Sched := nil;
   if Length(Targets) = 0 then
     Build
   else begin
@@ -1288,13 +1389,6 @@ begin
   end;
 end;
 
-function TProject.CreateProperty: TPropertyElement;
-begin
-  if FPropertyElement = nil then
-    FPropertyElement := TPropertyElement.Create(Self);
-  Result := FPropertyElement;
-end;
-
 function TProject.FindBuildFile(BuildFile: string): string;
 var
   Dir: string;
@@ -1334,8 +1428,11 @@ procedure TTarget.Build;
 var
   i: Integer;
 begin
+  EvaluateAttributes(1);
+  
   Project.Log;
   Log;
+
   for i := 0 to TaskCount-1 do
   begin
     Tasks[i].DoExecute;
@@ -1426,6 +1523,8 @@ procedure TTask.DoExecute;
 begin
   try
     try
+      EvaluateAttributes(MaxInt);
+
       ChangeDir(BasePath);
       Execute;
     except
@@ -1506,10 +1605,10 @@ end;
 procedure TPropertyElement.Validate;
 begin
   inherited Validate;
-  RequireAttribute('name',  name);
-  RequireAttribute('value', value);
+  RequireAttribute('name');
+  RequireAttribute('value');
 
-  SetProperty(name, value);
+  SetProperty(GetAttribute('name'), GetAttribute('value'));
 end;
 
 
@@ -1583,16 +1682,12 @@ end;
 
 function TPatternSet.createInclude: TIncludeElement;
 begin
-  if FIncluder = nil then
-    FIncluder := TIncludeElement.Create(Self);
-  Result := FIncluder;
+  Result := TIncludeElement.Create(Self);
 end;
 
 function TPatternSet.createExclude: TExcludeElement;
 begin
-  if FExcluder = nil then
-    FExcluder := TExcludeElement.Create(Self);
-  Result := FExcluder;
+  Result := TExcludeElement.Create(Self);
 end;
 
 procedure TPatternSet.DoIncludes(Files: TStrings; Base: string);

@@ -99,7 +99,7 @@ end;
 procedure TLoggerTask.Validate;
 begin
   inherited Validate;
-  RequireAttribute('file', _file);
+  RequireAttribute('file');
 end;
 
 procedure TLoggerTask.Execute;

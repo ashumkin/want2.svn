@@ -71,7 +71,6 @@ type
     constructor Create(Owner: TDanteElement);  override;
     destructor Destroy; override;
 
-    procedure Validate; override;
     procedure Execute; override;
   protected
     property Arguments: string      read GetArguments write SetArguments;
@@ -83,6 +82,7 @@ type
 
   TExecTask = class(TCustomExecTask)
   public
+    procedure Validate; override;
     procedure Execute; override;
   published
     property Arguments;
@@ -129,6 +129,12 @@ begin
   Log(Executable);
   Log(vlVerbose, BuildArguments);
   inherited Execute;
+end;
+
+procedure TExecTask.Validate;
+begin
+  inherited Validate;
+  RequireAttribute('executable');
 end;
 
 { TShellTask }
@@ -234,10 +240,6 @@ begin
   end;
 end;
 
-procedure TCustomExecTask.Validate;
-begin
-  RequireAttribute('executable', Executable);
-end;
 
 { TChildProcess }
 

@@ -154,7 +154,7 @@ end;
 
 procedure TDanteCallTask.Validate;
 begin
-  RequireAttribute('target', _target);
+  RequireAttribute('target');
 end;
 
 procedure TDanteCallTask.Execute;

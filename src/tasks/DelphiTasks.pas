@@ -181,8 +181,8 @@ end;
 procedure TDelphiCompileTask.Validate;
 begin
   inherited Validate;
-  RequireAttribute('basedir', source);
-  RequireAttribute('source',  source);
+  RequireAttribute('basedir');
+  RequireAttribute('source');
 end;
 
 
@@ -344,9 +344,8 @@ procedure TIncVerRcTask.Execute;
 var
   FclVerRc: TclVersionRc;
 begin
-  FRcFileName := ToSystemPath(FRcFileName);
-  Log('Incrementing build in ' + FRcFileName);
-  FclVerRc := TclVersionRc.Create(FRcFileName);
+  Log('Incrementing build in ' + ToRelativePath(FRcFileName));
+  FclVerRc := TclVersionRc.Create(ToSystemPath(FRcFileName));
   try
     FclVerRc.IncBuild;
     Project.SetProperty('build', IntToStr(FclVerRc.VersionInfo.Build));
@@ -357,7 +356,7 @@ end;
 
 procedure TIncVerRcTask.Validate;
 begin
-  RequireAttribute('rcfilename', FRcFileName);
+  RequireAttribute('rcfilename');
 end;
 
 class function TIncVerRcTask.XMLTag: string;
