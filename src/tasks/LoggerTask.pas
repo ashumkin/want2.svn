@@ -93,23 +93,30 @@ begin
       System.Append(LogFile)
     else
       System.Rewrite(LogFile);
-    try
-      for i := 0 to FInfos.Count-1 do
-      begin
-        with TInfoElement(FInfos[i]) do
-          Writeln( LogFile,
-                   SysUtils.Format( '%-20s %12s %s',
-                                     [
-                                     FormatDateTime('yyyy/mm/dd hh:nn:ss', Now),
-                                     '['+code+']',
-                                     text
-                                     ]));
-      end;
-    finally
-      System.Close(LogFile);
-    end;
   except
     TaskFailure('could not open log file');
+  end;
+  try
+    try
+      if FInfos <> nil then
+      begin
+        for i := 0 to FInfos.Count-1 do
+        begin
+          with TInfoElement(FInfos[i]) do
+            Writeln( LogFile,
+                     SysUtils.Format( '%-20s %12s %s',
+                                       [
+                                       FormatDateTime('yyyy/mm/dd hh:nn:ss', Now),
+                                       '['+code+']',
+                                       text
+                                       ]));
+        end;
+      end;
+    except
+      TaskFailure('could not write to log file');
+    end;
+  finally
+    System.Close(LogFile);
   end;
 end;
 
