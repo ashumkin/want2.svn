@@ -36,10 +36,11 @@ program DanteTest;
 uses
   GUITestRunner,
   TestFramework,
-  DanteMainTest,
-  DanteClassesTest,
+  DanteClassesTest in 'DanteClassesTest.pas',
+  FileSetTests in 'FileSetTests.pas',
   ExecTasksTest in 'ExecTasksTest.pas',
-  FileTasksTest in 'FileTasksTest.pas';
+  FileTasksTest in 'FileTasksTest.pas',
+  DanteMainTest in 'DanteMainTest.pas';
 
 {$R *.RES}
 

@@ -43,7 +43,7 @@ OutputDir=..\bin
 UnitOutputDir=..\dcu
 PackageDLLOutputDir=
 PackageDCPOutputDir=
-SearchPath=$(DELPHI)\Lib\Debug;..\src\;..\src\xml;..\src\tasks;..\src\jcl
+SearchPath=$(DELPHI)\Lib\Debug;..\src\;..\src\xml;..\src\tasks;..\src\jcl;..\src\paths
 Packages=Vcl50;Vclx50;VclSmp50;Vcldb50;vclado50;ibevnt50;Vclbde50;vcldbx50;Qrpt50;TeeUI50;TeeDB50;Tee50;Dss50;TeeQR50;VCLIB50;Vclmid50;vclie50;Inetdb50;Inet50;NMFast50;webmid50;dclocx50;dclaxserver50;Indy50;OE;RxCtl5;RxBDE5;RxDB5;msxml;OpenXML_D5
 Conditionals=USE_JEDI_JCL
 DebugSourceDirs=
@@ -51,10 +51,6 @@ UsePackages=0
 [Parameters]
 RunParams=
 HostApplication=
-[Language]
-ActiveLang=
-ProjectLang=$00000409
-RootDir=
 [Version Info]
 IncludeVerInfo=0
 AutoIncBuild=0
@@ -91,15 +87,16 @@ Item0=USE_JEDI_JCL
 Count=1
 Item0=WinTypes=Windows;WinProcs=Windows;DbiTypes=BDE;DbiProcs=BDE;DbiErrs=BDE;
 [HistoryLists\hlSearchPath]
-Count=8
-Item0=$(DELPHI)\Lib\Debug;..\src\;..\src\xml;..\src\tasks;..\src\jcl
-Item1=.\jcl\
-Item2=..\jcl\
-Item3=..\src\;..\src\xml;..\src\tasks;..\src\jcl
-Item4=..\src\;..\src\xml
-Item5=..\src\
-Item6=..\src
-Item7=..
+Count=9
+Item0=$(DELPHI)\Lib\Debug;..\src\;..\src\xml;..\src\tasks;..\src\jcl;..\src\paths
+Item1=$(DELPHI)\Lib\Debug;..\src\;..\src\xml;..\src\tasks;..\src\jcl
+Item2=.\jcl\
+Item3=..\jcl\
+Item4=..\src\;..\src\xml;..\src\tasks;..\src\jcl
+Item5=..\src\;..\src\xml
+Item6=..\src\
+Item7=..\src
+Item8=..
 [HistoryLists\hlUnitOutputDirectory]
 Count=1
 Item0=..\dcu
