@@ -79,25 +79,25 @@ begin
 
   Content :=
     CR+
-    '<project name="test_project" default="main">'                     + CR +
-{    '  <echo message="Test message with ""quotes"" in it" />'          + CR +
+    '<project name="test_project" default="main">                    '+ CR +
+{    '  <echo message="Test message with ""quotes"" in it" />         '+ CR +
      this fails -- should it? I'm not up on DOM/SAX reqs                 }
-    '  <property name="test" value="sample" />'                        + CR +
-    '  <target name="main">'                                           + CR +
-    '    <shell executable="mkdir" arguments="' + FNewDir + '" />'     + CR +
-    '    <mkdir dir="' + ToPath(FCopyDir) + '" />'                     + CR +
-    '    <shell executable="copy" arguments="'
-             + FBuildFileName + ' ' + FCopyOfFileName + '" />'         + CR +
-    '    <shell executable="copy" arguments="'
-             + FBuildFileName + ' ' + FNewCopyOfFileName + '" />'      + CR +
-    '    <copy todir="' + ToPath(FCopyDir) + '">'                      + CR +
-    '      <fileset dir="' + ToPath(FNewDir) + '">'                    + CR +
-    '        <include name="**/*.*" />'                                + CR +
-    '      </fileset>'                                                 + CR +
-    '    </copy>'                                                      + CR +
-    '    <delete dir="' + ToPath(FNewDir) + '" />'                     + CR +
-    '  </target>'                                                      + CR +
-    '</project>'                                                       + CR;
+    '  <property name="test" value="sample" />                       '+ CR +
+    '  <target name="main">                                          '+ CR +
+    '    <shell executable="mkdir" arguments="' + FNewDir + '" />    '+ CR +
+    '    <mkdir dir="' + ToPath(FCopyDir) + '" />                    '+ CR +
+    '    <shell executable="copy" arguments="                        '+
+             FBuildFileName + ' ' + FCopyOfFileName + '" />          '+ CR +
+    '    <shell executable="copy" arguments="                        '+
+             FBuildFileName + ' ' + FNewCopyOfFileName + '" />       '+ CR +
+    '    <copy todir="' + ToPath(FCopyDir) + '">                     '+ CR +
+    '      <fileset dir="' + ToPath(FNewDir) + '">                   '+ CR +
+    '        <include name="**/*.*" />                               '+ CR +
+    '      </fileset>                                                '+ CR +
+    '    </copy>                                                     '+ CR +
+    '    <delete dir="' + ToPath(FNewDir) + '" />                    '+ CR +
+    '  </target>                                                     '+ CR +
+    '</project>                                                      '+ CR;
 
   WriteLn(FBuildFile, Content);
   CloseFile(FBuildFile);
