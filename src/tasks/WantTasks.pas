@@ -74,9 +74,9 @@ end;
 
 procedure TWantTask.Init;
 begin
-  inherited Init;
   if dir <> '' then
     FSubProject.SetInitialBaseDir(dir);
+  inherited Init;
 end;
 
 procedure TWantTask.Execute;
