@@ -297,6 +297,7 @@ begin
     while not Child.EOF do
     begin
       Line := Child.ReadLine;
+      Log(vlDebug, 'output :%s', [Line]);
       //!!! Inc(LineNo); // never used
       if output <> '' then
         Writeln(OutFile, Line)
