@@ -80,26 +80,48 @@ LRDockWidth=421
 Dockable=1
 
 [Closed Files]
-File_0=SourceModule,'C:\home\want\src\lib\WildPaths.pas',0,1,129,21,141,0,0
-File_1=SourceModule,'C:\home\want\src\ScriptRunner.pas',0,1,315,48,329,0,0
-File_2=SourceModule,'C:\home\want\src\win32\ConsoleListener.pas',0,1,1,3,10,0,0
-File_3=SourceModule,'C:\home\want\src\tasks\DelphiTasks.pas',0,1,314,6,329,0,0
-File_4=SourceModule,'C:\home\want\src\tasks\IniFileTasks.pas',0,1,117,28,141,0,0
-File_5=SourceModule,'C:\home\want\lib\jal\src\JALStrings.pas',0,1,1,1,1,0,0
-File_6=SourceModule,'C:\home\want\lib\jal\src\JALExpressions.pas',0,1,40,1,57,0,0
-File_7=SourceModule,'C:\home\want\src\lib\ScriptParser.pas',0,1,154,1,172,0,0
-File_8=SourceModule,'c:\lib\pascal\jcl\source\JclStrings.pas',0,1,3598,1,3615,0,0
+File_0=SourceModule,'C:\home\want\src\lib\ScriptParser.pas',0,1,154,1,172,0,0
+File_1=SourceModule,'C:\home\want\lib\dunit\TestFramework.pas',0,1,1255,17,1271,0,0
+File_2=SourceModule,'C:\home\want\src\WantUtils.pas',0,1,307,1,331,0,0
+File_3=SourceModule,'C:\home\want\src\tasks\WantTasks.pas',0,1,64,24,76,0,0
+File_4=SourceModule,'C:\home\want\lib\jal\src\JALParse.pas',0,1,105,1,117,0,0
+File_5=SourceModule,'C:\home\want\test\DelphiTasksTest.pas',0,1,1,1,1,0,0
+File_6=SourceModule,'C:\home\want\lib\jal\src\JALStrings.pas',0,1,165,1,181,0,0
+File_7=SourceModule,'C:\home\want\src\lib\WildPaths.pas',0,1,129,21,141,0,0
+File_8=SourceModule,'C:\home\want\src\win32\ConsoleListener.pas',0,1,1,3,10,0,0
+File_9=SourceModule,'C:\home\want\src\tasks\IniFileTasks.pas',0,1,117,28,141,0,0
 
 [Modules]
-Module0=C:\home\want\src\tasks\FileTasks.pas
-Module1=C:\home\want\src\WantClasses.pas
-Module2=C:\home\want\src\WantUtils.pas
-Module3=C:\home\want\lib\jal\src\JALParse.pas
-Module4=C:\home\want\src\tasks\WantTasks.pas
-Count=5
+Module0=C:\home\want\src\ScriptRunner.pas
+Module1=C:\home\want\src\tasks\FileTasks.pas
+Module2=C:\home\want\src\want.dpr
+Module3=C:\home\want\src\tasks\ExecTasks.pas
+Module4=C:\home\want\src\tasks\DelphiTasks.pas
+Module5=C:\home\want\src\WantClasses.pas
+Count=6
 EditWindowCount=1
 
+[C:\home\want\src\ScriptRunner.pas]
+ModuleType=SourceModule
+FormState=0
+FormOnTop=0
+
 [C:\home\want\src\tasks\FileTasks.pas]
+ModuleType=SourceModule
+FormState=0
+FormOnTop=0
+
+[C:\home\want\src\want.dpr]
+ModuleType=SourceModule
+FormState=0
+FormOnTop=0
+
+[C:\home\want\src\tasks\ExecTasks.pas]
+ModuleType=SourceModule
+FormState=0
+FormOnTop=0
+
+[C:\home\want\src\tasks\DelphiTasks.pas]
 ModuleType=SourceModule
 FormState=0
 FormOnTop=0
@@ -109,26 +131,15 @@ ModuleType=SourceModule
 FormState=0
 FormOnTop=0
 
-[C:\home\want\src\WantUtils.pas]
-ModuleType=SourceModule
+[C:\home\want\src\want.bpg]
 FormState=0
 FormOnTop=0
 
-[C:\home\want\lib\jal\src\JALParse.pas]
-ModuleType=SourceModule
+[C:\home\want\test\WantTestLib.dpr]
 FormState=0
 FormOnTop=0
 
-[C:\home\want\src\tasks\WantTasks.pas]
-ModuleType=SourceModule
-FormState=0
-FormOnTop=0
-
-[c:\opt\borland\delphi4\Projects\ProjectGroup1.bpg]
-FormState=0
-FormOnTop=0
-
-[C:\home\want\src\want.dpr]
+[C:\home\want\test\WantAcceptTestLib.dpr]
 FormState=0
 FormOnTop=0
 
@@ -138,8 +149,8 @@ MessageView=MessageView@EditWindow0
 Create=1
 Visible=1
 State=0
-Left=96
-Top=74
+Left=42
+Top=44
 Width=935
 Height=667
 MaxLeft=-1
@@ -153,13 +164,14 @@ RightPanelSize=0
 BottomPanelSize=173
 BottomPanelClients=MessageView@EditWindow0,DockSite0
 BottomPanelData=00000400010000000B0000004D65737361676556696577AD00000000000000019F030000000000000100000000AD00000009000000446F636B5369746530FFFFFFFF
-ViewCount=5
-CurrentView=1
+ViewCount=6
+CurrentView=4
 View0=0
 View1=1
 View2=2
 View3=3
 View4=4
+View5=5
 
 [CodeExplorer@EditWindow0]
 Create=1
@@ -195,37 +207,44 @@ Dockable=1
 
 [View0]
 Module=C:\home\want\src\WantClasses.pas
-CursorX=22
-CursorY=1297
-TopLine=1282
+CursorX=26
+CursorY=1231
+TopLine=1217
 LeftCol=1
 
 [View1]
-Module=C:\home\want\src\tasks\FileTasks.pas
-CursorX=48
-CursorY=352
-TopLine=345
+Module=C:\home\want\src\tasks\DelphiTasks.pas
+CursorX=12
+CursorY=710
+TopLine=694
 LeftCol=1
 
 [View2]
-Module=C:\home\want\src\WantUtils.pas
-CursorX=1
-CursorY=331
-TopLine=307
+Module=C:\home\want\src\tasks\ExecTasks.pas
+CursorX=16
+CursorY=228
+TopLine=210
 LeftCol=1
 
 [View3]
-Module=C:\home\want\src\tasks\WantTasks.pas
-CursorX=24
-CursorY=76
-TopLine=64
+Module=C:\home\want\src\want.dpr
+CursorX=5
+CursorY=56
+TopLine=33
 LeftCol=1
 
 [View4]
-Module=C:\home\want\lib\jal\src\JALParse.pas
+Module=C:\home\want\src\ScriptRunner.pas
+CursorX=26
+CursorY=296
+TopLine=275
+LeftCol=1
+
+[View5]
+Module=C:\home\want\src\tasks\FileTasks.pas
 CursorX=1
-CursorY=117
-TopLine=105
+CursorY=291
+TopLine=264
 LeftCol=1
 
 [DockHosts]

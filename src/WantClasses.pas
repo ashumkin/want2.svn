@@ -1224,8 +1224,12 @@ begin
   try
     BuildSchedule(Target, Sched);
     SetLength(Result, Sched.Count);
+    Log(vlDebug, 'schedule:');
     for i := 0 to Sched.Count-1 do
+    begin
       Result[i] := Sched[i];
+      Log(vlDebug, Result[i].Name);
+    end;
   finally
     FreeAndNil(Sched);
   end;

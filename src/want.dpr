@@ -53,7 +53,7 @@ uses
   JALExpressions in '..\lib\jal\src\JALExpressions.pas';
 
 {$r wantver.res}
-{$r ..\bin\license.res }
+{$r license.res }
 
 const
   SwitchChars = ['-', '/'];

@@ -122,9 +122,13 @@ begin
       BuildProject(Project, Targets);
     except
       on e :EWantException do
+      begin
+        Log(vlDebug, e.Message);
         raise;
+      end;
       on e :Exception do
       begin
+        Log(vlDebug, e.Message);
         Listener.BuildFailed(Project, e.Message);
         raise;
       end;
@@ -223,6 +227,7 @@ begin
     except
       on e :Exception do
       begin
+        Log(vlDebug, e.Message);
         if e is ETaskException then
           Listener.BuildFailed(Project)
         else
@@ -286,6 +291,7 @@ begin
   except
     on e: Exception do
     begin
+      Log(vlDebug, e.Message);
       Listener.TaskFailed(Task, e.Message);
       if e is EWantException then
         raise

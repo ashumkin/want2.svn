@@ -225,7 +225,7 @@ var
 begin
   Log(vlDebug, 'currentDir=%s', [CurrentDir] );
   CmdLine := BuildCmdLine;
-  Log(vlDebug, CmdLine);
+  Log(vlVerbose, CmdLine);
   Run(CmdLine);
 end;
 
