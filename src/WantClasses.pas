@@ -596,6 +596,7 @@ function TDanteElement.SetAttribute(Name, Value: string): boolean;
 begin
   FAttributes.Values[Name] := Value;
   Result := SetDelphiProperty(Name, ExpandMacros(Value));
+  Log(vlDebug, 'attribute %s="%s"', [Name,ExpandMacros(Value)]);
 end;
 
 
