@@ -2,6 +2,15 @@
 
   <target name="test" >
     <edit file="file.txt" >
+      <write file="empty.txt" />
+    </edit>
+
+    <edit file="empty*.txt" >
+      <delete from="0" to="$" />
+      <write />
+    </edit>
+    
+    <edit file="file.txt" >
       <write file="full.txt" />
     </edit>
 
@@ -69,10 +78,6 @@
       </global>
     </edit>
 
-    <edit file="file.txt" >
-      <delete from="0" to="$" />
-      <write />
-    </edit>
   </target>
 
 </project>

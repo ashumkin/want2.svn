@@ -47,6 +47,7 @@ type
 
     FFile     :string;
     FLastPat  :string;
+    FCurrentFile :string;
 
     procedure SetDot(Value :Integer);
 
@@ -317,12 +318,17 @@ begin
       Perform;
     end
     else
-      for f := Low(Files) to High(Files) do
-      begin
-         Log(vlVerbose, '%s', [Files[f]]);
-         Buffer.Clear;
-         Buffer.LoadFromFile(ToSystemPath(Files[f]));
-         Perform
+      try
+        for f := Low(Files) to High(Files) do
+        begin
+           FCurrentFile := Files[f];
+           Log(vlVerbose, '%s', [FCurrentFile]);
+           Buffer.Clear;
+           Buffer.LoadFromFile(ToSystemPath(FCurrentFile));
+           Perform
+        end;
+      finally
+        FCurrentFile := '';
       end;
   end;
 end;
@@ -503,10 +509,12 @@ procedure TEditFileElement.Perform(Editor: TEditor);
 begin
   if (_file = '') then
   begin
-    if (Editor.FFile = '') then
+    if (Editor.FCurrentFile = '') then
       WantError('No file name')
     else
-      _file := Editor.FFile;
+    begin
+      _file := Editor.FCurrentFile;
+    end;
   end;
   inherited Perform(Editor);
 end;
@@ -575,7 +583,7 @@ begin
   S := TStringList.Create;
   try
      if append and FileExists(_file) then
-       S.LoadFromFile(_file);
+       S.LoadFromFile(ToSystemPath(_file));
      for i := Max(0, FromLine) to Min(Buffer.Count-1, ToLine) do
        S.Append(Buffer[i]);
      S.SaveToFile(ToSystemPath(_file));
