@@ -218,6 +218,7 @@ type
 
     FLogManager :TLogManager;
     FOnLog      :TLogMethod;
+    FOnTaggedLog:TTaggedLogMethod;
 
     procedure InsertNotification(Child :TTree); override;
     procedure RemoveNotification(Child :TTree); override;
@@ -290,6 +291,7 @@ type
     property Description:   string          read FDescription    write FDescription;
 
     property OnLog :TLogMethod read FOnLog write FOnLog;
+    property OnTaggedLog :TTaggedLogMethod read FOnTaggedLog write FOnTaggedLog;
   end;
 
 
@@ -1148,7 +1150,9 @@ end;
 
 procedure TProject.Log(Tag, Msg: string; Level: TLogLevel);
 begin
-  if LogManager <> nil then
+  if Assigned(FOnTaggedLog) then
+    FOnTaggedLog(Tag, Msg, Level)
+  else if LogManager <> nil then
     LogManager.Log(Format('%14s ', [ '['+Tag+']' ]), Msg, Level);
 end;
 
