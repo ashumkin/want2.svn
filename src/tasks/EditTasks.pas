@@ -77,6 +77,8 @@ type
     FFrom  :string;
     FTo    :string;
 
+    procedure SetLine(Value :string);
+
     procedure Perform(Editor :TEditor); override;
     function  Perform(Buffer :TStrings; FromLine, ToLine :Integer) :Integer; override;
 
@@ -84,6 +86,7 @@ type
   published
     property from :string  read FFrom write FFrom;
     property _to  :string  read FTo   write FTo;
+    property line :string  read Ffrom write SetLine;
     property all  :boolean write SetRangeToAll;
   end;
 
@@ -168,9 +171,9 @@ type
   protected
     FAppend :boolean;
 
-    procedure Perform(Editor :TEditor); override;
     function  Perform(Buffer :TStrings; FromLine, ToLine :Integer) :Integer; override;
   published
+    constructor Create(Owner :TScriptElement); override;
     property Append :boolean read FAppend write FAppend;
   end;
 
@@ -371,6 +374,12 @@ begin
   end;
 end;
 
+procedure TRangeElement.SetLine(Value: string);
+begin
+  from := Value;
+  _to  := Value;
+end;
+
 procedure TRangeElement.SetRangeToAll(Value: boolean);
 begin
   if Value then
@@ -530,12 +539,11 @@ end;
 
 { TWriteElement }
 
-procedure TWriteElement.Perform(Editor: TEditor);
+constructor TWriteElement.Create(Owner: TScriptElement);
 begin
-  if (from <> '') or (_to <> '') then
-    inherited Perform(Editor)
-  else
-    Perform(Editor.Buffer, 0, Editor.Buffer.Count-1);
+  inherited Create(Owner);
+  from  := '0';
+  _to   := '$';
 end;
 
 function TWriteElement.Perform(Buffer: TStrings; FromLine, ToLine: Integer): Integer;

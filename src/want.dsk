@@ -11,12 +11,6 @@ MaxTop=-1
 ClientWidth=804
 ClientHeight=78
 
-[BreakpointWindow]
-Column0Width=100
-Column1Width=75
-Column2Width=225
-Column3Width=40
-
 [CallStackWindow]
 Create=1
 Visible=1
@@ -31,6 +25,22 @@ ClientWidth=502
 ClientHeight=263
 TBDockHeight=161
 LRDockWidth=294
+Dockable=1
+
+[ProjectManager]
+Create=1
+Visible=1
+State=0
+Left=351
+Top=202
+Width=336
+Height=303
+MaxLeft=-1
+MaxTop=-1
+ClientWidth=328
+ClientHeight=279
+TBDockHeight=303
+LRDockWidth=336
 Dockable=1
 
 [LocalVarsWindow]
@@ -51,22 +61,28 @@ Dockable=1
 
 [Closed Files]
 File_0=SourceModule,'C:\home\want\lib\jal\JalStrings.pas',0,1,1,1,1,0,0
-File_1=SourceModule,'C:\home\want\src\tasks\FileTasks.pas',0,1,176,18,204,0,0
-File_2=SourceModule,'C:\home\want\src\tasks\ZipTasks.pas',0,1,84,30,106,0,0
-File_3=SourceModule,'C:\home\want\src\elements\PatternSets.pas',0,1,160,1,174,0,0
-File_4=SourceModule,'C:\home\want\src\ScriptRunner.pas',0,1,207,1,221,0,0
-File_5=SourceModule,'C:\home\want\lib\jal\JALOwnedTrees.pas',0,1,103,1,117,0,0
-File_6=SourceModule,'C:\home\want\src\WantClasses.pas',0,1,586,1,600,0,0
-File_7=SourceModule,'C:\home\want\src\lib\ScriptParser.pas',0,1,101,1,115,0,0
-File_8=SourceModule,'C:\home\want\src\win32\ConsoleScriptRunner.pas',0,1,1,1,1,0,0
-File_9=SourceModule,'C:\home\want\src\tasks\DelphiTasks.pas',0,1,1,1,1,0,0
+File_1=SourceModule,'C:\home\want\src\tasks\ZipTasks.pas',0,1,84,30,106,0,0
+File_2=SourceModule,'C:\home\want\src\elements\PatternSets.pas',0,1,160,1,174,0,0
+File_3=SourceModule,'C:\home\want\src\ScriptRunner.pas',0,1,207,1,221,0,0
+File_4=SourceModule,'C:\home\want\lib\jal\JALOwnedTrees.pas',0,1,103,1,117,0,0
+File_5=SourceModule,'C:\home\want\src\WantClasses.pas',0,1,586,1,600,0,0
+File_6=SourceModule,'C:\home\want\src\lib\ScriptParser.pas',0,1,101,1,115,0,0
+File_7=SourceModule,'C:\home\want\src\win32\ConsoleScriptRunner.pas',0,1,1,1,1,0,0
+File_8=SourceModule,'C:\home\want\src\tasks\DelphiTasks.pas',0,1,1,1,1,0,0
 
 [Modules]
-Module0=C:\home\want\lib\jal\JalPaths.pas
-Module1=C:\home\want\src\lib\WildPaths.pas
-Module2=C:\home\want\test\WantAcceptTestLib.dpr
-Count=3
+Module0=C:\home\want\src\tasks\EditTasks.pas
+Module1=C:\home\want\lib\jal\JalPaths.pas
+Module2=C:\home\want\src\lib\WildPaths.pas
+Module3=C:\home\want\test\WantAcceptTestLib.dpr
+Module4=C:\home\want\src\tasks\FileTasks.pas
+Count=5
 EditWindowCount=1
+
+[C:\home\want\src\tasks\EditTasks.pas]
+ModuleType=SourceModule
+FormState=0
+FormOnTop=0
 
 [C:\home\want\lib\jal\JalPaths.pas]
 ModuleType=SourceModule
@@ -79,6 +95,11 @@ FormState=0
 FormOnTop=0
 
 [C:\home\want\test\WantAcceptTestLib.dpr]
+ModuleType=SourceModule
+FormState=0
+FormOnTop=0
+
+[C:\home\want\src\tasks\FileTasks.pas]
 ModuleType=SourceModule
 FormState=0
 FormOnTop=0
@@ -116,11 +137,13 @@ RightPanelSize=0
 BottomPanelSize=0
 BottomPanelClients=MessageView@EditWindow0,LocalVarsWindow
 BottomPanelData=00000400020000000B0000004D657373616765566965770F0000004C6F63616C5661727357696E646F77F602000000000000009500000000000000FFFFFFFF
-ViewCount=3
-CurrentView=1
+ViewCount=5
+CurrentView=2
 View0=0
 View1=1
 View2=2
+View3=3
+View4=4
 
 [CodeExplorer@EditWindow0]
 Create=1
@@ -169,6 +192,20 @@ TopLine=1
 LeftCol=1
 
 [View2]
+Module=C:\home\want\src\tasks\EditTasks.pas
+CursorX=9
+CursorY=545
+TopLine=542
+LeftCol=1
+
+[View3]
+Module=C:\home\want\src\tasks\FileTasks.pas
+CursorX=1
+CursorY=1
+TopLine=1
+LeftCol=1
+
+[View4]
 Module=C:\home\want\test\WantAcceptTestLib.dpr
 CursorX=40
 CursorY=22
@@ -187,12 +224,10 @@ Watch3='Matches[i]',256,0,18,1
 Watch4='FIncludes[i]',256,0,18,1
 
 [Breakpoints]
-Count=5
+Count=3
 Breakpoint0='C:\home\want\test\ExternalTests.pas',256,'',0,1
 Breakpoint1='C:\home\want\src\ScriptRunner.pas',285,'',0,1
-Breakpoint2='C:\home\want\src\tasks\FileTasks.pas',361,'',0,1
-Breakpoint3='C:\home\want\src\tasks\FileTasks.pas',344,'',0,1
-Breakpoint4='C:\home\want\src\ScriptRunner.pas',221,'',0,1
+Breakpoint2='C:\home\want\src\ScriptRunner.pas',221,'',0,1
 
 [AddressBreakpoints]
 Count=0
