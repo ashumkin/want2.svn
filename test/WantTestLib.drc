@@ -258,4 +258,3 @@ BEGIN
 	SysConst_SInvalidInput,	"Invalid numeric input"
 END
 
-
