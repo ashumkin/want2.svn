@@ -47,7 +47,7 @@
     <delete dir="${bin}" />
   </target>
 
-  <target name="compile" > <!-- depends="prepare" -->
+  <target name="compile" depends="prepare">
     <log file="compile.log" >
       <info code="compile">
         Compile started.
