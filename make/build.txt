@@ -1,1 +1,0 @@
-dcc32.exe -B -Q -E"..\src" ..\src\dante.dpr
