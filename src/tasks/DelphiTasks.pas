@@ -644,7 +644,7 @@ begin
 
   result := result + OutputPathElements('resourcepath','R',FResourcePaths.Paths);
 
-  result := result + OutputPathElements('includepath','I',FResourcePaths.Paths);
+  result := result + OutputPathElements('includepath','I',FIncludePaths.Paths);
   
   result := result + OutputPathElements('objectpath','O',FObjectPaths.Paths);  
 
