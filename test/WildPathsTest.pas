@@ -7,12 +7,13 @@ uses
 
 type
   TTestToRelativePath = class(TTestCase)
+  private
   public
     procedure Setup; override;
     procedure TearDown; override;
   published
     procedure TestToRelativePath;
-
+    procedure TestToRelativePathUNC;
     procedure TestIsMatch;
   end;
 
@@ -105,6 +106,20 @@ begin
     'absolute base, relative path, cannot determine if Path in Base or not');
 end;
 
+procedure TTestToRelativePath.TestToRelativePathUNC;
+var
+  B, P :TPath;
+begin
+  P := '//machine/c/dir/../../..';
+  B := '//machine/c/dir';
+  CheckEquals('../../..', ToRelativePath(P, B));
+  P := '//machine';
+  CheckEquals('../..', ToRelativePath(P, B));
+  P := '';
+  CheckEquals('.', ToRelativePath(P, B));
+  P := '//';
+  CheckEquals('//', ToRelativePath(P, B));
+end;
 
 procedure TTestToRelativePath.TestIsMatch;
 const

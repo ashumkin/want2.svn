@@ -322,7 +322,7 @@ begin
         Result := Result + '/' + Parts[i];
     end;
   end;
-  Assert(Pos('//', Result) = 0);
+  Assert(Pos('//', Result) <= 1);
 end;
 
 procedure CheckPath(Path :TPath);
@@ -592,11 +592,16 @@ begin
       if j > High(B) then
         Result := '.'
       else
+      begin
         while  j <= High(B) do
         begin
-          Result := Result + '../';
+          if Result = '' then
+            Result := '..'
+          else
+            Result := Result + '/..';
           Inc(j);
         end;
+      end;
       while i <= High(P) do
       begin
         Result := PathConcat(Result, P[i]);
@@ -646,8 +651,16 @@ begin
     if PathIsAbsolute(Path) then
     begin // must be UNC, URI, or C:/ style
       p := 1+Pos('/', Copy(Path, 2, Length(Path)));
-      BasePath := BasePath + Copy(Path, 1, p-1);
-      Delete(Path, 1, p);
+      if p = 1 then
+      begin
+        BasePath := BasePath + Path;
+        Path := '';
+      end
+      else
+      begin
+        BasePath := BasePath + Copy(Path, 1, p-1);
+        Delete(Path, 1, p);
+      end;
     end;
   end;
 end;
@@ -828,21 +841,29 @@ end;
 function  SuperPath(Path: TPath): TPath;
 var
   p   : Integer;
+  f   : string;
 begin
   Path     := ToPath(Path);
 
   if (Path = '.') or (Path = '') then
     Result := '..'
+  else if Path = '..' then
+    Result := '../..'
   else
   begin
     Result := Path;
     p := LastDelimiter('/', Result);
-    if p = Length(Result) then
+    f := Copy(Result, p+1, Length(Result));
+    if (p = Length(Result)) or (f = '.') then
     begin
       Result := Copy(Result, 1, p-1);
       p := LastDelimiter('/', Result);
+      f := Copy(Result, p+1, Length(Result))
     end;
-    Result := Copy(Result, 1, p-1);
+    if  f = '..' then
+      Result := Result + '/..'
+    else
+      Result := Copy(Result, 1, p-1);
   end;
 end;
 
