@@ -103,6 +103,7 @@ begin
   B := '';
   CheckEquals('/c:/', P);
   ForceRelativePath(P, B);
+  CheckEquals('', P);
   CheckEquals('/c:', B);
 end;
 
