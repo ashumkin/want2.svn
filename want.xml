@@ -15,11 +15,13 @@ See http://www.suigeneris.org/want/ for details.
          basedir="."
          default="dist" >
 
+  <property name="want.master" value="%{want_master}" />
+
   <property name="old.version"    value="?{release.ini:releases:current}" />
   <regexp   property="old.build"  text="${old.version}" pattern="^.*\.([0-9]+)$" subst ="\1" />
   
-  <property name="build" value="={1 + ${old.build}}" if="%{want_master}" />
-  <property name="build" value="=${old.build}"   unless="%{want_master}" />
+  <property name="build" value="={1 + ${old.build}}" if="want.master" />
+  <property name="build" value="${old.build}"    unless="want.master" />
   
   <regexp property="version" text="${old.version}" pattern="\.[0-9]*$" subst=".${build}" />
   <regexp property="comma.version" pattern="\." subst="," text="${version}" />
@@ -185,7 +187,7 @@ See http://www.suigeneris.org/want/ for details.
   </target>
 
   <target name="build" >
-    <ini file="release.ini" >
+    <ini file="release.ini" if="want.master" >
       <write section="releases" key="current" value="${version}" />                  
     </ini>
   </target>
