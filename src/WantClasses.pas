@@ -123,6 +123,7 @@ type
     FProperties:  TStrings;
     FAttributes:  TStrings;
 
+    FDescription:   string;
 
     function GetChild(i :Integer):TDanteElement;
 
@@ -201,7 +202,8 @@ type
 
     property Children[i :Integer] :TDanteElement read GetChild;
   published
-    property Tag :  string read TagName stored False;
+    property Tag :  string        read TagName stored False;
+    property Description: string  read FDescription write FDescription;
   end;
 
 
@@ -214,7 +216,6 @@ type
     FVerbosity:      TLogLevel;
     FRootPath:      TPath;  // root for all path calculations
     FRootPathSet:   boolean;
-    FDescription:   string;
 
     FLogManager :TLogManager;
     FOnLog      :TLogMethod;
@@ -285,7 +286,6 @@ type
       write  FVerbosity
       stored False
       default vlNormal;
-    property Description:   string          read FDescription    write FDescription;
 
     property OnLog :TLogMethod read FOnLog write FOnLog;
   end;
@@ -1384,7 +1384,8 @@ procedure TTarget.Build;
 var
   i: Integer;
 begin
-  Log;
+  Project.Log;
+  Log(Description);
 
   Log(vlDebug, 'basepath="%s"', [BasePath]);
   Log(vlDebug, 'basedir="%s"',  [BaseDir]);
@@ -1472,6 +1473,9 @@ var
 begin
   Log(vlDebug, 'basepath="%s"', [BasePath]);
   Log(vlDebug, 'basedir="%s"',  [BaseDir]);
+
+  if Description <> '' then
+    Log(Description);
 
   LastDir := CurrentDir;
   try

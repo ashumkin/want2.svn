@@ -103,7 +103,7 @@ var
   t:    Integer;
 begin
   Log('buildfile: ' + ToRelativePath(FindBuildFile(ABuildFileName, False)));
-  Log;
+  Log(Description);
 
   try
     LoadXML(ABuildFileName);
