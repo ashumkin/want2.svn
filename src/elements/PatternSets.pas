@@ -56,6 +56,8 @@ type
 
     FPatternSets: array of TPatternSet;
 
+    FSorted: boolean;
+
     procedure InsertNotification(Child :TTree); override;
 
     procedure AddPatternSet(APatternSet: TPatternSet);
@@ -95,6 +97,9 @@ type
 
     property Includes: TStrings read FIncludes;
     property Excludes: TStrings read FExcludes;
+
+    property Sorted: boolean read FSorted write FSorted;
+    
   published
     function createInclude: TIncludeElement;
     function createExclude: TExcludeElement;
@@ -151,6 +156,7 @@ begin
   inherited Create(Owner);
   FIncludes := TStringList.Create;
   FExcludes := TStringList.Create;
+  FSorted := true;
 end;
 
 destructor TPatternSet.Destroy;
@@ -257,7 +263,7 @@ var
 begin
   Files := TStringList.Create;
   try
-    Files.Sorted := True;
+    Files.Sorted := FSorted;
 
     Log(vlDebug, 'fileset basedir="%s"', [basedir]);
     GetPaths(Files);
@@ -276,7 +282,7 @@ var
 begin
   Files := TStringList.Create;
   try
-    Files.Sorted := True;
+    Files.Sorted := FSorted;
 
     GetPaths(Files);
 
