@@ -266,7 +266,7 @@ begin
               OutputLog(Header + Lines[i], False);
 
           finally
-            FreeAndNil(Lines);
+            Lines.Free;
 
             if AlwaysFlush then
               CloseLogFile;

@@ -36,7 +36,6 @@ unit FileSets;
 interface
 uses
   WildPaths,
-  FileOps,
   DanteClasses,
   //PatternSets,
 

@@ -39,8 +39,7 @@ uses
   ZipUtils,
   ZIP,
   UNZIP,
-  WildPaths,
-  FileOps;
+  WildPaths;
 
 type
   EZipFileException = class(Exception);

@@ -35,7 +35,6 @@ unit ExecTasks;
 interface
 uses
   WildPaths,
-  FileOps,
   DanteClasses,
 
   JclBase,

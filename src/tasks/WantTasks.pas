@@ -38,7 +38,6 @@ uses
   DanteClasses,
   WildPaths,
   FileSets,
-  FileOps,
 
   SysUtils,
   Classes;

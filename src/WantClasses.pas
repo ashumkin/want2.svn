@@ -40,7 +40,6 @@ uses
   TypInfo,
 
   WildPaths,
-  FileOps,
 
   Collections,
   MiniDom,

@@ -37,7 +37,6 @@ uses
   DanteClasses,
   ExecTasks,
   WildPaths,
-  FileOps,
 
   Collections,
   MiniDom,

@@ -36,7 +36,6 @@ interface
 uses
   SysUtils,
   WildPaths,
-  FileOps,
   FileSets,
   ZipStreams,
   DanteClasses,

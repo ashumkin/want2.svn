@@ -38,7 +38,6 @@ uses
   DanteClasses,
   WildPaths,
   FileSets,
-  FileOps,
 
   SysUtils,
   Classes;
@@ -228,7 +227,7 @@ begin
     if PathExists(dir) then
       TaskFailure(Format('cannot create dir "%s". A file is in the way.', [dir]));
     Log(ToRelativePath(dir));
-    FileOps.MakeDir(ToAbsolutePath(dir));
+    WildPaths.MakeDir(ToAbsolutePath(dir));
     if not IsDir(dir) then
       TaskFailure(Format('cannot create dir "%s".', [dir]));
   end;
@@ -242,7 +241,7 @@ begin
   if _File = '' then
     TaskError('<file> attribute not set');
   Log(ToRelativePath(_File));
-  FileOps.TouchFile(_File);
+  WildPaths.TouchFile(_File);
 end;
 
 
@@ -296,7 +295,7 @@ begin
     begin
       Log(vlVerbose, 'del ' + ToSystemPath(Paths[p]));
       AboutToScratchPath(Paths[p]);
-      FileOps.DeleteFile(Paths[p]);
+      WildPaths.DeleteFile(Paths[p]);
       if PathExists(Paths[p]) then
         TaskFailure(Format('Could not delete "%s"', [  Paths[p] ]) );
     end;
@@ -352,7 +351,7 @@ procedure TCopyTask.DoFiles(Fileset :TFileSet; FromPath, ToPath: TPath);
 begin
   Log(vlVerbose, Format('copy %s -> %s', [ToSystemPath(FromPath), ToSystemPath(ToPath)]));
   AboutToScratchPath(ToPath);
-  FileOps.CopyFile(FromPath, ToPath);
+  WildPaths.CopyFile(FromPath, ToPath);
   if not FileExists(ToSystemPath(ToPath)) then
     TaskFailure(ToPath);
 end;
@@ -372,7 +371,7 @@ procedure TMoveTask.DoFiles(Fileset :TFileSet; FromPath, ToPath: TPath);
 begin
   Log(vlVerbose, Format('move %s -> %s', [ToSystemPath(FromPath), ToSystemPath(ToPath)]));
   AboutToScratchPath(ToPath);
-  FileOps.MoveFile(FromPath, ToPath);
+  WildPaths.MoveFile(FromPath, ToPath);
   if not FileExists(ToSystemPath(ToPath)) then
     TaskFailure(ToPath);
 end;
