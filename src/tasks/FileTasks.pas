@@ -75,7 +75,7 @@ type
   protected
     FDir :string;
   public
-    procedure Validate; override;
+    procedure Init; override;
     procedure Execute;  override;
   published
     property dir : string read FDir write FDir;
@@ -85,7 +85,7 @@ type
   protected
     FFile :string;
   public
-    procedure Validate; override;
+    procedure Init; override;
     procedure Execute; override;
   published
     property _File : string read FFile write FFile;
@@ -102,7 +102,7 @@ type
 
     procedure DoFileset(Fileset :TFileSet); override;
   public
-    procedure Validate; override;
+    procedure Init; override;
   published
     property _File :string  read FFile write SetFile stored True;
     property Dir   :string  read FDir  write FDir;
@@ -117,7 +117,7 @@ type
     procedure DoPaths(Fileset :TFileSet; FromPaths, ToPaths :TPaths); virtual;
     procedure DoFiles(Fileset :TFileSet; FromPath, ToPath :TPath);    virtual; abstract;
   public
-    procedure Validate; override;
+    procedure Init; override;
   published
     property todir  :string read FToDir  write FToDir;
   end;
@@ -211,9 +211,9 @@ end;
 
 { TMkDirTask }
 
-procedure TMkDirTask.Validate;
+procedure TMkDirTask.Init;
 begin
-  inherited Validate;
+  inherited Init;
   RequireAttribute('dir');
 end;
 
@@ -246,9 +246,9 @@ begin
 end;
 
 
-procedure TTouchTask.Validate;
+procedure TTouchTask.Init;
 begin
-  inherited Validate;
+  inherited Init;
   RequireAttribute('file');
 end;
 
@@ -309,9 +309,9 @@ begin
   FFileSets[0].Include(Value);
 end;
 
-procedure TDeleteTask.Validate;
+procedure TDeleteTask.Init;
 begin
-  inherited Validate;
+  inherited Init;
   if (_file = '') and (dir = '') then
     TaskError('either the "file" or the "dir" attribute must be set');
 end;
@@ -340,9 +340,9 @@ begin
   DoPaths(Fileset, FromPaths, ToPaths);
 end;
 
-procedure TMoveCopyTask.Validate;
+procedure TMoveCopyTask.Init;
 begin
-  inherited Validate;
+  inherited Init;
   RequireAttribute('todir');
 end;
 

@@ -60,7 +60,7 @@ type
 
     class function XMLTag :string; override;
 
-    procedure Validate; override;
+    procedure Init; override;
     procedure Execute;  override;
   published
     function CreateInfo :TInfoElement;
@@ -96,9 +96,9 @@ begin
   FInfos.Add(Result);
 end;
 
-procedure TLoggerTask.Validate;
+procedure TLoggerTask.Init;
 begin
-  inherited Validate;
+  inherited Init;
   RequireAttribute('file');
 end;
 

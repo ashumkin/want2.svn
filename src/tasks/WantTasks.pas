@@ -68,7 +68,7 @@ type
     constructor Create(Owner: TDanteElement = nil); override;
     destructor  Destroy; override;
 
-    procedure Validate; override;
+    procedure Init; override;
     procedure Execute;  override;
   published
     function CreateProperty :TPropertyElement; override;
@@ -80,7 +80,7 @@ type
 
   TDanteCallTask = class(TCustomDanteTask)
   public
-    procedure Validate; override;
+    procedure Init; override;
     procedure Execute;  override;
   published
     property _target;
@@ -109,9 +109,9 @@ begin
 end;
 
 
-procedure TDanteTask.Validate;
+procedure TDanteTask.Init;
 begin
-  inherited Validate;
+  inherited Init;
   // nothing required
 end;
 
@@ -152,7 +152,7 @@ end;
 
 { TDanteCallTask }
 
-procedure TDanteCallTask.Validate;
+procedure TDanteCallTask.Init;
 begin
   RequireAttribute('target');
 end;

@@ -35,7 +35,7 @@
       <li>Define a new class that descends from
       DanteClasses.TTask.</li>
 
-		<li>Override the Validate procedure, to verify that 
+		<li>Override the Init procedure, to verify that 
 		attributes have valid values after the task has been parsed.</li>
 
       <li>Override the Execute procedure to define the task's
@@ -61,16 +61,16 @@ uses
 type
   TLoggerTask = class(TTask)
   public
-    procedure Validate; override;
+    procedure Init; override;
     procedure Execute;  override;
   end;
 
 implementation
 
-procedure TLoggerTask.Validate;
+procedure TLoggerTask.Init;
 begin
-  inherited Validate;
-  // validate attributes
+  inherited Init;
+  // Init attributes
 end;
 
 procedure TLoggerTask.Execute;
@@ -197,9 +197,9 @@ type
     property format :TLogFormat read FFormat write FFormat;
 </b>  end;
 
-procedure TLoggerTask.Validate;
+procedure TLoggerTask.Init;
 begin
-  inherited Validate;
+  inherited Init;
 <b>  AttributeRequired('file', _file); </b>
 end;
 
@@ -215,7 +215,7 @@ end;
 
     <p>Dante assigns the values of attributes to their
     corresponding properties as the build script is parsed, and
-    the <code>Validate</code> method is called after the last 
+    the <code>Init</code> method is called after the last 
     attribute is processed. The <code>AttributeRequired</code> method
     is a handy way to verify that an attribute of type string 
     has a value</p>
@@ -405,9 +405,9 @@ begin
 end;
 </b>
 
-procedure TLoggerTask.Validate;
+procedure TLoggerTask.Init;
 begin
-  inherited Validate;
+  inherited Init;
   AttributeRequired('file', _file); 
 end;
 

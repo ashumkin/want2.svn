@@ -21,6 +21,8 @@
 
 
   <target name="prepare" >
+    <echo message="param=${param}" />
+
     <echo message="basedir=${basedir}" />
     <echo>
     The base directory is ${basedir}
@@ -38,6 +40,7 @@
     <echo message="jcl=${jcl}" />
     <echo message="paszlib=${paszlib}" />
 
+	 
     <mkdir dir="${dcu}" />
     <mkdir dir="${bin}" />
   </target>

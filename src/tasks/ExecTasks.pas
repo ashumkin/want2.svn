@@ -54,7 +54,7 @@ type
   protected
     FVAlue :string;
   public
-    procedure Validate; override;
+    procedure Init; override;
   published
     property value :string read FValue write FValue;
   end;
@@ -101,7 +101,7 @@ type
 
   TExecTask = class(TCustomExecTask)
   public
-    procedure Validate; override;
+    procedure Init; override;
     procedure Execute; override;
   published
     property Arguments;
@@ -151,9 +151,9 @@ begin
   inherited Execute;
 end;
 
-procedure TExecTask.Validate;
+procedure TExecTask.Init;
 begin
-  inherited Validate;
+  inherited Init;
   RequireAttribute('executable');
 end;
 
@@ -450,7 +450,7 @@ end;
 
 { TArgElement }
 
-procedure TArgElement.Validate;
+procedure TArgElement.Init;
 begin
   RequireAttribute('value');
   (Owner as TCustomExecTask).FArguments.Add(Value);

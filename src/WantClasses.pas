@@ -155,7 +155,7 @@ type
     procedure ParseXML(Node: MiniDom.IElement);               virtual;
     function  ParseXMLChild(Child: MiniDom.IElement):boolean; virtual;
     procedure ParseError(Msg: string; Line: Integer);
-    procedure Validate;                                       virtual;
+    procedure Init;                                       virtual;
 
     function  AsXML    : string;                virtual;
     function  ToXML(Dom: IDocument):  IElement; virtual;
@@ -168,8 +168,7 @@ type
 
     function  SetAttribute(Name, Value: string): boolean; virtual;
     function  GetAttribute(Name :string) : string;        virtual;
-    function  EvaluateAttribute(Name: string): boolean; virtual;
-    procedure EvaluateAttributes(Depth :Integer = 0);
+
     function  GetDelphiProperty(Name :string) :Variant;
     function  SetDelphiProperty(Name, Value :string) :boolean;
 
@@ -336,7 +335,7 @@ type
     FName: string;
     FValue: string;
   public
-    procedure Validate; override;
+    procedure Init; override;
   published
     property name: string read FName  write FName;
     property value: string read FValue write FValue;
@@ -539,7 +538,7 @@ begin
   end;
 end;
 
-procedure TDanteElement.Validate;
+procedure TDanteElement.Init;
 begin
   // do nothing
 end;
@@ -574,6 +573,9 @@ begin
     end;
   end;
 
+  ChangeDir(BasePath);
+  Self.Init;
+
   i := Node.Children.Iterator;
   while i.HasNext do
   begin
@@ -594,8 +596,7 @@ end;
 function TDanteElement.SetAttribute(Name, Value: string): boolean;
 begin
   FAttributes.Values[Name] := Value;
-  SetDelphiProperty(Name, Value);
-  Result := True;
+  Result := SetDelphiProperty(Name, ExpandMacros(Value));
 end;
 
 function TDanteElement.GetAttribute(Name: string): string;
@@ -605,46 +606,6 @@ begin
     Result := GetDelphiProperty(Name);
 
   Result := ExpandMacros(Result);
-end;
-
-function TDanteElement.EvaluateAttribute(Name :string): boolean;
-begin
-  Result := SetDelphiProperty(Name, GetAttribute(Name));
-end;
-
-
-procedure TDanteElement.EvaluateAttributes(Depth :Integer);
-var
-  a, c:       Integer;
-  Valid:    boolean;
-  Children: TDanteElementArray;
-begin
-  Children := nil;
-
-  with FAttributes do
-  begin
-    for a := 0 to Count-1 do
-    begin
-      valid := False;
-      try
-         Valid := EvaluateAttribute(Names[a]);
-      except
-        on e: Exception do
-          ParseError(e.Message, 0);
-      end;
-      if not Valid then
-        ParseError(Format('Unknown attribute <%s>.%s', [XMLTag, Names[a]]), 0);
-    end;
-  end;
-
-  Validate;
-  
-  if (Depth > 0) then
-  begin
-    Children := GetChildrenTyped(TDanteElement);
-    for c := Low(Children) to High(children) do
-      Children[c].EvaluateAttributes(Depth-1);
-  end;
 end;
 
 function TDanteElement.ParseXMLChild(Child: IElement): boolean;
@@ -987,7 +948,7 @@ begin
           Value := LowerCase(Value);
           if (Value = 'true') or (Value = 'yes') or (Value = 'on') then
             SetOrdProp(Self, PropInfo, GetEnumValue(PropType^, 'true'))
-          else if (Value = 'false') or (Value = 'no') or (Value = 'off') then
+          else if (Value = 'false') or (Value = 'no') or (Value = 'off')  or (Value = '') then
             SetOrdProp(Self, PropInfo, GetEnumValue(PropType^, 'false'))
           else
             DanteError('expected one of true/false, yes/no, on/off');
@@ -1196,8 +1157,6 @@ begin
 
   Sched := nil;
   try
-    Self.EvaluateAttributes(1);
-    
     if Target = '' then
     begin
       if Default = '' then
@@ -1457,8 +1416,6 @@ procedure TTarget.Build;
 var
   i: Integer;
 begin
-  EvaluateAttributes(1);
-  
   Project.Log;
   Log;
 
@@ -1552,8 +1509,6 @@ procedure TTask.DoExecute;
 begin
   try
     try
-      EvaluateAttributes(MaxInt);
-
       ChangeDir(BasePath);
       Execute;
     except
@@ -1631,9 +1586,9 @@ end;
 
 { TPropertyElement }
 
-procedure TPropertyElement.Validate;
+procedure TPropertyElement.Init;
 begin
-  inherited Validate;
+  inherited Init;
   RequireAttribute('name');
   RequireAttribute('value');
 

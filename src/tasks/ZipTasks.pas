@@ -54,7 +54,7 @@ type
   public
     constructor Create(Owner :TDanteElement); override;
 
-    procedure Validate; override;
+    procedure Init; override;
     procedure DoFileset(Fileset :TFileSet); override;
 
     procedure Execute; override;
@@ -78,9 +78,9 @@ begin
   FCompress := true;
 end;
 
-procedure TZipTask.Validate;
+procedure TZipTask.Init;
 begin
-  inherited Validate;
+  inherited Init;
   RequireAttribute('zipfile');
 end;
 

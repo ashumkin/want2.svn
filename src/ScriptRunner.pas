@@ -48,6 +48,8 @@ type
   TDante = class(TObject)
   protected
     function RunConsole(CmdLine: string): boolean;
+
+    procedure SetCommandLineProperties(Project :TProject);
   public
     procedure DoBuild( ABuildFileName: string;
                        Verbosity: TVerbosityLevel = vlNormal); overload;
@@ -69,6 +71,7 @@ var
 begin
   Project := TProject.Create(nil);
   try
+    SetCommandLineProperties(Project);
     Project.LoadXML(ABuildFileName);
     Project.Verbosity := Verbosity;
     if Targets = '' then
@@ -94,6 +97,35 @@ end;
 function TDante.RunConsole(CmdLine: string): boolean;
 begin
   Result := (WinExec32AndWait(CmdLine, SW_HIDE) = 0);
+end;
+
+procedure TDante.SetCommandLineProperties(Project: TProject);
+var
+  i:         Integer;
+  Param:     string;
+  PropName:  string;
+  PropValue: string;
+  EqPos:     Integer;
+begin
+  for i := 1 to ParamCount do
+  begin
+    Param := ParamStr(i);
+    if Copy(Param, 1, 2) = '-D' then
+    begin
+      Delete(Param, 1, 2);
+
+      EqPos := Pos('=', Param);
+      if EqPos = 0 then
+         EqPos := 1+Length(Param);
+
+      PropName  := Copy(Param, 1, EqPos-1);
+      PropValue := Copy(Param, EqPos+1, Length(Param));
+
+      PropValue := StrTrimQuotes(PropValue);
+
+      Project.SetProperty(PropName, PropValue);
+    end;
+  end;
 end;
 
 end.

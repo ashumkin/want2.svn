@@ -46,7 +46,7 @@ type
     F_Label: string;
   public
     procedure Execute; override;
-    procedure Validate; override;
+    procedure Init; override;
   published
     property _Label: string read F_Label write F_Label;
     property LocalPath: string read FLocalPath write FLocalPath;
@@ -85,7 +85,7 @@ begin
   inherited Execute;
 end;
 
-procedure TVssGetTask.Validate;
+procedure TVssGetTask.Init;
 begin
   inherited;
   RequireAttribute('vsspath');
