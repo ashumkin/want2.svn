@@ -27,21 +27,31 @@ type
     FText    :string;
     FFile    :string;
     FAppend  :boolean;
+    FLevel   :TLogLevel;
 
   public
+    constructor Create(Owner :TScriptElement); override;
+
     procedure Execute; override;
 
     function FormatText :string;
   published
-    property _message :string  read FMessage write FMessage;
-    property _text    :string  read FText    write FText;
-    property _file    :string  read FFile    write FFile;
-    property append   :boolean read FAppend  write FAppend;
+    property _message :string    read FMessage write FMessage;
+    property _text    :string    read FText    write FText;
+    property _file    :string    read FFile    write FFile;
+    property append   :boolean   read FAppend  write FAppend;
+    property level    :TLogLevel read FLevel   write FLevel default vlNormal;
   end;
 
 implementation
 
 { TEchoTask }
+
+constructor TEchoTask.Create(Owner: TScriptElement);
+begin
+  inherited Create(Owner);
+  Level := vlNormal;
+end;
 
 procedure TEchoTask.Execute;
 var
@@ -50,7 +60,7 @@ var
 begin
   msg := _message + FormatText;
   if _file = '' then
-    Log(msg)
+    Log(msg, Level)
   else
   begin
     Log(SysUtils.Format('echo to "%s"', [ToRelativePath(_file)]));

@@ -93,8 +93,14 @@ type
 
   TPrintElement = class(TEditElement)
   protected
+    FLevel :TLogLevel;
+
     function Perform(Buffer :TStrings; Line :Integer) :Integer;  override;
   public
+    constructor Create(Owner :TScriptElement); override;
+
+  published
+    property Level :TLogLevel read FLevel write FLevel default vlNormal;
   end;
 
   TPatternElement = class(TRangeElement)
@@ -268,7 +274,8 @@ begin
   SetText(FText);
   for i := 0 to ChildCount-1 do
   begin
-    if Children[i] is TCustomEditElement then
+    if (Children[i] is TCustomEditElement)
+    and (Children[i].Enabled) then
       TCustomEditElement(Children[i]).Perform(Self);
   end;
 end;
@@ -358,7 +365,8 @@ begin
   Result := inherited Perform(Buffer, FromLine, ToLine);
   for i := 0 to ChildCount-1 do
   begin
-    if Children[i] is TEditElement then
+    if  (Children[i] is TEditElement)
+    and (Children[i].Enabled) then
       Result := TEditElement(Children[i]).Perform(Buffer, FromLine, ToLine);
   end;
 end;
@@ -441,9 +449,15 @@ end;
 
 { TPrintElement }
 
+constructor TPrintElement.Create(Owner: TScriptElement);
+begin
+  inherited Create(Owner);
+  Level := vlNormal;
+end;
+
 function TPrintElement.Perform(Buffer: TStrings; Line: Integer) :Integer;
 begin
-  Log(Buffer[Line]);
+  Log(Buffer[Line], Level);
   Result := -1; // print doesn't alter dot
 end;
 
