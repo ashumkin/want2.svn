@@ -15,7 +15,7 @@ See http://www.suigeneris.org/want/ for details.
          basedir="."
          default="dist" >
 
-  <property name="version" value="0.1.1" />
+  <property name="version" value="0.1.2" />
   <property name="increment.build" value="false" />
 
   <property name="etc"       value="${basedir}/etc" />
