@@ -36,9 +36,9 @@ end;
 procedure TTestCustomExecTask.TestBuildCmdLine;
 begin
   FCustomExecTask.Executable := 'cmd.exe';
-  FCustomExecTask.Arguments.Add('/c copy');
-  FCustomExecTask.Arguments.Add('file1.txt');
-  FCustomExecTask.Arguments.Add('"c:\dir w space\filecpy.txt"');
+  FCustomExecTask.ArgumentList.Add('/c copy');
+  FCustomExecTask.ArgumentList.Add('file1.txt');
+  FCustomExecTask.ArgumentList.Add('"c:\dir w space\filecpy.txt"');
   CheckEquals(
     'cmd.exe /c copy file1.txt "c:\dir w space\filecpy.txt"',
     FCustomExecTask.BuildCmdLine, 'BuildCmdLine failed');

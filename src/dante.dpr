@@ -38,11 +38,9 @@ program dante;
 uses
   SysUtils,
   clUtilConsole,
+  DanteClasses,
   StandardTasks,
   DanteMain;
-
-const
-  BuildFileName = 'build.dfm';
 
 function DanteHeader: string;
 begin
@@ -114,8 +112,22 @@ procedure Run;
 var
   BuildFile: string;
   ADante:    TDante;
+  p:         Integer;
 begin
-  BuildFile := FindBuildFile(BuildFileName);
+  BuildFile := '';
+  p := 1;
+  while p <= ParamCount do
+  begin
+    if ParamStr(p) = '-buildfile' then
+    begin
+      Inc(p);
+      BuildFile := ParamStr(p);
+    end;
+    Inc(p);
+  end;
+
+  if BuildFile = '' then
+    BuildFile := FindBuildFile(BuildFileName);
   if not FileExists(BuildFile) then
   begin
     // in the future add -find support and -buildfile support
@@ -148,7 +160,7 @@ begin
     WriteLn('Options:');
     WriteLn('  -h, -H, -?          Displays this help text.');
     WriteLn('  -buildfile [file]   Specifies the build file. Default is');
-    WriteLn('                      build.txt (will be build.xml in future)');
+    WriteLn('                      build.xml');
 end;
 
 begin

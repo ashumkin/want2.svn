@@ -99,20 +99,20 @@ type
 
   TDummyTask1 = class(TTask)
   public
-    class function Tag :string; override;
+    class function XMLTag :string; override;
     procedure Execute; override;
   end;
 
   TDummyTask2 = class(TDummyTask1)
-    class function Tag :string; override;
+    class function XMLTag :string; override;
   end;
 
   TDummyTask3 = class(TDummyTask1)
   protected
-    FAnInt: Integer;
+    FAProp: string;
   published
-    class function Tag :string; override;
-    property AnInt: Integer read FAnInt write FAnInt;
+    class function XMLTag :string; override;
+    property AProp: string read FAProp write FAProp;
   end;
 
   TTestExecTask = class(TTestDirCase)
@@ -126,6 +126,7 @@ type
   end;
 
 implementation
+
 
 { TProjectBaseCase }
 
@@ -171,32 +172,33 @@ const
   CR = #13#10;
 
   Expected =
-    'object my_project: TProject' + CR +
-    '  object prepare: TTarget' + CR +
-    '    object TDummyTask1_0: TDummyTask1' + CR +
-    '    end' + CR +
-    '  end' + CR +
-    '  object compile: TTarget' + CR +
-    '    object TDummyTask2_0: TDummyTask2' + CR +
-    '    end' + CR +
-    '    object TDummyTask3_0: TDummyTask3' + CR +
-    '      AnInt = 0' + CR +
-    '    end' + CR +
-    '  end' + CR +
-    'end' + CR;
+    'object my_project: TProject'                                          + CR +
+    '  BaseDir = ''..'''                                                   + CR +
+    '  object prepare: TTarget'                                            + CR +
+    '    object TDummyTask1'                                               + CR +
+    '    end'                                                              + CR +
+    '  end'                                                                + CR +
+    '  object compile: TTarget'                                            + CR +
+    '    object TDummyTask2'                                               + CR +
+    '    end'                                                              + CR +
+    '    object TDummyTask3'                                               + CR +
+    '      AProp = ''aValue'''                                             + CR +
+    '    end'                                                              + CR +
+    '  end'                                                                + CR +
+    'end'                                                                  + CR;
 
 
   ExpectedXML =
-    '<project description="a test project"'               + CR +
-    '         default="compile" >'                        + CR +
-    '  <target name="prepare" >'                          + CR +
-    '    <dummy1 />' + CR +
-    '  </target>'                                         + CR +
-    '  <target name="compile" depends="prepare">'         + CR +
-    '    <dummy2 />'                                      + CR +
-    '    <dummy3 anint="25" />'                           + CR +
-    '  </target>'                                         + CR +
-    '</project>'                                          + CR;
+    CR+
+    '<project default="compile" description="a test project" name="test">' + CR +
+    '  <target name="prepare">'                                            + CR +
+    '    <dummy1 />'                                                       + CR +
+    '  </target>'                                                          + CR +
+    '  <target depends="prepare" name="compile">'                          + CR +
+    '    <dummy2 />'                                                       + CR +
+    '    <dummy3 aprop="25" />'                                            + CR +
+    '  </target>'                                                          + CR +
+    '</project>'                                                           + CR;
 
 
 procedure TSaveProjectTests.BuildTestProject;
@@ -205,13 +207,14 @@ var
 begin
   with FProject do
   begin
+    BaseDir := '..';
     Name := 'my_project';
     T := AddTarget('prepare');
     TDummyTask1.Create(T);
 
     T := AddTarget('compile');
     TDummyTask2.Create(T);
-    TDummyTask3.Create(T);
+    TDummyTask3.Create(T).AProp := 'aValue';
   end;
 end;
 
@@ -234,6 +237,7 @@ end;
 procedure TSaveProjectTests.TestParseXML;
 begin
   FProject.ParseXMLText(ExpectedXML);
+  CheckEquals(ExpectedXML, CR+FProject.AsXML);
 end;
 
 procedure TSaveProjectTests.TestSaveLoad;
@@ -276,9 +280,9 @@ var
 begin
   CurrentFileName := MakeSampleTextFile;
   NewFileName := ExtractFilePath(CurrentFileName) + 'new.txt';
-  FExecTask.Arguments.Add('copy');
-  FExecTask.Arguments.Add(CurrentFileName);
-  FExecTask.Arguments.Add(NewFileName);
+  FExecTask.ArgumentList.Add('copy');
+  FExecTask.ArgumentList.Add(CurrentFileName);
+  FExecTask.ArgumentList.Add(NewFileName);
   FExecTask.Execute;
   Check(FileExists(NewFileName), 'TExecTask copy file failed');
 end;
@@ -308,9 +312,9 @@ begin
     begin
       Executable := 'copy';
       fname := ExtractFilePath(ParamStr(0)) + 'test\sample.txt';
-      Arguments.Add(fname);
+      ArgumentList.Add(fname);
       fname := ExtractFilePath(fname) + 'new.txt';
-      Arguments.Add(fname);
+      ArgumentList.Add(fname);
     end;
   end;
 end;
@@ -340,8 +344,8 @@ var
 begin
  with FProject.Names['copy'].Tasks[0] as TExecTask do
  begin
-   OldFileName := Arguments[0];
-   NewFileName := Arguments[1];
+   OldFileName := ArgumentList[0];
+   NewFileName := ArgumentList[1];
  end;
 
  try
@@ -374,12 +378,12 @@ begin
     with TDelphiCompileTask.Create(T) do
     begin
       RootDir := ExtractFilePath(ParamStr(0));
-      Arguments.Add(RootDir + '..\src\dante.dpr');
-      Arguments.Add('/B');
-      Arguments.Add('/Q');
-      Arguments.Add('/E..\bin');
-      Arguments.Add('/N..\dcu');
-      Arguments.Add('/U..\src;..\src\tasks;..\src\jcl;..\src\paths;..\src\xml');
+      ArgumentList.Add(RootDir + '..\src\dante.dpr');
+      ArgumentList.Add('/B');
+      ArgumentList.Add('/Q');
+      ArgumentList.Add('/E..\bin');
+      ArgumentList.Add('/N..\dcu');
+      ArgumentList.Add('/U..\src;..\src\tasks;..\src\jcl;..\src\paths;..\src\xml');
     end;
   end;
 end;
@@ -406,20 +410,20 @@ procedure TDummyTask1.Execute;
 begin
 end;
 
-class function TDummyTask1.Tag: string;
+class function TDummyTask1.XMLTag: string;
 begin
   Result := 'dummy1';
 end;
 { TDummyTask2 }
 
-class function TDummyTask2.Tag: string;
+class function TDummyTask2.XMLTag: string;
 begin
   Result := 'dummy2';
 end;
 
 { TDummyTask3 }
 
-class function TDummyTask3.Tag: string;
+class function TDummyTask3.XMLTag: string;
 begin
   Result := 'dummy3';
 end;

@@ -45,6 +45,8 @@ unit WildPaths;
 
        Do not make these changes until specific user stories prove them
        necessary.
+
+@TODO: Factor out stuff that JCL already handles well.       
 }
 
 interface
@@ -152,6 +154,8 @@ function ToSystemPath(Path: TPath; BasePath :string): string;
 begin
    Result := PathConcat(BasePath, Path);
    Result := StringReplace(Result, '/', SystemPathDelimiter, [rfReplaceAll]);
+   if (Length(Result) >= 3) and (Result[3] = ':') and (Result[1] = '\') then
+     Delete(Result,1, 1);
    Result := ExpandFileName(Result);
 end;
 

@@ -68,15 +68,14 @@ begin
   Rewrite(FBuildFile);
 
   Content :=
-    'object TestProject: TProject                                       ' + CR +
-    '  Default = ''Main''                                               ' + CR +
-    '  object Main: TTarget                                             ' + CR +
-    '    object ShellExec: TShellExecTask                               ' + CR +
-    '      Executable = ''copy ' + FBuildFileName + ' ' +
-                          FCopyOfFileName + '''                         ' + CR +
-    '    end                                                            ' + CR +
-    '  end                                                              ' + CR +
-    'end                                                                ' + CR;
+    CR+
+    '<project name="test_project" default="main">'                      + CR +
+    '  <target name="main">'                                            + CR +
+    '    <shell executable="copy '
+             + FBuildFileName + ' ' + FCopyOfFileName + '" />'          + CR +
+    '  </target>'                                                       + CR +
+    '</project>'                                                        + CR;
+    
   WriteLn(FBuildFile, Content);
   CloseFile(FBuildFile);
 end;
@@ -85,8 +84,8 @@ procedure TTestDanteMain.Setup;
 begin
   inherited;
   FDante := TDante.Create;
-  FBuildFileName := FTestDir + '\build.txt';
-  FCopyOfFileName := FTestDir + '\copyofbuild.txt';
+  FBuildFileName := FTestDir + '\build.xml';
+  FCopyOfFileName := FTestDir + '\copyofbuild.xml';
 end;
 
 procedure TTestDanteMain.TearDown;

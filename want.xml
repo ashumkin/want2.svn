@@ -1,0 +1,29 @@
+<!-- $Id$ -->
+<!-- This is the Dante script for building Dante -->
+<project name="dante" 
+         basedir=".."
+         default="compile" >
+  <target name="compile" >
+    <dcc source="./src/dante.dpr"
+	      exes="."
+	 		dcus="./dcu"
+			quiet="true"
+			build="true"
+	      arguments="/U..\src\tasks;..\src\jcl;..\dcu /B /Q"
+    >
+      <unit path="./src" />
+      <unit path="./src/tasks" />
+      <unit path="./src/jcl" />
+      <unit path="./src/xml" />
+      <unit path="./src/paths" />
+    </dcc>
+ </target>
+  <target name="clean" >
+    <shell executable="del"   arguments=".\dist\*" />
+    <shell executable="rmdir" arguments=".\dist"    />
+  </target>
+  <target name="dist" >
+    <shell executable="mkdir" arguments=".\dist" />
+    <shell executable="copy"  arguments=".\src\dante.exe ..\dist\dante.exe"  />
+  </target>
+</project>

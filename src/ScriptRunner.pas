@@ -51,14 +51,14 @@ implementation
 
 procedure TDante.DoBuild(ABuildFileName: string);
 var
-  P: TProject;
+  Project: TProject;
 begin
-  P := TProject.Create(nil);
+  Project := TProject.Create(nil);
   try
-    P.Load(ABuildFileName);
-    P.Build;
+    Project.LoadXML(ABuildFileName);
+    Project.Build;
   finally
-    P.Free;
+    Project.Free;
   end;
 end;
 

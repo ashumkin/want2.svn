@@ -48,6 +48,16 @@ uses
   Classes,
   TypInfo;
 
+const
+  BuildFileName = 'build.xml';
+
+  SupportedPropertyTypes = [
+     //tkInteger,
+     tkEnumeration,
+     tkString,
+     tkLString,
+     tkWString];
+
 type
   TProject    = class;
   TTarget     = class;
@@ -69,6 +79,8 @@ type
 
   EDanteParseException = class(EDanteException);
 
+
+  TStringArray = array of string;
 
   TTargetArray = array of TTarget;
 
@@ -95,13 +107,21 @@ type
   public
     constructor Create(Owner: TComponent); override;
 
-    class function Tag :string; virtual;
+    class function XMLTag :string; virtual;
     procedure ParseXML(Node :MiniDom.IElement); virtual;
+    function  AsXML     :string;                virtual;
+    function  ToXML(Dom :IDocument) : IElement; virtual;
+
+    // use this to get the fully qualified base path
+    function  BasePath :string; virtual;
+    // use this function in Tasks to let the user specify relative
+    // directories that work consistently
+    function  RelativePath(SubPath :string) :string; virtual;
 
     property Project: TProject read GetProject;
+    property Tag stored False;
   published
-    property Name;
-    // Tag is the Name to use for the task in build scripts
+    property Name stored False;
   end;
 
 
@@ -111,7 +131,8 @@ type
     FTargets:       TList;
     FDefaultTarget: string;
     FVerbosity:     TVerbosityLevel;
-    FBaseDir:      string;
+    FBaseDir:       string;
+    FRunPath:       string;
     FDescription:   string;
     FProperties:    TStrings;
 
@@ -121,13 +142,17 @@ type
 
     procedure DoParseXML(Node :MiniDom.IElement);
 
+    procedure SetBaseDir(Path :TPath);
+    function  GetBaseDir :TPath;
+
     procedure Notification(AComponent: TComponent; Operation: TOperation); override;
   public
     constructor Create(Owner: TComponent = nil);  override;
     destructor  Destroy; override;
 
-    class function Tag :string; override;
+    class function XMLTag :string; override;
     procedure ParseXML(Node :MiniDom.IElement); override;
+    function  ToXML(Dom :IDocument) : IElement; override;
 
     procedure Parse(const Image: string);
     procedure ParseXMLText(const XML :string);
@@ -136,9 +161,11 @@ type
     procedure LoadXML(const SystemPath: string);
     procedure Save(const Path: string);
 
+    // use this to get the fully qualified base path
+    function  BasePath :string; override;
     // use this function in Tasks to let the user specify relative
     // directories that work consistently
-    function  RelativePath(SubPath :string) :string;
+    function  RelativePath(SubPath :string) :string; override;
 
     function  AsString: string;
     function  AddTarget(Name: string = ''): TTarget;
@@ -150,19 +177,22 @@ type
     procedure SetProperty(Name, Value :string);
     function  PropertyDefined(Name :string): boolean;
 
-    function Schedule(TargetName :string) :TTargetArray;
-    procedure Build(TargetName :string); overload;
-    procedure Build;                     overload;
+    function  Schedule(TargetName :string) :TTargetArray;
+    procedure Build(TargetName :string = '');
 
     procedure Log(Msg :string = ''; Verbosity :TVerbosityLevel = vlNormal);
 
     property Targets[i: Integer]: TTarget read GetTarget; default;
     property Names[TargetName :string] :TTarget read GetTargetByName;
-    property BaseDir :string read FBaseDir write FBaseDir;
 
   published
+    property BaseDir :string read GetBaseDir write SetBaseDir;
     property Default:       string          read FDefaultTarget  write FDefaultTarget;
-    property Verbosity:     TVerbosityLevel read FVerbosity      write FVerbosity default vlNormal;
+    property Verbosity:     TVerbosityLevel
+      read    FVerbosity
+      write   FVerbosity
+      stored  False
+      default vlNormal;
     property Properties:    TStrings        read FProperties     write SetProperties;
     property Description:   string          read FDescription    write FDescription;
   end;
@@ -179,8 +209,9 @@ type
     constructor Create(Owner: TComponent); override;
     destructor  Destroy; override;
 
-    class function Tag :string; override;
+    class function XMLTag :string; override;
     procedure ParseXML(Node :MiniDom.IElement); override;
+    function  ToXML(Dom :IDocument) : IElement; override;
 
     function TaskCount: Integer;
     procedure Build;
@@ -194,7 +225,7 @@ type
 
   TTask = class(TDanteComponent)
   protected
-
+    function GetName :string;
     procedure DoExecute;
   public
     function Target :TTarget;
@@ -202,6 +233,7 @@ type
     procedure Execute; virtual; abstract;
     procedure Log(Msg :string = ''; Verbosity :TVerbosityLevel = vlNormal);
 
+    property Name :string read GetName stored False;
   published
   end;
 
@@ -219,7 +251,25 @@ function  FindTask(Tag :string): TTaskClass;
 procedure RegisterTask(TaskClass :TTaskClass);
 procedure RegisterTasks(TaskClasses :array of TTaskClass);
 
+function CommaTextToArray(Text :string) :TStringArray;
+
 implementation
+
+function CommaTextToArray(Text :string) :TStringArray;
+var
+  S: TStrings;
+  i: Integer;
+begin
+  S := TStringList.Create;
+  try
+    S.CommaText := Text;
+    SetLength(Result, S.Count);
+    for i := 0 to S.Count-1 do
+       Result[i] := S[i];
+  finally
+    S.Free;
+  end;
+end;
 
 var
   __TaskRegistry :TStringList;
@@ -229,7 +279,7 @@ var
 constructor TDanteComponent.Create(Owner: TComponent);
 begin
   inherited Create(Owner);
-  Name := NewName;
+  //!!!Name := NewName;
 end;
 
 function TDanteComponent.GetChildOwner: TComponent;
@@ -266,7 +316,7 @@ begin
     Result := nil;
 end;
 
-class function TDanteComponent.Tag: string;
+class function TDanteComponent.XMLTag: string;
 begin
   Result := copy(ClassName, 2, 255);
   Result := LowerCase(Result);
@@ -294,8 +344,8 @@ var
   TypeInfo :PTypeInfo;
   PropInfo :PPropInfo;
 begin
-  if Node.Name <> Self.Tag then
-    raise EDanteParseException.Create(Format('expected <%s>', [Self.Tag]) );
+  if Node.Name <> Self.XMLTag then
+    raise EDanteParseException.Create(Format('expected <%s>', [Self.XMLTag]) );
 
   TypeInfo := Self.ClassInfo;
 
@@ -306,9 +356,9 @@ begin
     AName := att.Name;
     PropInfo := GetPropInfo(TypeInfo, AName);
     if PropInfo = nil then
-      raise EDanteParseException.Create( Format('Unknown attribute %s.%s', [Tag, AName]) )
-    else if PropInfo.SetProc <> nil then
-      // read only property (Name), do nothing
+      raise EDanteParseException.Create( Format('Unknown attribute %s.%s', [XMLTag, AName]) )
+    else if not IsStoredProp(Self, PropInfo) then
+      continue
     else
     begin
       try
@@ -320,10 +370,10 @@ begin
           else if Kind in [tkEnumeration] then
             SetOrdProp(Self, PropInfo, GetEnumValue(PropType^, att.Value))
           else
-            raise EDanteParseException.Create(Format('Cannot handle type of attribute %s.%s', [Tag, AName]) )
+            raise EDanteParseException.Create(Format('Cannot handle type of attribute %s.%s', [Name, AName]) )
       except
         on e :Exception do
-          raise EDanteParseException.Create(Format('Error %s setting value of attribute %s.%s', [e.Message, Tag, AName]) );
+          raise EDanteParseException.Create(Format('Error %s setting value of attribute %s.%s', [e.Message, Name, AName]) );
       end;
     end;
   end;
@@ -337,6 +387,72 @@ begin
 
 end;
 
+function TDanteComponent.AsXML: string;
+begin
+  Result := toXML(TDocument.Create).toString;
+end;
+
+function TDanteComponent.ToXML(Dom :MiniDom.IDocument) :MiniDom.IElement;
+var
+  TypeInfo:  PTypeInfo;
+  PropList:  PPropList;
+  PropInfo:  PPropInfo;
+  PropCount: Integer;
+  i:         Integer;
+  PropName:  string;
+  PropValue: string;
+begin
+  Result := Dom.NewElement(XMLTag);
+
+  TypeInfo  := Self.ClassInfo;
+  PropCount := GetTypeData(TypeInfo).PropCount;
+  if PropCount > 0 then
+  begin
+    GetMem(PropList, PropCount * SizeOf(PPropInfo));
+    try
+      GetPropInfos(TypeInfo, PropList);
+      for i := 0 to PropCount-1 do
+      begin
+        PropInfo  := PropList[i];
+        PropName  := AnsiLowerCase(PropInfo.Name);
+        PropValue := '';
+        with PropInfo^, PropType^^ do
+          if IsStoredProp(Self, PropInfo)
+          and (SetProc <> nil)
+          and (GetProc <> nil)
+          and (Kind in SupportedPropertyTypes)
+          then
+          begin
+            if Kind in [tkString, tkLString, tkWString] then
+              PropValue := GetStrProp(Self, PropInfo)
+            else if Kind in [tkInteger] then
+              PropValue := IntToStr(GetOrdProp(Self, PropInfo))
+            else if Kind in [tkEnumeration] then
+              PropValue := GetEnumName(PropType^, GetOrdProp(Self, PropInfo))
+            else
+            begin
+              // do nothing
+            end
+          end;
+        if PropValue <> '' then
+          Result.SetAttribute(PropName, PropValue);
+      end;
+    finally
+      FreeMem(PropList);
+    end;
+  end;
+end;
+
+function TDanteComponent.BasePath: string;
+begin
+  Result := Project.BasePath;
+end;
+
+function TDanteComponent.RelativePath(SubPath: string): string;
+begin
+  Result := Project.RelativePath(SubPath);
+end;
+
 { TProject }
 
 constructor TProject.Create(Owner: TComponent);
@@ -345,6 +461,7 @@ begin
   FTargets    := TList.Create;
   FProperties := TWriteOnceStringList.Create;
   FVerbosity  := vlNormal;
+  FRunPath    := ToPath(GetCurrentDir);
 end;
 
 destructor TProject.Destroy;
@@ -427,7 +544,6 @@ procedure TProject.Load(const Path: string);
 var
   S: TStrings;
 begin
-  FBaseDir := ToPath(ExtractFilePath(ExpandFileName(Path)));
   S := TStringList.Create;
   try
     S.LoadFromFile(Path);
@@ -462,20 +578,15 @@ procedure TProject.BuildSchedule(TargetName: string; Sched: TList);
 var
   Target : TTarget;
   i      : Integer;
-  Deps   : TStrings;
+  Deps   : TStringArray;
 begin
   Target := GetTargetByName(TargetName);
   if Sched.IndexOf(Target) >= 0 then
      EXIT; // done
 
-  Deps := TStringList.Create;
-  try
-    Deps.CommaText := Target.Depends;
-    for i := 0 to Deps.Count-1 do
-       BuildSchedule(Deps[i], Sched);
-  finally
-    Deps.Free;
-  end;
+  Deps := CommaTextToArray(Target.Depends);
+  for i := Low(Deps) to High(Deps) do
+     BuildSchedule(Deps[i], Sched);
 
   if Sched.IndexOf(Target) >= 0 then
      raise ECircularTargetDependency.Create(TargetName);
@@ -511,12 +622,23 @@ var
   i     :Integer;
   Sched :TTargetArray;
 begin
+  if TargetName = '' then
+  begin
+    if Default = '' then
+      raise ENoDefaultTargetError.Create('No default target')
+    else
+      TargetName := Default;
+  end;
   Sched := Schedule(Targetname);
   try
-    for i := Low(Sched) to High(Sched) do
-    begin
-      Sched[i].Build;
-      Log;
+    try
+      for i := Low(Sched) to High(Sched) do
+      begin
+        Sched[i].Build;
+        Log;
+      end;
+    finally
+      ChangeDir(FRunpath);
     end;
   except
     on e :Exception do
@@ -527,18 +649,9 @@ begin
   end;
 end;
 
-procedure TProject.Build;
-begin
-  if Default = '' then
-  begin
-    raise ENoDefaultTargetError.Create('No default target');
-  end;
-  Build(Default);
-end;
-
 function TProject.RelativePath(SubPath: string): string;
 begin
-  Result := BaseDir + SubPath;
+  Result := BasePath + SubPath;
 end;
 
 procedure TProject.SetProperties(Value: TStrings);
@@ -564,12 +677,11 @@ procedure TProject.LoadXML(const SystemPath: string);
 var
   Dom :IDocument;
 begin
-  FBaseDir := ToPath(ExtractFilePath(ExpandFileName(SystemPath)));
   Dom := MiniDom.ParseToDom(SystemPath);
   Self.DoParseXML(Dom.Root);
 end;
 
-class function TProject.Tag: string;
+class function TProject.XMLTag: string;
 begin
   Result := 'project';
 end;
@@ -580,8 +692,9 @@ var
   child :IElement;
 begin
   inherited ParseXML(Node);
+  Self.Name := Node.attributeValue('name');
 
-  i := Node.Children(TTarget.Tag).Iterator;
+  i := Node.Children(TTarget.XMLTag).Iterator;
   while i.HasNext do
   begin
     child := i.Next as IElement;
@@ -608,6 +721,34 @@ begin
   DoParseXML(MiniDom.ParseTextToDOM(XML).Root);
 end;
 
+function TProject.ToXML(Dom: IDocument): IElement;
+var
+  i :Integer;
+begin
+  Result := inherited ToXML(Dom);
+  Result.setAttribute('name', Self.Name);
+  for i := 0 to TargetCount-1 do
+    Result.Add(Targets[i].toXML(Dom));
+end;
+
+function TProject.BasePath: string;
+begin
+  if PathIsAbsolute(BaseDir) then
+    Result := BaseDir
+  else
+    Result := PathConcat(FRunPath, BaseDir);
+end;
+
+function TProject.GetBaseDir: string;
+begin
+  Result := AbsoluteToRelativePath(FBaseDir, FRunPath);
+end;
+
+procedure TProject.SetBaseDir(Path: TPath);
+begin
+  FBaseDir := AbsoluteToRelativePath(Path, FRunPath);
+end;
+
 { TTarget }
 
 procedure TTarget.Build;
@@ -632,7 +773,7 @@ begin
 end;
 
 
-class function TTarget.Tag: string;
+class function TTarget.XMLTag: string;
 begin
   Result := 'target';
 end;
@@ -681,11 +822,21 @@ begin
 end;
 
 
+function TTarget.ToXML(Dom: IDocument): IElement;
+var
+  i :Integer;
+begin
+  Result := inherited ToXML(Dom);
+  Result.setAttribute('name', Self.Name);
+  for i := 0 to TaskCount-1 do
+    Result.Add(Tasks[i].toXML(Dom));
+end;
+
 { TTask }
 
 procedure TTask.Log(Msg: string; Verbosity :TVerbosityLevel);
 begin
-  Project.Log(Format('%16s %s', ['['+Tag+']', Msg]), Verbosity);
+  Project.Log(Format('%16s %s', ['['+XMLTag+']', Msg]), Verbosity);
 end;
 
 function TTask.Target: TTarget;
@@ -697,6 +848,7 @@ procedure TTask.DoExecute;
 begin
   try
     try
+      ChangeDir(Project.BasePath);
       Execute;
     except
       on e :Exception do
@@ -706,8 +858,13 @@ begin
       end;
     end;
   finally
-    ChangeDir(Project.BaseDir);
+    ChangeDir(Project.BasePath);
   end;
+end;
+
+function TTask.GetName: string;
+begin
+  Result := inherited Name;
 end;
 
 { TWriteOnceStringList }
@@ -746,7 +903,7 @@ end;
 
 procedure RegisterTask(TaskClass :TTaskClass);
 begin
-  __TaskRegistry.AddObject(TaskClass.Tag, Pointer(TaskClass));
+  __TaskRegistry.AddObject(TaskClass.XMLTag, Pointer(TaskClass));
   if GetClass(TaskClass.ClassName) = nil then
     RegisterClass(TaskClass);
 end;
@@ -768,5 +925,4 @@ initialization
 finalization
   __TaskRegistry.Free;
 end.
-
 
