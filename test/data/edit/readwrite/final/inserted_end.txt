@@ -1,0 +1,4 @@
+--------------------------------------------------------------------------------
+Copyright (c) 2001, Dante Authors -- See authors.txt for complete list
+inserted_end
+All rights reserved.

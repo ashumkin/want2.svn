@@ -1,0 +1,2 @@
+The JCL (JEDI Code Library) used in Dante is governed by the terms of the
+The source code for JCL itself can be found on JEDI Web site:
