@@ -58,8 +58,8 @@
       </info>
     </log>
   
-    <incverrc rcfilename="${src}/dantever.rc" 
-	           increment="${increment.build}"
+    <versioninfo rcfilename="${src}/dantever.rc" 
+	              increment="${increment.build}"
 	 />
 	 <echo message="Build number is '${build}'" />
 
@@ -69,7 +69,7 @@
          ${src}.
 			Exec tasks could have a "pathargument" sub-element for this
 			-->
-    <shell executable="brcc32" arguments=".\src\dantever.rc" />
+    <brcc file="${src}/dantever.rc" output="${bin}/dantever.res" />
 
     <!-- Delete dante.cfg first to get a reproducible build.
          (Should this be automated?)

@@ -59,7 +59,7 @@ const
      tkLString,
      tkWString];
 
-  LabeledMsgFormat = '%12s %s';
+  LabeledMsgFormat = '%14s %s';
 
 type
   TDanteElement = class;

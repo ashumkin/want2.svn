@@ -45,7 +45,7 @@ uses
   JclFileUtils,
   VersionInfoTasks in 'tasks\VersionInfoTasks.pas';
 
-{$R dantever.res}
+{$R ..\bin\dantever.res}
 
 function GetVersionString: string;
 var

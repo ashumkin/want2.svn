@@ -49,7 +49,7 @@ Conditionals=
 DebugSourceDirs=
 UsePackages=0
 [Parameters]
-RunParams=-buildfile ..\make\build.xml  dist -Dparam="hello, dude!"
+RunParams=-buildfile ..\make\build.xml  dist -Dparam="hello, dude!" -verbose
 HostApplication=
 [Version Info]
 IncludeVerInfo=0
@@ -123,33 +123,33 @@ Count=1
 Item0=..\bin
 [HistoryLists\hlRunParameters]
 Count=30
-Item0=-buildfile ..\make\build.xml  dist -Dparam="hello, dude!"
-Item1=-buildfile \home\dunit\build.xml examples -debug
-Item2=-buildfile \home\dunit\build.xml examples
-Item3=-buildfile ..\make\build.xml  dist
-Item4=-buildfile ..\make\build.xml 
-Item5=-buildfile \home\dunit\examples\registry\build.xml
-Item6=-buildfile \home\dunit\build.xml dist 
-Item7=-buildfile \home\dunit\build.xml dist -debug
-Item8=-buildfile \home\dunit\build.xml dist -verbose
-Item9=-buildfile \home\dunit\build.xml -debug
-Item10=-buildfile \home\dunit\build.xml -verbose
-Item11=-buildfile ..\make\build.xml compile -debug
-Item12=-buildfile ..\make\build.xml dist  -debug
-Item13=-buildfile ..\make\build.xml dist  -verbose
-Item14=-buildfile ..\make\build.xml dist 
-Item15=-buildfile ..\make\build.xml dist -verbose
-Item16=-buildfile ..\make\build.xml dist-verbose
-Item17=-buildfile ..\make\build.xml examples -verbose
-Item18=-buildfile ..\make\build.xml dist
-Item19=-buildfile ..\make\build.xml clean dist
-Item20=-buildfile ..\make\build.xml clean
+Item0=-buildfile ..\make\build.xml  dist -Dparam="hello, dude!" -verbose
+Item1=-buildfile ..\make\build.xml  dist -Dparam="hello, dude!" -debug
+Item2=-buildfile ..\make\build.xml  dist -Dparam="hello, dude!"
+Item3=-buildfile \home\dunit\build.xml examples -debug
+Item4=-buildfile \home\dunit\build.xml examples
+Item5=-buildfile ..\make\build.xml  dist
+Item6=-buildfile ..\make\build.xml 
+Item7=-buildfile \home\dunit\examples\registry\build.xml
+Item8=-buildfile \home\dunit\build.xml dist 
+Item9=-buildfile \home\dunit\build.xml dist -debug
+Item10=-buildfile \home\dunit\build.xml dist -verbose
+Item11=-buildfile \home\dunit\build.xml -debug
+Item12=-buildfile \home\dunit\build.xml -verbose
+Item13=-buildfile ..\make\build.xml compile -debug
+Item14=-buildfile ..\make\build.xml dist  -debug
+Item15=-buildfile ..\make\build.xml dist  -verbose
+Item16=-buildfile ..\make\build.xml dist 
+Item17=-buildfile ..\make\build.xml dist -verbose
+Item18=-buildfile ..\make\build.xml dist-verbose
+Item19=-buildfile ..\make\build.xml examples -verbose
+Item20=-buildfile ..\make\build.xml dist
 Item21=-buildfile ..\make\build.xml clean dist
-Item22=-buildfile ..\make\build.xml dist
-Item23=-buildfile ..\make\build.xml clean dist -verbose
-Item24=-buildfile ..\make\build.xml clean dist
-Item25=-buildfile ..\make\build.xml clean dist
-Item26=-buildfile ..\make\build.xml clean dist -debug
-Item27=-buildfile ..\make\build.xml clean dist  -verbose
-Item28=-buildfile ..\make\build.xml dist clean
-Item29=-buildfile ..\make\build.xml
+Item22=-buildfile ..\make\build.xml clean
+Item23=-buildfile ..\make\build.xml clean dist
+Item24=-buildfile ..\make\build.xml dist
+Item25=-buildfile ..\make\build.xml clean dist -verbose
+Item26=-buildfile ..\make\build.xml clean dist
+Item27=-buildfile ..\make\build.xml clean dist
+Item28=-buildfile ..\make\build.xml clean dist -debug
+Item29=-buildfile ..\make\build.xml clean dist  -verbose

@@ -78,7 +78,12 @@ type
     procedure SetPath(Value: string); override;
   end;
 
-  TDelphiCompileTask = class(TCustomExecTask)
+  TCustomDelphiTask = class(TCustomExecTask)
+  protected
+    function FindDelphiDir: string;
+  end;
+
+  TDelphiCompileTask = class(TCustomDelphiTask)
   protected
     FExesPath: string;
     FDCUPath : string;
@@ -95,13 +100,12 @@ type
     FIncludePaths   : TStrings;
 
     function BuildArguments: string; override;
-    function FindDelphiDir: string;
     function FindCompiler: string;
 
     procedure SetExes(Value: string);
 
   public
-    constructor Create(owner: TDanteElement); override;
+    constructor Create(Owner: TDanteElement); override;
     destructor  Destroy; override;
 
     class function XMLTag: string; override;
@@ -125,7 +129,7 @@ type
     // these properties are mapped to XML attributes
     property Arguments;
     property ArgumentList stored False;
-    property SkipLines: Integer read FSkipLines write FSkipLines;
+    property SkipLines;
 
     property exes: string read FExesPath write SetExes;
     property dcus: string read FDCUPath write FDCUPath;
@@ -140,13 +144,63 @@ type
     property source : string read FSource     write FSource;
   end;
 
+  TResourceCompileTask = class(TCustomDelphiTask)
+  protected
+    FFile:   string;
+    FOutput: string;
+
+    function BuildExecutable: string; override;
+    function BuildArguments: string; override;
+
+    function FindBRCC :string;
+  public
+    class function XMLTag: string; override;
+
+    constructor Create(Owner: TDanteElement); override;
+
+    procedure Init;    override;
+    procedure Execute; override;
+  published
+    property _file:  string read FFile   write FFile;
+    property output: string read FOutput write FOutput;
+  end;
+
 implementation
+
+{ TCustomDelphiTask }
+
+function TCustomDelphiTask.FindDelphiDir: string;
+const
+  DelphiRegRoot  = 'SOFTWARE\Borland\Delphi';
+  DelphiRootKey  = 'RootDir';
+
+  function RootFor(version: Integer): string;
+  begin
+    Result := Format('%s\%d.0', [DelphiRegRoot, version]);
+  end;
+
+  function ReadRootFor(version: Integer):string;
+  begin
+    Result := RegReadStringDef(HKEY_LOCAL_MACHINE, RootFor(version), DelphiRootKey, '');
+  end;
+
+var
+  ver: Integer;
+begin
+  for ver := 6 downto 4 do
+  begin
+    Result := ReadRootFor(ver);
+    if Result <> '' then EXIT;
+  end;
+  raise EDelphiNotFoundError.Create('');
+end;
+
 
 { TDelphiCompileTask }
 
-constructor TDelphiCompileTask.Create(owner: TDanteElement);
+constructor TDelphiCompileTask.Create(Owner: TDanteElement);
 begin
-  inherited Create(owner);
+  inherited Create(Owner);
   SkipLines  := 1;
   quiet      := true;
 
@@ -177,8 +231,6 @@ end;
 procedure TDelphiCompileTask.Execute;
 begin
   Log(ToRelativePath(Source));
-  Log(vlVerbose, BuildCmdLine);
-  Log(vlDebug, 'Current Dir is:'+ CurrentDir);
   inherited Execute;
 end;
 
@@ -189,32 +241,6 @@ begin
   Result := FindDelphiDir + '\bin\dcc32.exe';
   if not FileExists(Result) then
      raise ECompilerNotFoundError.Create(Result);
-end;
-
-function TDelphiCompileTask.FindDelphiDir: string;
-const
-  DelphiRegRoot  = 'SOFTWARE\Borland\Delphi';
-  DelphiRootKey  = 'RootDir';
-
-  function RootFor(version: Integer): string;
-  begin
-    Result := Format('%s\%d.0', [DelphiRegRoot, version]);
-  end;
-
-  function ReadRootFor(version: Integer):string;
-  begin
-    Result := RegReadStringDef(HKEY_LOCAL_MACHINE, RootFor(version), DelphiRootKey, '');
-  end;
-
-var
-  ver: Integer;
-begin
-  for ver := 6 downto 4 do
-  begin
-    Result := ReadRootFor(ver);
-    if Result <> '' then EXIT;
-  end;
-  raise EDelphiNotFoundError.Create('');
 end;
 
 class function TDelphiCompileTask.XMLTag: string;
@@ -326,6 +352,54 @@ begin
 end;
 
 
+{ TResourceCompileTask }
+
+function TResourceCompileTask.BuildArguments: string;
+begin
+  Result := inherited BuildArguments;
+
+  Result := Result + ToSystemPath(_file);
+
+  if output <> '' then
+    Result := Result + ' -fo' + ToSystemPath(output);
+end;
+
+function TResourceCompileTask.BuildExecutable: string;
+begin
+  Executable := FindBRCC;
+  Result := inherited BuildExecutable;
+end;
+
+constructor TResourceCompileTask.Create(Owner: TDanteElement);
+begin
+  inherited Create(Owner);
+  SkipLines := 2;
+end;
+
+procedure TResourceCompileTask.Execute;
+begin
+  Log(ToRelativePath(_file));
+  inherited Execute;
+end;
+
+function TResourceCompileTask.FindBRCC: string;
+begin
+  Result := FindDelphiDir + '\bin\brcc32.exe';
+  if not FileExists(Result) then
+     raise ECompilerNotFoundError.Create(Result);
+end;
+
+procedure TResourceCompileTask.Init;
+begin
+  inherited Init;
+  RequireAttribute('file');
+end;
+
+class function TResourceCompileTask.XMLTag: string;
+begin
+  Result := 'brcc';
+end;
+
 initialization
-  RegisterTasks([TDelphiCompileTask]);
+  RegisterTasks([TDelphiCompileTask, TResourceCompileTask]);
 end.
