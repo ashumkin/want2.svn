@@ -1254,10 +1254,7 @@ end;
 
 function TProject.GetBaseDir: TPath;
 begin
-  if not PropertyDefined('basedir') then
-    Result := ''
-  else
-    Result := WildPaths.ToRelativePath(PropertyValue('basedir'), RootPath);
+  Result := FBaseDir;
 end;
 
 procedure TProject.SetRootPath(const Path: TPath);

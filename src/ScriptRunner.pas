@@ -201,11 +201,12 @@ begin
       Sched := nil;
       Project.Listener := Listener;
 
-      Log(vlDebug, Format('basedir="%s"',   [Project.RootPath]));
+      Project.Configure;
+      
+      Log(vlDebug, Format('rootdir="%s"',   [Project.RootPath]));
       Log(vlDebug, Format('basedir="%s"',   [Project.BaseDir]));
       Log(vlDebug, Format('basepath="%s"',  [Project.BasePath]));
 
-      Project.Configure;
 
       if Length(Targets) = 0 then
       begin
