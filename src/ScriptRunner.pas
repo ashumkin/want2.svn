@@ -98,7 +98,7 @@ begin
   except
     on e :Exception do
     begin
-      //Listener.BuildFailed(Project, e.Message);
+      Listener.BuildFailed(Project, e.Message);
       raise;
     end;
   end;
@@ -268,8 +268,8 @@ begin
     EXIT;
   Listener.TaskStarted(Task);
 
-  Log(vlVerbose, Format('basedir="%s"',   [Task.BaseDir]));
-  Log(vlVerbose, Format('basepath="%s"',  [Task.BasePath]));
+  Log(vlDebug, Format('basedir="%s"',   [Task.BaseDir]));
+  Log(vlDebug, Format('basepath="%s"',  [Task.BasePath]));
 
   LastDir := CurrentDir;
   try
