@@ -125,11 +125,11 @@ begin
      ToRelativePaths(FinalFiles, FinalPath);
 
      for p := 0 to SetupFiles.Count-1 do
-       if Pos('CVS\', SetupFiles[p]) = 0 then
+       if Pos('CVS', SetupFiles[p]) = 0 then
          Check(FinalFiles.IndexOf(SetupFiles[p]) >= 0, Format('%s in setup but not in final', [SetupFiles[p]]));
 
      for p := 0 to FinalFiles.Count-1 do
-       if Pos('CVS\', FinalFiles[p]) = 0 then
+       if Pos('CVS', FinalFiles[p]) = 0 then
          Check(SetupFiles.IndexOf(FinalFiles[p]) >= 0, Format('%s in final but not in setup', [FinalFiles[p]]));
 
      for p := 0 to Min(SetupFiles.Count, FinalFiles.Count)-1 do
@@ -143,7 +143,7 @@ begin
                         IsDirectory(FF),
                         Format('%s files not both directories', [SetupFiles[p]]));;
 
-         if not PathIsDir(SF) then
+         if PathExists(SF) and not PathIsDir(SF) then
            Check(CompareFiles(SF, FF), Format('%s files are different', [SetupFiles[p]]));;
          end;
      end;

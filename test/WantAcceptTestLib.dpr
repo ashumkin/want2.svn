@@ -18,8 +18,7 @@ uses
   Win32Implementations in '..\src\win32\Win32Implementations.pas',
   ExternalTests in 'ExternalTests.pas',
   ConsoleScriptRunner in '..\src\win32\ConsoleScriptRunner.pas',
-  RunnerTests in 'RunnerTests.pas',
-  JalPaths in '..\lib\jal\JalPaths.pas';
+  RunnerTests in 'RunnerTests.pas';
 
 {$R *.RES}
 
