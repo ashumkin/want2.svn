@@ -35,7 +35,7 @@ unit VssTasks;
 interface
 
 uses
-  DanteClasses, ExecTasks, JclStrings;
+  DanteClasses, ExecTasks, JclStrings, WildPaths;
 
 type
   TVssGetTask = class(TCustomExecTask)
@@ -74,7 +74,7 @@ begin
     ArgumentList.Add('-Y' + FLogin);
 
   if FLocalPath <> '' then
-    ArgumentList.Add('"-GL' + ToSystemPath(ToAbsolutePath(ToDantePath(FLocalPath))) + '"');
+    ArgumentList.Add('"-GL' + WildPaths.ToSystemPath(ToAbsolutePath(ToDantePath(FLocalPath))) + '"');
 
   { skip writable files }
   ArgumentList.Add('-GWS');
