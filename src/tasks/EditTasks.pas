@@ -18,6 +18,8 @@ uses
   JclSysUtils,
   JclStrings,
 
+  XPerlRE,
+
   WildPaths,
   WantClasses;
 
@@ -77,9 +79,12 @@ type
 
     procedure Perform(Editor :TEditor); override;
     function  Perform(Buffer :TStrings; FromLine, ToLine :Integer) :Integer; override;
+
+    procedure SetRangeToAll(Value :boolean);
   published
-    property from :string read FFrom write FFrom;
-    property _to  :string read FTo   write FTo;
+    property from :string  read FFrom write FFrom;
+    property _to  :string  read FTo   write FTo;
+    property all  :boolean write SetRangeToAll;
   end;
 
   TEditElement = class(TRangeElement)
@@ -106,6 +111,22 @@ type
     function  Perform(Buffer :TStrings; FromLine, ToLine :Integer):Integer; override;
   published
     property pattern :string read FPattern write FPattern;
+  end;
+
+  TSubstElement = class(TEditElement)
+  protected
+    FPattern :string;
+    FSubst   :string;
+    FGlobal  :boolean;
+
+    procedure Perform(Editor :TEditor); override;
+    function  Perform(Buffer :TStrings; Line :Integer):Integer; override;
+  public
+    procedure Init; override;
+  published
+    property pattern :string  read FPattern write FPattern;
+    property subst   :string  read FSubst   write FSubst;
+    property global  :boolean read FGlobal  write FGlobal;
   end;
 
   TGlobalElement = class(TPatternElement)
@@ -169,6 +190,11 @@ type
     function TargetLine(FromLine, ToLine :Integer) :Integer; override;
   end;
 
+  TEvalElement = class(TEditElement)
+  protected
+    function Perform(Buffer :TStrings; Line :Integer):Integer; override;
+  end;
+
 implementation
 
 { TEditTask }
@@ -200,9 +226,13 @@ begin
     while (i < S.Count) do
     begin
       if S[i] = '.' then
-        Buffer.Append('')
-      else
-        Buffer.Append(S[i]);
+        Buffer.Append('');
+        Inc(i);
+    end;
+
+    while (i < S.Count) do
+    begin
+      Buffer.Append(S[i]);
       Inc(i);
     end;
   finally
@@ -256,13 +286,19 @@ begin
   else
   begin
     Files := Wild(_file, BasePath);
-    for f := Low(Files) to High(Files) do
+    if Length(Files) = 0 then
     begin
-       Log(vlVerbose, '%s', [Files[f]]);
-       Buffer.Clear;
-       Buffer.LoadFromFile(ToSystemPath(Files[f]));
-       Perform
-    end;
+      Log(vlVerbose, 'No files to edit');
+      Perform;
+    end
+    else
+      for f := Low(Files) to High(Files) do
+      begin
+         Log(vlVerbose, '%s', [Files[f]]);
+         Buffer.Clear;
+         Buffer.LoadFromFile(ToSystemPath(Files[f]));
+         Perform
+      end;
   end;
 end;
 
@@ -323,7 +359,16 @@ begin
   for i := 0 to ChildCount-1 do
   begin
     if Children[i] is TEditElement then
-      Result := TCustomEditElement(Children[i]).Perform(Buffer, FromLine, ToLine);
+      Result := TEditElement(Children[i]).Perform(Buffer, FromLine, ToLine);
+  end;
+end;
+
+procedure TRangeElement.SetRangeToAll(Value: boolean);
+begin
+  if Value then
+  begin
+    from := '0';
+    _to  := '$';
   end;
 end;
 
@@ -361,12 +406,12 @@ end;
 
 procedure TSearchElement.Perform(Editor: TEditor);
 begin
-  Log(vlVerbose, '%s /%s/', [TagName, pattern]);
-
   if pattern = '' then
     pattern := Editor.FLastPat
   else if pattern <> '' then
     Editor.FLastPat := pattern;
+
+  Log(vlVerbose, '%s /%s/', [TagName, pattern]);
 
   if _to = '' then
     _to := '$';
@@ -408,7 +453,7 @@ function TDeleteElement.Perform(Buffer: TStrings; FromLine, ToLine: Integer) :In
 var
   l :Integer;
 begin
-  Log(vlVerbose, '%s %d-%d', [TagName, FromLine, ToLine]);
+  Log(vlVerbose, '%s %d,%d', [TagName, 1+FromLine, 1+ToLine]);
   for l := Min(Buffer.Count-1,ToLine) downto Max(0,FromLine) do
     Buffer.Delete(l);
   Result := FromLine;
@@ -445,7 +490,7 @@ var
   Files :TPaths;
 begin
   Files := nil;
-  Log(vlVerbose, '%s %d %s', [TagName, ToLine, _file]);
+  Log(vlVerbose, '%s %d %s', [TagName, 1+ToLine, ToRelativePath(_file)]);
   Result := FromLIne;
   S := TStringList.Create;
   try
@@ -453,7 +498,7 @@ begin
      Files := Wild(_file, BasePath);
      for f := High(Files) downto Low(Files) do
      begin
-       Log(vlVerbose, '%s %d %s', [TagName, pos, Files[f]]);
+       Log(vlVerbose, '%s %d %s', [TagName, pos, ToRelativePath(Files[f])]);
        S.LoadFromFile(ToSystemPath(Files[f]));
        if pos >= Buffer.Count then
          Buffer.AddStrings(S)
@@ -485,9 +530,9 @@ var
   i :Integer;
 begin
   if append then
-    Log(vlVerbose, '%s %d-%d >> %s', [TagName, FromLine, ToLine, _file])
+    Log(vlVerbose, '%s %d,%d >> %s', [TagName, 1+FromLine, 1+ToLine, ToRelativePath(_file)])
   else
-    Log(vlVerbose, '%s %d-%d %s', [TagName, FromLine, ToLine, _file]);
+    Log(vlVerbose, '%s %d,%d %s', [TagName, 1+FromLine, 1+ToLine, ToRelativePath(_file)]);
 
   Result := -1; // don't change the line
   S := TStringList.Create;
@@ -496,7 +541,7 @@ begin
        S.LoadFromFile(_file);
      for i := Max(0, FromLine) to Min(Buffer.Count-1, ToLine) do
        S.Append(Buffer[i]);
-     S.SaveToFile(_file);
+     S.SaveToFile(ToSystemPath(_file));
   finally
     FreeAndNil(S);
   end;
@@ -527,7 +572,7 @@ var
    i :Integer;
 begin
   ToLine := Max(0, TargetLine(FromLine, ToLine));
-  Log(vlVerbose, '%s %d', [TagName, ToLine]);
+  Log(vlVerbose, '%s %d', [TagName, 1+ToLine]);
   if ToLine > Buffer.Count then
   begin
     Buffer.AddStrings(FText);
@@ -559,6 +604,46 @@ begin
 end;
 
 
+{ TSubstElement }
+
+
+{ TSubstElement }
+
+procedure TSubstElement.Init;
+begin
+  inherited Init;
+  RequireAttribute('subst');
+end;
+
+function TSubstElement.Perform(Buffer: TStrings; Line: Integer): Integer;
+begin
+  Buffer[Line] := XPerlRE.Replace(Buffer[Line], pattern, subst, global);
+  Result := inherited Perform(Buffer, Line);
+end;
+
+procedure TSubstElement.Perform(Editor: TEditor);
+begin
+  if pattern = '' then
+    pattern := Editor.FLastPat
+  else if pattern <> '' then
+    Editor.FLastPat := pattern;
+
+  if global then
+    Log(vlVerbose, '%s /%s/%s/g', [TagName, pattern, subst])
+  else
+    Log(vlVerbose, '%s /%s/%s/',  [TagName, pattern, subst]);
+
+  inherited Perform(Editor);
+end;
+
+{ TEvalElement }
+
+function TEvalElement.Perform(Buffer: TStrings; Line: Integer): Integer;
+begin
+  Buffer[Line] := Evaluate(Buffer[Line]);
+  Result := inherited Perform(Buffer, Line);
+end;
+
 initialization
   RegisterTask(TEditTask);
   RegisterElements( TEditTask, [
@@ -566,6 +651,8 @@ initialization
                         TPrintElement,
                         TGlobalElement,
                         TSearchElement,
+                        TSubstElement,
+                        TEvalElement,
                         TDeleteElement,
                         TReadElement,
                         TWriteElement,
@@ -576,6 +663,8 @@ initialization
                         TGotoElement,
                         TPrintElement,
                         TDeleteElement,
+                        TSubstElement,
+                        TEvalElement,
                         TReadElement,
                         TWriteElement,
                         TInsertElement,
@@ -584,6 +673,8 @@ initialization
   RegisterElements( TSearchElement, [
                         TPrintElement,
                         TDeleteElement,
+                        TSubstElement,
+                        TEvalElement,
                         TReadElement,
                         TWriteElement,
                         TInsertElement,
