@@ -50,6 +50,7 @@ type
     FArguments   :TStrings;
     FSkipLines   :Integer;
     FFailOnError :boolean;
+    FErrorLevel  :Integer;
     FTimeOut     :Longint;
     FOutput      :string;
 
@@ -77,6 +78,7 @@ type
     property SkipLines:    Integer  read FSkipLines   write FSkipLines;
     property OS:           string   read FOS          write FOS;
     property failonerror:  boolean  read FFailOnError write FFailOnError default True;
+    property errorlevel:   Integer  read FErrorLevel  write FErrorLevel;
     property output:       string   read FOutput      write FOutput;
     {:@TODO Implement a TWaitableTimer class to implement timeouts.
       Use Windows.CreateWaitableTimer and Windows.SetWaitableTimer.
@@ -99,6 +101,7 @@ type
     property SkipLines :Integer     read FSkipLines   write FSkipLines;
     property OS;
     property failonerror;
+    property errorlevel;
     property output;
   end;
 
@@ -200,7 +203,8 @@ end;
 
 procedure TCustomExecTask.Run(CmdLine :string);
 var
-  Child :TChildProcess;
+  Child    :TChildProcess;
+  ExitCode :Integer;
 begin
   if ChildProcessClass = nil then
     TaskError('No Child Process implementation?');
@@ -214,11 +218,9 @@ begin
         TaskFailure(e.Message, ExceptAddr);
     end;
     HandleOutput(Child);
-    if (Child.ExitCode <> 0) and FailOnError then
-    begin
-      Log(vlErrors, 'Exit code not zero');
-      TaskFailure('failed');
-    end;
+    ExitCode := Child.ExitCode;
+    if (ExitCode > errorlevel) and FailOnError then
+      TaskFailure(Format('Exit code was %d', [ExitCode]));
   finally
     FreeAndNil(Child);
   end;
