@@ -46,12 +46,15 @@ implementation
 { TCustomAttributeElement }
 
 procedure TCustomAttributeElement.Init;
+var
+  Val :string;
 begin
   inherited Init;
   RequireAttribute(ValueName);
 
-  Owner.SetAttribute(Self.TagName, FStrValue);
-  Log(vlVerbose, '%s=%s', [Self.TagName, FStrValue]);
+  Val := Evaluate(FStrValue);
+  Owner.SetAttribute(Self.TagName, Val);
+  Log(vlVerbose, '%s=%s', [Self.TagName, Val]);
 end;
 
 function TCustomAttributeElement.ValueName: string;

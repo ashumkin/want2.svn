@@ -94,7 +94,7 @@ type
 
     FDescription:   string;
 
-    FIf  :string;
+    FIf     :string;
     FUnless :string;
 
     class function SynthesizeTagName(Suffix :string): string; virtual;
@@ -646,7 +646,7 @@ function TScriptElement.SetAttribute(Name, Value: string): boolean;
 begin
   Log(vlDebug, 'attribute %s="%s"', [Name,Value]);
   FAttributes.Values[Name] := Value;
-  Result := SetDelphiProperty(Name, Evaluate(Value));
+  Result := SetDelphiProperty(Name, Value);
 end;
 
 

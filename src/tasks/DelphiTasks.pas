@@ -344,7 +344,7 @@ begin
 
   if console then
   begin
-    Log(vlVerbose, 'console');
+    Log(vlVerbose, 'console=true');
     Result := Result + ' -CC'
   end
   else
@@ -353,22 +353,22 @@ begin
   if quiet then
     Result := Result + ' -Q'
   else
-    Log(vlVerbose, 'verbose');
+    Log(vlVerbose, 'verbose=true');
 
   if build then
   begin
-    Log(vlVerbose, 'build');
+    Log(vlVerbose, 'build=true');
     Result := Result + ' -B'
   end
   else if make then
   begin
-    Log(vlVerbose, 'make');
+    Log(vlVerbose, 'make=true');
     Result := Result + ' -M';
   end;
 
   if optimize then
   begin
-    Log(vlVerbose, 'optimize');
+    Log(vlVerbose, 'optimize=true');
     Result := Result + ' -$O+'
   end
   else
@@ -376,7 +376,7 @@ begin
 
   if debug then
   begin
-    Log(vlVerbose, 'debug');
+    Log(vlVerbose, 'debug=true');
     Result := Result + ' -$D+ -$L+ -$R+ -$Q+ -$C+ -GD'
   end
   else if optimize then
@@ -391,7 +391,7 @@ begin
 
   if useLibraryPath then
   begin
-    Log(vlVerbose, 'uselibrarypath');
+    Log(vlVerbose, 'uselibrarypath=true');
     PS := TStringList.Create;
     try
       StrToStrings(ReadLibraryPaths, ';', PS);
