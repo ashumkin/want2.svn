@@ -208,9 +208,7 @@ begin
   begin
     if FFileSets[f] <> nil then
     begin
-      if not PathIsDir(FFileSets[f].BasePath) then
-        TaskError(Format('%s directory does not exist', [ToRelativePath(FFileSets[f].BasePath)]))
-      else
+      if PathIsDir(FFileSets[f].BasePath) then
       begin
         ChangeDir(FFileSets[f].BasePath);
         Self.DoFileset(FFileSets[f]);
