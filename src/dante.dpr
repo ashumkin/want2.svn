@@ -138,7 +138,7 @@ begin
   end
 end;
 
-procedure Ussage;
+procedure Usage;
 begin
     WriteLn('For licensing info, use the -L switch');
     WriteLn;
@@ -156,7 +156,7 @@ begin
   if FindCmdLineSwitch('?', SwitchChars, true) or
      FindCmdLineSwitch('h', SwitchChars, true) then
   begin
-    Ussage;
+    Usage;
   end
   else if FindCmdLineSwitch('L', SwitchChars, false) then
   begin
