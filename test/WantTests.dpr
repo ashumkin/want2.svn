@@ -20,7 +20,10 @@ uses
   DelphiTasksTest in 'DelphiTasksTest.pas',
   WildPathsTest in 'WildPathsTest.pas',
   RegexpElementsTest in 'RegexpElementsTest.pas',
-  ExternalTests in 'ExternalTests.pas';
+  ExternalTests in 'ExternalTests.pas',
+  ConsoleScriptRunner in '..\src\win32\ConsoleScriptRunner.pas',
+  StyleTasks in '..\src\tasks\StyleTasks.pas',
+  MSXMLEngineImpl in '..\src\win32\MSXMLEngineImpl.pas';
 
 {$R *.RES}
 

@@ -85,7 +85,18 @@ begin
       BasePath := PathConcat(CurrentDir, '../../test/data');
     if not PathIsDir(BasePath) then
       raise Exception.Create('could not find test data in ' + ToSystemPath(BasePath));
-    Files := WildPaths.Wild('**/*.xml', BasePath);
+    Files := WildPaths.Wild('**/want.xml', BasePath);
+    for i := 0 to High(Files) do
+    begin
+      if Pos('CVS', Files[i]) = 0 then
+      begin
+        ATest := TExternalTest.Create;
+        ATest.TestPath := SuperPath(Files[i]);
+        ATest.FBuildFileName := MovePath(Files[i], ATest.TestPath, '');
+        RegisterTest(PathConcat('External Tests',ToRelativePath(ATest.TestPath, BasePath)), ATest);
+      end;
+    end;
+    Files := WildPaths.Wild('**/build.xml', BasePath);
     for i := 0 to High(Files) do
     begin
       if Pos('CVS', Files[i]) = 0 then

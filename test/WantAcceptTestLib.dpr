@@ -18,7 +18,9 @@ uses
   Win32Implementations in '..\src\win32\Win32Implementations.pas',
   ExternalTests in 'ExternalTests.pas',
   ConsoleScriptRunner in '..\src\win32\ConsoleScriptRunner.pas',
-  RunnerTests in 'RunnerTests.pas';
+  RunnerTests in 'RunnerTests.pas',
+  MSXMLEngineImpl in '..\src\win32\MSXMLEngineImpl.pas',
+  StyleTasks in '..\src\tasks\StyleTasks.pas';
 
 {$R *.RES}
 
