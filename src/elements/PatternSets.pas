@@ -188,7 +188,7 @@ var
   Excluded: TPaths;
   f       : Integer;
 begin
-  Excluded := SplitPath(PathConcat(Base, Pattern));
+  Excluded := SplitPath(Pattern);
   for f := Files.Count-1 downto 0 do
     if IsMatch(SplitPath(Files[f]), Excluded) then
       Files.Delete(f);
@@ -317,12 +317,13 @@ end;
 procedure TCustomFileSet.AddDefaultPatterns;
 begin
   // add the default Ant excludes
-  Exclude('**/*~');
-  Exclude('**/#*#');
-  Exclude('**/%*%');
   Exclude('**/CVS');
   Exclude('**/CVS/*');
   Exclude('**/.cvsignore');                                                                 
+
+  Exclude('**/*~');
+  Exclude('**/#*#');
+  Exclude('**/%*%');
 
   // Some additional excludes
   Exclude('**/*.*~*');
@@ -347,10 +348,10 @@ procedure TCustomDirSet.DoExcludes(Files: TStrings; Base: string);
 var
   f       : Integer;
 begin
-  inherited DoExcludes(Files, Base);
   for f := Files.Count-1 downto 0 do
     if not PathIsdir(PathConcat(Base, Files[f])) then
       Files.Delete(f);
+  inherited DoExcludes(Files, Base);
 end;
 
 
