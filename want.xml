@@ -24,23 +24,22 @@
   <echo message="The default command processor is %{comspec}." />
 
   <target name="prepare" >
-    <mkdir dir="${dist}" />
-    <log file="test.log" >
-      <info code="66">
-        Logger task test
-      </info>
-    </log>
+    <mkdir dir="${dcu}" />
+    <mkdir dir="${bin}" />
   </target>
 
   <target name="clean" >
     <delete dir="${dist}" />
-    <!--
     <delete dir="${dcu}" />
     <delete dir="${bin}" />
-    -->
   </target>
 
   <target name="compile" depends="prepare" >
+    <log file="compile.log" >
+      <info>
+        Compile started.
+      </info>
+    </log>
     <!-- Delete dante.cfg first to get a reproducible build.
          (Should this be automated?)
     -->
@@ -69,11 +68,20 @@
       <resource path="${src}" />
       <resource path="${res}" />
     </dcc>
+    <log file="compile.log" >
+      <info>
+        Compile suceeded.
+      </info>
+    </log>
   </target>
 
   <target name="dist" depends="prepare,compile" >
     <mkdir dir="${dist}" />
-	 <zip zipfile="${dist}/dante-${version}.zip" >
+    <property name="zipfile" value="${dist}/dante-${version}.zip" />
+	 <delete file="${zipfile}" />
+	 <zip zipfile="${zipfile}" >
+         <exclude name="${dist}/**" />
+	      
 	      <include name="${basedir}/dante.exe" />
 			
 	      <include name="**/*.pas" />
@@ -94,5 +102,5 @@
 			<exclude name="${src}/jcl/**"   />
 	 </zip>
   </target>
-  
+
 </project>
