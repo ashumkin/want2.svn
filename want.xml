@@ -26,6 +26,11 @@ See http://www.suigeneris.org/want/ for details.
   <regexp property="version" text="${old.version}" pattern="\.[0-9]*$" subst=".${build}" />
   <regexp property="comma.version" pattern="\." subst="," text="${version}" />
 
+  <tstamp>
+    <format property="when"      pattern="yyyy,mm,dd,HH,nn,ss" />
+    <format property="date.tag"  pattern="yyyy-mm-dd" />
+  </tstamp>
+
   <property name="etc"       value="${basedir}/etc" />
   <property name="src"       value="${basedir}/src" />
   <property name="doc"       value="${basedir}/doc" />
@@ -203,6 +208,14 @@ See http://www.suigeneris.org/want/ for details.
          <arg value="--window 604800" />
          <arg value="--prune" />
      </exec>
+  </target>
+
+  <target name="tarball" >
+    <exec executable="wget">
+      <arg value="--quiet" />
+      <arg value="--output-document=@{want-cvs-${date.tag}.tar.gz}" />
+      <arg value="http://cvs.sourceforge.net/cvstarballs/want-cvsroot.tar.gz" />
+    </exec>
   </target>
 
 </project>
