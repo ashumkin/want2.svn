@@ -45,12 +45,14 @@ type
   private
     FRcFileName: string;
     FIncrement:  boolean;
+    FProperty:   string;
   public
     procedure Execute; override;
     procedure Init; override;
   published
     property rcfilename: string  read FRcFileName write FRcFileName;
     property increment:  boolean read FIncrement  write FIncrement;
+    property _property:  string  read FProperty   write FProperty;
   end;
 
 implementation
@@ -89,6 +91,8 @@ begin
     if increment then
       Inc(BuildNo);
     Project.SetProperty('build', IntToStr(BuildNo));
+    if Trim(_property) <> '' then
+      Project.SetProperty(_property, FclVerRc.VersionInfo.VersionString);
   finally
     FclVerRc.Free;
   end;
