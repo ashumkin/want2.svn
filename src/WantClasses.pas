@@ -655,7 +655,7 @@ var
   Lines :TStrings;
   i     :Integer;
 begin
-  Msg := WrapText(Msg, '...@@... ', [' ',#13,#10,#9], 55);
+  Msg := WrapText(Msg, '...@@... ', [' ',#13,#10,#9], 64);
   Lines := TStringList.Create;
   try
     JclStrings.StrToStrings(Msg, '@@', Lines);
