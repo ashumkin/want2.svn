@@ -2,7 +2,7 @@
 
 <html>
   <head>
-    <meta name="generator" content="HTML Tidy, see www.w3.org">
+    <meta name="generator" content="Microsoft FrontPage 4.0">
 
     <title>Want Notes</title>
     <link rel="stylesheet" type="text/css" href=
@@ -14,10 +14,30 @@
 
     <p><i>Juanco A&ntilde;ez</i></p>
 
+    <h2>Paths</h2>
+
+    <ul>
+      <li>Currently, a task that deals with files must call AboutToScratchPath
+        to check that files outside the current directory branch will not be
+        deleted or overwritten. This puts the burden on the task writer, and
+        makes mistakes more likely. Instead, do the following:
+        <ul>
+          <li>Finish porting WANT to the new interface-based JalPaths.</li>
+          <li>Provide a restricted implementation of NewPath that will not
+            overwrite/delete files outside a given directory branch.</li>
+          <li>Make WantClasses classes use the restricted implementation.</li>
+          <li>Implement commonly needed stuff like: opening a stream for
+            reading/writing, the same for files, and text files: NewPath(./src/file).GetWriteStream,
+            NewPath(./src/file).Reset(F)/Rewrite(F), NewPath(...).GetStrings :TStrings;</li>
+        </ul>
+        <p>After that, all task writers have to do is JalPaths for file
+        manipulation.</li>
+    </ul>
+
     <h2>Core Classes</h2>
 
     <ul>
-      <li>Must parse all elements and store value of _all_ attributes 
+      <li><b>DONE! </b>Must parse all elements and store value of _all_ attributes 
       to support GUI editing.
       Conditional attributes currently make the parser skip elements.
       <li>Make Want capable of analyzing a task/element and
@@ -25,7 +45,7 @@
 
       <li>Implement loadable task/element modules.</li>
 
-      <li><b>DONE!</b>Factor out XML parsing into its own unit. This will reduce
+      <li><b>DONE! </b>Factor out XML parsing into its own unit. This will reduce
       the set of core classes that loadable modules must link in
       </li>
     </ul>
@@ -64,9 +84,9 @@
 
         <blockquote>
 <pre>
-&lt;patternset id="non.test.sources" &gt;
-  &lt;include name="**/*.java" /&gt;
-  &lt;exclude name="**/*Test*" /&gt;
+&lt;patternset id=&quot;non.test.sources&quot; &gt;
+  &lt;include name=&quot;**/*.java&quot; /&gt;
+  &lt;exclude name=&quot;**/*Test*&quot; /&gt;
 &lt;/patternset&gt;
 </pre>
         </blockquote>
@@ -118,7 +138,7 @@
     <h2>Tasks</h2>
 
     <ul>
-      <li>Implement htmlhelp tasl. Use this registry key:<br>
+      <li>Implement htmlhelp task. Use this registry key:<br>
       HKEY_CURRENT_USER\Software\Microsoft\HTML Help Workshop\InstallDir
       </li>
       <li><b>DONE!</b> Expose the "basedir" property in the
@@ -128,7 +148,7 @@
       TCheckProperty task:</li>
     </ul>
 <pre>
-  &lt;checkproperty name="aname" expectedvalue="avalue" /&gt;
+  &lt;checkproperty name=&quot;aname&quot; expectedvalue=&quot;avalue&quot; /&gt;
 </pre>
 
     <ul>
