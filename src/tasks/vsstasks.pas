@@ -40,37 +40,75 @@ uses
   DanteClasses, ExecTasks, JclStrings, WildPaths;
 
 type
-  TVssGetTask = class(TCustomExecTask)
+  TVssBaseTask = class(TCustomExecTask)
   private
+    FFileName: string;
     FVssPath: string;
     FLogin: string;
     FLocalPath: string;
-    F_Label: string;
   public
     procedure Execute; override;
     procedure Init; override;
-  published
-    property _Label: string read F_Label write F_Label;
+
+    property FileName: string read FFileName write FFileName;
     property LocalPath: string read FLocalPath write FLocalPath;
     property Login: string read FLogin write FLogin;
     property VssPath: string read FVssPath write FVssPath;
   end;
 
+  TVssGetTask = class(TVssBaseTask)
+  private
+    F_Label: string;
+  public
+    procedure Execute; override;
+  published
+    property _Label: string read F_Label write F_Label;
+    property LocalPath;
+    property Login;
+    property VssPath;
+  end;
+
+  TVssCheckoutTask = class(TVssBaseTask)
+  public
+    procedure Execute; override;
+  published
+    property FileName;
+    property LocalPath;
+    property Login;
+    property VssPath;
+  end;
+
+  { could refactor a base class out of checkout/checkin (basecheck), but
+    not a huge deal -- only benefit is not redeclaring FileName }
+  TVssCheckinTask = class(TVssBaseTask)
+  private
+    FComment: string;
+  public
+    procedure Execute; override;
+  published
+    property Comment: string read FComment write FComment;
+    property FileName;
+    property LocalPath;
+    property Login;
+    property VssPath;
+  end;
+
 implementation
 
-{ TVssGetTask }
+{ TVssBaseTask }
 
-procedure TVssGetTask.Execute;
-  function FormatVssPath(s: string): string;
+procedure TVssBaseTask.Execute;
+  function FormatVssPath: string;
   begin
-    Result := s;
-    if JclStrings.StrRight(Result, 1) = '/' then
-      Result := JclStrings.StrChopRight(Result, 1);
+    Result := JclStrings.StrEnsureSuffix('/', FVssPath);
+    if FFileName = '' then
+      Result := JclStrings.StrChopRight(Result, 1)
+    else
+      Result := Result + FFileName;
     Result := '"' + Result + '"';
   end;
 begin
-  Executable := 'ss Get';
-  ArgumentList.Add(FormatVssPath(FVssPath));
+  ArgumentList.Add(FormatVssPath);
 
   if FLogin <> '' then
     ArgumentList.Add('-Y' + FLogin);
@@ -78,21 +116,51 @@ begin
   if FLocalPath <> '' then
     ArgumentList.Add('"-GL' + WildPaths.ToSystemPath(ToAbsolutePath(ToDantePath(FLocalPath))) + '"');
 
+  { ignore prompts for information - chooses default. Vss is, AFAIK, good
+    about having non-destructive defaults. }
+  ArgumentList.Add('-I-');
+  inherited Execute;
+end;
+
+procedure TVssBaseTask.Init;
+begin
+  inherited;
+  RequireAttribute('vsspath');
+end;
+
+{ TVssGetTask }
+
+procedure TVssGetTask.Execute;
+begin
+  Executable := 'ss Get';
+
   { skip writable files }
   ArgumentList.Add('-GWS');
 
   if F_Label <> '' then
     ArgumentList.Add('"-VL' + F_Label + '"');
 
-  { ignore prompts for information }  
-  ArgumentList.Add('-I-');
   inherited Execute;
 end;
 
-procedure TVssGetTask.Init;
+{ TVssCheckoutTask }
+
+procedure TVssCheckoutTask.Execute;
 begin
-  inherited;
-  RequireAttribute('vsspath');
+  Executable := 'ss Checkout';
+
+  inherited Execute;
+end;
+
+{ TVssCheckinTask }
+
+procedure TVssCheckinTask.Execute;
+begin
+  Executable := 'ss Checkin';
+
+  ArgumentList.Add('"-C' + FComment + '"');
+
+  inherited Execute;
 end;
 
 initialization
