@@ -12,7 +12,6 @@ type
 implementation
 
 initialization
-  RegisterClasses([TDeleteTask]);
-
+  RegisterTasks([TDeleteTask]);
 end.
 
