@@ -353,6 +353,7 @@ type
 
   public
     function  SetAttribute(Name, Value :string) :boolean; override;
+    procedure Init; override;
   published
     property value :string read FValue  write FValue;
     property path  :TPath  read GetPath write SetPath;
@@ -574,7 +575,8 @@ begin
       with Attributes do
       begin
         for a := 0 to Count-1 do
-          SetDelphiProperty(Names[a], Evaluate(Values[Names[a]]));
+          if not SetDelphiProperty(Names[a], Evaluate(Values[Names[a]])) then
+             raise Exception.CreateFmt('%s not a property of this element', [Names[a]]);
       end;
 
       ChangeDir(BasePath, false);
@@ -1424,6 +1426,12 @@ end;
 function TAttributeElement.GetPath: TPath;
 begin
   Result := ToPath(Value);
+end;
+
+procedure TAttributeElement.Init;
+begin
+  inherited;
+  Owner.SetDelphiProperty(AttribName, Value);
 end;
 
 function TAttributeElement.SetAttribute(Name, Value: string): boolean;

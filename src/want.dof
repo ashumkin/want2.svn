@@ -100,7 +100,7 @@ Conditionals=USE_JEDI_JCL;DUNIT_DLL
 DebugSourceDirs=
 UsePackages=0
 [Parameters]
-RunParams=clean -buildfile ..\..\want.xml -verbose
+RunParams=test -buildfile ..\..\want.xml -verbose
 HostApplication=
 Launcher=
 UseLauncher=0
