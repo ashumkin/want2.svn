@@ -147,7 +147,10 @@ end;
 procedure MoveFile(const Src, Dst :TPath);
 begin
    MakeDir(SuperPath(Dst));
-   writeln('move ',ToSystemPath(Src), '->', ToSystemPath(Dst));
+   if not Windows.MoveFile(PChar(ToSystemPath(Src)),
+                           PChar(ToSystemPath(Dst))) then
+     raise EFileOpException.Create(SysErrorMessage(GetLastError));
+   //writeln('move ',ToSystemPath(Src), '->', ToSystemPath(Dst));
 end;
 
 procedure MoveFiles(const Pattern :TPattern; const FromPath, ToPath :TPath);
