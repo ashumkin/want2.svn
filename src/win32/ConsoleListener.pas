@@ -167,7 +167,8 @@ end;
 procedure TConsoleListener.TaskStarted(Task: TTask);
 begin
   FPrefix := Format('%14s ', [Trim(FPrefix + '[' + Task.TagName + ']') ] );
-  Log(Task.Description);
+  if Task.Description <> '' then
+    Log(Task.Description);
 end;
 
 procedure TConsoleListener.TaskFinished(Task: TTask);
