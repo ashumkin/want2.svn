@@ -26,8 +26,13 @@
 }
 { TODO -oGJD -cTODO : 
   Add handling of:
+  -$A: Align on/off/1/2/4/8
+  -$X: Extended Syntax
+  -$G: Imported Data
+  -$P: Open Strings
+  -$M: RTTI Type Info
+  -$V: Var String Checks
   -A: Unit aliases
-  -$U: Pentium safe FDIV
   -J: Generate an object file
   -JP: Generate C++ object file
   -K: Set image base address
@@ -154,8 +159,10 @@ type
     FMake           : boolean;
     FBuild          : boolean;
     FOptimize       : boolean;
+    FOptimization   : boolean;
     FDebug          : boolean;
     FDebugInfo      : boolean;
+    FAllDebugInfo   : boolean;
     FLocalSymbols   : boolean;
     FDefinitionInfo : boolean;
     FReferenceInfo  : boolean;
@@ -177,6 +184,7 @@ type
     FMap            : TMapType;
     FMinEnumSize    : integer;
     FUseDebugDCUs   : boolean;
+    FSafeDivide     : boolean;
 
     FUnitPaths      : TUnitPathElement;
     FResourcePaths  : TResourcePathElement;
@@ -245,19 +253,21 @@ type
 
     property assertions     :boolean read FAssertions     write FAssertions     default true;
     property booleval       :boolean read FBoolEval       write FBoolEval       default false;
-    property optimize       :boolean read FOptimize       write FOptimize       default true;
+    property optimize       :boolean read FOptimize       write FOptimize       default false;
+    property optimization   :boolean read FOptimization   write FOptimization   default true;
     property iochecks       :boolean read FIoChecks       write FIoChecks       default true;
     property overflowchecks :boolean read FOverFlowChecks write FOverFlowChecks default false;
     property rangechecks    :boolean read FRangeChecks    write FRangeChecks    default false;
     property allchecks      :boolean read FAllChecks      write FAllChecks      default false;
     property debug          :boolean read FDebug          write FDebug          default true;
     property debuginfo      :boolean read FDebugInfo      write FDebugInfo      default true;
+    property alldebuginfo   :boolean read FAllDebugInfo   write FAllDebugInfo   default true;
     property localsymbols   :boolean read FLocalSymbols   write FLocalSymbols   default true;
     property definitioninfo :boolean read FDefinitionInfo write FDefinitionInfo default true;
     property referenceinfo  :boolean read FReferenceInfo  write FReferenceInfo  default false;
     property console        :boolean read FConsole        write FConsole        default false;
     property warnings       :boolean read FEnableWarnings write FEnableWarnings default true;
-    property hints          :boolean read FEnableHints    write FEnableHints    default false;
+    property hints          :boolean read FEnableHints    write FEnableHints    default true;
     property usecfg         :boolean read FUseCFG         write FUseCFG         default false;
     property hugestrings    :boolean read FHugeStrings    write FHugeStrings    default true;
     property typedaddress   :boolean read FTypedAddress   write FTypedAddress   default false;
@@ -265,10 +275,11 @@ type
     property writableconst  :boolean read FWritableConst  write FWritableConst  default false;
     property usedebugdcu    :boolean read FUseDebugDCUs   write FUseDebugDCUs   default false;
     property minenumsize    :integer read FMinEnumSize    write FMinEnumSize    default 1;
+    property safedivide     :boolean read FSafeDivide     write FSafeDivide     default false;
 
     property map            :TMapType read FMap write FMap default none;
 
-    property uselibrarypath :boolean read FUseLibraryPath write FUseLibraryPath;
+    property uselibrarypath :boolean read FUseLibraryPath write FUseLibraryPath default false;
 
     property source         :TPath read FSource write FSource;
   end;
@@ -506,17 +517,19 @@ begin
 
   FAssertions := true;
   FBoolEval := false;
-  FOptimize := true;
+  FOptimize := false;
+  FOptimization := true;
   FIoChecks := true;
   FOverFlowChecks := false;
   FRangeChecks := false;
   FDebug := true;
+  FDebugInfo := true;
   FLocalSymbols := true;
   FDefinitionInfo := true;
   FReferenceInfo := false;
   FConsole := false;
   FEnableWarnings := true;
-  FEnableHints := false;
+  FEnableHints := true;
   FUseCFG := false;
   FHugeStrings := true;
   FTypedAddress := false;
@@ -524,12 +537,13 @@ begin
   FWritableConst := false;
   FUseDebugDCUs := false;
   FMinEnumSize := 1;
-  FDebugInfo := true;
+  FSafeDivide := false;
   FAllChecks := false;
+  FAllDebugInfo := true;
 
   FMap := none;
 
-  FUseLibraryPath := true;
+  FUseLibraryPath := false;
 
   AddWarning(UNSAFE_CODE,       true);
   AddWarning(SYMBOL_PLATFORM,   true);
@@ -658,7 +672,53 @@ begin
     Result := Result + PathOpt('LN', dcpoutput);
   end;
 
-  if (not usecfg) or HasAttribute('console') then
+  { Meta options }
+
+  if HasAttribute('debug') or HasAttribute('optimize') then
+  begin
+    if debug then
+    begin
+      Log(vlVerbose, 'debug=true');
+      Result := Result + ' -$D+ -$L+ -$YD -$C+ -$Q+ -$R+ -$O- -GD'
+    end
+    else if optimize then
+    begin
+      Log(vlVerbose, 'optimize=true');
+      Result := Result + ' -$D+ -$L+ -$Y- -$C+ -$Q+ -$R+ -$O+'
+    end
+  end;
+
+  if HasAttribute('alldebuginfo') then
+  begin
+    if alldebuginfo then
+    begin
+      Log(vlVerbose, 'alldebuginfo=true');
+      Result := Result + ' -$D+ -$L+ -$YD'
+    end
+    else
+    begin
+      Log(vlVerbose, 'alldebuginfo=false');
+      Result := Result + ' -$D- -$L- -$Y-'
+    end;
+  end;
+
+  if HasAttribute('allchecks') then
+  begin
+    if allchecks then
+    begin
+      Log(vlVerbose, 'allchecks=true');
+      Result := Result + ' -$C+ -$Q+ -$R+'
+    end
+    else
+    begin
+      Log(vlVerbose, 'allchecks=false');
+      Result := Result + ' -$C- -$Q- -$R-'
+    end;
+  end;
+
+  { Basic options }
+
+  if HasAttribute('console') then
   begin
     if console then
     begin
@@ -669,7 +729,7 @@ begin
       Result := Result + ' -CG';
   end;
 
-  if (not usecfg) or HasAttribute('warnings') then
+  if HasAttribute('warnings') then
   begin
     if warnings then
       Result := Result + ' -W+'
@@ -680,17 +740,183 @@ begin
     end;
   end;
 
-  if (not usecfg) or HasAttribute('hints') then
+  if HasAttribute('hints') then
   begin
     if hints then
     begin
-      Log(vlVerbose, 'hints=true');
       Result := Result + ' -H+';
     end
     else
     begin
+      Log(vlVerbose, 'hints=false');
       Result := Result + ' -H-';
     end;
+  end;
+
+  if HasAttribute('debuginfo') then
+  begin
+    if debug then
+    begin
+      Result := Result + ' -$D+'
+    end
+    else
+    begin
+      Log(vlVerbose, 'debuginfo=false');
+      Result := Result + ' -$D-';
+    end;
+  end;
+
+  if HasAttribute('localsymbols') then
+  begin
+    if localsymbols then
+      Result := Result + ' -$L+'
+    else
+    begin
+      Log(vlVerbose, 'localsymbols=false');
+      Result := Result + ' -$L-';
+    end;
+  end;
+
+  if HasAttribute('referenceinfo') or HasAttribute('definitioninfo') then
+  begin
+    if referenceinfo then
+      Result := Result + ' -$Y+'
+    else if definitioninfo then
+      Result := Result + ' -$YD'
+    else
+      Result := Result + ' -$Y-';
+  end;
+
+  if HasAttribute('optimization') then
+  begin
+    if optimization then
+    begin
+      Result := Result + ' -$O+'
+    end
+    else
+    begin
+      Log(vlVerbose, 'optimization=false');
+      Result := Result + ' -$O-';
+    end;
+  end;
+
+  if HasAttribute('overflowchecks') then
+  begin
+    if overflowchecks then
+    begin
+      Log(vlVerbose, 'overflowchecks=true');
+      Result := Result + ' -$Q+';
+    end
+    else
+      Result := Result + ' -$Q-';
+  end;
+
+  if HasAttribute('rangechecks') then
+  begin
+    if rangechecks then
+    begin
+      Log(vlVerbose, 'rangechecks=true');
+      Result := Result + ' -$R+';
+    end
+    else
+      Result := Result + ' -$R-';
+  end;
+
+  if HasAttribute('assertions') then
+  begin
+    if assertions then
+      Result := Result + ' -$C+'
+    else
+    begin
+      Log(vlVerbose, 'assertions=false');
+      Result := Result + ' -$C-';
+    end;
+  end;
+
+  if HasAttribute('iochecks') then
+  begin
+    if iochecks then
+      Result := Result + ' -$I+'
+    else
+    begin
+      Log(vlVerbose, 'iochecks=false');
+      Result := Result + ' -$I-';
+    end;
+  end;
+
+  if HasAttribute('hugestrings') then
+  begin
+    if hugestrings then
+      Result := Result + ' -$H+'
+    else
+    begin
+      Log(vlVerbose, 'hugestrings=false');
+      Result := Result + ' -$H-';
+    end;
+  end;
+
+  if HasAttribute('booleval') then
+  begin
+    if booleval then
+    begin
+      Log(vlVerbose, 'booleval=true');
+      Result := Result + ' -$B+';
+    end
+    else
+      Result := Result + ' -$B-';
+  end;
+
+  if HasAttribute('typedaddress') then
+  begin
+    if typedaddress then
+    begin
+      Log(vlVerbose, 'typedaddress=true');
+      Result := Result + ' -$T+';
+    end
+    else
+      Result := Result + ' -$T-';
+  end;
+
+  if HasAttribute('stackframes') then
+  begin
+    if stackframes then
+    begin
+      Log(vlVerbose, 'stackframes=true');
+      Result := Result + ' -$W+';
+    end
+    else
+      Result := Result + ' -$W-';
+  end;
+
+  if HasAttribute('writableconst') then
+  begin
+    if writableconst then
+    begin
+      Log(vlVerbose, 'writableconst=true');
+      Result := Result + ' -$J+';
+    end
+    else
+      Result := Result + ' -$J-';
+  end;
+
+  if HasAttribute('safedivide') then
+  begin
+    if safedivide then
+    begin
+      Log(vlVerbose, 'safedivide=true');
+      Result := Result + ' -$U+';
+    end
+    else
+      Result := Result + ' -$U-';
+  end;
+
+  if HasAttribute('minenumsize') then
+  begin
+    if minenumsize in [1,2,4] then
+      Result := Result + ' -$Z' + IntToStr(minenumsize)
+    else
+      Log(vlErrors, 'Invalid enum size value (not one of [1,2,4]): '
+                    + IntToStr(minenumsize));
   end;
 
   if (not usecfg) or HasAttribute('quiet') then
@@ -715,169 +941,6 @@ begin
     end;
   end;
 
-  if (not usecfg) or HasAttribute('optimize') then
-  begin
-    if optimize then
-    begin
-      Log(vlVerbose, 'optimize=true');
-      Result := Result + ' -$O+'
-    end
-    else
-    begin
-      Log(vlVerbose, 'optimize=false');
-      Result := Result + ' -$O-';
-    end;
-  end;
-
-  if (not usecfg) or HasAttribute('debuginfo') then
-  begin
-    if debuginfo then
-    begin
-      Log(vlVerbose, 'debuginfo=true');
-      Result := Result + ' -$D+ -$L+ -$YD'
-    end
-    else
-    begin
-      Log(vlVerbose, 'debuginfo=false');
-      Result := Result + ' -$D- -$L- -$Y-'
-    end;
-  end;
-
-  if HasAttribute('debug') then
-  begin
-    if debug then
-    begin
-      Log(vlVerbose, 'debug=true');
-      Result := Result + ' -$D+'
-    end
-    else
-    begin
-      Log(vlVerbose, 'debug=false');
-      Result := Result + ' -$D-';
-    end;
-  end;
-
-  if HasAttribute('localsymbols') then
-  begin
-    if localsymbols then
-      Result := Result + ' -$L+'
-    else
-      Result := Result + ' -$L-';
-  end;
-
-  if HasAttribute('referenceinfo') or HasAttribute('definitioninfo') then
-  begin
-    if referenceinfo then
-      Result := Result + ' -$Y+'
-    else if definitioninfo then
-      Result := Result + ' -$YD'
-    else
-      Result := Result + ' -$Y-';
-  end;
-
-  if (not usecfg) or HasAttribute('allchecks') then
-  begin
-    if allchecks then
-    begin
-      Log(vlVerbose, 'allchecks=true');
-      Result := Result + ' -$C+ -$Q+ -$R+'
-    end
-    else
-    begin
-      Log(vlVerbose, 'allchecks=false');
-      Result := Result + ' -$C- -$Q- -$R-'
-    end;
-  end;
-
-  if HasAttribute('overflowchecks') then
-  begin
-    if overflowchecks then
-      Result := Result + ' -$Q+'
-    else
-      Result := Result + ' -$Q-';
-  end;
-
-  if HasAttribute('rangechecks') then
-  begin
-    if rangechecks then
-      Result := Result + ' -$R+'
-    else
-      Result := Result + ' -$R-';
-  end;
-
-  if HasAttribute('assertions') then
-  begin
-    if assertions then
-      Result := Result + ' -$C+'
-    else
-      Result := Result + ' -$C-';
-  end;
-
-  if (not usecfg) or HasAttribute('iochecks') then
-  begin
-    if iochecks then
-      Result := Result + ' -$I+'
-    else
-      Result := Result + ' -$I-';
-  end;
-
-  if (not usecfg) or HasAttribute('hugestrings') then
-  begin
-    if hugestrings then
-      Result := Result + ' -$H+'
-    else
-      Result := Result + ' -$H-';
-  end;
-
-  if (not usecfg) or HasAttribute('booleval') then
-  begin
-    if booleval then
-      Result := Result + ' -$B+'
-    else
-      Result := Result + ' -$B-';
-  end;
-
-  if (not usecfg) or HasAttribute('typedaddress') then
-  begin
-    if typedaddress then
-      Result := Result + ' -$T+'
-    else
-      Result := Result + ' -$T-';
-  end;
-
-  if (not usecfg) or HasAttribute('stackframes') then
-  begin
-    if stackframes then
-      Result := Result + ' -$W+'
-    else
-      Result := Result + ' -$W-';
-  end;
-
-  if (not usecfg) or HasAttribute('writableconst') then
-  begin
-    if writableconst then
-      Result := Result + ' -$J+'
-    else
-      Result := Result + ' -$J-';
-  end;
-
-//  if (not usecfg) or HasAttribute('pentiumsafefdiv') then
-//  begin
-//    if pentiumsafefdiv then
-//      Result := Result + ' -$U+'
-//    else
-//      Result := Result + ' -$U-';
-//  end;
-
-  if HasAttribute('minenumsize') then
-  begin
-    if minenumsize in [1,2,4] then
-      Result := Result + ' -$Z' + IntToStr(minenumsize)
-    else
-      Log(vlErrors, 'Invalid enum size value (not one of [1,2,4]): '
-                    + IntToStr(minenumsize));
-  end;
-
   case map of
     segments : Result := Result + ' -GS';
     publics  : Result := Result + ' -GP';
@@ -890,7 +953,7 @@ begin
     Result := Result + ' -D' + FDefines.Names[d];
   end;
 
-  if (not usecfg) or HasAttribute('warnings') then
+  if HasAttribute('warnings') then
   begin
     if warnings then
     begin
@@ -909,7 +972,7 @@ begin
   end;
 
   Result := Result + ' ' + inherited BuildArguments;
-  
+
   for p := 0 to FPackages.Count - 1 do
   begin
     Log(vlVerbose, 'package %s', [FPackages[p]]);
@@ -956,7 +1019,7 @@ begin
       end;
     end;
   end;
-  
+
   if (FUnitPaths.Includes.Count <> 0) or (FUnitPaths.Excludes.Count <> 0) or (Length(FUnitPaths.FPatternSets) <> 0) then
     Result := Result + OutputPathElements('unitpath', 'U', FUnitPaths.Paths);
 
