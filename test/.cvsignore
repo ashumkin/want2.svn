@@ -1,3 +1,6 @@
 *.~*
 *.dsk
 *.dcu
+*.cfg
+*.drc
+*.res
