@@ -45,10 +45,7 @@ type
   TZipTask = class(TFileSetTask)
   protected
     FZipFile  :string;
-    FBaseDir  :string;
     FCompress :boolean;
-
-    procedure SetBaseDir(Value :string);
 
   public
     constructor Create(Owner :TDanteElement); override;
@@ -56,9 +53,10 @@ type
     procedure Validate; override;
     procedure Execute;  override;
   published
-    property zipfile  :string  read FZipFile  write FZipFile;
-    property basedir  :string  read FBaseDir  write SetBaseDir;
-    property compress :boolean read FCompress write FCompress    default true;
+    property basedir;
+    
+    property zipfile  :string  read FZipFile   write FZipFile;
+    property compress :boolean read FCompress  write FCompress    default true;
 
     property includes :string write AddCommaSeparatedIncludes;
     property excludes :string write AddCommaSeparatedExcludes;
@@ -101,12 +99,6 @@ begin
   finally
     Zip.Free;
   end
-end;
-
-procedure TZipTask.SetBaseDir(Value: string);
-begin
-  FBaseDir := Value;
-  FFileSet.Dir := ToRelativePath(Value);
 end;
 
 initialization

@@ -63,7 +63,6 @@ type
 
   TFileSet = class(TDanteElement)
   protected
-    FDir:      TPath;    // prefix for all wildcards
     FIncludes: TStrings;
     FExcludes: TStrings;
     FPaths:    TPaths;
@@ -71,7 +70,7 @@ type
     FIncluder: TIncludeComponent;
     FExcluder: TExcludeComponent;
 
-    procedure SetDir(Value :TPath);
+    procedure SetBaseDir(Value :string);   override;
 
     procedure SetChanged;
 
@@ -100,7 +99,7 @@ type
     function createInclude :TIncludeComponent;
     function createExclude :TExcludeComponent;
 
-    property dir:      TPath read FDir write SetDir;
+    property dir: TPath read GetBaseDir write SetBaseDir;
   end;
 
 
@@ -208,9 +207,9 @@ begin
   Result := PathConcat(BasePath, dir);
 end;
 
-procedure TFileSet.SetDir(Value: TPath);
+procedure TFileSet.SetBaseDir(Value: TPath);
 begin
-  FDir := ToRelativePath(Value);
+  inherited SetBaseDir(Value);
   SetChanged;
 end;
 

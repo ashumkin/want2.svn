@@ -41,7 +41,9 @@ uses
   DanteClasses,
   StandardTasks,
   CustomTasks,
-  DanteMain;
+  DanteMain,
+  DanteTasks in 'tasks\DanteTasks.pas',
+  ExecTasks in 'tasks\ExecTasks.pas';
 
 function DanteHeader: string;
 begin
@@ -95,20 +97,6 @@ end;
 const
   SwitchChars = ['-', '/'];
 
-function FindBuildFile(BuildFile :string):string;
-begin
-  Result := ExpandFileName('.\'+ BuildFile);
-  // find the Result in the current or super directories
-  while not FileExists(Result)
-        and FileExists(ExtractFileDir(Result))
-  do begin
-    Result := ExpandFileName(ExtractFilePath(Result) + '..\' + ExtractFilename(Result));
-  end;
-  if not FileExists(Result) then
-    Result := BuildFile;
-end;
-
-
 procedure Run;
 var
   BuildFile: string;
@@ -145,7 +133,7 @@ begin
   end;
 
   if BuildFile = '' then
-    BuildFile := FindBuildFile(BuildFileName);
+    BuildFile := BuildFileName;
   if not FileExists(BuildFile) then
     WriteLn('Cannot find ' + ExtractFileName(BuildFile))
   else

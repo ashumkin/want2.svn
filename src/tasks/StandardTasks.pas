@@ -34,10 +34,12 @@ unit StandardTasks;
 
 interface
 uses
+  EchoTasks,
   ExecTasks,
   DelphiTasks,
   FileTasks,
-  ZipTasks;
+  ZipTasks,
+  DanteTasks;
 
 implementation
 

@@ -104,6 +104,8 @@ type
   );
 
   TCreateElementMethod = function :TDanteElement of object;
+  TLogMethod = procedure(Msg :string; Verbosity :TVerbosityLevel) of object;
+
 
 
   // for implementing <property> elements
@@ -111,7 +113,12 @@ type
 
   TDanteElement = class(TComponent)
   protected
-    FName :string; // ditch TComponent.Name
+    FName :string;         // ditch TComponent.Name
+    FBaseDir :string;      // wher paths for this object are based
+
+
+    function  GetBaseDir :string;          virtual;
+    procedure SetBaseDir(Value :string);   virtual;
 
     function GetOwner: TPersistent; override;
     function GetProject: TProject;
@@ -121,9 +128,13 @@ type
     function  GetChildOwner: TComponent; override;
     function  GetChildrenTyped(AClass :TDanteElementClass) : TDanteElementArray;
 
-    procedure Log(Msg :string = ''; Verbosity :TVerbosityLevel = vlNormal); overload; virtual;
+    procedure Log(Msg :string = ''; Verbosity :TVerbosityLevel = vlNormal);           overload; virtual;
     procedure Log(Verbosity :TVerbosityLevel; Msg :string = ''); overload;
-    procedure Log(Tag :string; Msg :string; Verbosity :TVerbosityLevel = vlNormal); overload; virtual;
+
+    function  Log(const Format: string; const Args: array of const; Verbosity :TVerbosityLevel = vlNormal): string; overload;
+    function  Log(Verbosity :TVerbosityLevel; const Format: string; const Args: array of const): string; overload;
+
+    procedure Log(Tag :string; Msg :string; Verbosity :TVerbosityLevel = vlNormal);  overload; virtual;
 
     procedure RequireAttribute(Name :string; Value :string);
     procedure AttributeRequiredError(AttName :string);
@@ -153,56 +164,68 @@ type
     function  BasePath :string; virtual;
     // use this function in Tasks to let the user specify relative
     // directories that work consistently
-    function  ToSystemPath(Path :string):string;
+    function  ToSystemPath(Path :string; Base :string = ''):string;
     function  ToDantePath(Path :string) :string;
     function  ToAbsolutePath(Path :string) :string; virtual;
-    function  ToRelativePath(Path :string) :string; virtual;
+    function  ToRelativePath(Path :string; Base :string = '') :string; virtual;
+    function  StringsToSystemPathList(List: TStrings; Base :string = ''): string;
     procedure AboutToScratchPath(Path :TPath);
 
-    property Project: TProject read GetProject;
-    property Tag stored False;
+    property  Project: TProject read GetProject;
+    property  Tag stored False;
+
+    property  basedir :string   read GetBaseDir write SetBaseDir;
   published
-    function CreateProperty :TPropertyElement;
+    function CreateProperty :TPropertyElement; virtual;
 
     property Name : string read FName write FName stored True;
   end;
+
 
   TProject = class(TDanteElement)
   protected
     FTargets:       TList;
     FDefaultTarget: string;
     FVerbosity:     TVerbosityLevel;
-    FBaseDir:       string;
     FRunPath:       string;
     FDescription:   string;
     FProperties:    TStrings;
+
+    FPropertyElement :TPropertyElement;
+
+    FOnLog :TLogMethod;
 
     procedure Notification(AComponent: TComponent; Operation: TOperation); override;
     function  GetTarget(Index: Integer):TTarget;
     procedure BuildSchedule(TargetName :string; Sched :TList);
     procedure DoParseXML(Node :MiniDom.IElement);
-    procedure SetBaseDir(Path :TPath);
-    function  GetBaseDir :TPath;
+    procedure SetBaseDir(Path :TPath);  override;
+    function  GetBaseDir :TPath;        override;
 
   public
     constructor Create(Owner: TDanteElement = nil); override;
     destructor  Destroy; override;
 
+    procedure SetInitialBaseDir(Path :TPath);
+
     class function XMLTag :string; override;
+    function FindBuildFile(BuildFile :string = ''):string;
+
+
     function  ToXML(Dom :IDocument) : IElement; override;
 
     procedure Parse(const Image: string);
     procedure ParseXMLText(const XML :string);
 
     procedure Load(const Path: string);
-    procedure LoadXML(const SystemPath: string);
+    procedure LoadXML(const SystemPath: string = '');
     procedure Save(const Path: string);
+
 
     // use this to get the fully qualified base path
     function  BasePath :string; override;
     // use this function in Tasks to let the user specify relative
     // directories that work consistently
-    function  ToAbsolutePath(SubPath :string) :string; override;
 
     function  AsString:     string;
     function  AddTarget(Name :string) :TTarget;
@@ -224,15 +247,20 @@ type
 
     procedure Log(Msg :string = ''; Verbosity :TVerbosityLevel = vlNormal); override;
 
-    property RunPath :string read FRunPath;
-    property Targets[i: Integer]: TTarget read GetTarget; default;
-    property Names[TargetName :string] :TTarget read GetTargetByName;
+    property RunPath :string read FRunPath write FRunPath;
 
+    property Targets[i: Integer]: TTarget             read GetTarget; default;
+    property TargetNames[TargetName :string] :TTarget read GetTargetByName;
+
+    property OnLog :TLogMethod read FOnLog write FOnLog;
   published
-    function  CreateTarget: TTarget;
+    function CreateTarget: TTarget;
+    function CreateProperty :TPropertyElement; override;
+
+
+    property basedir;
 
     property Name stored True;
-    property BaseDir :string read GetBaseDir write SetBaseDir;
     property Default:       string          read FDefaultTarget  write FDefaultTarget;
     property Verbosity:     TVerbosityLevel
       read    FVerbosity
@@ -280,12 +308,15 @@ type
   public
     class function XMLTag :string; override;
 
+    function  BasePath :string; override;
+
     function Target :TTarget;
 
     procedure Execute; virtual; abstract;
     procedure Log(Msg :string = ''; Verbosity :TVerbosityLevel = vlNormal); override;
 
     property Name stored False;
+
   published
   end;
 
@@ -307,7 +338,6 @@ procedure RegisterTask(TaskClass :TTaskClass);
 procedure RegisterTasks(TaskClasses :array of TTaskClass);
 
 function CommaTextToArray(Text :string) :TStringArray;
-function StringsToSystemPathList(List: TStrings): string;
 
 procedure RaiseLastSystemError(Msg :string = '');
 procedure DanteError(Msg :string = '');
@@ -338,22 +368,6 @@ begin
        Result[i] := S[i];
   finally
     S.Free;
-  end;
-end;
-
-
-function StringsToSystemPathList(List: TStrings): string;
-var
-  i, p  :Integer;
-  Paths :TStringArray;
-begin
-  Result := '';
-  Paths  := nil;
-  for i := 0 to List.Count-1 do
-  begin
-    Paths := CommaTextToArray(List[i]);
-    for p := Low(Paths) to High(Paths) do
-      Result := Result + ';' + ToSystemPath(Paths[p]);
   end;
 end;
 
@@ -493,7 +507,7 @@ begin
     end
     else if 0 = child.QueryInterface(ITextNode, text)  then
     begin
-      if not SetAttribute('text', trim(text.text)) then
+      if not SetAttribute('text', ExpandMacros(trim(text.text))) then
         ParseError(Format('Element <%s> does not accept text', [XMLTag]), Child.LineNo);
     end;
   end;
@@ -543,22 +557,19 @@ var
   Comp       :TDanteElement;
 begin
   Result := true;
-  if Child.Name = 'echo' then
-    Log('echo', ExpandMacros(Child.attributeValue('message')))
-  else
-  begin
-    Method.Data  := Self;
-    MethodName   := 'Create' + Child.Name;
-    Method.Code  := MethodAddress(MethodName);
-    if Method.Code = nil then
-      Result := False
-    else begin
-      Comp := TCreateElementMethod(Method)();
-      if Comp <> nil then
-        Comp.ParseXML(Child)
-      else
-        Result := false;
-    end;
+
+  Method.Data  := Self;
+  MethodName   := 'Create' + Child.Name;
+  Method.Code  := MethodAddress(MethodName);
+
+  if Method.Code = nil then
+    Result := False
+  else begin
+    Comp := TCreateElementMethod(Method)();
+    if Comp <> nil then
+      Comp.ParseXML(Child)
+    else
+      Result := false;
   end;
 end;
 
@@ -625,18 +636,39 @@ end;
 
 function TDanteElement.BasePath: string;
 begin
-  Result := Project.BasePath;
+  if PathIsAbsolute(BaseDir) then
+    Result := BaseDir
+  else
+    Result := PathConcat(Project.BasePath, BaseDir);
 end;
 
 function TDanteElement.ToAbsolutePath(Path: string): string;
 begin
-  Result := Project.ToAbsolutePath(Path);
+  Result := PathConcat(BasePath, Path);
 end;
 
-function TDanteElement.ToRelativePath(Path: string): string;
+function TDanteElement.ToRelativePath(Path: string; Base :string): string;
 begin
-  Result := WildPaths.ToRelativePath(Path, BasePath);
+  if Base = '' then
+    Base := BasePath;
+  Result := WildPaths.ToRelativePath(Path, ToAbsolutePath(Base));
 end;
+
+function TDanteElement.StringsToSystemPathList(List: TStrings; Base: string): string;
+var
+  i, p  :Integer;
+  Paths :TStringArray;
+begin
+  Result := '';
+  Paths  := nil;
+  for i := 0 to List.Count-1 do
+  begin
+    Paths := CommaTextToArray(List[i]);
+    for p := Low(Paths) to High(Paths) do
+      Result := Result + ';' + ToSystemPath(Paths[p], Base);
+  end;
+end;
+
 
 procedure TDanteElement.AboutToScratchPath(Path: TPath);
 begin
@@ -685,7 +717,12 @@ var
   Lines :TStrings;
   i     :Integer;
 begin
-  Msg := WrapText(Msg, '...@@... ', [' ',#13,#10,#9], 64);
+  Msg := StringReplace(Msg, #13#10,'@@', [rfReplaceAll]);
+  Msg := StringReplace(Msg, #10#13,'@@', [rfReplaceAll]);
+  Msg := StringReplace(Msg, #13,'@@', [rfReplaceAll]);
+  Msg := StringReplace(Msg, #10,'@@', [rfReplaceAll]);
+
+  Msg := WrapText(Msg, '@@   ', [' ',#13,#10,#9,';',','], 66);
   Lines := TStringList.Create;
   try
     JclStrings.StrToStrings(Msg, '@@', Lines);
@@ -694,6 +731,16 @@ begin
   finally
     Lines.Free;
   end;
+end;
+
+function TDanteElement.Log(const Format: string; const Args: array of const; Verbosity: TVerbosityLevel): string;
+begin
+  Log(SysUtils.Format(Format, Args), Verbosity);
+end;
+
+function TDanteElement.Log(Verbosity: TVerbosityLevel; const Format: string; const Args: array of const): string;
+begin
+  Log(Format, Args, Verbosity);
 end;
 
 function TDanteElement.PropertyDefined(Name: string): boolean;
@@ -726,10 +773,9 @@ begin
   Result := WildPaths.ToPath(Path, BasePath);
 end;
 
-function TDanteElement.ToSystemPath(Path: string): string;
+function TDanteElement.ToSystemPath(Path: string; Base :string): string;
 begin
-  Result := ToAbsolutePath(Path);
-  Result := ToRelativePath(Result);
+  Result := ToRelativePath(Path, ToAbsolutePath(Base));
   Result := WildPaths.ToSystemPath(Result);
 end;
 
@@ -746,8 +792,24 @@ end;
 
 function TDanteElement.CreateProperty: TPropertyElement;
 begin
-   Result := TPropertyElement.Create(Self);
+  Result := Project.CreateProperty;
 end;
+
+
+
+
+function TDanteElement.GetBaseDir: string;
+begin
+  Result := FBaseDir;
+end;
+
+procedure TDanteElement.SetBaseDir(Value: string);
+begin
+  FBaseDir := Value;
+end;
+
+
+
 
 { TProject }
 
@@ -757,7 +819,7 @@ begin
   FTargets    := TList.Create;
   FProperties := TStringList.Create;
   FVerbosity  := vlNormal;
-  FRunPath    := ToPath(GetCurrentDir);
+  FRunPath    := ToAbsolutePath(ToPath(GetCurrentDir));
 end;
 
 destructor TProject.Destroy;
@@ -871,7 +933,7 @@ begin
     end;
   end;
   if Result = nil then
-    raise ETargetNotFoundException.Create(Name);
+    raise ETargetNotFoundException.Create(Format('Target "%s" not found',[Name]));
 end;
 
 procedure TProject.BuildSchedule(TargetName: string; Sched: TList);
@@ -911,7 +973,9 @@ end;
 
 procedure TProject.Log(Msg: string; Verbosity :TVerbosityLevel);
 begin
-  if Self.Verbosity >= Verbosity then
+  if Assigned(FOnLog) then
+    FOnLog(Msg, Verbosity)
+  else if Self.Verbosity >= Verbosity then
     writeln(Msg);
 end;
 
@@ -942,11 +1006,9 @@ begin
   except
     on e :ETaskException do
       raise;
-    on e :ETargetException do
-      raise;
     on e :Exception do
     begin
-      Log(vlErrors, Format('%s: %s', [e.ClassName, e.Message]));
+      Log(vlErrors, Format('!ERROR: %s', [e.Message]));
       raise;
     end;
   end;
@@ -967,11 +1029,6 @@ begin
   end;
 end;
 
-function TProject.ToAbsolutePath(SubPath: string): string;
-begin
-  Result := PathConcat(Self.BasePath, SubPath);
-end;
-
 procedure TProject.SetProperties(Value: TStrings);
 begin
   FProperties.Assign(Value);
@@ -979,7 +1036,8 @@ end;
 
 procedure TProject.SetProperty(Name, Value: string);
 begin
-  Properties.Values[Name] := Value;
+  if not PropertyDefined(Name) then
+    Properties.Values[Name] := Value;
 end;
 
 function TProject.PropertyDefined(Name: string): boolean;
@@ -1003,10 +1061,14 @@ end;
 
 procedure TProject.LoadXML(const SystemPath: string);
 var
-  Dom :IDocument;
+  Dom       :IDocument;
+  BuildFile :TPath;
 begin
+  BuildFile := FindBuildFile(ToPath(SystemPath));
   try
-    Dom := MiniDom.ParseToDom(SystemPath);
+    RunPath := SuperPath(BuildFile);
+    ChangeDir(BasePath);
+    Dom := MiniDom.ParseToDom(ToSystemPath(BuildFile));
     Self.DoParseXML(Dom.Root);
   except
     on e:EDanteParseException do
@@ -1061,19 +1123,24 @@ begin
   if PathIsAbsolute(BaseDir) then
     Result := BaseDir
   else
-    Result := PathConcat(FRunPath, BaseDir);
-end;
-
-function TProject.GetBaseDir: string;
-begin
-  Result := WildPaths.ToRelativePath(FBaseDir, FRunPath);
+    Result := PathConcat(RunPath, BaseDir);
 end;
 
 procedure TProject.SetBaseDir(Path: TPath);
 begin
-  FBaseDir := WildPaths.ToRelativePath(Path, FRunPath);
+  SetProperty('basedir', PathConcat(FRunPath, Path));
 end;
 
+function TProject.GetBaseDir: TPath;
+begin
+  Result := PropertyValue('basedir');
+end;
+
+
+procedure TProject.SetInitialBaseDir(Path: TPath);
+begin
+  Properties.Values['basedir'] := PathConcat(RunPath, Path);
+end;
 
 function TProject.ExpandMacros(Value: string): string;
 type
@@ -1102,7 +1169,6 @@ type
   end;
 
 begin
-  Properties.Values['basedir'] := BasePath;
   Result := Value;
   Result := Expand('%{', '}', Result, EnvironmentValue);
   Result := Expand('${', '}', Result, PropertyValue);
@@ -1122,6 +1188,40 @@ begin
   end;
 end;
 
+function TProject.CreateProperty: TPropertyElement;
+begin
+  if FPropertyElement = nil then
+    FPropertyElement := TPropertyElement.Create(Self);
+  Result := FPropertyElement;
+end;
+
+function TProject.FindBuildFile(BuildFile: string): string;
+var
+  Dir :string;
+begin
+  if BuildFile = '' then
+    BuildFile := BuildFileName;
+
+  Result := ToAbsolutePath(BuildFile);
+  Dir    := SuperPath(Result);
+
+  while not IsFile(Result) do
+  begin
+    if IsDir(SuperPath(Dir)) then
+    begin
+      Dir := SuperPath(Dir);
+      Result := PathConcat(Dir, BuildFile)
+    end
+    else
+      break;
+  end;
+
+  if not IsFile(Result) then
+    DanteError(Format('cannot find build file "%s" in "%s": ',[BuildFile, BaseDir]));
+end;
+
+
+
 { TTarget }
 
 procedure TTarget.Build;
@@ -1131,7 +1231,10 @@ begin
   Project.Log;
   Log;
   for i := 0 to TaskCount-1 do
+  begin
     Tasks[i].DoExecute;
+    Project.Log;
+  end;
 end;
 
 constructor TTarget.Create(Owner: TDanteElement);
@@ -1206,7 +1309,7 @@ end;
 
 procedure TTask.Log(Msg: string; Verbosity :TVerbosityLevel);
 begin
-  Project.Log(XMLTag, Msg, Verbosity);
+  Log(XMLTag, Msg, Verbosity);
 end;
 
 function TTask.Target: TTarget;
@@ -1282,6 +1385,16 @@ begin
   for i := Low(TaskClasses) to High(TaskClasses) do
     RegisterTask(TaskClasses[i]);
 end;
+
+function TTask.BasePath: string;
+begin
+  if (Owner = nil) or PathIsAbsolute(BaseDir) then
+    Result := BaseDir
+  else
+    Result := PathConcat((Owner as TDanteElement).BasePath, BaseDir);
+end;
+
+
 
 { TPropertyElement }
 

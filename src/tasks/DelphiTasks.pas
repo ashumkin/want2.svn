@@ -37,6 +37,7 @@ uses
   DanteClasses,
   ExecTasks,
   WildPaths,
+  FileOps,
 
   Collections,
   MiniDom,
@@ -56,7 +57,7 @@ type
   EDelphiNotFoundError   = class(EDelphiTaskError);
   ECompilerNotFoundError = class(EDelphiTaskError);
 
-  TPathComponent = class(TDanteElement)
+  TPathElement = class(TDanteElement)
   protected
     FPath :string;
 
@@ -66,23 +67,23 @@ type
   protected
   end;
 
-  TUnitComponent     = class(TPathComponent)
+  TUnitElement     = class(TPathElement)
     procedure SetPath(Value :string); override;
   end;
 
-  TResourceComponent  = class(TPathComponent)
+  TResourceElement  = class(TPathElement)
     procedure SetPath(Value :string); override;
   end;
 
-  TIncludeComponent  = class(TPathComponent)
+  TIncludeElement  = class(TPathElement)
     procedure SetPath(Value :string); override;
   end;
 
   TDelphiCompileTask = class(TCustomExecTask)
   protected
-    FExesPath      :string;
+    FExesPath :string;
     FDCUPath  :string;
-    FSource          :string;
+    FSource   :string;
 
     FQuiet           :boolean;
     FMake            :boolean;
@@ -110,11 +111,13 @@ type
     procedure Execute;  override;
   published
 
-    // published methods for creating sub components
+    property basedir; // from TTask
+
+    // published methods for creating sub Elements
     // these methods are mapped to XML elements
-    function CreateUnit     :TUnitComponent;
-    function CreateResource :TResourceComponent;
-    function CreateInclude  :TIncludeComponent;
+    function CreateUnit     :TUnitElement;
+    function CreateResource :TResourceElement;
+    function CreateInclude  :TIncludeElement;
 
     // these properties are mapped to XML attributes
     property Arguments;
@@ -131,7 +134,7 @@ type
     property optimize :boolean read FOptimize write FOptimize;
     property debug    :boolean read FDebug    write FDebug;
 
-    property source :string read FSource write FSource;
+    property source  :string read FSource     write FSource;
   end;
 
 implementation
@@ -165,11 +168,16 @@ begin
   RequireAttribute('source', source);
 end;
 
+
+
 procedure TDelphiCompileTask.Execute;
 begin
   Log(ToRelativePath(Source));
+  Log(vlVerbose, BuildCmdLine);
   inherited Execute;
 end;
+
+
 
 function TDelphiCompileTask.FindCompiler: string;
 begin
@@ -248,19 +256,19 @@ begin
     Result := Result + ' -R' + StringsToSystemPathList(FIncludePaths);
 end;
 
-function TDelphiCompileTask.createUnit: TUnitComponent;
+function TDelphiCompileTask.createUnit: TUnitElement;
 begin
-  Result := TUnitComponent.Create(Self);
+  Result := TUnitElement.Create(Self);
 end;
 
-function TDelphiCompileTask.CreateResource: TResourceComponent;
+function TDelphiCompileTask.CreateResource: TResourceElement;
 begin
-  Result := TResourceComponent.Create(Self);
+  Result := TResourceElement.Create(Self);
 end;
 
-function TDelphiCompileTask.CreateInclude: TIncludeComponent;
+function TDelphiCompileTask.CreateInclude: TIncludeElement;
 begin
-  Result := TIncludeComponent.Create(Self);
+  Result := TIncludeElement.Create(Self);
 end;
 
 procedure TDelphiCompileTask.SetExes(Value: string);
@@ -268,23 +276,23 @@ begin
   FExesPath := Value;
 end;
 
-{ TUnitComponent }
+{ TUnitElement }
 
-procedure TUnitComponent.SetPath(Value: string);
+procedure TUnitElement.SetPath(Value: string);
 begin
   (Owner as TDelphiCompileTask).FUnitPaths.Add(Value);
 end;
 
-{ TResourceComponent }
+{ TResourceElement }
 
-procedure TResourceComponent.SetPath(Value: string);
+procedure TResourceElement.SetPath(Value: string);
 begin
   (Owner as TDelphiCompileTask).FResourcePaths.Add(Value);
 end;
 
-{ TIncludeComponent }
+{ TIncludeElement }
 
-procedure TIncludeComponent.SetPath(Value: string);
+procedure TIncludeElement.SetPath(Value: string);
 begin
   (Owner as TDelphiCompileTask).FIncludePaths.Add(Value);
 end;
