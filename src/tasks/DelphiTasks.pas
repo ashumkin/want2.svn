@@ -108,7 +108,7 @@ type
 
     class function XMLTag: string; override;
 
-    procedure Validate; override;
+    procedure Init; override;
     procedure Execute;  override;
 
     procedure AddUnitPath(Path: TPath);
@@ -145,12 +145,14 @@ type
   TIncVerRcTask = class(TTask)
   private
     FRcFileName: string;
+    FIncrement:  boolean;
   public
     procedure Execute; override;
-    procedure Validate; override;
+    procedure Init; override;
     class function XMLTag: string; override;
   published
-    property rcfilename: string read FRcFileName write FRcFileName;
+    property rcfilename: string  read FRcFileName write FRcFileName;
+    property increment:  boolean read FIncrement  write FIncrement;
   end;
 
 implementation
@@ -178,9 +180,9 @@ begin
   inherited Destroy;
 end;
 
-procedure TDelphiCompileTask.Validate;
+procedure TDelphiCompileTask.Init;
 begin
-  inherited Validate;
+  inherited Init;
   RequireAttribute('basedir');
   RequireAttribute('source');
 end;
@@ -347,16 +349,31 @@ begin
   Log('Incrementing build in ' + ToRelativePath(FRcFileName));
   FclVerRc := TclVersionRc.Create(ToSystemPath(FRcFileName));
   try
-    FclVerRc.IncBuild;
-    Project.SetProperty('build', IntToStr(FclVerRc.VersionInfo.Build));
+    if increment then
+      FclVerRc.IncBuild;
   finally
     FclVerRc.Free;
   end;
 end;
 
-procedure TIncVerRcTask.Validate;
+procedure TIncVerRcTask.Init;
+var
+  FclVerRc: TclVersionRc;
+  BuildNo:  Integer;
 begin
+  inherited Init;
+
   RequireAttribute('rcfilename');
+
+  FclVerRc := TclVersionRc.Create(ToSystemPath(FRcFileName));
+  try
+    BuildNo := FclVerRc.VersionInfo.Build;
+    if increment then
+      Inc(BuildNo);
+    Project.SetProperty('build', IntToStr(BuildNo));
+  finally
+    FclVerRc.Free;
+  end;
 end;
 
 class function TIncVerRcTask.XMLTag: string;
