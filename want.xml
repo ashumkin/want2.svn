@@ -65,7 +65,6 @@ See http://www.suigeneris.org/want/ for details.
     <echo message="version=${version}" />
     <regexp property="comma.version" pattern="\." subst="," text="${version}" />
     <echo input="${src}/wantver.template.rc" file="${src}/wantver.rc" />
-    <echo input="${doc}/index.template.html" file="${doc}/index.html" />
   </target>
 
   <target name="resources" depends="prepare,versioninfo" >
@@ -139,7 +138,11 @@ See http://www.suigeneris.org/want/ for details.
     <dunit testlib="${bin}/${test.app}" />
  </target>
 
- <target name="dist" depends="clean,prepare,compile,test,changelog,package" /> 
+ <target name="dist" depends="clean,compile,test,changelog,package,publish" />
+
+ <target name="publish" >
+   <echo input="${doc}/index.template.html" file="${doc}/index.html" />
+ </target>
          
  <target name="zip" depends="package" />
 
