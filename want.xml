@@ -279,8 +279,8 @@ See http://www.suigeneris.org/want/ for details.
   <target name="tarball">
     <exec executable="wget">
       <arg value="--quiet" />
-      <arg value="--output-document=@{want-cvs-${date.tag}.tar.gz}" />
-      <arg value="http://cvs.sourceforge.net/cvstarballs/want-cvsroot.tar.gz" />
+      <arg value="--output-document=@{want-cvs-${date.tag}.tar.bz2}" />
+      <arg value="http://cvs.sourceforge.net/cvstarballs/want-cvsroot.tar.bz2" />
     </exec>
   </target>
 </project>
