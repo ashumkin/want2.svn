@@ -391,6 +391,8 @@ begin
   inherited Init;
   if value = '' then
   begin
+    if GetAttribute('path') = '' then
+      RequireAttribute('value');
     RequireAttribute('path');
     value := ToSystemPath(path.asString);
   end;
