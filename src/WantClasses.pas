@@ -208,6 +208,7 @@ type
     FDefaultTarget: string;
     FVerbosity:     TVerbosityLevel;
     FRunPath:       string;
+    FRunPathSet:    boolean;
     FDescription:   string;
 
     FOnLog: TLogMethod;
@@ -221,6 +222,8 @@ type
 
     procedure SetBaseDir(Path: TPath);  override;
     function  GetBaseDir: TPath;        override;
+
+    procedure SetRunPath(Path :TPath);
 
   public
     constructor Create(Owner: TDanteElement = nil); override;
@@ -263,7 +266,7 @@ type
 
     procedure Log(Msg: string = ''; Verbosity: TVerbosityLevel = vlNormal); override;
 
-    property RunPath: string read FRunPath write FRunPath;
+    property RunPath: string read FRunPath write SetRunPath;
 
     property Targets[i: Integer]: TTarget             read GetTarget; default;
     property TargetNames[TargetName: string]: TTarget read GetTargetByName;
@@ -553,6 +556,7 @@ var
   elem : MiniDom.IElement;
   text : MiniDom.ITextNode;
 begin
+  Log(vlDebug, 'Parsing %s', [Node.Name]);
   if Node.Name <> Self.XMLTag then
     ParseError(Format('XML tag of class <%s> is <%s> but found <%s>',
                       [ClassName, XMLTag, NOde.Name]
@@ -575,6 +579,7 @@ begin
     end;
   end;
 
+  Log(vlDebug, 'Init, BasePath ="%s"', [BasePath]);
   ChangeDir(BasePath);
   Self.Init;
 
@@ -1015,7 +1020,9 @@ begin
   inherited Create(Owner);
   FTargets    := TList.Create;
   FVerbosity  := vlNormal;
+
   FRunPath    := CurrentDir;
+  FRunPathSet := False;
 end;
 
 destructor TProject.Destroy;
@@ -1277,8 +1284,9 @@ begin
   if FindFile then
     BuildFile := FindBuildFile(BuildFile);
   try
-    if RunPath = '' then
+    if not FRunPathSet then
       RunPath := SuperPath(ToAbsolutePath(BuildFile));
+    Log(vlDebug, 'Runpath="%s"', [ RunPath ] );
     ChangeDir(BasePath);
     Dom := MiniDom.ParseToDom(ToSystemPath(BuildFile));
     Self.DoParseXML(Dom.Root);
@@ -1344,6 +1352,11 @@ begin
   Result := WildPaths.ToRelativePath(PropertyValue('basedir'), FRunPath);
 end;
 
+procedure TProject.SetRunPath(Path: TPath);
+begin
+  FRunPath := Path;
+  FRunPathSet := True;
+end;
 
 procedure TProject.SetInitialBaseDir(Path: TPath);
 begin
@@ -1394,6 +1407,7 @@ function TProject.CreatePatternSet: TPatternSet;
 begin
   Result := TPatternSet.Create(Self);
 end;
+
 
 
 { TTarget }
