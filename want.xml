@@ -154,7 +154,7 @@ See http://www.suigeneris.org/want/ for details.
     <dunit testlib="${bin}/${test.app}" />
  </target>
 
- <target name="dist" depends="clean,compile,test,changelog,package,publish" />
+ <target name="dist" depends="clean,compile,test,changelog,tag,package,publish" />
 
  <target name="publish" >
    <echo input="${doc}/index.template.html" file="${doc}/index.html" />
@@ -212,6 +212,12 @@ See http://www.suigeneris.org/want/ for details.
          <arg value="--prune" />
      </exec>
   </target>
+
+  <target name="tag">
+     <regexp   property="cvs.tag" text="build_${version}" pattern="\." subst="_" />
+     <exec  executable="cvs rtag -R -F ${cvs.tag} ." />
+  </target>
+
 
   <target name="tarball" >
     <exec executable="wget">
