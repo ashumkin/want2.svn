@@ -24,7 +24,7 @@
     @author Dan Hughes <dan@multiedit.com>
     @author Ignacio J. Ortega
 }
-{ TODO -oGJD -cTODO : 
+{ TODO -oGJD -cTODO :
   Add handling of:
   -$A: Align on/off/1/2/4/8
   -$X: Extended Syntax
@@ -180,7 +180,7 @@ type
     FBoolEval       : boolean;
     FTypedAddress   : boolean;
     FStackFrames    : boolean;
-    FWritableConst  : boolean;
+    FWriteableConst : boolean;
     FMap            : TMapType;
     FMinEnumSize    : integer;
     FUseDebugDCUs   : boolean;
@@ -272,7 +272,7 @@ type
     property hugestrings    :boolean read FHugeStrings    write FHugeStrings    default true;
     property typedaddress   :boolean read FTypedAddress   write FTypedAddress   default false;
     property stackframes    :boolean read FStackFrames    write FStackFrames    default false;
-    property writableconst  :boolean read FWritableConst  write FWritableConst  default false;
+    property writeableconst :boolean read FWriteableConst write FWriteableConst default false;
     property usedebugdcu    :boolean read FUseDebugDCUs   write FUseDebugDCUs   default false;
     property minenumsize    :integer read FMinEnumSize    write FMinEnumSize    default 1;
     property safedivide     :boolean read FSafeDivide     write FSafeDivide     default false;
@@ -534,7 +534,7 @@ begin
   FHugeStrings := true;
   FTypedAddress := false;
   FStackFrames := false;
-  FWritableConst := false;
+  FWriteableConst := false;
   FUseDebugDCUs := false;
   FMinEnumSize := 1;
   FSafeDivide := false;
@@ -888,11 +888,11 @@ begin
       Result := Result + ' -$W-';
   end;
 
-  if HasAttribute('writableconst') then
+  if HasAttribute('writeableconst') then
   begin
-    if writableconst then
+    if writeableconst then
     begin
-      Log(vlVerbose, 'writableconst=true');
+      Log(vlVerbose, 'writeableconst=true');
       Result := Result + ' -$J+';
     end
     else
