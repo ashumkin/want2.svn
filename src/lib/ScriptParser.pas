@@ -86,7 +86,12 @@ begin
     while i.HasNext do
     begin
       with i.Next as IAttribute do
-          Result.Values[Name] := Value;
+      begin
+          if Value <> '' then
+            Result.Values[Name] := Value
+          else
+            Result.Add(Name + '='); 
+      end;
     end;
 
     s := '';

@@ -619,7 +619,9 @@ begin
       Self.Init;
     except
       on e :Exception do
-         WantError(Format('(%d:%d) could not configure <%s>: %s', [Line, Column, TagName, e.Message]));
+         WantError(Format('(%d:%d) could not configure <%s>: %s',
+                          [Line, Column, TagName, e.Message]
+                          ));
     end;
 
     for i := 0 to ChildCount-1 do
@@ -690,7 +692,10 @@ end;
 function TScriptElement.SetAttribute(Name, Value: string): boolean;
 begin
   Log(vlDebug, 'attribute %s="%s"', [Name,Value]);
-  FAttributes.Values[Name] := Value;
+  if Value <> '' then
+     FAttributes.Values[Name] := Value
+  else
+     FAttributes.Add(Name+'=');
   Result := true;
 end;
 
@@ -832,7 +837,8 @@ begin
   Names := StringToArray(Name, '|', ttBoth);
   for i := 0 to High(Names) do
   begin
-    if GetAttribute(Names[i]) <> '' then
+    if HasAttribute(Names[i])
+    or (GetAttribute(Names[i]) <> '') then
     begin
       AttributeFound := true;
       break;

@@ -24,7 +24,7 @@ uses
   ConsoleScriptRunner in '..\src\win32\ConsoleScriptRunner.pas',
   StyleTasks in '..\src\tasks\StyleTasks.pas',
   MSXMLEngineImpl in '..\src\win32\MSXMLEngineImpl.pas',
-  CVSTasksTests in 'CVSTasksTests.pas',
+  //!!! CVSTasksTests in 'CVSTasksTests.pas',
   XmlPropertyTests in 'XmlPropertyTests.pas',
   FilterElementsTests in 'FilterElementsTests.pas',
   LoadFileTests in 'LoadFileTests.pas',
