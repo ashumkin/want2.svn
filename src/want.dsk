@@ -11,12 +11,6 @@ MaxTop=-1
 ClientWidth=804
 ClientHeight=78
 
-[BreakpointWindow]
-Column0Width=100
-Column1Width=75
-Column2Width=225
-Column3Width=40
-
 [CallStackWindow]
 Create=1
 Visible=1
@@ -59,13 +53,19 @@ File_5=SourceModule,'C:\home\want\src\win32\WIN32.pas',0,1,1,1,1,0,0
 File_6=SourceModule,'c:\lib\pascal\jcl\source\JclSysInfo.pas',0,1,30,1,30,0,0
 
 [Modules]
-Module0=C:\home\want\src\win32\ConsoleScriptRunner.pas
-Module1=C:\home\want\src\WantResources.pas
-Module2=C:\home\want\src\ScriptRunner.pas
-Module3=C:\home\want\src\lib\ScriptParser.pas
-Module4=C:\home\want\src\WantClasses.pas
-Count=5
+Module0=C:\home\want\src\tasks\ExecTasks.pas
+Module1=C:\home\want\src\win32\ConsoleScriptRunner.pas
+Module2=C:\home\want\src\WantResources.pas
+Module3=C:\home\want\src\ScriptRunner.pas
+Module4=C:\home\want\src\lib\ScriptParser.pas
+Module5=C:\home\want\src\WantClasses.pas
+Count=6
 EditWindowCount=1
+
+[C:\home\want\src\tasks\ExecTasks.pas]
+ModuleType=SourceModule
+FormState=0
+FormOnTop=0
 
 [C:\home\want\src\win32\ConsoleScriptRunner.pas]
 ModuleType=SourceModule
@@ -129,13 +129,14 @@ RightPanelSize=0
 BottomPanelSize=0
 BottomPanelClients=MessageView@EditWindow0
 BottomPanelData=00000400010000000B0000004D657373616765566965770000000000000000000000000000000000FFFFFFFF
-ViewCount=5
-CurrentView=0
+ViewCount=6
+CurrentView=1
 View0=0
 View1=1
 View2=2
 View3=3
 View4=4
+View5=5
 
 [CodeExplorer@EditWindow0]
 Create=1
@@ -171,33 +172,40 @@ Dockable=1
 
 [View0]
 Module=C:\home\want\src\win32\ConsoleScriptRunner.pas
-CursorX=22
-CursorY=196
+CursorX=42
+CursorY=170
 TopLine=169
 LeftCol=1
 
 [View1]
+Module=C:\home\want\src\tasks\ExecTasks.pas
+CursorX=1
+CursorY=213
+TopLine=201
+LeftCol=1
+
+[View2]
 Module=C:\home\want\src\WantResources.pas
 CursorX=1
 CursorY=41
 TopLine=1
 LeftCol=1
 
-[View2]
+[View3]
 Module=C:\home\want\src\WantClasses.pas
 CursorX=1
 CursorY=470
 TopLine=444
 LeftCol=1
 
-[View3]
+[View4]
 Module=C:\home\want\src\lib\ScriptParser.pas
 CursorX=1
 CursorY=166
 TopLine=141
 LeftCol=1
 
-[View4]
+[View5]
 Module=C:\home\want\src\ScriptRunner.pas
 CursorX=1
 CursorY=97
@@ -216,10 +224,9 @@ Watch3='Matches[i]',256,0,18,1
 Watch4='FIncludes[i]',256,0,18,1
 
 [Breakpoints]
-Count=3
-Breakpoint0='C:\home\want\src\tasks\ExecTasks.pas',214,'',0,1
-Breakpoint1='C:\home\want\src\win32\ConsoleScriptRunner.pas',106,'',0,1
-Breakpoint2='C:\home\want\src\win32\ConsoleScriptRunner.pas',113,'',0,1
+Count=2
+Breakpoint0='C:\home\want\src\win32\ConsoleScriptRunner.pas',106,'',0,1
+Breakpoint1='C:\home\want\src\win32\ConsoleScriptRunner.pas',113,'',0,1
 
 [AddressBreakpoints]
 Count=0

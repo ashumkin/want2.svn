@@ -207,7 +207,12 @@ begin
 
   Child := ChildProcessClass.Create;
   try
-    Child.Run(CmdLine);
+    try
+      Child.Run(CmdLine);
+    except
+      on e :Exception do
+        TaskFailure(e.Message, ExceptAddr);
+    end;
     HandleOutput(Child);
     if (Child.ExitCode <> 0) and FailOnError then
     begin
