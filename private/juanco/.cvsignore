@@ -2,3 +2,5 @@
 *.dsk
 *.dcu
 *.cfg
+*.dof
+*.res
