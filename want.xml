@@ -2,10 +2,13 @@
 <!-- This is the Dante script for building Dante -->
 <project name="dante"
          basedir=".."
-         default="compile" >
+         default="dist" >
 
-  <target name="prepare" >
+  <target name="clean" >
     <delete dir=".\dist" />
+  </target>
+
+  <target name="prepare" depends="clean" >
   </target>
 
   <target name="compile" depends="prepare" >
@@ -23,14 +26,10 @@
     </dcc>
   </target>
 
-
-  <target name="clean" >
-    <shell executable="del"   arguments=".\dist\*" />
-    <shell executable="rmdir" arguments=".\dist"    />
-  </target>
-  <target name="dist" >
+  <target name="dist" depends="compile" >
     <shell executable="mkdir" arguments=".\dist" />
-    <shell executable="copy"  arguments=".\src\dante.exe ..\dist\dante.exe"  />
+    <shell executable="copy"  arguments=".\src\dante.exe .\dist\dante.exe"  />
+    <exec executable=".\make\zip.exe" arguments="-m .\make\dante.zip .\dist\dante.exe" />
   </target>
 
 </project>
