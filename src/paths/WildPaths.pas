@@ -77,6 +77,7 @@ type
   EWildPathsException = class(Exception);
   EWildPathsError     = class(EWildPathsException);
 
+function IsSystemIndependentPath(const Path :TPath) :boolean;
 procedure AssertIsSystemIndependentPath(const Path :TPath);
 
 function PathConcat(const Path1, Path2 :TPath) :TPath;
@@ -127,6 +128,11 @@ uses
 procedure Wild(Files :TStrings; const Patterns :TPatterns; const BasePath: TPath = ''; Index :Integer = 0);
   overload; forward;
 
+
+function IsSystemIndependentPath(const Path :TPath) :boolean;
+begin
+  Result := ( Pos(SystemPathDelimiter, Path) = 0 );
+end;
 
 procedure AssertIsSystemIndependentPath(const Path :TPath);
 begin

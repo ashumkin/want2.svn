@@ -72,7 +72,7 @@ type
   TPatternSet = class;
 
   EDanteException   = class(Exception);
-  EDanteError       = class(Exception);
+  EDanteError       = class(EDanteException);
   ETargetException  = class(EDanteException);
   ETaskException    = class(EDanteException);
 
@@ -326,7 +326,7 @@ type
     function BasePath: string; override;
     function Target: TTarget;
 
-    procedure Execute; virtual; abstract;
+    procedure Execute; virtual; 
     procedure Log(Msg: string = ''; Verbosity: TVerbosityLevel = vlNormal); override;
 
     property Name stored False;
@@ -987,7 +987,12 @@ begin
     with PropInfo^, PropType^^ do
     begin
       if Kind in [tkString, tkLString, tkWString] then
-        SetStrProp(Self, PropInfo, Value)
+      begin
+        if (PropType^^.Name = 'TPath')
+        and not WildPaths.IsSystemIndependentPath(Value) then
+          DanteError(Format('expected system-independent path but got: "%s"', [Value]) );
+        SetStrProp(Self, PropInfo, Value);
+      end
       else if Kind in [tkInteger] then
         SetOrdProp(Self, PropInfo, StrToInt(Value))
       else if Kind in [tkEnumeration] then
@@ -1589,6 +1594,11 @@ begin
 end;
 
 
+
+procedure TTask.Execute;
+begin
+  // do nothing
+end;
 
 { TPropertyElement }
 

@@ -92,7 +92,22 @@ type
   TPropertyTests = class(TProjectBaseCase)
   published
     procedure TestLocalProperties;
+    procedure TestValidPath;
+    procedure TestInvalidPath;
   end;
+
+  TTestDanteElement = class(TProjectBaseCase)
+  private
+    FDanteElement: TDanteElement;
+  public
+    procedure Setup; override;
+    procedure TearDown; override;
+  published
+    procedure TestDanteElementPaths;
+  end;
+
+
+  // tasks used in tests
 
   TDummyTask1 = class(TTask)
   public
@@ -125,16 +140,12 @@ type
     property actual   :string read FActual   write FActual;
   end;
 
-  TTestDanteElement = class(TProjectBaseCase)
-  private
-    FDanteElement: TDanteElement;
-  public
-    procedure Setup; override;
-    procedure TearDown; override;
+  TWithPathTask = class(TTask)
+  protected
+    FPath :TPath;
   published
-    procedure TestDanteElementPaths;
+    property path :TPath read FPath write FPath;
   end;
-
 
 implementation
 
@@ -423,6 +434,42 @@ begin
   FProject.Build;
 end;
 
+procedure TPropertyTests.TestValidPath;
+const
+  build_xml = ''
+  +#10'<project name="test" default="dotest" >'
+  +#10'  <target name="dotest">'
+  +#10'    <withpath path="/c:/a/valid/path" />'
+  +#10'  </target>'
+  +#10'</project>'
+  +'';
+begin
+  FProject.ParseXMLText(build_xml);
+  FProject.Build;
+end;
+
+procedure TPropertyTests.TestInvalidPath;
+const
+  build_xml = ''
+  +#10'<project name="test" default="dotest" >'
+  +#10'  <target name="dotest">'
+  +#10'    <withpath path="c:\awindows\path" />'
+  +#10'  </target>'
+  +#10'</project>'
+  +'';
+begin
+  try
+    FProject.ParseXMLText(build_xml);
+    FProject.Build;
+    fail('expected exception about invalid path')
+  except
+    on e :EDanteParseException do
+    begin
+    end;
+  end;
+end;
+
+
 { TTestDanteElement }
 
 procedure TTestDanteElement.Setup;
@@ -453,7 +500,11 @@ begin
 end;
 
 initialization
-  RegisterTasks([TDummyTask1, TDummyTask2, TDummyTask3, TCompareValuesTask]);
+  RegisterTasks([ TDummyTask1,
+                  TDummyTask2,
+                  TDummyTask3,
+                  TCompareValuesTask,
+                  TWithPathTask]);
 
   RegisterTests('Dante Classes', [
              TSaveProjectTests.Suite,
