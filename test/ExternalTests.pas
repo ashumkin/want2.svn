@@ -79,7 +79,8 @@ uses
   DanteMain,
   JclMiscel,
   JclShell,
-  WildPaths;
+  WildPaths,
+  DanteClasses;
 
 procedure LoadTests;
 var
@@ -156,7 +157,7 @@ var
 begin
   Dante := TDante.Create;
   try
-    Dante.DoBuild(FTestExeSetupDir + BuildFileName);
+    Dante.DoBuild(FTestExeSetupDir + BuildFileName, vlVerbose);
   finally
     Dante.Free;
   end;
