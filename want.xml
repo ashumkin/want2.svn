@@ -248,17 +248,6 @@ See http://www.suigeneris.org/want/ for details.
     </ini>
   </target>
 
-  <!--target name="changelog" >
-     <exec executable="perl" >
-         <arg path="tools/cvs2cl.pl" />
-         <arg value="--file ChangeLog" />
-         <arg value="--tags" />
-         <arg value="--utc" />
-         <arg value="--window 604800" />
-         <arg value="--prune" />
-     </exec>
-  </target-->
-
   <target name="changelog">
     <cvschangelog
         destfile="changelog.xml"
@@ -272,6 +261,7 @@ See http://www.suigeneris.org/want/ for details.
   </target>
 
   <target name="tag">
+    <cvs command="commit release.ini"/>
     <regexp property="cvs.tag" text="build_${version}" pattern="\."   subst="_" />
     <cvs command="rtag -R -F ${cvs.tag} ." />
   </target>
