@@ -95,6 +95,7 @@ type
     FBuild          : boolean;
     FOptimize       : boolean;
     FDebug          : boolean;
+    FConsole        : boolean;
 
     FUnitPaths      : TStrings;
     FResourcePaths  : TStrings;
@@ -140,7 +141,8 @@ type
     property build: boolean read FBuild write FBuild;
 
     property optimize: boolean read FOptimize write FOptimize;
-    property debug: boolean read FDebug write FDebug;
+    property debug:    boolean read FDebug    write FDebug;
+    property console:  boolean read FConsole  write FConsole;
 
     property source : string read FSource     write FSource;
   end;
@@ -209,7 +211,7 @@ begin
   FResourcePaths  := TStringList.Create;
   FIncludePaths   := TStringList.Create;
 
-  self.Executable := ToDantePath(FindCompiler);
+  self.Executable := WildPaths.ToPath(FindCompiler);
 end;
 
 destructor TDelphiCompileTask.Destroy;
@@ -284,6 +286,11 @@ begin
     Result := Result + ' -V -$D+ -$L+ -GD'
   else
     Result := Result + ' -V- -$D-';
+
+  if console then
+    Result := Result + ' -CC'
+  else
+    Result := Result + ' -CG';
 
 
   if FUnitPaths.Count > 0 then
