@@ -53,23 +53,32 @@ type
   protected
     FOS: string;
     FExecutable: string;
-    FArguments: TStringList;
+    FArguments: TStrings;
 
     function BuildCmdLine: string; virtual;
+
+    function  GetArguments :string;
+    procedure SetArguments(Value :string);
+    procedure SetArgumentList(Value :TStrings);
   public
     constructor Create(Owner: TComponent); override;
     destructor Destroy; override;
+    class function XMLTag :string; override;
 
     procedure Execute; override;
   protected
-    property Arguments: TStringList read FArguments write FArguments;
-    property Executable: string read FExecutable write FExecutable;
-    property OS: string read FOS write FOS;
+    property Arguments: string      read GetArguments write SetArguments;
+    property ArgumentList: TStrings read FArguments   write SetArgumentList stored False;
+    property Executable: string     read FExecutable  write FExecutable;
+    property OS: string read FOS    write FOS;
   end;
 
   TExecTask = class(TCustomExecTask)
+  public
+    class function XMLTag :string; override;
   published
     property Arguments;
+    property ArgumentList stored False;
     property Executable;
     property OS;
   end;
@@ -78,6 +87,8 @@ type
   TShellExecTask = class(TExecTask)
   protected
     function BuildCmdLine: string; override;
+  public
+    class function XMLTag :string; override;
   end;
 
 
@@ -91,8 +102,8 @@ var
 begin
   Result := Executable;
   { Arguments.CommaText screws with the contents. See unit test }
-  for i := 0 to Arguments.Count - 1 do
-    Result := Result + ' ' + Arguments[i];
+  for i := 0 to ArgumentList.Count - 1 do
+    Result := Result + ' ' + ArgumentList[i];
 end;
 
 constructor TCustomExecTask.Create(Owner: TComponent);
@@ -125,6 +136,34 @@ begin
 end;
 
 
+function TCustomExecTask.GetArguments: string;
+begin
+  Result := FArguments.CommaText;
+end;
+
+procedure TCustomExecTask.SetArguments(Value: string);
+begin
+  FArguments.CommaText := Value;
+end;
+
+procedure TCustomExecTask.SetArgumentList(Value: TStrings);
+begin
+  FArguments.Assign(Value);
+end;
+
+class function TCustomExecTask.XMLTag: string;
+begin
+  result := 'custom_exec';
+end;
+
+{ TExecTask }
+
+class function TExecTask.XMLTag: string;
+begin
+  result := 'exec';
+end;
+
+
 { TShellExecTask }
 
 function TShellExecTask.BuildCmdLine: string;
@@ -134,6 +173,11 @@ begin
     Result := 'cmd.exe /c ' + Result
   else
     Result := 'command.com /c ' + Result;
+end;
+
+class function TShellExecTask.XMLTag: string;
+begin
+  Result := 'shell';
 end;
 
 initialization
