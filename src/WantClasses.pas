@@ -327,12 +327,15 @@ type
     procedure TaskFailure(const Msg: string; Addr :Pointer = nil);
     procedure TaskError(Msg: string = ''; Addr :Pointer = nil);
     procedure WantError(Msg: string = ''; Addr :Pointer = nil); override;
+
+    procedure Execute; virtual;
   public
     class function TagName: string; override;
 
     function  Target: TTarget;
 
-    procedure Execute; virtual;
+    procedure DoExecute; 
+
     property Name stored False;
   published
   end;
@@ -730,7 +733,7 @@ end;
 procedure TScriptElement.AboutToScratchPath(const Path: TPath);
 begin
   if  PathExists(Path)
-  and (Pos(ToAbsolutePath(BasePath), ToAbsolutePath(Path)) <> 1)
+  and (Pos(LowerCase(ToAbsolutePath(BasePath)), LowerCase(ToAbsolutePath(Path))) <> 1)
   then
     WantError(Format('Will not scratch %s outside of %s',
                          [ToSystemPath(Path), ToSystemPath(BasePath)]
@@ -1058,7 +1061,7 @@ begin
       if Kind in [tkString, tkLString, tkWString] then
       begin
         if (Name = 'TPath') then
-           Value := WildPaths.ToPath(Value);
+           Value := ToRelativePath(Value);
         SetStrProp(Self, PropInfo, Value);
       end
       else if Kind in [tkInteger] then
@@ -1397,6 +1400,19 @@ procedure TTask.WantError(Msg: string; Addr: Pointer);
 begin
   //Log(vlErrors, Msg);
   inherited;
+end;
+
+procedure TTask.DoExecute;
+var
+  LastDir: TPath;
+begin
+  LastDir := CurrentDir;
+  try
+    ChangeDir(BasePath);
+    Execute;
+  finally
+    ChangeDir(LastDir);
+  end;
 end;
 
 { TCustomAttributeElement }
