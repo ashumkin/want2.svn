@@ -718,7 +718,7 @@ end;
 procedure TScriptElement.AboutToScratchPath(const Path: TPath);
 begin
   if  PathExists(Path)
-  and (Pos('..', ToRelativePath(Path)) <> 0)
+  and (Pos(BasePath, ToAbsolutePath(Path)) <> 1)
   then
     WantError(Format('Will not scratch %s outside of %s',
                          [ToSystemPath(Path), ToSystemPath(BasePath)]
@@ -785,9 +785,23 @@ begin
 end;
 
 procedure TScriptElement.RequireAttribute(Name: string);
+var
+  AttributeFound :boolean;
+  Names          :TStringDynArray;
+  i              :Integer;
 begin
-  if GetAttribute(Name) = '' then
-    AttributeRequiredError(Name);
+  AttributeFound := false;
+  Names := StringToArray(Name, '|', ttBoth);
+  for i := 0 to Length(Names) do
+  begin
+    if GetAttribute(Names[i]) <> '' then
+    begin
+      AttributeFound := true;
+      break;
+    end;
+  end;
+  if not AttributeFound then
+      AttributeRequiredError(Name);
 end;
 
 procedure TScriptElement.RequireAttributes(Names: array of string);
@@ -1015,7 +1029,7 @@ begin
       if Kind in [tkString, tkLString, tkWString] then
       begin
         if (Name = 'TPath') then
-           Value := ToWantPath(Value);
+           Value := WildPaths.ToPath(Value);
         SetStrProp(Self, PropInfo, Value);
       end
       else if Kind in [tkInteger] then
