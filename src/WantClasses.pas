@@ -124,6 +124,9 @@ type
     procedure Log(Msg :string = ''; Verbosity :TVerbosityLevel = vlNormal); overload; virtual;
     procedure Log(Verbosity :TVerbosityLevel; Msg :string = ''); overload;
     procedure Log(Tag :string; Msg :string; Verbosity :TVerbosityLevel = vlNormal); overload; virtual;
+
+    procedure RequireAttribute(Name :string; Value :string);
+    procedure AttributeRequiredError(AttName :string);
   public
     constructor Create(Owner: TComponent);    overload; override;
     constructor Create(Owner: TDanteElement); reintroduce; overload; virtual;
@@ -133,7 +136,7 @@ type
     procedure ParseXML(Node :MiniDom.IElement);               virtual;
     function  ParseXMLChild(Child :MiniDom.IElement):boolean; virtual;
     procedure ParseError(Msg :string; Line :Integer);
-    procedure Validate;                              virtual;
+    procedure Validate;                                       virtual;
 
     function  AsXML     :string;                virtual;
     function  ToXML(Dom :IDocument) : IElement; virtual;
@@ -356,7 +359,6 @@ begin
    raise ETaskFailure.Create(Msg);
 end;
 
-
 { TDanteElement }
 
 constructor TDanteElement.Create(Owner: TDanteElement);
@@ -464,6 +466,8 @@ begin
     end;
   end;
 
+  Self.Validate;
+
   i := Node.Children.Iterator;
   while i.HasNext do
   begin
@@ -479,8 +483,6 @@ begin
         ParseError(Format('Element <%s> does not accept text', [XMLTag]), Child.LineNo);
     end;
   end;
-
-  Validate;
 end;
 
 function TDanteElement.SetAttribute(Name, Value: string): boolean;
@@ -726,6 +728,17 @@ begin
   Result := ToAbsolutePath(Path);
   Result := ToRelativePath(Result);
   Result := WildPaths.ToSystemPath(Result);
+end;
+
+procedure TDanteElement.AttributeRequiredError(AttName: string);
+begin
+  DanteError(Format('"%s" attribute is required', [AttName]));
+end;
+
+procedure TDanteElement.RequireAttribute(Name, Value: string);
+begin
+  if Value = '' then
+    AttributeRequiredError(Name);
 end;
 
 { TProject }

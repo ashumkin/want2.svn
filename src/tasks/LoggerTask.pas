@@ -43,10 +43,10 @@ type
 
   TInfoElement = class(TDanteElement)
   protected
-    FCode :Integer;
+    FCode :string;
     FText :string;
   published
-    property code :Integer read FCode write FCode;
+    property code :string  read FCode write FCode;
     property text :string  read FText write FText;
   end;
 
@@ -61,7 +61,8 @@ type
 
     class function XMLTag :string; override;
 
-    procedure Execute; override;
+    procedure Validate; override;
+    procedure Execute;  override;
   published
     function CreateInfo :TInfoElement;
 
@@ -96,6 +97,12 @@ begin
   FInfos.Add(Result);
 end;
 
+procedure TLoggerTask.Validate;
+begin
+  inherited Validate;
+  RequireAttribute('file', _file);
+end;
+
 procedure TLoggerTask.Execute;
 var
   LogFile: System.Text;
@@ -113,8 +120,13 @@ begin
       for i := 0 to FInfos.Count-1 do
       begin
         with TInfoElement(FInfos[i]) do
-          Writeln(LogFile, DateTimeToStr(Now),
-                           SysUtils.Format(' (%d) %s', [code, text]));
+          Writeln( LogFile,
+                   SysUtils.Format( '%-20s %12s %s',
+                                     [
+                                     FormatDateTime('yyyy/mm/dd hh:nn:ss', Now),
+                                     '['+code+']',
+                                     text
+                                     ]));
       end;
     finally
       System.Close(LogFile);
@@ -123,6 +135,7 @@ begin
     TaskFailure('could not open log file');
   end;
 end;
+
 
 initialization
   RegisterTask(TLoggerTask);

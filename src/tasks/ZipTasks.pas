@@ -77,8 +77,8 @@ end;
 
 procedure TZipTask.Validate;
 begin
-  if zipfile = '' then
-    TaskError('zipfile attribute not set');
+  inherited Validate;
+  RequireAttribute('zipfile', zipfile);
 end;
 
 procedure TZipTask.Execute;

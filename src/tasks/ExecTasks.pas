@@ -74,6 +74,7 @@ type
     constructor Create(Owner: TDanteElement);  override; 
     destructor Destroy; override;
 
+    procedure Validate; override;
     procedure Execute; override;
   protected
     property Arguments: string      read GetArguments write SetArguments;
@@ -234,6 +235,11 @@ begin
     if LineNo > SkipLines then
       Log(LIne);
   end;
+end;
+
+procedure TCustomExecTask.Validate;
+begin
+  RequireAttribute('executable', Executable);
 end;
 
 { TChildProcess }

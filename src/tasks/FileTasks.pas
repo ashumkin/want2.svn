@@ -72,7 +72,8 @@ type
   protected
     FDir :string;
   public
-    procedure Execute; override;
+    procedure Validate; override;
+    procedure Execute;  override;
   published
     property dir : string read FDir write FDir;
   end;
@@ -81,6 +82,7 @@ type
   protected
     FFile :string;
   public
+    procedure Validate; override;
     procedure Execute; override;
   published
     property _File : string read FFile write FFile;
@@ -94,9 +96,9 @@ type
     procedure SetDir(Value :string);
     procedure SetFile(Value :string);
   public
+    procedure Validate; override;
     procedure Execute; override;
   published
-    {:@TODO: use setters to check that only one of the followint two is ever set }
     property _File :string  read FFile write SetFile stored True;
     property Dir   :string  read FDir  write SetDir;
   end;
@@ -108,6 +110,7 @@ type
     procedure DoPaths(FromPaths, ToPaths :TPaths); virtual;
     procedure DoFiles(FromPath, ToPath :TPath);    virtual; abstract;
   public
+    procedure Validate; override;
     procedure Execute; override;
   published
     property todir  :string read FToDir  write FToDir;
@@ -188,7 +191,15 @@ begin
 end;
 
 
+
 { TMkDirTask }
+
+procedure TMkDirTask.Validate;
+begin
+  inherited Validate;
+  RequireAttribute('dir', dir);
+end;
+
 
 procedure TMkDirTask.Execute;
 begin
@@ -206,6 +217,7 @@ begin
   end;
 end;
 
+
 { TTouchTask }
 
 procedure TTouchTask.Execute;
@@ -216,6 +228,12 @@ begin
   FileOps.TouchFile(_File);
 end;
 
+
+procedure TTouchTask.Validate;
+begin
+  inherited Validate;
+  RequireAttribute('file', _file);
+end;
 
 { TDeleteTask }
 
@@ -270,6 +288,13 @@ begin
   FFileSet.Include(Value);
 end;
 
+procedure TDeleteTask.Validate;
+begin
+  inherited Validate;
+  if (_file = '') and (dir = '') then
+    TaskError('either the "file" or the "dir" attribute must be set');
+end;
+
 { TMoveCopyTask }
 
 
@@ -294,6 +319,12 @@ begin
   ToPaths   := FFileSet.MovePaths(todir);
 
   DoPaths(FromPaths, ToPaths);
+end;
+
+procedure TMoveCopyTask.Validate;
+begin
+  inherited Validate;
+  RequireAttribute('todir', todir);
 end;
 
 { TCopyTask }

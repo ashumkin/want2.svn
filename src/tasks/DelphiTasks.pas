@@ -109,7 +109,8 @@ type
 
     class function XMLTag :string; override;
 
-    procedure Execute; override;
+    procedure Validate; override;
+    procedure Execute;  override;
   published
 
     // published methods for creating sub components
@@ -149,6 +150,8 @@ begin
   FUnitPaths      := TStringList.Create;
   FResourcePaths  := TStringList.Create;
   FIncludePaths   := TStringList.Create;
+
+  self.Executable := FindCompiler;
 end;
 
 destructor TDelphiCompileTask.Destroy;
@@ -159,10 +162,15 @@ begin
   inherited Destroy;
 end;
 
+procedure TDelphiCompileTask.Validate;
+begin
+  inherited Validate;
+  RequireAttribute('source', source);
+end;
+
 procedure TDelphiCompileTask.Execute;
 begin
   Log(ToRelativePath(Source));
-  self.Executable := FindCompiler;
   inherited Execute;
 end;
 
@@ -208,8 +216,7 @@ function TDelphiCompileTask.BuildArguments: string;
 begin
   Result := inherited BuildArguments;
 
-  if source <> '' then
-    Result := Result + ' ' + ToSystemPath(source);
+  Result := Result + ' ' + ToSystemPath(source);
 
   if exes <> '' then
     Result := Result + ' -E' + ToSystemPath(exes);
