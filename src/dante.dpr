@@ -41,11 +41,35 @@ uses
   DanteClasses,
   StandardTasks,
   CustomTasks,
-  DanteMain;
+  DanteMain,
+  JclFileUtils;
+
+{$R dantever.res}
+
+function GetVersionString: string;
+var
+  AFileVer: TJclFileVersionInfo;
+begin
+  try
+    AFileVer := TJclFileVersionInfo.Create(ParamStr(0));
+    try
+      Result := AFileVer.FileVersion;
+    finally
+      AFileVer.Free;
+    end;
+  except
+    Result := '?.?.?.?';
+  end;
+end;
 
 function DanteHeader: string;
+const
+  CR = #13#10;
 begin
-  Result := 'Dante v0.0.0 Build Management tool';
+  Result :=
+    'Dante ' + GetVersionString + ' Build Management tool                  '+ CR +
+    'Copyright (c) 2001, Dante Authors -- See authors.txt for complete list'+ CR +
+    'For complete licensing info, execute with -L switch';
 end;
 
 function License: string;
@@ -71,7 +95,7 @@ begin
     'other contributors to this software may not be used to endorse or promote       '+ CR +
     'products derived from this software without specific prior written permission.  '+ CR +
     '                                                                                '+ CR +
-    'THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS ``AS IS''     '+ CR +
+    'THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS ``AS IS''''   '+ CR +
     'AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE       '+ CR +
     'IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE  '+ CR +
     'DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDERS OR CONTRIBUTORS BE LIABLE   '+ CR +
@@ -110,7 +134,7 @@ begin
     'software may be used to endorse or promote products derived from this software  '+ CR +
     'without specific prior written permission.                                      '+ CR +
     '                                                                                '+ CR +
-    'THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS ``AS IS''     '+ CR +
+    'THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS ``AS IS''''   '+ CR +
     'AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE       '+ CR +
     'IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE  '+ CR +
     'DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDERS OR CONTRIBUTORS BE LIABLE   '+ CR +
@@ -193,7 +217,6 @@ end;
 
 procedure Usage;
 begin
-    WriteLn('For licensing info, use the -L switch');
     WriteLn;
     WriteLn('Usage:');
     WriteLn('  dante.exe [options]');
