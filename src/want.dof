@@ -1,5 +1,7 @@
+[FileVersion]
+Version=6.0
 [Compiler]
-A=1
+A=8
 B=0
 C=1
 D=1
@@ -49,8 +51,15 @@ Conditionals=USE_JEDI_JCL
 DebugSourceDirs=
 UsePackages=0
 [Parameters]
-RunParams=-buildfile "c:\home\lasalle\src\want.xml" test
+RunParams=-buildfile "c:\home\tranus\tus\want.xml"  -verbose
 HostApplication=
+Launcher=
+UseLauncher=0
+DebugCWD=
+[Language]
+ActiveLang=
+ProjectLang=
+RootDir=
 [Version Info]
 IncludeVerInfo=0
 AutoIncBuild=0
@@ -130,11 +139,3 @@ Count=3
 Item0=c:\home\want\bin
 Item1=c:\tmp\bin
 Item2=..\bin
-[HistoryLists\hlHostApplication]
-Count=2
-Item0=c:\home\dunit\bin\dunit.exe
-Item1=c:\home\dunit\bin\dunit.exe /nologo
-[HistoryLists\hlRunParameters]
-Count=2
-Item0= /nologo WantAcceptTestLib
-Item1=WantAcceptTestLib

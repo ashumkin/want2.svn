@@ -1,3 +1,48 @@
+2002-02-06 14:50  juanco
+
+	* release.ini, src/want.dsk: routine
+
+2002-02-06 14:47  juanco
+
+	* src/tasks/: DelphiTasks.pas, ZipTasks.pas: simplified <delphi>
+	task using TAttributeElement features
+
+2002-02-06 14:45  juanco
+
+	* src/WantClasses.pas: made element-as-attribute support path= in
+	addition to value=
+
+2002-02-02 19:23  juanca
+
+	* lib/jal/src/: JALGeomModels.pas, JalDXF.pas: Read value of color
+	attribute
+
+2002-01-29 21:54  juanco
+
+	* want.xml, dist/want-0.1.115.zip, doc/index.html,
+	doc/index.template.html, doc/index.html: move dist directory to
+	under doc directory to aid with web site management
+
+2002-01-29 15:06  juanco
+
+	* dist/want-0.1.115.zip: release 0.1.115, now as binary
+
+2002-01-29 14:54  juanco
+
+	* CVSROOT/cvswrappers: Added cvswrappers to catch known extensions
+	for binary files and check them in as -kb.
+
+2002-01-29 14:51  juanco
+
+	* dist/want-0.1.115.zip: removed non binary distro file
+
+2002-01-29 14:49  juanco
+
+	* dist/want-0.1.115.zip, dist/want-0.1.115.zip, ChangeLog,
+	release.ini, doc/index.html, make/bootstrap.bat,
+	test/WantAcceptTestLib.drc, doc/dist/want-0.1.115.zip: release
+	0.1.115
+
 2002-01-29 14:41  juanco
 
 	* ChangeLog: added ChangeLog

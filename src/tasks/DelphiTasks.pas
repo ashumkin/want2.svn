@@ -275,7 +275,7 @@ begin
      end;
   end;
   if FToolPath = '' then
-    raise EDelphiNotFoundError.Create('Could not find ' + ToolName);
+    TaskError('Could not find ' + ToolName);
 end;
 
 
@@ -284,6 +284,7 @@ begin
   if ver = '' then
     ver := FVersionFound;
   Result := RegReadStringDef(HKEY_LOCAL_MACHINE, RootForVersion(ver), DelphiRootKey, '');
+  Log(vlVerbose, 'delphi dir: %s', [Result]);
 end;
 
 function TCustomDelphiTask.ReadMachineOption(Key, Name: string): string;
@@ -673,7 +674,7 @@ function TResourceCompileTask.BuildArguments: string;
 begin
   Result := inherited BuildArguments;
 
-  Result := Result + ToSystemPath(_file);
+  Result := Result + ' -r ' + ToSystemPath(_file);
 
   if output <> '' then
     Result := Result + ' -fo' + ToSystemPath(output);
@@ -694,7 +695,6 @@ end;
 procedure TResourceCompileTask.Init;
 begin
   inherited Init;
-  versions := '2,3,4,5,6';
   RequireAttribute('file');
 end;
 
