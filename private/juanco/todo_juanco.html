@@ -1,0 +1,97 @@
+<html>
+
+<head>
+<meta name="generator" content="Microsoft FrontPage 4.0">
+<meta name="ProgId" content="FrontPage.Editor.Document">
+<title>Dante Notes</title>
+<link rel="stylesheet" type="text/css" href="../../doc/style.css">
+</head>
+
+<body>
+
+<h1>Dante TODO</h1>
+<p><i>Juanco Añez</i></p>
+<h2>Build Scripts</h2>
+<p>To avoid any confusion with Ant's build scripts, which are named &quot;build.xml&quot;,
+Dante's build scripts should be named &quot;make.xml&quot;, or anything
+different.</p>
+<h2>FileSets</h2>
+<ul>
+  <li>Turn on the ability for file tasks (touch, delete, copy, move) to specify
+    internal &lt;fileset&gt; elements.</li>
+  <li>Implement this (from the Ant docs):
+    <p>There is one &quot;shorthand&quot;, if a pattern ends with '/' or '\',
+    then '**' is appended. E.g. &quot;mypackage/test/&quot; is interpreted as
+    were it &quot;mypackage/test/**&quot;.</li>
+  <li>Implement this: filesets with no &lt;include&gt; elements have an implicit
+    include of &quot;basedir/**&quot;.</li>
+  <li>Implement this:<br>
+    <blockquote>
+      <pre>&lt;patternset id=&quot;non.test.sources&quot; &gt;
+  &lt;include name=&quot;**/*.java&quot; /&gt;
+  &lt;exclude name=&quot;**/*Test*&quot; /&gt;
+&lt;/patternset&gt;
+</pre>
+    </blockquote>
+    <p>This set can be referred to via <code>&lt;patternset refid=&quot;non.test.sources&quot;
+    /&gt;</code> by tasks that support this feature or by FileSets.</p>
+    <p>Note that patternsets hold the patterns but do not have a basedir.
+    Filesets have an implicit patternset.</li>
+</ul>
+<h2>Properties</h2>
+<ul>
+  <li>Decide on the set ob built-in properties to support and add them.</li>
+  <li>Consider making properties local to elements, but inheritable to
+    sub-elements. This would add flexibility, and will eliminate the fiddling
+    with properties in TDanteTask if the subproject's owner was set to the
+    TDanteTask instance. In other words, properties would have the expected
+    scope.</li>
+</ul>
+<h2>Attributes</h2>
+<ul>
+  <li>Make boolean attributes accept values of &quot;yes&quot; and
+    &quot;no&quot;.</li>
+</ul>
+<h2>Targets</h2>
+<ul>
+  <li>Add a &quot;description&quot; attribute/property to targets. Ant has one.</li>
+</ul>
+<h2>Tasks</h2>
+<ul>
+  <li>Expose the &quot;basedir&quot; property in the &lt;exec&gt;&nbsp; task.</li>
+  <li>For testing purposes, it would be useful to define a TCheckProperty task:</li>
+</ul>
+<pre>  &lt;checkproperty name=&quot;aname&quot; expectedvalue=&quot;avalue&quot; /&gt;</pre>
+<ul>
+  <li>Overload RegisterTask, and have the overloaded version take a Name
+    parameter. This allows for task aliasing (tasks that have more than one
+    name/xmltag). </li>
+  <li>Implement the &lt;tstamp/&gt; task.</li>
+  <li>Implement the &lt;available&gt; task.</li>
+  <li>Implement the &lt;fail&gt; task.</li>
+  <li>To be consistent with Ant, make&nbsp; ETaskException descend from
+    EBuildException and use accross the board. Refactor exception classes in
+    general.</li>
+  <li>According to Ant's docs, the setting of attributes/properties is done <b>after</b>
+    the file is parsed and all XML elements (and sub-elements) have been
+    created. In Dante, this would require an additional examination of the
+    MiniDOM just before a task is executed. Tasks (elements in general) can keep
+    a reference to their MiniDOM node for this.
+    <p>Sequence:
+    <ol>
+      <li>Call ParseXML recursively on all elements created.</li>
+      <li>On the DoExecute method, call a SetAttributes first, so elements
+        retrieve their attributes from the recorded MiniDOM node. SetAttributes
+        calls Init (currently Validate) on the element (The MiniDOM node can be
+        released at this point).</li>
+      <li>Do 2. on the task's children. </li>
+      <li>Execute the task.</li>
+    </ol>
+    <p>It seems complicated, but it allows for lazy (last minute) evaluation of
+    properties.</li>
+</ul>
+<p align="center">~o~</p>
+
+</body>
+
+</html>
