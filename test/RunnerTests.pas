@@ -22,7 +22,7 @@ uses
   StandardTasks;
 
 type
-  TTestWantMain = class(TTestDirCase)
+  TScriptRunnerTests = class(TTestDirCase)
   private
     FBuildFile: TextFile;
     FBuildFileName: string;
@@ -44,9 +44,9 @@ implementation
 
 uses JclFileUtils;
 
-{ TTestWantMain }
+{ TScriptRunnerTests }
 
-procedure TTestWantMain.MakeTestBuildFile;
+procedure TScriptRunnerTests.MakeTestBuildFile;
 const
   CR = #$D#$A;
 var
@@ -83,12 +83,12 @@ begin
   CloseFile(FBuildFile);                                   
 end;
 
-procedure TTestWantMain.Setup;
+procedure TScriptRunnerTests.Setup;
 begin
   inherited;
   FRunner := TScriptRunner.Create;
   {$IFNDEF USE_TEXT_RUNNER}
-  FRunner.CreateLogManager;
+  FRunner.CreateListener;
   {$ENDIF}
 
   FBuildFileName := FTestDir + '\build.xml';
@@ -98,13 +98,13 @@ begin
   FCopyDir := FTestDir + '\copy';
 end;
 
-procedure TTestWantMain.TearDown;
+procedure TScriptRunnerTests.TearDown;
 begin
   FRunner.Free;
   inherited;
 end;
 
-procedure TTestWantMain.TestWantMain;
+procedure TScriptRunnerTests.TestWantMain;
 var
   CurDir: string;
 begin
@@ -122,7 +122,7 @@ begin
 end;
 
 initialization
-  RegisterTest('Acceptance Suite', TTestWantMain);
+  RegisterTest('Acceptance Suite', TScriptRunnerTests);
 
 end.
 
