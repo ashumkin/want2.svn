@@ -71,6 +71,8 @@ type
 
 implementation
 
+uses Windows;
+
 { TTestVssTasksBase }
 
 function TTestVssTasksBase.CompareSampleContents(
@@ -162,7 +164,7 @@ end;
 procedure TTestVssGetTask.Setup;
 begin
   inherited;
-  FProject := TProject.Create;
+  FProject.Verbosity := vlDebug;
   FVssGetTask := TVssGetTask.Create(FProject.AddTarget('test'));
 end;
 
@@ -195,13 +197,20 @@ var
   LabelName: string;
   CurrDir: string;
 begin
-  { because the TearDown doesn't purge the test file (for reasons stated there),
-    and after the 1st time its run can't delete the file without purging the
-    previous one, the test below won't actually be operating against a clean
-    file. The label command, run subsequent times, will fail because of the
-    previous labelling in the test file's SS history. However, this test still
-    does its job properly. If you want a clean, clean test, do a purge of the
-    test file first. }
+  { because the TearDown doesn't purge the test file or project (for reasons
+    stated there), re-running this test doesn't really achieve an actual test.
+    This is because the labelling done cannot be removed. The only way to remove
+    a label is to re-submit a label command that adds a single space label to
+    the version of the previous label (see MS KBase article Q126786):
+
+      ss label $/test "-vl old label" "-l "
+
+    But this won't work from inside this test code because then it prompts for a
+    confirmation, the default reply being No. So ... to actual ensure the
+    accuracy of this test, it is necessary to open the GUI client (version 5),
+    display the history for the test project, select the label row, open it
+    (double-click), delete the label name and click Close. This will delete the
+    label out of history. Then run this test to make certain. }
   CurrDir := GetCurrentDir;
   ChDir(FTestDir);
   WinExec32AndWait('ss Checkout ' + FSampleFileName + ' -GL"' + FTestDir + '"' +
@@ -212,10 +221,15 @@ begin
   LabelName := 'RevOne';
   WinExec32AndWait('ss Label "' + FVssPath + '" -CComment -L' + LabelName +
     ' -I- -Y' + FUserPwd, 0);
+
+  { if the following Checkin command is sent immediately, sometimes it
+    beats the labeling command (don't know why) and gets applied to the
+    2nd revision instead of the first }
+  Sleep(1000);
   MakeSampleRevTwo;
   WinExec32AndWait('ss Checkin ' + FSampleFileName + ' -CComment ' +
     ' -Y' + FUserPwd, 0);
-  ChDir(CurrDir);    
+  ChDir(CurrDir);
 
   FVssGetTask.VssPath := FVssPath;
   FVssGetTask.Login := FUserPwd;
