@@ -1146,6 +1146,7 @@ begin
          path := path + '\Debug';
       FUnitPaths.Includes.Insert(0, path);
       FResourcePaths.Includes.Insert(0, path);
+      FResourcePaths.Includes.Insert(0, libPath);
       FIncludePaths.Includes.Insert(0, path);
     end
     else if not useLibraryPath then

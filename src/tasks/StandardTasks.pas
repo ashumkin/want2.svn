@@ -43,7 +43,8 @@ uses
   TempFileTasks,
   StyleTasks,
   XmlPropertyTasks,
-  InputTasks;
+  InputTasks,
+  InnoSetupTasks;
 
 
 implementation

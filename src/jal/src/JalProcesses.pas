@@ -48,7 +48,7 @@ type
     FHandle: Integer;
   public
     constructor Create(AHandle: Integer);
-  	function Read(var Buffer; Count: Longint): Longint; override;
+    function Read(var Buffer; Count: Longint): Longint; override;
     function Write(const Buffer; Count: Longint): Longint; override;
     function Seek(Offset: Longint; Origin: Word): Longint; override;
     property Handle: Integer read FHandle write FHandle;

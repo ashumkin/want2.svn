@@ -57,6 +57,7 @@ type
     procedure TestingStarts; virtual;
     procedure TestingEnds(testResult: TTestResult); virtual;
     procedure Status(test :ITest; const Msg :string); virtual;
+    procedure Warning(test: ITest; const Msg: string);
 
  // implement the task
   protected
@@ -182,6 +183,11 @@ end;
 procedure TDUnitTask.Status(test: ITest; const Msg: string);
 begin
   Log(vlVerbose, Format('%s: %s', [test.Name, Msg]));
+end;
+
+procedure TDUnitTask.Warning(test: ITest; const Msg: string);
+begin
+  Log(vlWarnings, Format('%s: %s', [test.Name, Msg]));
 end;
 
 procedure TDUnitTask.StartSuite(suite: ITest);

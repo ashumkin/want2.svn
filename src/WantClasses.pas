@@ -238,6 +238,7 @@ type
     property Children[i :Integer] :TScriptElement read GetChild;
 
     property NoChanges :boolean read GetNoChanges;
+
   published
     property Tag :  string        read TagName stored False;
     property Description: string  read FDescription write FDescription;
@@ -696,7 +697,7 @@ end;
 function TScriptElement.HasAttribute(Name: string): boolean;
 begin
   Result := (FAttributes.IndexOfName(Name) >= 0)
-             or (GetDelphiProperty(Name) <> '')
+            //or (GetDelphiProperty(Name) <> '');
 end;
 
 
