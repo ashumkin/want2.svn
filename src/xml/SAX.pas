@@ -2487,8 +2487,14 @@ begin
 end;
 
 function TAttributeList.getValue(i: Integer): WideString;
+var
+  value :IString;
 begin
-  result := (map_.get(list_.at(i)) as IString).toString;
+  value := (map_.get(list_.at(i)) as IString);
+  if value = nil then
+    Result := ''
+  else
+    Result := Value.toString;
 end;
 
 end.

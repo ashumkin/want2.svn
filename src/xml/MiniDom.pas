@@ -70,7 +70,7 @@ type
     function name :string;
     function children :IList;                overload;
     function children(name :string) :IList;  overload;
-    function attributes :IIterator;
+    function attributes :IList;
     function attribute(name :string) :IAttribute;
     function attributeValue(name :string) :string;
     function add(n :INode):INode;
@@ -136,7 +136,7 @@ type
     function children :IList;                overload; virtual;
     function children(name :string) :IList;  overload; virtual;
 
-    function attributes :IIterator;                virtual;
+    function attributes :IList;                    virtual;
     function attribute(name :string) :IAttribute;  virtual;
     function attributeValue(name :string) :string; virtual;
 
@@ -160,7 +160,12 @@ type
     function toString :string; override;
   end;
 
-  TSAXtoDOMHandler = class(SAX.THandlerBase, IErrorHandler)
+  ISAXToDomHandler = interface(IDocumentHandler)
+  ['{5545E11B-D69A-4436-A65E-9F663F74D31B}']
+    function locator :TLocator;
+  end;
+
+  TSAXtoDOMHandler = class(SAX.THandlerBase, ISAXToDomHandler,  IErrorHandler)
     constructor create(dom :IDocument);
 
     procedure startDocument; override;
@@ -185,6 +190,8 @@ type
     override;
 
     function LineNo :Integer;
+
+    function locator :TLocator;
   protected
     _dom        :IDocument;
     _nodes      :IStack;
@@ -297,9 +304,10 @@ begin
   result := _attributes.get(name) as IAttribute
 end;
 
-function TElement.attributes: IIterator;
+function TElement.attributes: IList;
 begin
-  result := _attributes.values.iterator;
+  result := TArrayList.create(_attributes.values.size);
+  result.addAll(_attributes.values);
 end;
 
 function TElement.attributeValue(name: string): string;
@@ -329,7 +337,7 @@ var
   i :IIterator;
 begin
   Result := prefix + '<' + name;
-  i := attributes;
+  i := attributes.iterator;
   while i.HasNext do
     Result := Result + ' ' + (i.Next as IAttribute).toString;
 
@@ -464,6 +472,11 @@ begin
   Result := 1+_locator.getLineNumber;
 end;
 
+function TSAXtoDOMHandler.locator: TLocator;
+begin
+  Result := _locator;
+end;
+
 { TAttribute }
 
 constructor TAttribute.create(name, value: string; LineNo :Integer);
@@ -491,7 +504,7 @@ end;
 function parseToDOM(src :IInputSource) :IDocument; overload;
 var
   parser  :IParser;
-  handler :IDocumentHandler;
+  handler :ISAXToDOMHandler;
 begin
   result := TDocument.create;
   try
@@ -506,8 +519,16 @@ begin
      parser := nil;
     end
   except
-    result := nil;
-    raise;
+    on e :SAXParseException do
+    begin
+      result := nil;
+      raise;
+    end;
+    on e :Exception do
+    begin
+      result := nil;
+      raise SAXParseException.Create(e.Message, handler.locator);
+    end;
   end;
 end;
 
