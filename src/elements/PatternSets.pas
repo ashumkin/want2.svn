@@ -14,6 +14,7 @@ uses
   Classes,
   MiniDOM,
   WildPaths,
+  WantUtils,
   WantClasses;
 
 type

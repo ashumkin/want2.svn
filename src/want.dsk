@@ -113,29 +113,46 @@ LRDockWidth=366
 Dockable=1
 
 [Closed Files]
-File_0=SourceModule,'C:\home\want\test\FileTasksTest.pas',0,1,105,1,108,0,0
-File_1=SourceModule,'C:\home\want\test\ExternalTests.pas',0,1,22,23,30,0,0
-File_2=SourceModule,'C:\home\want\test\RunnerTests.pas',0,1,1,23,20,0,0
-File_3=SourceModule,'C:\home\want\src\tasks\ExecTasks.pas',0,1,1,1,1,0,0
-File_4=SourceModule,'c:\home\dunit\src\TestFramework.pas',0,1,1671,1,1686,0,0
-File_5=SourceModule,'C:\home\want\src\win32\Win32ChildProcesses.pas',0,1,99,21,117,0,0
-File_6=SourceModule,'C:\home\want\src\tasks\FileTasks.pas',0,1,36,9,57,0,0
-File_7=SourceModule,'C:\home\want\test\ExecTasksTest.pas',0,1,154,22,183,0,0
+File_0=SourceModule,'c:\lib\pascal\jcl\source\JclSysInfo.pas',0,1,30,1,30,0,0
+File_1=SourceModule,'C:\home\want\src\BuildListeners.pas',0,1,86,18,101,0,0
+File_2=SourceModule,'C:\home\want\src\win32\ConsoleListener.pas',0,1,73,19,88,0,0
+File_3=SourceModule,'C:\home\want\src\elements\PatternSets.pas',0,1,1,13,17,0,0
+File_4=SourceModule,'C:\home\want\src\tasks\ExecTasks.pas',0,1,1,13,24,0,0
+File_5=SourceModule,'C:\home\want\src\tasks\EchoTasks.pas',0,1,8,13,20,0,0
+File_6=SourceModule,'C:\home\want\src\tasks\LoggerTask.pas',0,1,1,13,15,0,0
+File_7=SourceModule,'c:\dvl\bor\d4\source\rtl\Sys\SysUtils.pas',0,1,1,1,1,0,0
+File_8=SourceModule,'c:\lib\pascal\jcl\source\JclSysUtils.pas',0,1,240,1,255,0,0
+File_9=SourceModule,'C:\home\want\test\FileTasksTest.pas',0,1,105,1,108,0,0
 
 [Modules]
-Module0=C:\home\want\src\win32\ConsoleScriptRunner.pas
-Module1=C:\home\want\src\ScriptRunner.pas
-Module2=C:\home\want\src\lib\WildPaths.pas
-Module3=C:\home\want\src\want.dpr
-Count=4
+Module0=C:\home\want\src\ScriptRunner.pas
+Module1=C:\home\want\src\win32\ConsoleScriptRunner.pas
+Module2=C:\home\want\src\WantClasses.pas
+Module3=C:\home\want\src\tasks\DUnitTasks.pas
+Module4=C:\home\want\src\lib\WildPaths.pas
+Module5=C:\home\want\src\WantUtils.pas
+Module6=C:\home\want\src\win32\WIN32.pas
+Module7=c:\lib\pascal\jcl\source\JclStrings.pas
+Module8=C:\home\want\src\lib\OwnedTrees.pas
+Count=9
 EditWindowCount=1
+
+[C:\home\want\src\ScriptRunner.pas]
+ModuleType=SourceModule
+FormState=0
+FormOnTop=0
 
 [C:\home\want\src\win32\ConsoleScriptRunner.pas]
 ModuleType=SourceModule
 FormState=0
 FormOnTop=0
 
-[C:\home\want\src\ScriptRunner.pas]
+[C:\home\want\src\WantClasses.pas]
+ModuleType=SourceModule
+FormState=0
+FormOnTop=0
+
+[C:\home\want\src\tasks\DUnitTasks.pas]
 ModuleType=SourceModule
 FormState=0
 FormOnTop=0
@@ -145,12 +162,23 @@ ModuleType=SourceModule
 FormState=0
 FormOnTop=0
 
-[C:\home\want\src\want.dpr]
+[C:\home\want\src\WantUtils.pas]
 ModuleType=SourceModule
 FormState=0
 FormOnTop=0
 
-[C:\home\want\test\WantAcceptTestLib.dpr]
+[C:\home\want\src\win32\WIN32.pas]
+ModuleType=SourceModule
+FormState=0
+FormOnTop=0
+
+[c:\lib\pascal\jcl\source\JclStrings.pas]
+ModuleType=SourceModule
+FormState=0
+FormOnTop=0
+
+[C:\home\want\src\lib\OwnedTrees.pas]
+ModuleType=SourceModule
 FormState=0
 FormOnTop=0
 
@@ -158,7 +186,15 @@ FormOnTop=0
 FormState=0
 FormOnTop=0
 
+[C:\home\want\src\want.dpr]
+FormState=0
+FormOnTop=0
+
 [C:\home\want\test\WantTestLib.dpr]
+FormState=0
+FormOnTop=0
+
+[C:\home\want\test\WantAcceptTestLib.dpr]
 FormState=0
 FormOnTop=0
 
@@ -185,12 +221,17 @@ RightPanelSize=0
 BottomPanelSize=169
 BottomPanelClients=MessageView@EditWindow0,LocalVarsWindow
 BottomPanelData=00000400010000000B0000004D65737361676556696577A9000000000000000100040000000000000100000000A90000000F0000004C6F63616C5661727357696E646F77FFFFFFFF
-ViewCount=4
+ViewCount=9
 CurrentView=2
 View0=0
 View1=1
 View2=2
 View3=3
+View4=4
+View5=5
+View6=6
+View7=7
+View8=8
 
 [CodeExplorer@EditWindow0]
 Create=1
@@ -227,29 +268,64 @@ Dockable=1
 [View0]
 Module=C:\home\want\src\lib\WildPaths.pas
 CursorX=1
-CursorY=337
-TopLine=322
+CursorY=64
+TopLine=47
 LeftCol=1
 
 [View1]
-Module=C:\home\want\src\ScriptRunner.pas
+Module=C:\home\want\src\tasks\DUnitTasks.pas
 CursorX=1
-CursorY=30
-TopLine=28
+CursorY=70
+TopLine=68
 LeftCol=1
 
 [View2]
-Module=C:\home\want\src\win32\ConsoleScriptRunner.pas
+Module=C:\home\want\src\ScriptRunner.pas
 CursorX=1
-CursorY=103
-TopLine=99
+CursorY=226
+TopLine=221
 LeftCol=1
 
 [View3]
-Module=C:\home\want\src\want.dpr
+Module=C:\home\want\src\win32\ConsoleScriptRunner.pas
+CursorX=75
+CursorY=9
+TopLine=1
+LeftCol=1
+
+[View4]
+Module=C:\home\want\src\WantClasses.pas
+CursorX=15
+CursorY=198
+TopLine=169
+LeftCol=1
+
+[View5]
+Module=C:\home\want\src\lib\OwnedTrees.pas
+CursorX=20
+CursorY=63
+TopLine=47
+LeftCol=1
+
+[View6]
+Module=c:\lib\pascal\jcl\source\JclStrings.pas
 CursorX=1
-CursorY=55
-TopLine=55
+CursorY=3200
+TopLine=3179
+LeftCol=1
+
+[View7]
+Module=C:\home\want\src\WantUtils.pas
+CursorX=1
+CursorY=1
+TopLine=1
+LeftCol=1
+
+[View8]
+Module=C:\home\want\src\win32\WIN32.pas
+CursorX=1
+CursorY=1
+TopLine=1
 LeftCol=1
 
 [DockHosts]
@@ -265,7 +341,7 @@ Watch4='FIncludes[i]',256,0,18,1
 
 [Breakpoints]
 Count=1
-Breakpoint0='C:\home\want\src\tasks\ExecTasks.pas',213,'',0,1
+Breakpoint0='C:\home\want\src\tasks\ExecTasks.pas',214,'',0,1
 
 [AddressBreakpoints]
 Count=0

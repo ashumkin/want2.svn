@@ -17,6 +17,7 @@ uses
 
   JclStrings,
 
+  WantUtils,
   WantClasses,
   WildPaths;
 

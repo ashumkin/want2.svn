@@ -38,7 +38,6 @@ uses
   RegexpElements in 'elements\RegexpElements.pas',
   StandardElements in 'elements\StandardElements.pas',
   ScriptParser in 'lib\ScriptParser.pas',
-  ScriptFrm in 'forms\ScriptFrm.pas' {ScriptForm},
   ScriptRunner in 'ScriptRunner.pas',
   WantClasses in 'WantClasses.pas',
   WantTasks in 'tasks\WantTasks.pas',
@@ -46,7 +45,8 @@ uses
   ChildProcesses in 'lib\ChildProcesses.pas',
   WantResources in 'WantResources.pas',
   ConsoleScriptRunner in 'win32\ConsoleScriptRunner.pas',
-  BuildListeners in 'BuildListeners.pas';
+  BuildListeners in 'BuildListeners.pas',
+  WantUtils in 'WantUtils.pas';
 
 {$r wantver.res}
 {$r ..\bin\license.res }

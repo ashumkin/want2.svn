@@ -19,6 +19,7 @@ uses
 
   WildPaths,
 
+  WantUtils,
   WantClasses,
   BuildListeners,
   ScriptParser;

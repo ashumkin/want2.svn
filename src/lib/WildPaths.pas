@@ -62,9 +62,7 @@ uses
   Math,
   Classes,
 
-  JclBase,
-  JclSysUtils,
-  JclStrings;
+  WantUtils;
 
 const
   InvalidPathChars = ''; //';:,';

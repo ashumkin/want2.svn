@@ -85,7 +85,7 @@ end;
 
 destructor TConsoleListener.Destroy;
 begin
-  FreeAndNil(FFragments);
+  FFragments.Free;
   inherited Destroy;
 end;
 

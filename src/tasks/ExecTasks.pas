@@ -21,6 +21,7 @@ uses
   JclSecurity,
 
   WildPaths,
+  WantUtils,
   WantClasses,
   Attributes,
   ChildProcesses;

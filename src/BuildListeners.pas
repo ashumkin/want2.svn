@@ -98,7 +98,7 @@ begin
       for i := 0 to Lines.Count-1 do
         LogLine(Lines[i], Level);
     finally
-      FreeAndNil(Lines);
+      Lines.Free;
     end;
   end;
 end;

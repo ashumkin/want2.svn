@@ -19,6 +19,7 @@ uses
   CRT32,
 
   WildPaths,
+  WantUtils,
   WantClasses,
   WantResources,
   ConsoleListener,

@@ -12,6 +12,7 @@ interface
 uses
   SysUtils,
   Classes,
+  WantUtils,
   WantClasses;
 
 type

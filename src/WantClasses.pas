@@ -11,17 +11,12 @@ unit WantClasses;
 
 interface
 uses
-  Windows,
   SysUtils,
   Classes,
   TypInfo,
 
   WildPaths,
-
-  JclSysUtils,
-  JclSysInfo,
-  JclStrings,
-
+  WantUtils,
   OwnedTrees;
 
 
@@ -158,7 +153,7 @@ type
     function  PropertyDefined(Name: string): boolean;    virtual;
     function  PropertyValue(Name: string): string;       virtual;
     function  EnvironmentValue(Name: string): string;    virtual;
-    function  Evaluate(Value: string): string;       virtual;
+    function  Evaluate(Value: string): string;           virtual;
 
     procedure SetProperties(Value: TStrings);
 
@@ -314,14 +309,10 @@ procedure RegisterElements(AppliesTo : TScriptElementClass; ElementClasses:array
 
 function  TextToArray(const Text: string; const Delimiter :string = ','): TStringArray;
 
-procedure RaiseLastSystemError(Msg: string = '');
 procedure WantError(Msg: string = '');
 procedure TaskError(Msg: string = '');
 
 function CallerAddr: Pointer;
-{$IFNDEF DELPHI5_UP}
-const FreeAndNil : procedure(var Obj) = JclSysUtils.FreeAndNil;
-{$ENDIF}
 
 implementation
 
@@ -423,11 +414,6 @@ begin
     RegisterTask(TaskClasses[i]);
 end;
 
-procedure RaiseLastSystemError(Msg: string = '');
-begin
-  raise Exception.Create(SysErrorMessage(GetLastError) + Msg)
-end;
-
 function TextToArray(const Text: string; const Delimiter :string): TStringArray;
 var
   S: TStrings;
@@ -435,7 +421,7 @@ var
 begin
   S := TStringList.Create;
   try
-    JclStrings.StrToStrings(Text, Delimiter, S);
+    StrToStrings(Text, Delimiter, S);
     SetLength(Result, S.Count);
     for i := 0 to S.Count-1 do
        Result[i] := Trim(S[i]);
@@ -556,9 +542,11 @@ begin
     Log(vlDebug, '%s disabled', [TagName])
   else
   begin
-    for a := 0 to Attributes.Count-1 do
-      with Attributes do
+    with Attributes do
+    begin
+      for a := 0 to Count-1 do
         SetDelphiProperty(Names[a], Evaluate(Values[Names[a]]) );
+    end;
 
     LastDir := CurrentDir;
     ChangeDir(BasePath);
@@ -830,7 +818,7 @@ end;
 function TScriptElement.EnvironmentValue(Name: string): string;
 begin
   Assert(Name <> '');
-  JclSysInfo.GetEnvironmentVar(Name, Result, True);
+  GetEnvironmentVar(Name, Result, True);
 end;
 
 
@@ -853,7 +841,7 @@ type
       if MacroEnd =0  then
         break
       else begin
-        SubPropName := StrMid(Result, MacroStart+2, -2 + MacroEnd-MacroStart);
+        SubPropName := Copy(Result, MacroStart+2, -2 + MacroEnd-MacroStart);
         Delete(Result, MacroStart, 3 + Length(SubPropName));
         Insert(MacroExpansion(SubPropName), Result, MacroStart);
         MacroStart := StrSearch(StartPat, Result, macroEnd+1);
