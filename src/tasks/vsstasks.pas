@@ -93,7 +93,7 @@ end;
 procedure TVssGetTask.Validate;
 begin
   inherited;
-  RequireAttribute('vsspath',  FVssPath);
+  RequireAttribute('vsspath');
 end;
 
 end.
