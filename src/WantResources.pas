@@ -111,6 +111,7 @@ type
       property    Count: Integer     read GetCount;
   end;
 
+{$IFNDEF VER120}
 resourcestring
   DanteHeaderText  = 'Dante v0.0.0 Build 0. Build Management tool for Delphi' + C_EOL;
 
@@ -195,6 +196,7 @@ resourcestring
   F_DanteClassNotFound        = 'Dante class <%s> not found';
   F_DuplicateDanteClass       = 'Duplicate Dante tag <%s> in class <%s>';
 
+{$ENDIF}
 
 procedure RaiseLastSystemError(Msg :string = '');
 
@@ -264,7 +266,8 @@ destructor TDanteList.Destroy; { override }
 begin
   Clear;
 
-  FreeAndNil(FList);
+  FList.Free;
+  FList := nil;
 
   inherited Destroy;
 end;
