@@ -398,12 +398,15 @@ end;
 
 function TLineContainsRegexpElement.ExecuteFilter(AInputString: string): string;
 var
-  i: integer;
-  j: integer;
+  i:        integer;
+  j:        integer;
+  bOldOpts: TPCREOptions;
 begin
-  Result   := '';
-  FSL.Text := AInputString;
-  for i := 0 to FSL.Count - 1 do 
+  Result        := '';
+  FSL.Text      := AInputString;
+  bOldOpts      := regex.Options;
+  regex.Options := regex.Options - [pcre_CASELESS];
+  for i := 0 to FSL.Count - 1 do
   begin
     if GetAttribute('regexp') <> '' then 
     begin
@@ -426,6 +429,7 @@ begin
       end;
     end;
   end;
+  regex.Options := bOldOpts;
 end;
 
 procedure TLineContainsRegexpElement.Init;
