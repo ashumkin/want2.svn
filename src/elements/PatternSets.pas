@@ -16,6 +16,7 @@ unit PatternSets;
 interface
 uses
   Classes,
+  JALOwnedTrees,
   WildPaths,
   WantUtils,
   WantClasses;
@@ -42,6 +43,8 @@ type
     FExcludes: TStrings;
 
     FPatternSets: array of TPatternSet;
+
+    procedure InsertNotification(Child :TTree); override;
 
     procedure AddPatternSet(APatternSet: TPatternSet);
     procedure SetRefId(Id :string);
@@ -83,8 +86,6 @@ type
   published
     function createInclude: TIncludeElement;
     function createExclude: TExcludeElement;
-    function createPatternSet: TPatternSet;
-
     property id;
     property refid :string write SetRefId;
   end;
@@ -289,13 +290,11 @@ begin
 end;
 
 
-function TPatternSet.createPatternSet: TPatternSet;
+procedure TPatternSet.InsertNotification(Child: TTree);
 begin
-  Result := TPatternSet.Create(Self);
-  AddPatternSet(Result);
+  if Child is TPatternSet then
+    AddPatternSet(TPatternSet(Child));
 end;
-
-
 
 { TCustomFileSet }
 
