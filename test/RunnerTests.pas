@@ -31,16 +31,68 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 --------------------------------------------------------------------------------
 (based on BSD Open Source License)
 }
-program DanteTest;
+unit DanteMainTest;
+
+interface
 
 uses
-  GUITestRunner,
-  DanteMainTest,
-  DanteClassesTest;
+  TestFramework, DanteUnit, SysUtils, JclFileUtils, JclShell, JclSysInfo;
 
-{$R *.RES}
+type
+  TTestDanteMain = class(TTestCase)
+  private
+    FBuildFile: TextFile;
+    FBuildFileName: string;
+    FDante: TDante;
+    FTestDir: string;
+  public
+    procedure Setup; override;
+    procedure TearDown; override;
+  published
+    procedure TestDanteMain;
+  end;
 
+implementation
+
+{ TTestDanteMain }
+
+procedure TTestDanteMain.Setup;
 begin
-  GUITestRunner.RunRegisteredTests;
+  inherited;
+  FTestDir := ExtractFilePath(ParamStr(0)) + 'test';
+  JclFileUtils.ForceDirectories(FTestDir);
+  FDante := TDante.Create;
+  FBuildFileName := FTestDir + '\build.txt';
+end;
+
+procedure TTestDanteMain.TearDown;
+begin
+  FDante.Free;
+  JclShell.SHDeleteFolder(0, FTestDir, [doSilent]);
+  inherited;
+end;
+
+procedure TTestDanteMain.TestDanteMain;
+var
+  FCopyOfFileName: string;
+begin
+  FCopyOfFileName := FTestDir + '\copyofbuild.txt';
+
+  AssignFile(FBuildFile, FBuildFileName);
+  Rewrite(FBuildFile);
+  if IsWinNT then
+    WriteLn(FBuildFile, 'cmd.exe /c copy ' + FBuildFileName + ' ' + FCopyOfFileName)
+  else
+    WriteLn(FBuildFile, 'command.com /c copy ' + FBuildFileName + ' ' + FCopyOfFileName);
+  CloseFile(FBuildFile);
+
+  FDante.DoBuild(FBuildFileName);
+
+  Check(FileExists(FCopyOfFileName), 'copy doesn''t exist');
+end;
+
+initialization
+  RegisterTest('', TTestDanteMain);
+
 end.
 

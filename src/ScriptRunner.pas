@@ -31,68 +31,49 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 --------------------------------------------------------------------------------
 (based on BSD Open Source License)
 }
-unit DanteUnitTest;
+unit DanteMain;
 
 interface
 
-uses
-  TestFramework, DanteUnit, SysUtils, JclFileUtils, JclShell, JclSysInfo;
+uses Windows, SysUtils, JclMiscel;
 
 type
-  TTestDanteUnit = class(TTestCase)
-  private
-    FBuildFile: TextFile;
-    FBuildFileName: string;
-    FDante: TDante;
-    FTestDir: string;
+  TDante = class(TObject)
+  protected
+    function RunConsole(CmdLine: string): boolean;
   public
-    procedure Setup; override;
-    procedure TearDown; override;
-  published
-    procedure TestDanteUnit;
+    procedure DoBuild(ABuildFileName: string);
   end;
 
 implementation
 
-{ TTestDanteUnit }
+{ TDante }
 
-procedure TTestDanteUnit.Setup;
-begin
-  inherited;
-  FTestDir := ExtractFilePath(ParamStr(0)) + 'test';
-  JclFileUtils.ForceDirectories(FTestDir);
-  FDante := TDante.Create;
-  FBuildFileName := FTestDir + '\build.txt';
-end;
-
-procedure TTestDanteUnit.TearDown;
-begin
-  FDante.Free;
-  JclShell.SHDeleteFolder(0, FTestDir, [doSilent]);
-  inherited;
-end;
-
-procedure TTestDanteUnit.TestDanteUnit;
+procedure TDante.DoBuild(ABuildFileName: string);
 var
-  FCopyOfFileName: string;
+  F: TextFile;
+  CmdLine: string;
 begin
-  FCopyOfFileName := FTestDir + '\copyofbuild.txt';
-
-  AssignFile(FBuildFile, FBuildFileName);
-  Rewrite(FBuildFile);
-  if IsWinNT then
-    WriteLn(FBuildFile, 'cmd.exe /c copy ' + FBuildFileName + ' ' + FCopyOfFileName)
-  else
-    WriteLn(FBuildFile, 'command.com /c copy ' + FBuildFileName + ' ' + FCopyOfFileName);
-  CloseFile(FBuildFile);
-
-  FDante.DoBuild(FBuildFileName);
-
-  Check(FileExists(FCopyOfFileName), 'copy doesn''t exist');
+  AssignFile(F, ABuildFileName);
+  Reset(F);
+  try
+    while not Eof(F) do
+    begin
+      ReadLn(F, CmdLine);
+      if not RunConsole(CmdLine) then
+        // need to report errors somehow
+        RaiseLastWin32Error;
+    end;
+  finally
+    CloseFile(F);
+  end;
 end;
 
-initialization
-  RegisterTest('', TTestDanteUnit);
+function TDante.RunConsole(CmdLine: string): boolean;
+begin
+  Result := (WinExec32AndWait(CmdLine, SW_HIDE) = 0);
+end;
 
 end.
+
 
