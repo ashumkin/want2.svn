@@ -30,18 +30,71 @@ TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
 THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 --------------------------------------------------------------------------------
 }
-unit StandardTasks;
+unit VssTasks;
 
 interface
+
 uses
-  EchoTasks,
-  ExecTasks,
-  DelphiTasks,
-  FileTasks,
-  ZipTasks,
-  DanteTasks,
-  VssTasks;
+  DanteClasses, ExecTasks, JclStrings;
+
+type
+  TVssGetTask = class(TShellTask)
+  private
+    FVssPath: string;
+    FLogin: string;
+    FLocalPath: string;
+    FFileName: string;
+  protected
+    function BuildPathFileName: string;
+  public
+    procedure Execute; override;
+    procedure Validate; override;
+  published
+    property FileName: string read FFileName write FFileName;
+    property LocalPath: string read FLocalPath write FLocalPath;
+    property Login: string read FLogin write FLogin;
+    property VssPath: string read FVssPath write FVssPath;
+  end;
 
 implementation
 
+{ TVssGetTask }
+
+function TVssGetTask.BuildPathFileName: string;
+  function RemoveTrailingSlash(s: string): string;
+  begin
+    if JclStrings.StrRight(s, 1) = '/' then
+      Result := JclStrings.StrChopRight(s, 1);
+  end;
+begin
+  if FFileName = '' then
+    Result := RemoveTrailingSlash(FVssPath)
+  else
+    Result := JclStrings.StrEnsureSuffix(FVssPath, '/') + FFileName;
+end;
+
+procedure TVssGetTask.Execute;
+begin
+  Executable := 'ss Get';
+  ArgumentList.Add(BuildPathFileName);
+
+  if FLogin <> '' then
+    ArgumentList.Add('-Y' + FLogin);
+
+  if FLocalPath <> '' then
+  begin
+    ArgumentList.Add('"-GL' + FLocalPath + '"');
+
+    { skip writable files }
+    ArgumentList.Add('-GWS');
+  end;
+end;
+
+procedure TVssGetTask.Validate;
+begin
+  inherited;
+  RequireAttribute('vsspath',  FVssPath);
+end;
+
 end.
+
