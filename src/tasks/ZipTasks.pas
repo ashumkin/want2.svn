@@ -81,7 +81,7 @@ end;
 procedure TZipTask.Validate;
 begin
   inherited Validate;
-  RequireAttribute('zipfile', zipfile);
+  RequireAttribute('zipfile');
 end;
 
 procedure TZipTask.DoFileset(Fileset: TFileSet);
@@ -98,7 +98,7 @@ begin
   if Length(Paths) = 0 then
     Log
   else
-    Log(Format('Zipping %4d files to %s', [Length(Paths), ToRelativePath(zipfile)]));
+    Log(Format('Zipping %4d files from %s to %s', [Length(Paths), ToRelativePath(Fileset.dir), ToRelativePath(zipfile)]));
 
   for p := Low(Paths) to High(Paths) do
   begin
