@@ -47,6 +47,8 @@ uses
   JclSysInfo,
   JclRegistry,
 
+  clVersionRcUnit,
+
   Windows,
   SysUtils,
   Classes;
@@ -59,87 +61,95 @@ type
 
   TPathElement = class(TDanteElement)
   protected
-    FPath :string;
+    FPath: string;
 
-    procedure SetPath(Value :string); virtual; abstract;
+    procedure SetPath(Value: string); virtual; abstract;
   published
-    property Path :string write SetPath;
-  protected
+    property Path: string write SetPath;
   end;
 
-  TUnitElement     = class(TPathElement)
-    procedure SetPath(Value :string); override;
+  TUnitElement = class(TPathElement)
+    procedure SetPath(Value: string); override;
   end;
 
-  TResourceElement  = class(TPathElement)
-    procedure SetPath(Value :string); override;
+  TResourceElement = class(TPathElement)
+    procedure SetPath(Value: string); override;
   end;
 
-  TIncludeElement  = class(TPathElement)
-    procedure SetPath(Value :string); override;
+  TIncludeElement = class(TPathElement)
+    procedure SetPath(Value: string); override;
   end;
 
   TDelphiCompileTask = class(TCustomExecTask)
   protected
-    FExesPath :string;
-    FDCUPath  :string;
-    FSource   :string;
+    FExesPath: string;
+    FDCUPath : string;
+    FSource  : string;
 
-    FQuiet           :boolean;
-    FMake            :boolean;
-    FBuild           :boolean;
-    FOptimize        :boolean;
-    FDebug           :boolean;
+    FQuiet          : boolean;
+    FMake           : boolean;
+    FBuild          : boolean;
+    FOptimize       : boolean;
+    FDebug          : boolean;
 
-    FUnitPaths       :TStrings;
-    FResourcePaths   :TStrings;
-    FIncludePaths    :TStrings;
+    FUnitPaths      : TStrings;
+    FResourcePaths  : TStrings;
+    FIncludePaths   : TStrings;
 
     function BuildArguments: string; override;
-    function FindDelphiDir :string;
-    function FindCompiler :string;
+    function FindDelphiDir: string;
+    function FindCompiler: string;
 
-    procedure SetExes(Value :string);
+    procedure SetExes(Value: string);
 
   public
-    constructor Create(owner :TDanteElement); override;
+    constructor Create(owner: TDanteElement); override;
     destructor  Destroy; override;
 
-    class function XMLTag :string; override;
+    class function XMLTag: string; override;
 
     procedure Validate; override;
     procedure Execute;  override;
 
-    procedure AddUnitPath(Path :TPath);
-    procedure AddResourcePath(Path :TPath);
-    procedure AddIncludePath(Path :TPath);
+    procedure AddUnitPath(Path: TPath);
+    procedure AddResourcePath(Path: TPath);
+    procedure AddIncludePath(Path: TPath);
 
   published
-
     property basedir; // from TTask
 
     // published methods for creating sub Elements
     // these methods are mapped to XML elements
-    function CreateUnit     :TUnitElement;
-    function CreateResource :TResourceElement;
-    function CreateInclude  :TIncludeElement;
+    function CreateUnit: TUnitElement;
+    function CreateResource: TResourceElement;
+    function CreateInclude: TIncludeElement;
 
     // these properties are mapped to XML attributes
     property Arguments;
     property ArgumentList stored False;
-    property SkipLines :Integer     read FSkipLines   write FSkipLines;
+    property SkipLines: Integer read FSkipLines write FSkipLines;
 
-    property exes :string    read FExesPath   write SetExes;
-    property dcus :string    read FDCUPath    write FDCUPath;
+    property exes: string read FExesPath write SetExes;
+    property dcus: string read FDCUPath write FDCUPath;
 
-    property quiet    :boolean read FQuiet    write FQuiet default true;
-    property make     :boolean read FMake     write FMake;
-    property build    :boolean read FBuild    write FBuild;
+    property quiet: boolean read FQuiet write FQuiet default true;
+    property make: boolean read FMake write FMake;
+    property build: boolean read FBuild write FBuild;
 
-    property optimize :boolean read FOptimize write FOptimize;
-    property debug    :boolean read FDebug    write FDebug;
+    property optimize: boolean read FOptimize write FOptimize;
+    property debug: boolean read FDebug write FDebug;
 
-    property source  :string read FSource     write FSource;
+    property source : string read FSource     write FSource;
+  end;
+
+  TIncVerRcTask = class(TTask)
+  private
+    FRcFileName: string;
+  public
+    procedure Execute; override;
+    procedure Validate; override;
+  published
+    property rcfilename: string read FRcFileName write FRcFileName;
   end;
 
 implementation
@@ -198,18 +208,18 @@ const
   DelphiRegRoot  = 'SOFTWARE\Borland\Delphi';
   DelphiRootKey  = 'RootDir';
 
-  function RootFor(version :Integer) :string;
+  function RootFor(version: Integer): string;
   begin
     Result := Format('%s\%d.0', [DelphiRegRoot, version]);
   end;
 
-  function ReadRootFor(version :Integer):string;
+  function ReadRootFor(version: Integer):string;
   begin
     Result := RegReadStringDef(HKEY_LOCAL_MACHINE, RootFor(version), DelphiRootKey, '');
   end;
 
 var
-  ver :Integer;
+  ver: Integer;
 begin
   for ver := 6 downto 4 do
   begin
@@ -226,8 +236,8 @@ end;
 
 function TDelphiCompileTask.BuildArguments: string;
 var
-  Sources :TPaths;
-  s       :Integer;
+  Sources: TPaths;
+  s      : Integer;
 begin
   Result := inherited BuildArguments;
 
@@ -327,6 +337,26 @@ begin
   (Owner as TDelphiCompileTask).AddIncludePath(Value);
 end;
 
+{ TIncVerRcTask }
+
+procedure TIncVerRcTask.Execute;
+var
+  FclVerRc: TclVersionRc;
+begin
+  FclVerRc := TclVersionRc.Create(FRcFileName);
+  try
+    FclVerRc.IncBuild;
+    Project.SetProperty('build', IntToStr(FclVerRc.VersionInfo.Build));
+  finally
+    FclVerRc.Free;
+  end;
+end;
+
+procedure TIncVerRcTask.Validate;
+begin
+  RequireAttribute('rcfilename', FRcFileName);
+end;
+
 initialization
-  RegisterTasks([TDelphiCompileTask]);
+  RegisterTasks([TDelphiCompileTask, TIncVerRcTask]);
 end.
