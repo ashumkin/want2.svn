@@ -78,7 +78,13 @@ var
 begin
   Files := nil;
   try
-    BasePath := PathConcat(CurrentDir, '../test/data');
+    BasePath := PathConcat(CurrentDir, 'test/data');
+    if not PathIsDir(BasePath) then
+      BasePath := PathConcat(CurrentDir, '../test/data');
+    if not PathIsDir(BasePath) then
+      BasePath := PathConcat(CurrentDir, '../../test/data');
+    if not PathIsDir(BasePath) then
+      raise Exception.Create('could not find test data in ' + ToSystemPath(BasePath));
     Files := WildPaths.Wild('**/*.xml', BasePath);
     for i := 0 to High(Files) do
     begin
@@ -319,6 +325,5 @@ end;
 
 initialization
   LoadTests;
-
 end.
 
