@@ -63,22 +63,29 @@ begin
   JclFileUtils.ForceDirectories(FTestDir);
   FDante := TDante.Create;
   FBuildFileName := FTestDir + '\build.txt';
-  AssignFile(FBuildFile, FBuildFileName);
-  Rewrite(FBuildFile);
 end;
 
 procedure TTestDanteUnit.TearDown;
 begin
-  CloseFile(FBuildFile);
   FDante.Free;
   JclShell.SHDeleteFolder(0, FTestDir, [doSilent]);
   inherited;
 end;
 
 procedure TTestDanteUnit.TestDanteUnit;
+var
+  FCopyOfFileName: string;
 begin
-  WriteLn(FBuildFile, '');
+  FCopyOfFileName := FTestDir + '\copyofbuild.txt';
+
+  AssignFile(FBuildFile, FBuildFileName);
+  Rewrite(FBuildFile);
+  WriteLn(FBuildFile, 'copy ' + FBuildFileName + ' ' + FCopyOfFileName);
+  CloseFile(FBuildFile);
+
   FDante.DoBuild(FBuildFileName);
+
+  Check(FileExists(FCopyOfFileName), 'copy doesn''t exist');
 end;
 
 initialization
