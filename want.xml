@@ -15,8 +15,8 @@ See http://www.suigeneris.org/want/ for details.
          basedir="."
          default="dist" >
 
-  <property name="version"   value="?{release.ini:releases:current}" />
-  <regexp property="build"      text="${version}" pattern="[0-9]+$" />
+  <property name="version"  value="?{release.ini:releases:current}" />
+  <regexp property="build"  text="${version}" pattern="^.*\.([0-9]+)$" subst ="\1" />
 
   <property name="etc"       value="${basedir}/etc" />
   <property name="src"       value="${basedir}/src" />
@@ -69,8 +69,8 @@ See http://www.suigeneris.org/want/ for details.
   </target>
 
   <target name="resources" depends="prepare,versioninfo" >
-    <brcc file="${src}/license.rc" output="${bin}/license.res" />
-    <brcc file="${src}/wantver.rc" output="${bin}/wantver.res" />
+    <brcc file="${src}/license.rc" output="${src}/license.res" />
+    <brcc file="${src}/wantver.rc" output="${src}/wantver.res" />
   </target>
 
   <target name="compile" depends="clean,prepare,versioninfo,resources,build">
@@ -79,7 +79,8 @@ See http://www.suigeneris.org/want/ for details.
       <exeoutput path="${bin}"  />
       <dcuoutput path="${dcu}"      />
       <build     value="true" />
-      <optimize  value="true" />
+      <!-- optimize  value="true" / -->
+      <debug     value="true" />
       <console   value="true" />
 
       <define name="USE_JEDI_JCL" />
@@ -170,7 +171,10 @@ See http://www.suigeneris.org/want/ for details.
   </target>
 
   <target name="build" >
-    <regexp property="newversion" text="${version}" pattern="\.[0-9]+$" subst=".={1 + ${build}}" />
+    <regexp property="newversion" text="${version}" pattern="\.[0-9]*$" subst=".={1 + ${build}}" />
+    <echo   message="version=${version}" />
+    <echo   message="build=${build}" />
+    <echo   message="newversion=${newversion}" />
     <ini file="release.ini" >
       <write section="releases" key="current" value="${newversion}" />                  
     </ini>
