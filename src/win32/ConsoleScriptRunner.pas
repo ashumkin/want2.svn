@@ -192,8 +192,8 @@ begin
   end
   else if Switch = 'quiet' then
     Listener.Level := vlQuiet
-  else if Switch = 'color'then
-    UseColor := True
+  else if Switch = 'nocolor'then
+    UseColor := False
   else if Copy(Switch, 1, 1) = 'D' then
   begin
     Delete(Switch, 1, 1);

@@ -38,7 +38,7 @@ resourcestring
              '  -quiet              Be very quiet. '                      + C_EOL +
              '  -verbose            Be extra verbose.'                    + C_EOL +
              '  -debug              Print debugging information.'         + C_EOL +
-             '  -color              Output to console using color.'       + C_EOL;
+             '  -nocolor            Do not use color in console output.'  + C_EOL;
 
 
 

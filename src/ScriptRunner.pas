@@ -86,8 +86,16 @@ begin
     BuildFile := ToPath(BuildFile);
   BuildFile := FindBuildFile(BuildFile, False);
 
-  TScriptParser.Parse(Project, BuildFile);
-  Listener.BuildFileLoaded(Project, WildPaths.ToRelativePath(BuildFile, CurrentDir));
+  try
+    TScriptParser.Parse(Project, BuildFile);
+    Listener.BuildFileLoaded(Project, WildPaths.ToRelativePath(BuildFile, CurrentDir));
+  except
+    on e :Exception do
+    begin
+      Listener.BuildFailed(Project, e.Message);
+      raise;
+    end;
+  end;
 end;
 
 procedure TScriptRunner.Build( BuildFile: TPath;
