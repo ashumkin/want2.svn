@@ -3,3 +3,5 @@
 *.dcu
 *.cfg
 *.drc
+license.res
+wantver.res
