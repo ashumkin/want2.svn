@@ -72,13 +72,19 @@ type
     FDirA: string;
     FDirB: string;
   protected
-    procedure GetFiles;
+    procedure RemoveBaseDir(Strings: TStringList; Base: string);
   public
     constructor Create(DirectoryA, DirectoryB: string);
     destructor Destroy; override;
 
     function CompareByFileName: boolean;
     function CompareByFileContent: boolean;
+
+    procedure GetFiles;
+    procedure GetRelativeFiles;
+
+    property AFiles :TStringList read FAFiles;
+    property BFiles :TStringList read FBFiles;
   end;
 
 implementation
@@ -173,25 +179,16 @@ begin
 end;
 
 function TclDirectoryCompare.CompareByFileName: boolean;
-  procedure RemoveBaseDir(Strings: TStringList; Base: string);
-  var
-    i: Integer;
-  begin
-    for i := 0 to Strings.Count - 1 do
-      Strings[i] := StringReplace(Strings[i], Base, '', [rfIgnoreCase]);
-  end;
 begin
-  GetFiles;
-
-  { we need to chop off the different base names }
-  RemoveBaseDir(FAFiles, FDirA);
-  RemoveBaseDir(FBFiles, FDirB);
-
+  GetRelativeFiles;
+  
   Result := FAFiles.Equals(FBFiles);
 end;
 
 constructor TclDirectoryCompare.Create(DirectoryA, DirectoryB: string);
 begin
+  inherited Create;
+
   FDirA := DirectoryA;
   FDirB := DirectoryB;
   FAFiles := TStringList.Create;
@@ -219,6 +216,24 @@ begin
   FBFiles.Sorted := False;
   ToSystemPaths(FAFiles, ToPath(FDirA));
   ToSystemPaths(FBFiles, ToPath(FDirB));
+end;
+
+
+procedure TclDirectoryCompare.RemoveBaseDir(Strings: TStringList; Base: string);
+var
+  i: Integer;
+begin
+  for i := 0 to Strings.Count - 1 do
+    Strings[i] := StringReplace(Strings[i], Base, '', [rfIgnoreCase]);
+end;
+
+procedure TclDirectoryCompare.GetRelativeFiles;
+begin
+  GetFiles;
+
+  { we need to chop off the different base names }
+  RemoveBaseDir(FAFiles, FDirA);
+  RemoveBaseDir(FBFiles, FDirB);
 end;
 
 { TclFileCompare }

@@ -74,7 +74,6 @@ type
     procedure NotImplementedError(Msg :string);
 
     function CheckFileTime(const FileName :TPath; Time :TDateTime = 0) :TDateTime;
-
   public
     constructor Create(const ZipFileName :TPath);
     destructor  Destroy; override;
@@ -83,22 +82,22 @@ type
     function Write(const Buffer; Count: Longint): Longint; override;
     function Seek(Offset: Longint; Origin: Word): Longint; override;
 
-    procedure NewEntry(  EntryName    :TPath;
-                         Attributes   :TFileAttributes;
-                         Time         :TDateTime;
-                         Compress     :boolean;
-                         Comment      :string = ''); overload;
+    procedure NewEntry(  const EntryName    :TPath;
+                               Attributes   :TFileAttributes;
+                               Time         :TDateTime;
+                               Compress     :boolean;
+                               Comment      :string = ''); overload;
     procedure CloseEntry;
 
-    procedure WriteDirEntry( DirName :TPath; Time:TDateTime = 0;  Comment :string = '');
+    procedure WriteDirEntry(const DirName :TPath; Time:TDateTime = 0;  Comment :string = '');
 
-    procedure WriteStream( EntryName  :TPath;
-                           Stream     :TStream;
-                           Attributes :TFileAttributes;
-                           Time       :TDateTime;
-                           Comment    :string = ''); overload;
+    procedure WriteStream(const EntryName  :TPath;
+                                Stream     :TStream;
+                                Attributes :TFileAttributes;
+                                Time       :TDateTime;
+                                Comment    :string = ''); overload;
 
-    procedure WriteFile( const FileName :TPath;  Comment :string = '');
+    procedure WriteFile(const FileName :TPath;  Comment :string = '');
 
   public
     property ZipFileName      :TPath    read FZipFileName write FZipFileName;
@@ -108,6 +107,61 @@ type
 
     property Compress         :boolean  read FCompress    write FCompress default true;
     property CompressionLevel :TCompressionLevel read FCompression write FCompression;
+  end;
+
+
+
+  TUnzipStream = class(TStream)
+  private
+  protected
+    FZipFileName :TPath;
+    FEntryOpen   :boolean;
+
+    FUnzipFile   :ZipUtils.UnzFile;
+
+    FEntries     :TStrings;
+    FAtLastEntry :boolean;
+
+    procedure Error(Msg :string);
+    procedure NotImplementedError(Msg :string);
+
+    function CheckFileTime(const FileName :TPath; Time :TDateTime = 0) :TDateTime;
+
+    function EntryInfo : unz_file_info;                           overload;
+    function EntryInfo(const EntryName :TPath) : unz_file_info;   overload;
+  public
+    constructor Create(const ZipFileName :TPath);
+    destructor  Destroy; override;
+
+    function Read(var Buffer; Count: Longint): Longint;    override;
+    function Write(const Buffer; Count: Longint): Longint; override;
+    function Seek(Offset: Longint; Origin: Word): Longint; override;
+
+    procedure LocateEntry(const EntryName    :TPath);
+    procedure OpenEntry(  const EntryName    :TPath);
+    procedure CloseEntry;
+
+
+    function EntryAttributes :TFileAttributes;                         overload;
+    function EntryAttributes(const EntryName :TPath) :TFileAttributes; overload;
+    function EntrySize :Cardinal;                                      overload;
+    function EntrySize(const EntryName :TPath):Cardinal;               overload;
+    function EntryName :string;
+
+    procedure GotoFirstEntry;
+    procedure GotoNextEntry;
+    function  HasMoreEntries : boolean;
+
+    procedure ReadStream(const EntryName  :TPath; Stream     :TStream);
+
+    procedure ExtractFile(const FileName :TPath; const ToDir :TPath = '');
+    procedure ExtractAll(const ToDir :TPath = '');
+
+  public
+    property ZipFileName      :TPath    read FZipFileName write FZipFileName;
+    property EntryOpen        :boolean  read FEntryOpen   write FEntryOpen;
+
+    property Entries :TStrings read FEntries;
   end;
 
 implementation
@@ -147,7 +201,9 @@ begin
   FPaths.Free;
   if EntryOpen then
      CloseEntry;
-  Err := ZipClose(FZipFile, PChar(Comment));
+  Err := ZIP_OK;
+  if FZipFile <> nil then
+    Err := ZipClose(FZipFile, PChar(Comment));
   inherited Destroy;
   if Err <> ZIP_OK then
     Error('Could not close zip file');
@@ -206,11 +262,11 @@ end;
 
 
 
-procedure TZipStream.NewEntry(  EntryName    :TPath;
-                                Attributes   :TFileAttributes;
-                                Time         :TDateTime;
-                                Compress     :boolean;
-                                Comment :string = '');
+procedure TZipStream.NewEntry(  const EntryName :TPath;
+                                Attributes      :TFileAttributes;
+                                Time            :TDateTime;
+                                Compress        :boolean;
+                                Comment         :string);
 var
   Err            :Integer;
   ZipFileInfo    :zip_fileinfo;
@@ -224,7 +280,7 @@ begin
   ZipFileInfo.external_fa := FileAttributesToSystemAttributes(Attributes);
   ZipFileInfo.dosDate     := TimeToSystemFileTime(Time);
 
-  WildPaths.ForceRelativePath(EntryName, TrashBase);
+  WildPaths.ForceRelativePath(FEntryName, TrashBase);
   // Yank Base!!
 
   if Compress then
@@ -233,7 +289,7 @@ begin
     CompressMethod := 0 {Z_STORED};
 
   Err := zipOpenNewFileInZip( FZipFile,
-                              PChar(EntryName),
+                              PChar(FEntryName),
                               @ZipFileInfo,
                               NIL,             { const extrafield_local : voidp; }
                               0,               { size_extrafield_local : uInt; }
@@ -261,11 +317,11 @@ end;
 
 
 
-procedure TZipStream.WriteStream( EntryName  :TPath;
-                                  Stream     :TStream;
-                                  Attributes   :TFileAttributes;
-                                  Time         :TDateTime;
-                                  Comment    :string );
+procedure TZipStream.WriteStream( const EntryName  :TPath;
+                                        Stream     :TStream;
+                                        Attributes :TFileAttributes;
+                                        Time       :TDateTime;
+                                        Comment    :string );
 begin
   NewEntry(EntryName, Attributes, Time, FCompress, Comment);
   try
@@ -276,7 +332,7 @@ begin
 end;
 
 
-procedure TZipStream.WriteFile( FileName: TPath;  Comment :string);
+procedure TZipStream.WriteFile(const FileName: TPath;  Comment :string);
 var
   Stream  :TFileStream;
   FileDir :TPath;
@@ -303,7 +359,7 @@ end;
 
 
 
-procedure TZipStream.WriteDirEntry( DirName: TPath; Time:TDateTime; Comment :string);
+procedure TZipStream.WriteDirEntry(const DirName: TPath; Time:TDateTime; Comment :string);
 begin
   if (Length(DirName) > 0) and (FPaths.IndexOf(DirName) < 0) then
   begin
@@ -318,6 +374,258 @@ begin
       CloseEntry;
     end;
   end;
+end;
+
+
+
+
+{ TUnzipStream }
+
+constructor TUnzipStream.Create(const ZipFileName: TPath);
+begin
+  inherited Create;
+  FZipFileName := ZipFileName;
+
+  FUnzipFile  := UNZIP.UnzOpen(PChar(ToSystemPath(ZipFileName)));
+  if FUnzipFile = nil then
+     Error(Format('Could not open zip file "%s"', [ZipFileName]));
+
+  FEntries := TStringList.Create;
+  with TStringList(FEntries)do
+  begin
+    Sorted := True;
+    Duplicates := dupIgnore;
+  end;
+
+  GotoFirstEntry;
+  while HasMoreEntries do
+  begin
+    FEntries.Add(EntryName);
+    GotoNextEntry;
+  end;
+end;
+
+destructor TUnzipStream.Destroy;
+var
+  Err :Integer;
+begin
+  FEntries.Free;
+  if EntryOpen then
+     CloseEntry;
+  Err := UNZ_OK;
+  if FUnzipFile <> nil then
+    Err := UnzClose(FUnzipFile);
+  inherited Destroy;
+  if Err <> UNZ_OK then
+    Error('Could not close zip file');
+end;
+
+procedure TUnzipStream.Error(Msg: string);
+begin
+  raise EZipFileError.Create(Msg);
+end;
+
+procedure TUnzipStream.NotImplementedError(Msg: string);
+begin
+  Error(Format('"%s" not implemented in %s', [Msg, ClassName]));
+end;
+
+
+function TUnzipStream.CheckFileTime(const FileName :TPath; Time :TDateTime = 0) :TDateTime;
+begin
+  if Time <= 0 then
+    Result := FileTime(FileName)
+  else
+    Result := Time;
+
+  if Time <= 0 then
+    Result := Now;
+end;
+
+
+function TUnzipStream.Read(var Buffer; Count: Integer): Longint;
+begin
+  Result := -1;
+  if not EntryOpen then
+    Error('Need to open a zip entry first')
+  else
+  begin
+    Result := unzReadCurrentFile(FUnzipFile, @Buffer, Count);
+    if Result < 0 then
+      Error('Could not read from zip file entry');
+  end;
+end;
+
+function TUnzipStream.Seek(Offset: Integer; Origin: Word): Longint;
+begin
+  Result := -1;
+  NotImplementedError('Seek');
+end;
+
+function TUnzipStream.Write(const Buffer; Count: Integer): Longint;
+begin
+  Result := -1;
+  NotImplementedError('Seek');
+end;
+
+
+
+procedure TUnzipStream.LocateEntry(const EntryName: TPath);
+var
+  Err            :Integer;
+  TrashBase      :TPath;
+  Name           :TPath;
+begin
+  Name := EntryName;
+
+  WildPaths.ForceRelativePath(Name, TrashBase);
+  // Yank Base!!
+
+  Err := UNZIP.UnzLocateFile(FUnzipFile, PChar(Name), 0);
+  if Err <> ZIP_OK then
+    Error(Format('Could not find zip file entry "%s"', [EntryName]));
+end;
+
+procedure TUnzipStream.OpenEntry(const EntryName  :TPath);
+var
+  Err            :Integer;
+begin
+  LocateEntry(EntryName);
+
+  Err := UNZIP.UnzOpenCurrentFile(FUnzipFile);
+  if Err <> ZIP_OK then
+    Error(Format('Could not open zip file entry "%s"', [EntryName]));
+
+  FEntryOpen := True;
+end;
+
+procedure TUnzipStream.CloseEntry;
+var
+  Err :Integer;
+begin
+  FEntryOpen := False;
+  Err := UNZIP.UnzCloseCurrentFile(FUnzipFile);
+  if Err <> ZIP_OK then
+    Error('Could not close zip file entry');
+end;
+
+
+
+
+procedure TUnzipStream.ReadStream( const EntryName  :TPath; Stream     :TStream);
+begin
+  OpenEntry(EntryName);
+  try
+    Stream.CopyFrom(Self, EntrySize);
+  finally
+    CloseEntry;
+  end;
+end;
+
+
+procedure TUnzipStream.ExtractFile(const FileName: TPath; const ToDir :TPath);
+var
+  Stream   :TFileStream;
+  DestName :string;
+begin
+  DestName := PathConcat(ToDir, FileName);
+  if Directory in EntryAttributes(FileName) then
+    MakeDir(DestName)
+  else
+  begin
+    MakeDir(SuperPath(DestName));
+
+    Stream := TFileStream.Create(ToSystemPath(DestName), fmCreate or fmShareDenyWrite);
+    try
+      ReadStream(FileName, Stream);
+    finally
+      Stream.Free;
+    end;
+  end;
+end;
+
+
+procedure TUnzipStream.ExtractAll(const ToDir: TPath);
+var
+  e :Integer;
+begin
+  for e := 0 to Entries.Count-1 do
+    ExtractFile(Entries[e], ToDir);
+end;
+
+function TUnzipStream.EntryInfo(const EntryName :TPath): unz_file_info;
+begin
+  LocateEntry(EntryName);
+  Result := EntryInfo;
+end;
+
+
+function TUnzipStream.EntryInfo: unz_file_info;
+var
+  Err :Integer;
+begin
+  Err := unzGetCurrentFileInfo(FUnzipFile, @Result, nil, 0, nil, 0, nil, 0);
+  if Err <> UNZ_OK then
+    Error('Could not read entry information');
+end;
+
+function TUnzipStream.EntryAttributes( const EntryName: TPath): TFileAttributes;
+begin
+  LocateEntry(EntryName);
+  Result := EntryAttributes;
+end;
+
+function TUnzipStream.EntryAttributes: TFileAttributes;
+begin
+  Result := TFileAttributes(Byte(EntryInfo.external_fa));
+end;
+
+function TUnzipStream.EntrySize(const EntryName: TPath): Cardinal;
+begin
+  LocateEntry(EntryName);
+  Result := EntrySize;
+end;
+
+function TUnzipStream.EntrySize: Cardinal;
+begin
+  Result := EntryInfo.uncompressed_size;
+end;
+
+procedure TUnzipStream.GotoFirstEntry;
+var
+  Err :Integer;
+begin
+  Err := UNZIP.unzGoToFirstFile(FUnzipFile);
+  if Err <> UNZ_OK then
+    Error('Could not move to first file');
+  FAtLastEntry := False;
+end;
+
+procedure TUnzipStream.GotoNextEntry;
+var
+  Err :Integer;
+begin
+  Err := UNZIP.unzGoToNextFile(FUnzipFile);
+  if Err = UNZ_END_OF_LIST_OF_FILE then
+    FAtLastEntry := True
+  else if Err <> UNZ_OK then
+    Error('Could not move to first file');
+end;
+
+function TUnzipStream.HasMoreEntries: boolean;
+begin
+  Result := not FAtLastEntry;
+end;
+
+function TUnzipStream.EntryName: string;
+var
+  Err :Integer;
+begin
+  SetLength(Result, EntryInfo.size_filename);
+  Err := unzGetCurrentFileInfo(FUnzipFile, nil, @Result[1], Length(Result), nil, 0, nil, 0);
+  if Err <> UNZ_OK then
+    Error('Could not read entry information');
+  Result := Trim(Result);
 end;
 
 

@@ -47,7 +47,7 @@ uses
 type
   TZipTask = class(TFileSetTask)
   protected
-    FZipFile   :string;
+    FZipFile   :TPath;
     FCompress  :boolean;
 
     FZipStream :TZipStream;
@@ -61,12 +61,30 @@ type
     procedure Execute; override;
   published
     property basedir;
-    
-    property zipfile  :string  read FZipFile   write FZipFile;
+
+    property zipfile  :TPath   read FZipFile   write FZipFile;
     property compress :boolean read FCompress  write FCompress    default true;
 
     property includes :string write AddCommaSeparatedIncludes;
     property excludes :string write AddCommaSeparatedExcludes;
+  end;
+
+  TUnzipTask = class(TTask)
+  protected
+    FZipFile   :TPath;
+    FToDir     :TPath;
+
+    FUnzipStream :TUnzipStream;
+
+  public
+    procedure Init; override;
+    procedure Execute; override;
+  published
+    property zipfile  :TPath read FZipFile write FZipFile;
+    property src      :TPath read FZipFile write FZipFile;
+
+    property todir    :TPath read FToDir     write FToDir;
+    property dest     :TPath read FToDir     write FToDir;
   end;
 
 implementation
@@ -123,6 +141,44 @@ begin
 end;
 
 
+{ TUnzipTask }
+
+procedure TUnzipTask.Init;
+begin
+  inherited Init;
+  if FZipFile = '' then
+    TaskError('zipfile (or src) attribute is required');
+end;
+
+procedure TUnzipTask.Execute;
+var
+  ToPath :TPath;
+  e :Integer;
+begin
+  Log(vlVerbose);
+  ToPath := ToRelativePath(ToDir);
+  FUnzipStream := TUnzipStream.Create(zipfile);
+  try
+    with FUnzipStream do
+    begin
+      if Entries.Count > 0 then
+      begin
+        Log('Unzipping %d files to "%s"', [Entries.Count, ToPath]);
+
+        for e := 0 to Entries.Count-1 do
+        begin
+          Log(vlVerbose, Entries[e]);
+          AboutToScratchPath(Entries[e]);
+          ExtractFile(Entries[e], ToPath);
+        end;
+      end;
+    end;
+  finally
+    FUnzipStream.Free;
+    FUnzipStream := nil;
+  end
+end;
+
 initialization
-  RegisterTask(TZipTask);
+  RegisterTasks([TZipTask, TUnzipTask]);
 end.

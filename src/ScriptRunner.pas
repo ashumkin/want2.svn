@@ -72,6 +72,8 @@ type
     procedure DoBuild( ABuildFileName: string;
                        Targets:        string;
                        Level:      TLogLevel = vlNormal); overload;
+
+    property UseColor :boolean read FUseColor write FUseColor;
   end;
 
 function DefaultBuildFileName: string;
@@ -99,7 +101,7 @@ var
 begin
   Logger  := TConsoleLogManager.Create;
   Logger.Level := Level;
-  Logger.UseColor := SysUtils.FindCmdLineSwitch('color', ['/','-'], True);
+  Logger.UseColor := Self.UseColor or SysUtils.FindCmdLineSwitch('color', ['/','-'], True);
   Logger.Start;
   try
 

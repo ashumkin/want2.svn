@@ -166,6 +166,7 @@ var
 begin
   Dante := TDante.Create;
   try
+    Dante.UseColor := True;
     Dante.DoBuild(FTestExeSetupDir + BuildFileName, vlVerbose);
   finally
     Dante.Free;
