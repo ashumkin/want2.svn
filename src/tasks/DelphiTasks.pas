@@ -24,9 +24,10 @@
     @author Dan Hughes <dan@multiedit.com>
     @author Ignacio J. Ortega
     @author Gerrit Jan Doornink
+    @author Michael A. Johnson
 }
 { TODO -oGJD -cTODO :
-  When usecfg is false create empty dcc32.cfg to override 
+  When usecfg is false create empty dcc32.cfg to override
   usage of $(DELPHI)\bin\dcc32.cfg by dcc32.exe.
   Add handling of:
   -TX: Target file extension
