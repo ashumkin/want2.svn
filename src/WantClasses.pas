@@ -979,7 +979,20 @@ begin
       else if Kind in [tkInteger] then
         SetOrdProp(Self, PropInfo, StrToInt(Value))
       else if Kind in [tkEnumeration] then
-        SetOrdProp(Self, PropInfo, GetEnumValue(PropType^, Value))
+      begin
+        if Name <> 'Boolean' then
+          SetOrdProp(Self, PropInfo, GetEnumValue(PropType^, Value))
+        else
+        begin
+          Value := LowerCase(Value);
+          if (Value = 'true') or (Value = 'yes') or (Value = 'on') then
+            SetOrdProp(Self, PropInfo, GetEnumValue(PropType^, 'true'))
+          else if (Value = 'false') or (Value = 'no') or (Value = 'off') then
+            SetOrdProp(Self, PropInfo, GetEnumValue(PropType^, 'false'))
+          else
+            DanteError('expected one of true/false, yes/no, on/off');
+        end
+      end
       else
         Result := False;
     end;
@@ -1257,6 +1270,27 @@ end;
 
 // XML handling
 
+procedure TProject.ParseXMLText(const XML :string);
+var
+  Dom      : IDocument;
+begin
+  try
+    Dom := MiniDom.ParseTextToDom(XML);
+    Self.DoParseXML(Dom.Root);
+  except
+    on e:EDanteParseException do
+    begin
+      Log(vlErrors, e.Message);
+      raise;
+    end;
+    on e:Exception do
+    begin
+      Log(vlErrors, e.Message);
+      ParseError(e.Message, 0);
+    end;
+  end;
+end;
+
 procedure TProject.LoadXML(const SystemPath: string; FindFile: boolean);
 var
   Dom      : IDocument;
@@ -1302,11 +1336,6 @@ begin
       ParseError(e.Message, Node.LineNo);
     end;
   end;
-end;
-
-procedure TProject.ParseXMLText(const XML: string);
-begin
-  DoParseXML(MiniDom.ParseTextToDOM(XML).Root);
 end;
 
 function TProject.ToXML(Dom: IDocument): IElement;
