@@ -86,6 +86,7 @@ function IsWindowsPath(const Path: TPath):boolean;
 
 function PathDrive(const Path: TPath): string;
 function PathServer(const Path: TPath): string;
+function PathFile(const Path: TPath): string;
 
 function RemovePathDrive(Path: TPath):TPath;
 function RemovePathServer(Path: TPath):TPath;
@@ -221,6 +222,16 @@ begin
     P := Copy(Path, 3, Length(Path));
     Result := StrToken(P, '/');
   end;
+end;
+
+function PathFile(const Path: TPath): string;
+var
+  splits :TPaths;
+begin
+  Result := '';
+  splits := SplitPath(Path);
+  if Length(splits) > 0 then
+    Result := splits[High(splits)];
 end;
 
 function RemovePathDrive(Path: TPath):TPath;

@@ -124,7 +124,8 @@ implementation
 
 procedure TExecTask.Execute;
 begin
-  Log(ToRelativePath(Executable));
+  Log(PathFile(Executable));
+  Log(vlVerbose, Executable);
   Log(vlVerbose, BuildArguments);
   inherited Execute;
 end;
