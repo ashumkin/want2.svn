@@ -154,7 +154,7 @@ begin
     try
       GetTest := GetModuleSymbol(LibHandle, 'Test');
       if not Assigned(GetTest) then
-        TaskError(Format('Library "%s" does not export a Test method', [ToRelativePath(testlib)]))
+        TaskError(Format('Library "%s" does not export a Test function', [ToRelativePath(testlib)]))
       else
       begin
         Test := GetTest;
