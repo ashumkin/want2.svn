@@ -10,16 +10,22 @@ ol   {margin-top :8; margin-bottom: 16; }
 li   {margin-bottom: 4; margin-top: 0; }
 pre,
 blockquote {margin-left:16; font-size:90%;}
-pre.copyright {justify:center; font-size:70%;}
+pre.copyright {
+ justify:center; 
+ font-size:70%;
+}
 
 pre.xml {
   background:#CCFFCC; 
   color:black; 
-  font-weight:bold; 
   padding=8;  
+  font-weight:medium; 
 }
 
-span.meta {color=green;}
+span.meta {
+  color=darkgreen;
+  font-weight:bold; 
+}
 
 table {
   margin-left:16; 

@@ -18,6 +18,7 @@
 <span class="meta">  <span lang="es-ve"> </span>   [</span> file=&quot;a_filename&quot; <span class="meta">]</span> 
 <span class="meta">    <span lang="es-ve"> </span> [</span> append= <span class="meta"><span lang="es-ve">(</span></span> <span lang="es-ve">&quot;on&quot; <span class="meta">|</span> &quot;off</span>&quot;<span lang="es-ve"><span class="meta">|</span> &quot;</span>yes&quot;<span lang="es-ve"><span class="meta">|</span> &quot;</span>no&quot;<span lang="es-ve"><span class="meta">|</span> &quot;</span><span style="background-position: 0 0">true</span>&quot;<span lang="es-ve"><span class="meta">|</span> &quot;</span><span style="background-position: 0 0">false</span>&quot;<span class="meta"><span lang="es-ve">)</span> ]</span> 
 <span class="meta">     <span lang="es-ve"> </span>[</span> <span lang="es-ve">level</span>=<span lang="es-ve"><span class="meta">(</span> &quot;errors&quot; <span class="meta">|</span> &quot;warnings&quot; <span class="meta">|</span> &quot;normal&quot; <span class="meta">|</span> &quot;verbose&quot; <span class="meta">|</span> &quot;debug</span>&quot;<span class="meta"><span lang="es-ve">)</span> ]</span> 
+<span class="meta">  <span lang="es-ve"> </span>   [</span> <span lang="es-ve">input</span>=&quot;a<span lang="es-ve">n</span>_<span lang="es-ve">input_</span>filename&quot; <span class="meta">]</span> 
 &gt;
 <span class="meta">[</span> a much longer message <span class="meta">]</span>
 &lt;/echo&gt;
@@ -57,6 +58,12 @@ the message text before writing the output. </p>
     debug. </td>
     <td align="center" valign="top" width="198">No </td>
   </tr>
+  <tr>
+    <td valign="top" width="65">input</td>
+    <td valign="top" width="317">the path of a file from which message text 
+    should be read</td>
+    <td align="center" valign="top" width="198">No</td>
+  </tr>
 </table>
 <h2>Nested Elements </h2>
 <p>The &lt;echo&gt; task supports no nested elements, but the text between the opening 
@@ -72,7 +79,15 @@ and closing tags can be used to place a longer message. </p>
   &lt;echo file=&quot;build.log&quot; append=&quot;yes&quot; level=&quot;errors&quot; &gt;
     Built again on ${year}-${month}-${day} ${hour}:${minute}
   &lt;/echo&gt;
-</pre>
+
+  &lt;!-- 
+    read an input template file that contains macros
+    and output it with macros substituted
+  --&gt;
+  &lt;echo&gt;
+    &lt;input path=&quot;ProductVersion.template.pas&quot; /&gt;
+    &lt;file  path=&quot;version.rc&quot; /&gt;
+  &lt;/echo&gt;</pre>
 <hr>
 <div align="center">
   <center>
