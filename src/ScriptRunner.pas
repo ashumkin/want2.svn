@@ -16,10 +16,13 @@ uses
   SysUtils,
   Classes,
   Forms,
+  Math,
 
   JclSysUtils,
   JclMiscel,
   JclStrings,
+
+  CRT32,
 
   ConsoleListener,
   WildPaths,
@@ -157,6 +160,36 @@ begin
   DoBuild(FBuildFile, FTargets, Verbosity)
 end;
 
+procedure More(Text :string);
+var
+  S :TStrings;
+  i :Integer;
+begin
+  S := TStringList.Create;
+  try
+    S.Text := Text;
+    i := 0;
+    while i < S.Count do
+    begin
+      if (Pos('---', S[i]) <> 1) then
+      begin
+        Writeln(S[i]);
+        Inc(i);
+      end
+      else
+      begin
+        Write(Format('-- More (%d%%) --'#13, [100*(i+2) div S.Count]));
+        Inc(i);
+        repeat until ReadKey in [' ',#13,#10, 'q'];
+        writeln(#13' ': 70);
+      end;
+    end;
+  finally
+    S.Free;
+  end;
+end;
+
+
 function TConsoleScriptRunner.ParseOption(Switch: string):boolean;
 var
   PropName:  string;
@@ -164,25 +197,32 @@ var
   EqPos:     Integer;
 begin
   Result := True;
-  if (Switch = '-h') or (Switch = '-?') then
-    // nothing: handled elsewhere
-  else if (Switch = '-L') then
-    // nothing: handled elsewhere
-  else if Switch = '-verbose' then
+  if (Switch = 'h') or (Switch = '?') then
+  begin
+    WriteLn(Copyright );
+    Usage;
+    Halt(2);
+  end
+  else if (Switch = 'L') then
+  begin
+    More(License);
+    Halt(3);
+  end
+  else if Switch = 'verbose' then
     Verbosity := vlVerbose
-  else if Switch = '-debug' then
+  else if Switch = 'debug' then
   begin
     Verbosity := vlDebug;
     Listener.Level := Verbosity;
     Log(vlDebug, 'Parsing commandline');
   end
-  else if Switch = '-quiet' then
+  else if Switch = 'quiet' then
     Verbosity := vlQuiet
-  else if Switch = '-color'then
+  else if Switch = 'color'then
     UseColor := True
-  else if StrLeft(Switch, 2) = '-D' then
+  else if StrLeft(Switch, 1) = 'D' then
   begin
-    Delete(Switch, 1, 2);
+    Delete(Switch, 1, 1);
 
     EqPos := Pos('=', Switch);
     if EqPos = 0 then
@@ -214,9 +254,9 @@ begin
         Inc(p);
         FBuildFile := ToPath(ParamStr(p));
       end
-      else if (StrLeft(Param, 1) = '-') then
+      else if Param[1] in ['-','/'] then
       begin
-        if not ParseOption(Param) then
+        if not ParseOption(Copy(Param, 2, Length(Param))) then
           WantError('Unknown commandline option: ' + Param);
       end
       else
