@@ -18,8 +18,8 @@
 <h2>Basic Steps </h2>
 <p>Want lets you write your own customized tasks and make them available to 
 build scripts. In this short tutorial we'll write a basic &quot;log&quot; task for Want. 
-The complete source code for the example is included as <code>
-&lt;want&gt;/src/tasks/LoggerTasks.pas</code> in the Want distribution. </p>
+The complete source code for the example is included as <code>&lt;want&gt;/src/tasks/LoggerTasks.pas</code> 
+in the Want distribution. </p>
 <h3>Go! </h3>
 <p>To create a new Want task: </p>
 <ol>
@@ -30,9 +30,8 @@ The complete source code for the example is included as <code>
   <li>Override the Execute procedure to define the task's actions. </li>
   <li>Register the the class by calling WantClasses.RegisterTask<span lang="es-ve">s</span>.
   </li>
-  <li>Include the new unit in the uses clause of <code>
-  &lt;want&gt;/src/tasks/CustomTasks.pas</code> (Want's standard tasks go in <code>
-  StandardTasks.pas</code>). </li>
+  <li>Include the new unit in the uses clause of <code>&lt;want&gt;/src/tasks/CustomTasks.pas</code> 
+  (Want's standard tasks go in <code>StandardTasks.pas</code>). </li>
 </ol>
 <p>Here's an example: </p>
 <blockquote>
@@ -204,7 +203,7 @@ last attribute is processed. </p>
   <li>Any appearance of a macro of the form&nbsp; <code>@{path}</code> treats
   <code>path</code> as an want path (forward slashes) and converts it to a 
   system path. </li>
-  <li>Any appearance of a macro of the form <code>@{inifile:section:key|default}</code> 
+  <li>Any appearance of a macro of the form <code>?{inifile:section:key|default}</code> 
   reads the value of the <code>key</code> key, in section <code>section</code>, 
   of the .ini file <code>inifile</code>. If the key is not found, then the 
   optional <code>default</code> is used for the value. </li>
@@ -281,8 +280,8 @@ element that contains the text that the task will log. Scripts that use the
 </pre>
 <p>To define nested XML elements for a task: </p>
 <ol>
-  <li>Define a class that descends from <code>TScriptElement</code> for each kind 
-  of nested element. </li>
+  <li>Define a class that descends from <code>TScriptElement</code> for each 
+  kind of nested element. </li>
   <li>For each kind of nested element, Define a published <code>CreateXYZ</code> 
   function in the task class, where &quot;<code>XYZ</code>&quot; is the XML tag of the 
   nested element (in our example, the method will be called <code>
