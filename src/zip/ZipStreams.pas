@@ -71,8 +71,8 @@ type
     constructor Create(const ZipFileName :string);
     destructor  Destroy; override;
 
-    procedure NewEntry(const EntryName :string; const Comment :string; Time :TDateTime = 0);      overload;
-    procedure NewEntry(const EntryName :string; Time :TDateTime = 0; const Comment :string = ''); overload;
+    procedure NewEntry(const EntryName :string; const Comment :string = ''; Age :Integer = 0);            overload;
+    procedure NewEntry(const EntryName :string; Age:Integer; const Comment :string = ''); overload;
 
     procedure CloseEntry;
 
@@ -80,8 +80,8 @@ type
     function Write(const Buffer; Count: Longint): Longint; override;
     function Seek(Offset: Longint; Origin: Word): Longint; override;
 
-    procedure WriteStream(const EntryName :string; Stream :TStream; const Comment :string = ''; const Time :TDateTime = 0);   overload;
-    procedure WriteStream(const EntryName :string; Stream :TStream; const Time :TDateTime; const Comment :string = '');       overload;
+    procedure WriteStream(const EntryName :string; Stream :TStream; const Comment :string = ''; Age :Integer = 0);   overload;
+    procedure WriteStream(const EntryName :string; Stream :TStream; Age :Integer; const Comment :string = '');       overload;
     procedure WriteFile(const FileName :string; const Comment :string = '');
 
   public
@@ -144,21 +144,18 @@ begin
   Error(Format('"%s" not implemented in %s', [Msg, ClassName]));
 end;
 
-procedure TZipStream.NewEntry(const EntryName, Comment: string; Time: TDateTime);
+procedure TZipStream.NewEntry(const EntryName: string; Age: Integer; const Comment: string);
+begin
+  NewEntry(EntryName, Comment, Age);
+end;
+
+
+procedure TZipStream.NewEntry(const EntryName, Comment: string; Age: Integer);
 var
   Err         :Integer;
   ZipFileInfo :zip_fileinfo;
-  Age         :Integer;
 begin
   FEntryName := EntryName;
-  if Time <> 0 then
-    Age := DateTimeToFileDate(Time)
-  else
-  begin
-    Age  := FileAge(EntryName);
-    if Age < 0 then
-       Age := DateTimeToFileDate(Time)
-  end;
 
   FillChar(ZipFileInfo, SizeOf(ZipFileInfo), 0);
   ZipFileInfo.dosDate := Age;
@@ -178,12 +175,6 @@ begin
 
   FEntryOpen := True;
 end;
-
-procedure TZipStream.NewEntry(const EntryName: string; Time: TDateTime; const Comment: string);
-begin
-  NewEntry(EntryName, Comment, Time);
-end;
-
 
 procedure TZipStream.CloseEntry;
 var
@@ -223,14 +214,14 @@ begin
   end;
 end;
 
-procedure TZipStream.WriteStream(const EntryName :string; Stream :TStream; const Time: TDateTime; const Comment: string);
+procedure TZipStream.WriteStream(const EntryName :string; Stream :TStream; Age :Integer; const Comment: string);
 begin
-  WriteStream(EntryName, Stream, Comment, Time);
+  WriteStream(EntryName, Stream, Comment, Age);
 end;
 
-procedure TZipStream.WriteStream(const EntryName :string; Stream :TStream; const Comment: string; const Time: TDateTime);
+procedure TZipStream.WriteStream(const EntryName :string; Stream :TStream; const Comment: string; Age :Integer);
 begin
-  NewEntry(EntryName, Comment, Time);
+  NewEntry(EntryName, Comment, Age);
   try
     Self.CopyFrom(Stream, Stream.Size);
   finally
@@ -260,6 +251,7 @@ begin
     Stream.Free;
   end;
 end;
+
 
 
 
