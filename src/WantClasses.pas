@@ -45,6 +45,21 @@ type
   TTarget     = class;
   TTask       = class;
 
+  EDanteException  = class(Exception);
+  ETargetException = class(EDanteException);
+  ETaskException   = class(EDanteException);
+
+  ETargetNotFoundException  = class(ETargetException);
+  ECircularTargetDependency = class(ETargetException);
+
+
+  ETaskError       = class(ETaskException);
+  ETaskFailure     = class(ETaskException);
+
+
+  TTargetArray = array of TTarget;
+
+
   TDanteComponent = class(TComponent)
   protected
     function GetOwner: TPersistent; override;
@@ -61,14 +76,19 @@ type
     property Name;
   end;
 
+
+
   TProject = class(TDanteComponent)
   protected
     FTargets: TList;
+    FBeQuiet: boolean;
 
-    function GetTarget(Index: Integer):TTarget;
+    function  GetTarget(Index: Integer):TTarget;
     procedure Notification(AComponent: TComponent; Operation: TOperation); override;
+
+    procedure BuildSchedule(TargetName :string; Sched :TList);
   public
-    constructor Create(Owner: TComponent);  override;
+    constructor Create(Owner: TComponent = nil);  override;
     destructor  Destroy; override;
 
     procedure Parse(const Image: string);
@@ -79,7 +99,16 @@ type
     function AddTarget(Name: string = ''): TTarget;
     function TargetCount: Integer;
 
+    function GetTargetByName(name :string):TTarget;
+
+    function Schedule(TargetName :string) :TTargetArray;
+    procedure Build(TargetName :string);
+
+    procedure Log(Msg :string = '');
+
     property Targets[i: Integer]: TTarget read GetTarget; default;
+    property Names[TargetName :string] :TTarget read GetTargetByName;
+    property BeQuiet: boolean read FBeQuiet write FBeQuiet;
   end;
 
   TTarget = class(TDanteComponent)
@@ -95,6 +124,9 @@ type
     destructor  Destroy; override;
 
     function TaskCount: Integer;
+    procedure Build;
+
+    procedure Log(Msg :string = '');
 
     property Tasks[i: Integer]: TTask read GetTask; default;
   published
@@ -102,26 +134,20 @@ type
   end;
 
   TTask = class(TDanteComponent)
+  protected
+    FTag :string;
+
+    function GetTag :string; virtual;
   public
+    function Target :TTarget;
+
     procedure Execute; virtual; abstract;
-  end;
+    procedure Log(Msg :string = '');
 
-  TExecTask = class(TTask)
-  private
-    FOS: string;
-    FExecutable: string;
-    FArguments: TStringList;
-  public
-    constructor Create(Owner: TComponent); override;
-    destructor Destroy; override;
-
-    procedure Execute; override;
   published
-    property Arguments: TStringList read FArguments write FArguments;
-    property Executable: string read FExecutable write FExecutable;
-    property OS: string read FOS write FOS;
+    // Tag is the name to use for the task in build scripts
+    property Tag : string read GetTag;
   end;
-
 
 implementation
 
@@ -289,7 +315,74 @@ begin
 end;
 
 
+function TProject.GetTargetByName(name: string): TTarget;
+begin
+  Result := self.FindComponent(name) as TTarget;
+  if Result = nil then
+    raise ETargetNotFoundException.Create(name);
+end;
+
+procedure TProject.BuildSchedule(TargetName: string; Sched: TList);
+var
+  Target : TTarget;
+  i      : Integer;
+begin
+  Target := GetTargetByName(TargetName);
+  if Sched.IndexOf(Target) >= 0 then
+     EXIT; // done
+  for i := 0 to Target.Depends.Count-1 do
+     BuildSchedule(Target.Depends[i], Sched);
+  if Sched.IndexOf(Target) >= 0 then
+     raise ECircularTargetDependency.Create(TargetName);
+  Sched.Add(Target);
+end;
+
+function TProject.Schedule(TargetName: string): TTargetArray;
+var
+  Sched :TList;
+  i     :Integer;
+begin
+  Sched := TList.Create;
+  try
+    BuildSchedule(TargetName, Sched);
+    SetLength(Result, Sched.Count);
+    for i := 0 to Sched.Count-1 do
+      Result[i] := Sched[i];
+  finally
+    Sched.Free;
+  end;
+end;
+
+procedure TProject.Build(TargetName: string);
+var
+  i     :Integer;
+  Sched :TTargetArray;
+begin
+  Sched := Schedule(Targetname);
+  for i := Low(Sched) to High(Sched) do
+  begin
+    Sched[i].Build;
+    Log;
+  end;
+end;
+
+procedure TProject.Log(Msg: string);
+begin
+  // bare bones implementation
+  // something smarter can be thought of later
+  writeln(Msg);
+end;
+
 { TTarget }
+
+procedure TTarget.Build;
+var
+  i :Integer;
+begin
+  Log;
+  for i := 0 to TaskCount-1 do
+    Tasks[i].Execute;
+end;
 
 constructor TTarget.Create(Owner: TComponent);
 begin
@@ -309,6 +402,11 @@ end;
 function TTarget.GetTask(Index: Integer): TTask;
 begin
   Result := FTasks[Index];
+end;
+
+procedure TTarget.Log(Msg: string);
+begin
+  Project.Log(Format('%s: %s', [Name, Msg]));
 end;
 
 procedure TTarget.Notification(AComponent: TComponent; Operation: TOperation);
@@ -331,26 +429,32 @@ begin
   Result := FTasks.Count;
 end;
 
-{ TExecTask }
 
-constructor TExecTask.Create(Owner: TComponent);
+{ TTask }
+
+function TTask.GetTag: string;
 begin
-  inherited Create(Owner);
-  FArguments := TStringList.Create;
+  Result := FTag;
+  if Result = '' then
+  begin
+    Result := copy(ClassName, 2, 255);
+    Result := StringReplace(Result, 'Task','', [rfIgnoreCase]);
+    Result := LowerCase(Result);
+  end;
 end;
 
-destructor TExecTask.Destroy;
+procedure TTask.Log(Msg: string);
 begin
-  FArguments.Free;
-  inherited;
+  Project.Log(Format('%16s %s', ['['+Tag+']', Msg]));
 end;
 
-procedure TExecTask.Execute;
+function TTask.Target: TTarget;
 begin
+  Result := Owner as TTarget;
 end;
 
 initialization
-  RegisterClasses([TProject, TTarget, TTask, TExecTask]);
+  RegisterClasses([TProject, TTarget, TTask]);
 end.
 
 
