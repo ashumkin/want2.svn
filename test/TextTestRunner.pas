@@ -1,7 +1,7 @@
-{ $Id: TextTestRunner.pas,v 1.10 2000/12/20 21:14:05 juanco Exp $ }
+{ $Id: TextTestRunner.pas,v 1.12 2001/02/09 19:25:37 juanco Exp $ }
 {: DUnit: An XTreme testing framework for Delphi programs.
    @author  The DUnit Group.
-   @version $Revision: 1.10 $
+   @version $Revision: 1.12 $
 }
 (*
  * The contents of this file are subject to the Mozilla Public
@@ -35,6 +35,8 @@ unit TextTestRunner;
 
 interface
 uses
+   SysUtils,
+   Classes,
    TestFramework;
 
 type
@@ -57,6 +59,7 @@ type
       function  PrintErrors   (r :TTestResult):string;  virtual;
       function  PrintFailures (r :TTestResult):string;  virtual;
       function  PrintHeader   (r :TTestResult):string;  virtual;
+      function  PrintFailureItems(failures :TList) :string; virtual;
       function  TruncateString(s :string; len :integer) :string; virtual;
   end;
 
@@ -83,8 +86,6 @@ function RunTest(aclass :TTestCaseClass; exitBehavior :TRunnerExitBehavior = rxb
 function RunRegisteredTests(exitBehavior :TRunnerExitBehavior = rxbContinue) :TTestResult; overload;
 
 implementation
-uses
-   SysUtils;
 
 const
   CRLF = #13#10;
@@ -115,9 +116,6 @@ end;
    Prints the errors to the standard output
  }
 function TTextTestListener.PrintErrors(r :TTestResult) :string;
-var
-  i       :integer;
-  error   :TTestFailure;
 begin
     result := '';
     if (r.errorCount <> 0) then begin
@@ -126,26 +124,34 @@ begin
         else
             result := result + format('There were %d errors:', [r.errorCount]) + CRLF;
 
-        for i := 0 to r.errors.Count-1 do begin
-            error :=  TObject(r.errors[i]) as TTestFailure;
-            result := result + format('%d) %s: %s: %s', [
-                                       i+1,
-                                       error.failedTest.name,
-                                       error.thrownExceptionName,
-                                       error.thrownExceptionMessage
-                                       ]) + CRLF;
-        end;
+        result := result + PrintFailureItems(r.errors);
         result := result + CRLF
     end
+end;
+
+function TTextTestListener.PrintFailureItems(failures :TList): string;
+var
+  i :Integer;
+  failure :TTestFailure;
+begin
+  result := '';
+  for i := 0 to failures.Count-1 do begin
+    failure := TObject(failures[i]) as TTestFailure;
+    result := result + format('%3d) %s: %s'#13#10'     at %s'#13#10'      "%s"',
+                               [
+                               i+1,
+                               failure.failedTest.name,
+                               failure.thrownExceptionName,
+                               failure.LocationInfo,
+                               failure.thrownExceptionMessage
+                               ]) + CRLF;
+  end;
 end;
 
 {:
    Prints failures to the standard output
  }
 function TTextTestListener.PrintFailures(r :TTestResult): string;
-var
-  i       :integer;
-  failure :TTestFailure;
 begin
     result := '';
     if (r.failureCount <> 0) then begin
@@ -154,15 +160,7 @@ begin
         else
             result := result + format('There were %d failures:', [r.failureCount]) + CRLF;
 
-        for i := 0 to r.failures.Count-1 do begin
-            failure := TObject(r.failures[i]) as TTestFailure;
-            result := result + format('%d) %s: %s: %s', [
-                                       i+1,
-                                       failure.failedTest.name,
-                                       failure.thrownExceptionName,
-                                       failure.thrownExceptionMessage
-                                       ]) + CRLF;
-        end;
+        result := result + PrintFailureItems(r.failures);
         result := result + CRLF
     end
 end;
@@ -254,5 +252,6 @@ function RunRegisteredTests(exitBehavior :TRunnerExitBehavior = rxbContinue) :TT
 begin
    Result := RunTest(registeredTests, exitBehavior);
 end;
+
 
 end.
