@@ -1208,8 +1208,9 @@ end;
 
 procedure TProject.Build(Target: string);
 var
-  i    : Integer;
-  Sched: TTargetArray;
+  i    :  Integer;
+  Sched:  TTargetArray;
+  LastDir: TPath;
 begin
   Log(vlDebug, 'runpath="%s"',  [RootPath]);
   Log(vlDebug, 'basepath="%s"', [BasePath]);
@@ -1224,14 +1225,15 @@ begin
         Target := Default;
     end;
 
-    Sched := Schedule(Target);
 
+    LastDir := CurrentDir;
+    Sched := Schedule(Target);
     for i := Low(Sched) to High(Sched) do
     begin
       try
         Sched[i].Build;
       finally
-        ChangeDir(BasePath);
+        ChangeDir(LastDir);
       end;
     end;
   except
@@ -1285,6 +1287,7 @@ procedure TProject.LoadXML(const SystemPath: string; FindFile: boolean);
 var
   Dom      : IDocument;
   BuildFile: TPath;
+  LastDir:    TPath;
 begin
   BuildFile := ToPath(SystemPath);
   if FindFile then
@@ -1293,9 +1296,15 @@ begin
     if not FRootPathSet then
       RootPath := SuperPath(ToAbsolutePath(BuildFile));
     Log(vlDebug, 'Runpath="%s"', [ RootPath ] );
-    ChangeDir(BasePath);
-    Dom := MiniDom.ParseToDom(ToSystemPath(BuildFile));
-    Self.DoParseXML(Dom.Root);
+
+    LastDir := CurrentDir;
+    try
+      ChangeDir(BasePath);
+      Dom := MiniDom.ParseToDom(ToSystemPath(BuildFile));
+      Self.DoParseXML(Dom.Root);
+    finally
+      ChangeDir(LastDir);
+    end;
   except
     on e:EDanteParseException do
     begin
@@ -1515,9 +1524,12 @@ begin
 end;
 
 procedure TTask.DoExecute;
+var
+  LastDir: TPath;
 begin
   Log(vlDebug, 'basepath="%s"', [BasePath]);
   Log(vlDebug, 'basedir="%s"',  [BaseDir]);
+  LastDir := CurrentDir;
   try
     try
       ChangeDir(BasePath);
@@ -1535,7 +1547,7 @@ begin
       end;
     end;
   finally
-    ChangeDir(BasePath);
+    ChangeDir(LastDir);
   end;
 end;
 
