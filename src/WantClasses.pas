@@ -683,7 +683,7 @@ end;
 
 function TScriptElement.HasAttribute(Name: string): boolean;
 begin
-  Result := FAttributes.IndexOf(Name) >= 0;
+  Result := FAttributes.IndexOfName(Name) >= 0;
 end;
 
 
