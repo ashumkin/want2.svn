@@ -995,7 +995,10 @@ begin
       '=':
           Result := Expand(MacroStart, Result, ExpressionValue);
       '?':
-          Result := Expand(MacroStart, Result, INIValue);
+          begin
+              Result := Expand(MacroStart, Result, INIValue);
+              MacroStart:=-1;
+          end;
       '@':
           Result := Expand(MacroStart, Result, PathValue);
     end;
