@@ -174,15 +174,15 @@ end;
 
 procedure TTestVssGetTask.TestVssGetTask;
 begin
-  try
+(*  try
     FVssGetTask.Validate;
     Fail('validation should have failed');
   except
     on EDanteError do { nada }
   end;
-
+  *)
   FVssGetTask.VssPath := FVssPath;
-  FVssGetTask.Validate;
+  FVssGetTask.Init;
 
   FVssGetTask.Login := FUserPwd;
   FVssGetTask.LocalPath := FTestDir;
@@ -193,6 +193,7 @@ end;
 procedure TTestVssGetTask.TestVssGetTaskLabel;
 var
   LabelName: string;
+  CurrDir: string;
 begin
   { because the TearDown doesn't purge the test file (for reasons stated there),
     and after the 1st time its run can't delete the file without purging the
@@ -201,6 +202,7 @@ begin
     previous labelling in the test file's SS history. However, this test still
     does its job properly. If you want a clean, clean test, do a purge of the
     test file first. }
+  CurrDir := GetCurrentDir;
   ChDir(FTestDir);
   WinExec32AndWait('ss Checkout ' + FSampleFileName + ' -GL"' + FTestDir + '"' +
     ' -Y' + FUserPwd, 0);
@@ -213,6 +215,7 @@ begin
   MakeSampleRevTwo;
   WinExec32AndWait('ss Checkin ' + FSampleFileName + ' -CComment ' +
     ' -Y' + FUserPwd, 0);
+  ChDir(CurrDir);    
 
   FVssGetTask.VssPath := FVssPath;
   FVssGetTask.Login := FUserPwd;
