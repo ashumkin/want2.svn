@@ -427,7 +427,7 @@ begin
         if LowerCase(StrRight(Sources[s], 4)) = '.dpr' then
         begin
           cfg := Sources[s];
-          Delete(cfg, Length(cfg)-3, 4);
+          cfg := StrLeft(cfg, Length(cfg)-4);
           if PathIsFile(cfg + '.cfg') then
           begin
             Log(vlVerbose, 'Renaming configuration file for %s', [ Sources[s] ]);
