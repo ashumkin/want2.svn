@@ -23,8 +23,9 @@
     @author Juancarlo Añez
     @author Dan Hughes <dan@multiedit.com>
     @author Ignacio J. Ortega
+    @author Gerrit Jan Doornink
 }
-{ TODO -oGJD -cTODO :
+{ TODO -oGJD -cTODO : 
   Add handling of:
   -$A: Align on/off/1/2/4/8
   -$X: Extended Syntax
@@ -139,9 +140,13 @@ type
 type
   TWarning = (
     UNSAFE_CODE,
+    UNSAFE_TYPE,
+    UNSAFE_CAST,
     SYMBOL_PLATFORM,
+    SYMBOL_LIBRARY,
     SYMBOL_DEPRECATED,
     UNIT_PLATFORM,
+    UNIT_LIBRARY,
     UNIT_DEPRECATED
   );
   TWarnings = set of TWarning;
@@ -248,8 +253,8 @@ type
     property dcpoutput :TPath read FDCPPath  write FDCPPath;
 
     property quiet :boolean read FQuiet write FQuiet default true;
-    property make  :boolean read FMake  write FMake  default true;
-    property build :boolean read FBuild write FBuild default false;
+    property make  :boolean read FMake  write FMake  default false;
+    property build :boolean read FBuild write FBuild default true;
 
     property assertions     :boolean read FAssertions     write FAssertions     default true;
     property booleval       :boolean read FBoolEval       write FBoolEval       default false;
@@ -351,7 +356,7 @@ type
 
 implementation
 var
-  WarningVersion : Array[TWarning] of double=(7.0,6.0,6.0,6.0,6.0);
+  WarningVersion : Array[TWarning] of double=(7.0,7.0,7.0,6.0,6.0,6.0,6.0,6.0,6.0);
 
 { TCustomDelphiTask }
 
@@ -501,7 +506,7 @@ constructor TDelphiCompileTask.Create(Owner: TScriptElement);
 begin
   inherited Create(Owner);
   SkipLines  := 2;
-  quiet      := true;
+  inherited quiet := true;
 
   FUnitPaths      := TUnitPathElement.Create(Self);
   FResourcePaths  := TResourcePathElement.Create(Self);
@@ -512,8 +517,8 @@ begin
   FPackages       := TStringList.Create;
 
   FQuiet := true;
-  FMake := true;
-  FBuild := false;
+  FMake := false;
+  FBuild := true;
 
   FAssertions := true;
   FBoolEval := false;
@@ -545,10 +550,14 @@ begin
 
   FUseLibraryPath := false;
 
-  AddWarning(UNSAFE_CODE,       true);
+  AddWarning(UNSAFE_CODE,       false);
+  AddWarning(UNSAFE_TYPE,       false);
+  AddWarning(UNSAFE_CAST,       false);
   AddWarning(SYMBOL_PLATFORM,   true);
+  AddWarning(SYMBOL_LIBRARY,    true);
   AddWarning(SYMBOL_DEPRECATED, true);
   AddWarning(UNIT_PLATFORM,     true);
+  AddWarning(UNIT_LIBRARY,      true);
   AddWarning(UNIT_DEPRECATED,   true);
 end;
 
@@ -927,7 +936,7 @@ begin
       Log(vlVerbose, 'verbose=true');
   end;
 
-  if (not usecfg) or HasAttribute('build') then
+  if (not usecfg) or HasAttribute('build') or HasAttribute('make') then
   begin
     if build then
     begin
@@ -1020,16 +1029,16 @@ begin
     end;
   end;
 
-  if (FUnitPaths.Includes.Count <> 0) or (FUnitPaths.Excludes.Count <> 0) or (Length(FUnitPaths.FPatternSets) <> 0) then
+  if (FUnitPaths.Includes.Count <> 0) or (Length(FUnitPaths.FPatternSets) <> 0) then
     Result := Result + OutputPathElements('unitpath', 'U', FUnitPaths.Paths);
 
-  if (FResourcePaths.Includes.Count <> 0) or (FResourcePaths.Excludes.Count <> 0) or (Length(FResourcePaths.FPatternSets) <> 0) then
+  if (FResourcePaths.Includes.Count <> 0) or (Length(FResourcePaths.FPatternSets) <> 0) then
     Result := Result + OutputPathElements('resourcepath', 'R', FResourcePaths.Paths);
 
-  if (FIncludePaths.Includes.Count <> 0) or (FIncludePaths.Excludes.Count <> 0) or (Length(FIncludePaths.FPatternSets) <> 0) then
+  if (FIncludePaths.Includes.Count <> 0) or (Length(FIncludePaths.FPatternSets) <> 0) then
     Result := Result + OutputPathElements('includepath', 'I', FIncludePaths.Paths);
 
-  if (FObjectPaths.Includes.Count <> 0) or (FObjectPaths.Excludes.Count <> 0) or (Length(FObjectPaths.FPatternSets) <> 0) then
+  if (FObjectPaths.Includes.Count <> 0) or (Length(FObjectPaths.FPatternSets) <> 0) then
     Result := Result + OutputPathElements('objectpath', 'O', FObjectPaths.Paths);
 
 
