@@ -44,6 +44,7 @@ See http://dante.sourceforge.net for details
   <property name="dist"      value="${basedir}/dist" />
   <property name="res"       value="${basedir}/res" />
   <property name="lib"       value="${basedir}/lib" />
+  <property name="test"      value="${basedir}/test" />
   <property name="examples"  value="${basedir}/examples" />
 
   <property name="bin" value="${basedir}/bin" />
@@ -53,6 +54,15 @@ See http://dante.sourceforge.net for details
   <property name="xml"     value="${lib}/xml" />
   <property name="paszlib" value="${lib}/paszlib" />
   <property name="regexp"  value="${lib}/perlre" />
+
+  <patternset id="sources" >
+    <include  name="${lib}/**" />
+    <include  name="${src}/**" />
+  </patternset>
+
+  <patternset id="resources" >
+    <patternset refid="sources"/>
+  </patternset>
 
 
   <target name="prepare" >
@@ -88,27 +98,78 @@ See http://dante.sourceforge.net for details
          optimize="true"
          debug="false"
     >
-      <unit path="${jcl}" />
-      <unit path="${xml}" />
-      <unit path="${regexp}" />
-
-      <unit path="${src}/lib" />
-      <unit path="${src}/tasks" />
-      <unit path="${src}/elements" />
-
-      <unit path="${paszlib}" />
-      <unit path="${paszlib}/minizip" />
-
-      <include path="${jcl}" />
-
-      <resource path="${src}" />
-      <resource path="${res}" />
+      <unit>
+        <patternset refid="sources" />
+      </unit>
+      <include>
+        <patternset refid="sources" />
+      </include>
+      <resource>
+        <patternset refid="resources" />
+      </resource>
     </dcc>
   </target>
 
 
+  <target name="test" depends="internal_tests,acceptance_tests" />
 
-  <target name="dist" depends="prepare,compile" >
+  <target name="internal_tests" >
+    <property name="test.app" value="DanteTest" />
+    <dcc basedir="${test}"
+         source="${test.app}.dpr"
+         exes="${bin}"
+         dcus="${dcu}"
+         quiet="true"
+         build="true"
+         optimize="false"
+         debug="true"
+         console="true"
+         uselibrarypath="true"
+    >
+      <unit>
+        <patternset refid="sources" />
+        <include name="${test}/**" />
+      </unit>
+      <include>
+        <patternset refid="sources" />
+      </include>
+      <resource>
+        <patternset refid="resources" />
+      </resource>
+    </dcc>
+    <exec executable="${bin}/${test.app}.exe" />
+ </target>
+
+
+  <target name="acceptance_tests" >
+    <property name="test.app" value="DanteAcceptTest" />
+    <dcc basedir="${test}"
+         source="${test.app}.dpr"
+         exes="${bin}"
+         dcus="${dcu}"
+         quiet="true"
+         build="true"
+         optimize="false"
+         debug="true"
+         console="true"
+         uselibrarypath="true"
+  >
+      <define name="NO_RUN_VSS_TESTS" />
+      <unit>
+        <patternset refid="sources" />
+        <include name="${test}/**" />
+      </unit>
+      <include>
+        <patternset refid="sources" />
+      </include>
+      <resource>
+        <patternset refid="resources" />
+      </resource>
+    </dcc>
+    <exec executable="${bin}/${test.app}.exe" />
+ </target>
+
+  <target name="dist" depends="prepare,compile,test" >
     <mkdir dir="${dist}" />
     <property name="zipfile" value="${dist}/dante-${version}.${build}.zip" />
     <delete file="${zipfile}" />
