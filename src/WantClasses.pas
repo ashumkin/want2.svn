@@ -807,7 +807,7 @@ var
 begin
   AttributeFound := false;
   Names := StringToArray(Name, '|', ttBoth);
-  for i := 0 to Length(Names) do
+  for i := 0 to High(Names) do
   begin
     if GetAttribute(Names[i]) <> '' then
     begin
@@ -816,7 +816,7 @@ begin
     end;
   end;
   if not AttributeFound then
-      AttributeRequiredError(Name);
+      AttributeRequiredError(StringReplace(Name, '|', ' or ', [rfReplaceAll]));
 end;
 
 procedure TScriptElement.RequireAttributes(Names: array of string);
