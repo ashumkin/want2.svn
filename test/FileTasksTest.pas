@@ -48,6 +48,19 @@ type
     procedure TestDeleteDirRelative;
   end;
 
+  TTestMkDirTask = class(TTestDirCase)
+  private
+    FMkDirTask: TMkDirTask;
+  protected
+    procedure DoTest;
+  public
+    procedure Setup; override;
+    procedure TearDown; override;
+  published
+    procedure TestMkDirTaskAbsolute;
+    procedure TestMkDirTaskRelative;
+  end;
+
 implementation
 
 uses JclFileUtils;
@@ -89,8 +102,41 @@ begin
 
 end;
 
+{ TTestMkDirTask }
+
+procedure TTestMkDirTask.DoTest;
+begin
+  FMkDirTask.Execute;
+  Check(DirectoryExists(FMkDirTask.dir), 'directory not made');
+end;
+
+procedure TTestMkDirTask.Setup;
+begin
+  inherited;
+  FMkDirTask := TMkDirTask.Create(FProject.AddTarget('test'));
+end;
+
+procedure TTestMkDirTask.TearDown;
+begin
+  FMkDirTask.Free;
+  inherited;
+
+end;
+
+procedure TTestMkDirTask.TestMkDirTaskAbsolute;
+begin
+  FMkDirTask.dir := FTestDir + '\new';
+  DoTest;
+end;
+
+procedure TTestMkDirTask.TestMkDirTaskRelative;
+begin
+  FMkDirTask.dir := '.\test\new';
+  DoTest;
+end;
+
 initialization
-  RegisterTest('File Tasks', TTestDeleteTask);
+  RegisterTests('File Tasks', [TTestDeleteTask.Suite, TTestMkDirTask.Suite]);
 
 end.
 
