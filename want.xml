@@ -56,13 +56,15 @@
     <!-- Delete dante.cfg first to get a reproducible build.
          (Should this be automated?)
     -->
-    <incverrc rcfilename="${src}/dantever.rc" />
+	 <echo message="Build number is '${build}'" />
 
     <!-- should use a brcc task, not written yet -->
     <!-- ToSystemPath in shell task doesn't work on embedded paths,
          so I hardcoded the path for the moment instead of using
-         ${src} -->
-    <shell executable="brcc32.exe .\src\dantever.rc" />
+         ${src}.
+			Exec tasks could have a "pathargument" sub-element for this
+			-->
+    <shell executable="brcc32" arguments=".\src\dantever.rc" />
 
     <touch  file="${src}/dante.cfg"  />
     <delete file="${src}/dante.cfg" />
@@ -90,6 +92,9 @@
       <resource path="${src}" />
       <resource path="${res}" />
     </dcc>
+  
+    <incverrc rcfilename="${src}/dantever.rc" />
+
     <log file="compile.log" >
       <info code="compile">
         Compile suceeded.
