@@ -327,7 +327,10 @@ begin
     begin
       if (Length(Result) >= 3)
       and (Result[3] = SystemPathDelimiter) then
-        Result := SystemPathDelimiter + Result
+      begin
+        Result[1] := LowerCase(''+Result[1])[1];
+        Result := SystemPathDelimiter + Result;
+      end
       else
         raise EPathException.Create('invalid absolute path ' + SystemPath)
     end;
@@ -341,7 +344,7 @@ begin
    //!!!AssertIsSystemIndependentPath(BasePath);
 
    Result := MovePath(Path, '', BasePath);
-   if IsWindowsPath(Result) and (StrLeft(Result, 1) = '/') then
+   if (PathDrive(Result) <> '') and (StrLeft(Result, 1) = '/') then
      Delete(Result,1, 1);
    if (Length(Result) >= 1) and (Result[Length(Result)] = '/') then
      Delete(Result,Length(Result), 1);
@@ -497,8 +500,7 @@ begin
 
   P := nil;
   B := nil;
-  if (Pos(BasePath, Path) <> 1)
-  or (PathDrive(Path) <> PathDrive(BasePath))
+  if (PathDrive(Path) <> PathDrive(BasePath))
   then
     Result := Path
   else

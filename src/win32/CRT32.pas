@@ -369,6 +369,12 @@ var
 begin
  SetActiveWindow(0);
  HConsoleInput := GetStdHandle(STD_InPUT_HANDLE);
+ if (HConsoleInput =  INVALID_HANDLE_VALUE)
+ or (HConsoleInput =  0) then
+ begin
+   AllocConsole;
+   HConsoleInput := GetStdHandle(STD_InPUT_HANDLE);
+ end;
  HConsoleOutput := GetStdHandle(STD_OUTPUT_HANDLE);
  HConsoleError := GetStdHandle(STD_Error_HANDLE);
  if getConsoleScreenBufferInfo(HConsoleOutput,cbi) then

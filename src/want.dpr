@@ -68,7 +68,8 @@ uses
   Resources in 'lib\Resources.pas',
   ConsoleListener in 'lib\ConsoleListener.pas';
 
-{$R wantver.res}
+{$r wantver.res}
+{$r ..\bin\lincense.res }
 
 const
   SwitchChars = ['-', '/'];
@@ -85,7 +86,10 @@ begin
       FreeAndNil(Runner);
     end;
   except
-    Halt(1);
+    on e :EWantException do
+      Halt(1);
+    on e :Exception do
+      raise;
   end;
 end;
 

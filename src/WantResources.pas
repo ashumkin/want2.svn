@@ -122,8 +122,7 @@ function WantHeader: string;
 begin
   Result :=
     'Want ' + GetVersionString + ' Build Management tool'              + C_EOL +
-    'Copyright (c) 2001, Juancarlo Añez, Caracas, Venezuela.'          + C_EOL +
-    'For complete licensing info, execute with -L switch';
+    'Copyright (c) 2001, Juancarlo Anez, Caracas, Venezuela.'          + C_EOL ;
 end;
 
 function License: string;

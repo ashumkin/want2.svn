@@ -293,7 +293,7 @@ type
   TTask = class(TScriptElement)
   protected
     procedure DoExecute;
-    procedure TaskFailure(Msg: string = '');
+    procedure TaskFailure(Msg: string = ''; Addr :Pointer = nil);
   public
     class function TagName: string; override;
 
@@ -1118,57 +1118,65 @@ var
   Sched:   TTargetArray;
   LastDir: TPath;
 begin
-  with FProperties do
-  begin
-    if Verbosity >= vlVerbose then
-      Values['verbose'] := 'true'
-    else if PropertyDefined('verbose') then
-      Delete(IndexOfName('verbose'));
+  if Listener <> nil then
+    Listener.BuildStarted(Self);
 
-    if Verbosity >= vlDebug then
-      Values['debug'] := 'true'
-    else if PropertyDefined('debug') then
-      Delete(IndexOfName('debug'));
-  end;
+  try
+    with FProperties do
+    begin
+      if Verbosity >= vlVerbose then
+        Values['verbose'] := 'true'
+      else if PropertyDefined('verbose') then
+        Delete(IndexOfName('verbose'));
 
-  Log(vlDebug, 'rootpath="%s"',  [RootPath]);
-  Log(vlDebug, 'basepath="%s"',  [BasePath]);
-  Log(vlDebug, 'basedir="%s"',   [BaseDir]);
+      if Verbosity >= vlDebug then
+        Values['debug'] := 'true'
+      else if PropertyDefined('debug') then
+        Delete(IndexOfName('debug'));
+    end;
 
-  Sched := nil;
-  if Target = '' then
-  begin
-    if _Default <> '' then
-      Target := _Default
+    Log(vlDebug, 'rootpath="%s"',  [RootPath]);
+    Log(vlDebug, 'basepath="%s"',  [BasePath]);
+    Log(vlDebug, 'basedir="%s"',   [BaseDir]);
+
+    Sched := nil;
+    if Target = '' then
+    begin
+      if _Default <> '' then
+        Target := _Default
+      else
+        raise ENoDefaultTargetError.Create('No default target');
+    end;
+
+    Initialize;
+    Sched := Schedule(Target);
+
+    if Length(Sched) = 0 then
+      Log(vlWarnings, 'Nothing to build')
     else
-      raise ENoDefaultTargetError.Create('No default target');
-  end;
-
-  Initialize;
-  Sched := Schedule(Target);
-
-  if Length(Sched) = 0 then
-    Log(vlWarnings, 'Nothing to build')
-  else
-  begin
-    LastDir := CurrentDir;
-    try
+    begin
+      LastDir := CurrentDir;
       try
-        if Listener <> nil then Listener.BuildStarted(Self);
         for i := Low(Sched) to High(Sched) do
         begin
             ChangeDir(BasePath);
             Sched[i].Build;
         end;
-        if Listener <> nil then
-          Listener.BuildFinished(Self);
-      except
-        if Listener <> nil then
-          Listener.BuildFailed(Self);
-        raise;
+      finally
+        ChangeDir(LastDir);
       end;
-    finally
-      ChangeDir(LastDir);
+    end;
+    if Listener <> nil then
+      Listener.BuildFinished(Self);
+  except
+    on e :Exception do
+    begin
+      if Listener <> nil then
+        if e is ETaskException then
+          Listener.BuildFailed(Self)
+        else
+          Listener.BuildFailed(Self, e.Message);
+      raise;
     end;
   end;
 end;
@@ -1377,9 +1385,6 @@ var
 begin
   if not Enabled then
     EXIT;
-  if Description <> '' then
-    Log(Description);
-
   if Listener <> nil then
     Listener.TaskStarted(Self);
 
@@ -1400,7 +1405,7 @@ begin
     on e: ETaskException do
       raise;
     on e: Exception do
-      TaskFailure(e.Message);
+      TaskFailure(e.Message, ExceptAddr);
   end;
 end;
 
@@ -1428,10 +1433,14 @@ begin
   // do nothing
 end;
 
-procedure TTask.TaskFailure(Msg: string);
+procedure TTask.TaskFailure(Msg: string; Addr :Pointer);
 begin
-  if Listener <> nil then Listener.TaskFailed(Self, Msg);
-  raise ETaskFailure.Create(Msg) //at CallerAddr;
+  if Listener <> nil then
+     Listener.TaskFailed(Self, Msg);
+  if Addr <> nil then
+    raise ETaskFailure.Create(Msg) at Addr
+  else
+    raise ETaskFailure.Create(Msg) at CallerAddr;
 end;
 
 { TBuildListener }

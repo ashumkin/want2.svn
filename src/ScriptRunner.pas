@@ -88,7 +88,7 @@ begin
     if Listener <> nil then
     begin
       Listener.Level := Level;
-      Listener.BuildFileLoaded(Self, ToRelativePath(ABuildFileName));
+      Listener.BuildFileLoaded(Self, WildPaths.ToRelativePath(ToAbsolutePath(ABuildFileName), CurrentDir));
     end;
 
     if Length(Targets) = 0 then

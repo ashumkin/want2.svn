@@ -69,6 +69,7 @@ type
 
     procedure Run(CmdLine: string);
     procedure HandleOutput(Child :TChildProcess);
+    procedure HandleOutputLine(Line :string); virtual;
   public
     constructor Create(Owner: TScriptElement);  override;
     destructor Destroy; override;
@@ -276,7 +277,7 @@ begin
       if output <> '' then
         Writeln(OutFile, Line)
       else
-        Log(Line);
+        HandleOutputLine(Line);
     end;
   finally
     if output <> '' then
@@ -293,6 +294,11 @@ end;
 function TCustomExecTask.CreatePath: TPathElement;
 begin
   Result := TPathElement.Create(Self);
+end;
+
+procedure TCustomExecTask.HandleOutputLine(Line: string);
+begin
+  Log(Line);
 end;
 
 { TChildProcess }

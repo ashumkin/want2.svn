@@ -28,7 +28,7 @@ const
     CRT32.LightGray
   );
 
-  DEFAULT_RIGTH_MARGIN = 78;
+  DEFAULT_RIGTH_MARGIN = 72;
 
 type
   TConsoleListener = class(TBuildListener)
@@ -36,6 +36,8 @@ type
     FUseColor     :boolean;
     FRightMargin  :Word;
     FPrefix       :string;
+
+    FFragments    :TStrings;
 
     procedure LogPrefix( Prefix :string; Level :TLogLevel);  virtual;
     procedure LogMessage(Prefix, Msg :string; Level :TLogLevel);  virtual;
@@ -45,6 +47,7 @@ type
     procedure DeleteTaskPrefix(Task :TTask);
   public
     constructor Create;
+    destructor  Destroy; override;
 
     procedure BuildFileLoaded(Project :TProject; FileName :string); override;
 
@@ -53,6 +56,7 @@ type
     procedure BuildFailed(Project :TProject; Msg :string = '');    override;
 
     procedure TargetStarted(Target :TTarget);    override;
+    procedure TargetFinished(Target: TTarget);   override;
 
     procedure TaskStarted(Task :TTask);          override;
     procedure TaskFinished(Task :TTask);         override;
@@ -72,21 +76,32 @@ begin
   inherited Create;
   FUseColor := True;
   FRightMargin := DEFAULT_RIGTH_MARGIN;
+
+  FFragments := TStringList.Create;
+end;
+
+
+
+destructor TConsoleListener.Destroy;
+begin
+  FreeAndNil(FFragments);
+  inherited Destroy;
 end;
 
 procedure TConsoleListener.LogLine(Msg: string; Level: TLogLevel);
 var
-  Fragments :TStrings;
   n         :Integer;
 begin
-  Fragments := TStringList.Create;
-  try
-    Msg := WrapText(Msg, '@@', [' ',#13,#10,#9], RightMargin - Length(FPrefix));
-    JclStrings.StrToStrings(Msg, '@@', Fragments);
-    for n := 0 to Fragments.Count-1 do
-      LogMessage(FPrefix, Fragments[n], Level);
-  finally
-    FreeAndNil(Fragments);
+  Msg := WrapText(Msg, '@@', [' ',#13,#10,#9], RightMargin - Length(FPrefix));
+  if Pos('@@', Msg) = 0 then
+    LogMessage(FPrefix, Msg, Level)
+  else
+  begin
+    FFragments.Clear;
+    JclStrings.StrToStrings(Msg, '@@', FFragments);
+    for n := 0 to FFragments.Count-1 do
+      LogMessage(FPrefix, FFragments[n], Level);
+    FFragments.Clear;
   end;
 end;
 
@@ -160,8 +175,14 @@ end;
 procedure TConsoleListener.TargetStarted(Target: TTarget);
 begin
   FPrefix := '';
-  LogMessage('', Target.TagName + ': ' + Target.Description, vlNormal);
+  LogMessage('', Target.Name + ': ' + Target.Description, vlNormal);
   FPrefix := '     ';
+end;
+
+procedure TConsoleListener.TargetFinished(Target: TTarget);
+begin
+  FPrefix := '';
+  Log;
 end;
 
 procedure TConsoleListener.TaskStarted(Task: TTask);
@@ -181,7 +202,6 @@ begin
   Log(Msg, vlErrors);
   DeleteTaskPrefix(Task);
 end;
-
 
 
 end.

@@ -52,6 +52,8 @@ type
     function Replace(Subst :string; All :boolean = true) :string;          overload;
   end;
 
+var
+  regex :TXRegexp = nil;
 
 function Match(Pattern, Text :string) :boolean;
 function Replace(Pattern, Subst, Text :string; All :boolean = true) :string;
@@ -60,7 +62,7 @@ implementation
 
 function Match(Pattern, Text :string) :boolean;
 begin
-  Result := UPerlRE.regex.Match(Pattern, Text);
+  Result := regex.Match(Pattern, Text);
 end;
 
 function Replace(Pattern, Subst, Text :string; All :boolean = true) :string;
@@ -130,6 +132,9 @@ begin
 end;
 
 initialization
-  with UPerlRE.regex do
-    Options := Options or PCRE_EXTENDED;
+  regex := TXRegexp.Create;
+  //with regex do
+  //  Options := Options or PCRE_EXTENDED;
+finalization
+  regex.Free;
 end.

@@ -631,7 +631,7 @@ end;
 
 function TSubstElement.Perform(Buffer: TStrings; Line: Integer): Integer;
 begin
-  Buffer[Line] := XPerlRE.Replace(Buffer[Line], pattern, subst, global);
+  Buffer[Line] := XPerlRE.Replace(pattern, subst, Buffer[Line], global);
   Result := inherited Perform(Buffer, Line);
 end;
 

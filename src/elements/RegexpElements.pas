@@ -56,7 +56,7 @@ end;
 function TRegexpElement.Substitute(Text, Pattern, Subst: string): string;
 begin
   Log(vlVerbose, 'Replacing /%s/ with /%s/', [Pattern, Subst]);
-  Result := XPerlRe.Replace(Text, Pattern, Subst, True);
+  Result := XPerlRe.Replace(Pattern, Subst, Text, True);
 end;
 
 initialization

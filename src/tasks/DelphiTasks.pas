@@ -261,12 +261,23 @@ end;
 
 procedure TCustomDelphiTask.Log(Msg: string; Level: TLogLevel);
 begin
- if not match('([0-9]+) +[A-Z][a-z]+', Msg) then
+ //if not XPerlre.regex.Match('^(.*\([0-9]+\)) *([A-Z][a-z]+:.*$)', Msg) then
+ if (Pos(':', Msg) = 0)
+ or not XPerlre.regex.Match('^(.*)(\([0-9]+\)) *([HWEF][a-z]+:.*)$', Msg) then
    inherited Log(Msg, Level)
- else if Pos('Fatal', Msg) <> 0 then
-   inherited Log(Msg, vlErrors)
  else
-   inherited Log(Msg, vlWarnings);
+ begin
+   if (Pos('Fatal', Msg) <> 0) or  (Pos('Error', Msg) <> 0) then
+     Level := vlErrors
+   else
+     Level := vlWarnings;
+
+   with regex do
+   begin
+     inherited Log(ToRelativePath(ToPath(SubExp[1].Text)) + ' ' + SubExp[2].Text, Level);
+     inherited Log(regex.SubExp[3].Text, Level);
+   end;
+ end;
 end;
 
 { TDelphiCompileTask }
