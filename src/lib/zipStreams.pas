@@ -164,6 +164,8 @@ type
     property Entries :TStrings read FEntries;
   end;
 
+procedure ExtractAll(const ZipFileName :TPath; const ToDir :TPath= '');
+
 implementation
 uses
   ZLIB;
@@ -175,6 +177,18 @@ const
    Z_BEST_SPEED,
    Z_BEST_COMPRESSION
    );
+
+procedure ExtractAll(const ZipFileName :TPath; const ToDir :TPath= '');
+var
+  UnzipStream :TUnzipStream;
+begin
+  UnzipStream := TUnzipStream.Create(ZipFileName);
+  try
+    UnzipStream.ExtractAll(ToDir);
+  finally
+    UnzipStream.Free;
+  end;
+end;
 
 { TZipStream }
 
