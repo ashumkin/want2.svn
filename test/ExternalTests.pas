@@ -42,13 +42,11 @@ uses
 type
   TExternalTest = class(TTestCase)
   private
-    FRootName: string;
     FRootTestDataDir: string;
     FRootTestExeDir: string;
     FTestExeFinalDir: string;
     FTestExeSetupDir: string;
     FTestPath: string;
-    procedure SetRootName(const Value: string);
     procedure SetTestName;
     procedure SetTestPath(const Value: string);
   protected
@@ -69,7 +67,6 @@ type
     procedure DoTest;
 
     property TestPath: string read FTestPath write SetTestPath;
-    property TestRootName: string read FRootName write SetRootName;
   end;
 
 implementation
@@ -90,6 +87,7 @@ var
   i: Integer;
   ATest: TExternalTest;
   BasePath: string;
+  SuitePath: string;
 begin
   BasePath := '../test/data';
   Files := TStringList.Create;
@@ -104,8 +102,11 @@ begin
         with a build.xml file in it. }
       ATest := TExternalTest.Create;
       ATest.TestPath := ExtractFilePath(ToSystemPath(Files[i]));
-      ATest.TestRootName := JclFileUtils.PathExtractFileNameNoExt(ToSystemPath(Files[i]));
-      RegisterTest('Acceptance Suite.External Tests.' + ATest.TestPath, ATest);
+
+      // need to chop off last entry in path for suite path. Last entry test
+      // will make its name.
+      SuitePath := SuperPath(ToPath(ATest.TestPath));
+      RegisterTest('Acceptance Suite.External Tests.' + SuitePath, ATest);
     end;
   finally
     Files.Free;
@@ -167,16 +168,13 @@ begin
   Result := 'final.zip';
 end;
 
-procedure TExternalTest.SetRootName(const Value: string);
-begin
-  FRootName := Value;
-  SetTestName;
-end;
-
 procedure TExternalTest.SetTestName;
+var
+  Paths: TPaths;
 begin
   { FTestPath is now used in the Suite hierarchy. See LoadTests }
-  FTestName := {FTestPath + }FRootName;
+  Paths := SplitPath(ToPath(FTestPath));
+  FTestName := Paths[High(Paths)];
 end;
 
 procedure TExternalTest.SetTestPath(const Value: string);
