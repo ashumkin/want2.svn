@@ -810,6 +810,7 @@ function TScriptElement.EnvironmentValue(Name: string): string;
 begin
   Assert(Name <> '');
   GetEnvironmentVar(Name, Result, True);
+  Result := PChar(Result); // so no nulls sneak in
 end;
 
 
