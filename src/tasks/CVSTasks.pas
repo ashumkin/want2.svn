@@ -201,7 +201,7 @@ type
     FCommand          :string;
     FDest             :string;
     FNoexec           :boolean;
-    FQuiet            :boolean;
+    FCVSQuiet            :boolean;
 
     function AddOption(AOption: string; AValue: string = '';
       AForceQuote: boolean = False): string;
@@ -222,10 +222,12 @@ type
     property package          :string  read FPackage          write FPackage;
     property tag              :string  read FTag              write FTag;
     property date             :string  read FDate             write FDate;
-    property quiet            :boolean read FQuiet            write FQuiet;
+    property quiet            :boolean read FCVSQuiet         write FCVSQuiet;
     property noexec           :boolean read FNoexec           write FNoexec;
     property output;
     property failonerror;
+  published
+    property hideOutput       :boolean read FQuiet            write FQuiet default true;
   end;
 
   // this class is used internally to log most recent module tag
@@ -548,7 +550,7 @@ end;
 function TCustomCVSTask.BuildArgumentsGlobal: string;
 begin
   // first add global CVS options
-  if FQuiet then
+  if FCVSQuiet then
   begin
     Log(vlVerbose, 'quiet=true');
     ArgumentList.Add('-q');
@@ -728,7 +730,7 @@ begin
     bMRT.cvsroot          := FCvsRoot;
     bMRT.cvsrsh           := FCvsRsh;
     bMRT.package          := FPackage;
-    bMRT.quiet            := FQuiet;
+    bMRT.quiet            := FCVSQuiet;
     bMRT.failonerror      := FFailOnError;
     bMRT.modulename       := FMostRecentModuleName;
 

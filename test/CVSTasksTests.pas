@@ -52,6 +52,11 @@ implementation
 
 { TCvsTests }
 
+const
+  CVSROOT   = ':pserver:anonymous@cvs.sourceforge.net:/cvsroot/want';
+  CVSMODULE = 'cdata';
+  CVSFILE   = 'cdata/cvstest.txt';
+
 procedure TCvsTests.TestCheckout;
 const
   build_xml = ''
@@ -60,9 +65,10 @@ const
   +#10'    <cvs'
   +#10'        dest="cvstest"'
   +#10'        compression="3"'
-  +#10'        cvsroot=":pserver:anonymous@cvs.sourceforge.net:/cvsroot/want"'
-  +#10'        package="src/want.dpr"'
-  +#10'        date="2002-11-1"'
+  +#10'        cvsroot="' + CVSROOT + '"'
+  +#10'        package="' + CVSMODULE + '"'
+  +#10'        date="2003-09-10"'
+  +#10'        hideOutput="false"'
   +#10'       >'
   +#10'    </cvs>'
   +#10'  </target>'
@@ -86,10 +92,11 @@ const
   +#10'    <cvstagdiff'
   +#10'        compression="3"'
   +#10'        destfile="tagdiff.xml"'
-  +#10'        cvsroot=":pserver:anonymous@cvs.sourceforge.net:/cvsroot/want"'
-  +#10'        package="src/want.dpr"'
-  +#10'        startdate="2002-1-1"'
-  +#10'        enddate="2002-12-31"'
+  +#10'        cvsroot="' + CVSROOT + '"'
+  +#10'        package="' + CVSFILE + '"'
+  +#10'        startdate="2003-09-1"'
+  +#10'        enddate="2003-09-10"'
+  +#10'        hideOutput="false"'
   +#10'       >'
   +#10'    </cvstagdiff>'
   +#10'  </target>'
@@ -116,6 +123,7 @@ const
   +#10'    <cvspass'
   +#10'        cvsroot=":pserver:anonymous@cvs.sourceforge.net:/cvsroot/want"'
   +#10'        emptypassword="true"'
+  +#10'        hideOutput="false"'
   +#10'       >'
   +#10'    </cvspass>'
   +#10'  </target>'
@@ -132,10 +140,11 @@ const
   +#10'<project basedir="." name="cvschangelog_test" default="cvs-changelog" >'
   +#10'  <target name="cvs-changelog">'
   +#10'    <cvschangelog'
-  +#10'        dir="cvstest/src"'
+  +#10'        dir="test/data/amodule"'
   +#10'        destfile="changelog.xml"'
   +#10'        start="2003-02-1"'
   +#10'        end="2003-02-28"'
+  +#10'        hideOutput="false"'
   +#10'       >'
   +#10'    </cvschangelog>'
   +#10'  </target>'
