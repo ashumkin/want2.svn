@@ -56,6 +56,7 @@ type
   protected
     FBuildFile  :TPath;
     FSubProject :TProject;
+    FDir        :TPath;
   public
     constructor Create(Owner: TScriptElement = nil); override;
     destructor  Destroy; override;
@@ -65,7 +66,7 @@ type
   published
     property _target;
     property buildfile :TPath read FBuildFile write FBuildFile;
-    property dir       :TPath read GetBaseDir write SetBaseDir;
+    property dir       :TPath read FDir write FDir;
   end;
 
 
@@ -99,6 +100,7 @@ end;
 procedure TWantTask.Execute;
 var
   FRunner :TScriptRunner;
+  Path    :string;
 begin
   if dir <> '' then
     FSubProject.SetInitialBaseDir(ToAbsolutePath(BasePath));
@@ -109,7 +111,8 @@ begin
     FRunner := TScriptRunner.Create;
     try
       FRunner.Listener  := Self.Project.Listener;
-      ChangeDir(BasePath);
+      Path := PathConcat(BasePath, Dir);
+      ChangeDir(Path);
       FRunner.LoadProject(FSubProject, buildfile, false);
       FRunner.BuildProject(FSubProject, _target);
     finally
