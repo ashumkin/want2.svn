@@ -134,7 +134,7 @@ begin
        for p := 0 to AFiles.Count-1 do
          Check(BFiles.IndexOf(AFiles[p]) >= 0, AFiles[p] + ' in A dir but not in B dir');
        for p := 0 to BFiles.Count-1 do
-         Check(BFiles.IndexOf(BFiles[p]) >= 0, BFiles[p] + ' in B dir but not in A dir');
+         Check(AFiles.IndexOf(BFiles[p]) >= 0, BFiles[p] + ' in B dir but not in A dir');
      end;
      Check(ADirComp.CompareByFileContent);
   finally
