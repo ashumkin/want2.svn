@@ -157,7 +157,7 @@ begin
       while bIter.HasNext do
       begin
         if 0 = (bIter.Next as INode).QueryInterface(ITextNode, bText)  then
-          Owner.SetProperty(FPrefix+FTagPath, TrimRight(bText.text));
+          Project.SetProperty(FPrefix+FTagPath, TrimRight(bText.text));
       end;
     end;
 
@@ -167,7 +167,7 @@ begin
       if 0 = (bAtrIter.Next as IAttribute).QueryInterface(IAttribute, bAttr)  then
       begin
         bAttrName := GeneratePropertyName(FTagPath, bAttr.name, true);
-        Owner.SetProperty(FPrefix+bAttrName, bAttr.value);
+        Project.SetProperty(FPrefix+bAttrName, bAttr.value);
       end;
     end;
   end;

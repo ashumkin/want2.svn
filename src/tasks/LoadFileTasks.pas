@@ -93,15 +93,14 @@ begin
         begin
           if bFCE.Children[j] is TCustomFilterElement then
           begin
-            bSL.Text := (bFCE.Children[j] as TCustomFilterElement).Execute(bSL.Text);
+            bSL.Text := (bFCE.Children[j] as TCustomFilterElement).ExecuteFilter(bSL.Text);
           end;
         end;
       end;
     end;
     if Assigned(Owner) then 
     begin
-      Owner.SetProperty(FProperty, bSL.Text);
-      Owner.Configure;
+      Project.SetProperty(FProperty, bSL.Text);
     end;
   finally
     bSL.Free;

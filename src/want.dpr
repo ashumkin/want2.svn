@@ -63,10 +63,7 @@ uses
   StyleTasks in 'tasks\StyleTasks.pas',
   MSXMLEngineImpl in 'win32\MSXMLEngineImpl.pas',
   CVSTasks in 'tasks\CVSTasks.pas',
-  GZipTasks in 'tasks\GZipTasks.pas',
-  LoadFileTasks in 'tasks\LoadFileTasks.pas',
-  TempFileTasks in 'tasks\TempFileTasks.pas',
-  XmlPropertyTasks in 'tasks\XmlPropertyTasks.pas';
+  GZipTasks in 'tasks\GZipTasks.pas';
 
 {$APPTYPE CONSOLE}
 

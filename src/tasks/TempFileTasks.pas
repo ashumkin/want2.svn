@@ -78,8 +78,7 @@ begin
   until not FileExists(ToSystemPath(bTempFileName));
   if Assigned(Owner) then
   begin
-    Owner.SetProperty(FProperty, bTempFileName);
-    Owner.Configure;
+    Project.SetProperty(FProperty, bTempFileName);
   end;
 end;
 

@@ -21,7 +21,7 @@
     @brief 
 
     @author Juancarlo Añez
-    @autot Radim Novotny <radimnov@seznam.cz>
+    @author Radim Novotny <radimnov@seznam.cz>
 }
 
 
@@ -43,7 +43,7 @@ type
     constructor Create(Owner: TScriptElement); override;
     destructor  Destroy; override;
 
-    function Execute(AInputString: string): string; virtual; abstract;
+    function ExecuteFilter(AInputString: string): string; virtual; abstract;
   end;
 
   THeadFilterElement = class(TCustomFilterElement)
@@ -52,7 +52,7 @@ type
   public
     constructor Create(Owner: TScriptElement); override;
 
-    function Execute(AInputString: string): string; override;
+    function ExecuteFilter(AInputString: string): string; override;
   published
     property Lines: integer read FLines write FLines;
   end;
@@ -85,7 +85,7 @@ type
     destructor Destroy; override;
 
     procedure Init; override;
-    function  Execute(AInputString: string): string; override;
+    function  ExecuteFilter(AInputString: string): string; override;
     function  CreateContains: TLineContainsContainsElement;
   published
     property contains: string read FContains write FContains;
@@ -118,7 +118,7 @@ type
     destructor Destroy; override;
 
     procedure Init;                                            override;
-    function  Execute(AInputString: string): string;           override;
+    function  ExecuteFilter(AInputString: string): string;           override;
     function  CreateRegexp: TLineContainsRegexpRegexpElement;
   published
     property regexp: string read FRegExp write FRegExp;
@@ -130,7 +130,7 @@ type
   public
     constructor Create(Owner: TScriptElement); override;
 
-    function Execute(AInputString: string): string; override;
+    function ExecuteFilter(AInputString: string): string; override;
   published
     property Lines: integer read FLines write FLines;
   end;
@@ -140,7 +140,7 @@ type
     FPrefix: string;
   public
     procedure Init; override;
-    function  Execute(AInputString: string): string; override;
+    function  ExecuteFilter(AInputString: string): string; override;
   published
     property prefix: string read FPrefix write FPrefix;
   end;
@@ -151,7 +151,7 @@ type
   public
     constructor Create(Owner: TScriptElement); override;
 
-    function Execute(AInputString: string): string; override;
+    function ExecuteFilter(AInputString: string): string; override;
   published
     property linebreaks: string read FLineBreaks write FLineBreaks;
   end;
@@ -183,7 +183,7 @@ type
     destructor Destroy; override;
 
     procedure Init;                                            override;
-    function  Execute(AInputString: string): string;           override;
+    function  ExecuteFilter(AInputString: string): string;           override;
     function  CreateComment: TStripLineCommentsCommentElement;
   published
     property comment: string read FComment write FComment;
@@ -195,7 +195,7 @@ type
   public
     constructor Create(Owner: TScriptElement); override;
 
-    function Execute(AInputString: string): string; override;
+    function ExecuteFilter(AInputString: string): string; override;
   published
     property tablength: integer read FTabLength write FTabLength;
   end;
@@ -229,7 +229,7 @@ type
     destructor  Destroy;                       override;
 
     procedure Init;                                    override;
-    function  Execute(AInputString: string): string;   override;
+    function  ExecuteFilter(AInputString: string): string;   override;
     function  CreateToken: TReplaceTokensTokenElement;
   published
     property token: string read FToken write FToken;
@@ -240,7 +240,7 @@ type
 
   TExpandPropertiesElement = class(TCustomFilterElement)
   public
-    function Execute(AInputString: string): string; override;
+    function ExecuteFilter(AInputString: string): string; override;
   end;
 
   TFilterChainElement = class(TScriptElement)
@@ -262,7 +262,7 @@ begin
   inherited;
 end;
 
-function THeadFilterElement.Execute(AInputString: string): string;
+function THeadFilterElement.ExecuteFilter(AInputString: string): string;
 var
   i: integer;
 begin
@@ -281,7 +281,7 @@ begin
   inherited;
 end;
 
-function TTailFilterElement.Execute(AInputString: string): string;
+function TTailFilterElement.ExecuteFilter(AInputString: string): string;
 var
   i: integer;
 begin
@@ -328,7 +328,7 @@ begin
   inherited;
 end;
 
-function TLineContainsElement.Execute(AInputString: string): string;
+function TLineContainsElement.ExecuteFilter(AInputString: string): string;
 var
   i: integer;
   j: integer;
@@ -396,7 +396,7 @@ begin
   inherited;
 end;
 
-function TLineContainsRegexpElement.Execute(AInputString: string): string;
+function TLineContainsRegexpElement.ExecuteFilter(AInputString: string): string;
 var
   i: integer;
   j: integer;
@@ -449,7 +449,7 @@ end;
 
 { TPrefixLinesElement }
 
-function TPrefixLinesElement.Execute(aInputString: string): string;
+function TPrefixLinesElement.ExecuteFilter(aInputString: string): string;
 var
   i: integer;
 begin
@@ -473,7 +473,7 @@ begin
   inherited;
 end;
 
-function TStripLineBreaksElement.Execute(aInputString: string): string;
+function TStripLineBreaksElement.ExecuteFilter(aInputString: string): string;
 var
   bCharsToRemove :TSysCharSet;
   i              :integer;
@@ -515,7 +515,7 @@ begin
   inherited;
 end;
 
-function TStripLineCommentsElement.Execute(AInputString: string): string;
+function TStripLineCommentsElement.ExecuteFilter(AInputString: string): string;
 var
   i: integer;
   j: integer;
@@ -561,7 +561,7 @@ begin
   inherited;
 end;
 
-function TTabsToSpacesElement.Execute(aInputString: string): string;
+function TTabsToSpacesElement.ExecuteFilter(aInputString: string): string;
 var
   bSpaces :string;
   i       :integer;
@@ -606,7 +606,7 @@ begin
   inherited;
 end;
 
-function TReplaceTokensElement.Execute(AInputString: string): string;
+function TReplaceTokensElement.ExecuteFilter(AInputString: string): string;
 var
   i       :integer;
   bSearch :string;
@@ -644,7 +644,7 @@ end;
 
 { TExpandPropertiesElement }
 
-function TExpandPropertiesElement.Execute(AInputString: string): string;
+function TExpandPropertiesElement.ExecuteFilter(AInputString: string): string;
 begin
   Result := Evaluate(AInputString);
 end;
