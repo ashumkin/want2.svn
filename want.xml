@@ -22,10 +22,10 @@
   <target name="prepare" >
     <echo message="basedir=${basedir}" />
     <echo>
-	 The base directory is ${basedir}
+    The base directory is ${basedir}
     The source directory is ${src}
     The default command processor is %{comspec}
-	 </echo>
+    </echo>
     <echo message="src=${src}" />
     <echo message="dist=${dist}" />
     <echo message="res=${res}" />
@@ -59,7 +59,7 @@
     <touch  file="${src}/dante.cfg"  />
     <delete file="${src}/dante.cfg" />
     <dcc basedir="${src}"
-	      source="dante.dpr"
+         source="dante.dpr"
          exes="${basedir}"
          dcus="${dcu}"
          quiet="true"
@@ -96,35 +96,36 @@
     <dante buildfile="${examples}/build.xml" />
     <dante buildfile="${examples}/test/build.xml" />
 </target>
-  
+
 
   <target name="dist" depends="prepare,compile" >
     <mkdir dir="${dist}" />
     <property name="zipfile" value="${dist}/dante-${version}.zip" />
-	 <delete file="${zipfile}" />
-	 <zip zipfile="${zipfile}" >
+    <delete file="${zipfile}" />
+    <zip zipfile="${zipfile}" >
          <exclude name="${dist}/**" />
 
-	      <include name="${basedir}/dante.exe" />
+         <include name="${basedir}/dante.exe" />
 
-	      <include name="**/*.pas" />
-	      <include name="**/*.dpr" />
-	      <include name="**/*.inc" />
-	      <include name="**/*.rc" />
-	      <include name="**/*.res" />
-	      <include name="**/*.html" />
-	      <include name="**/*.gif" />
-	      <include name="**/*.png" />
-	      <include name="**/*.jpg" />
-	      <include name="**/*.jpeg" />
-	      <include name="**/*.txt" />
+         <include name="**/*.pas" />
+         <include name="**/*.dpr" />
+         <include name="**/*.inc" />
+         <include name="**/*.rc" />
+         <include name="**/*.res" />
+         <include name="**/*.html" />
+         <include name="**/*.gif" />
+         <include name="**/*.png" />
+         <include name="**/*.jpg" />
+         <include name="**/*.jpeg" />
+         <include name="**/*.txt" />
 
-			<include name="${lib}/paszlib*.zip" />
-			<exclude name="${lib}/paszlib/**"   />
-			<include name="${lib}/jcl*.zip" />
-			<exclude name="${lib}/jcl/**"   />
-			<exclude name="${src}/jcl/**"   />
-	 </zip>
+         <include name="${lib}/paszlib*.zip" />
+         <exclude name="${lib}/paszlib/**"   />
+         <include name="${lib}/jcl*.zip" />
+         <exclude name="${lib}/jcl/**"   />
+         <exclude name="${src}/jcl/**"   />
+         <exclude name="${basedir}/private/**" />
+    </zip>
   </target>
 
 </project>
