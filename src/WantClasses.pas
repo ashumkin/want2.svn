@@ -104,8 +104,8 @@ type
      vlDebug
   );
 
-  TCreateElementMethod = function :TDanteElement of object;
-  TLogMethod = procedure(Msg :string; Verbosity :TVerbosityLevel) of object;
+  TCreateElementMethod = function: TDanteElement of object;
+  TLogMethod = procedure(Msg: string; Verbosity: TVerbosityLevel) of object;
 
 
 
@@ -114,15 +114,15 @@ type
 
   TDanteElement = class(TComponent)
   protected
-    FName    :string;      // ditch TComponent.Name
-    FBaseDir :string;      // wher paths for this object are based
-    FId      :string;      // element Id
+    FName   : string;      // ditch TComponent.Name
+    FBaseDir: string;      // wher paths for this object are based
+    FId     : string;      // element Id
 
 
-    function  GetBaseDir :string;          virtual;
-    procedure SetBaseDir(Value :string);   virtual;
+    function  GetBaseDir: string;          virtual;
+    procedure SetBaseDir(Value: string);   virtual;
 
-    procedure SetID(Value :string); virtual;
+    procedure SetID(Value: string); virtual;
 
     function GetOwner: TDanteElement; reintroduce;
     function GetProject: TProject;
@@ -130,61 +130,61 @@ type
 
     procedure GetChildren(Proc: TGetChildProc; Root: TComponent); override;
     function  GetChildOwner: TComponent; override;
-    function  GetChildrenTyped(AClass :TDanteElementClass) : TDanteElementArray;
+    function  GetChildrenTyped(AClass: TDanteElementClass):  TDanteElementArray;
 
-    procedure Log(Msg :string = ''; Verbosity :TVerbosityLevel = vlNormal);           overload; virtual;
-    procedure Log(Verbosity :TVerbosityLevel; Msg :string = ''); overload;
+    procedure Log(Msg: string = ''; Verbosity: TVerbosityLevel = vlNormal);           overload; virtual;
+    procedure Log(Verbosity: TVerbosityLevel; Msg: string = ''); overload;
 
-    function  Log(const Format: string; const Args: array of const; Verbosity :TVerbosityLevel = vlNormal): string; overload;
-    function  Log(Verbosity :TVerbosityLevel; const Format: string; const Args: array of const): string; overload;
+    function  Log(const Format: string; const Args: array of const; Verbosity: TVerbosityLevel = vlNormal): string; overload;
+    function  Log(Verbosity: TVerbosityLevel; const Format: string; const Args: array of const): string; overload;
 
-    procedure Log(Tag :string; Msg :string; Verbosity :TVerbosityLevel = vlNormal);  overload; virtual;
+    procedure Log(Tag: string; Msg: string; Verbosity: TVerbosityLevel = vlNormal);  overload; virtual;
 
-    procedure RequireAttribute(Name :string; Value :string);
-    procedure AttributeRequiredError(AttName :string);
+    procedure RequireAttribute(Name: string; Value: string);
+    procedure AttributeRequiredError(AttName: string);
   public
     constructor Create(Owner: TComponent);    overload; override;
     constructor Create(Owner: TDanteElement); reintroduce; overload; virtual;
 
-    class function XMLTag :string; virtual;
+    class function XMLTag: string; virtual;
 
-    procedure ParseXML(Node :MiniDom.IElement);               virtual;
-    function  ParseXMLChild(Child :MiniDom.IElement):boolean; virtual;
-    procedure ParseError(Msg :string; Line :Integer);
+    procedure ParseXML(Node: MiniDom.IElement);               virtual;
+    function  ParseXMLChild(Child: MiniDom.IElement):boolean; virtual;
+    procedure ParseError(Msg: string; Line: Integer);
     procedure Validate;                                       virtual;
 
-    function  AsXML     :string;                virtual;
-    function  ToXML(Dom :IDocument) : IElement; virtual;
+    function  AsXML    : string;                virtual;
+    function  ToXML(Dom: IDocument):  IElement; virtual;
 
-    procedure SetProperty(Name, Value :string);          virtual;
-    function  PropertyDefined(Name :string): boolean;    virtual;
-    function  PropertyValue(Name :string) :string;       virtual;
-    function  EnvironmentValue(Name :string): string;    virtual;
-    function  ExpandMacros(Value :string) :string;       virtual;
+    procedure SetProperty(Name, Value: string);          virtual;
+    function  PropertyDefined(Name: string): boolean;    virtual;
+    function  PropertyValue(Name: string): string;       virtual;
+    function  EnvironmentValue(Name: string): string;    virtual;
+    function  ExpandMacros(Value: string): string;       virtual;
 
-    function  SetAttribute(Name, Value :string) :boolean; virtual;
+    function  SetAttribute(Name, Value: string): boolean; virtual;
 
     // use this to get the fully qualified base path
-    function  BasePath :string; virtual;
+    function  BasePath: string; virtual;
     // use this function in Tasks to let the user specify relative
     // directories that work consistently
-    function  ToSystemPath(Path :string; Base :string = ''):string;
-    function  ToDantePath(Path :string) :string;
-    function  ToAbsolutePath(Path :string) :string; virtual;
-    function  ToRelativePath(Path :string; Base :string = '') :string; virtual;
-    function  StringsToSystemPathList(List: TStrings; Base :string = ''): string;
-    procedure AboutToScratchPath(Path :TPath);
+    function  ToSystemPath(Path: string; Base: string = ''):string;
+    function  ToDantePath(Path: string): string;
+    function  ToAbsolutePath(Path: string): string; virtual;
+    function  ToRelativePath(Path: string; Base: string = ''): string; virtual;
+    function  StringsToSystemPathList(List: TStrings; Base: string = ''): string;
+    procedure AboutToScratchPath(Path: TPath);
 
     property  Project: TProject      read GetProject;
-    property  Owner  : TDanteElement read GetOwner;
+    property  Owner :  TDanteElement read GetOwner;
     property  Tag stored False;
 
-    property  id      :string  read FId        write SetId;
-    property  basedir :string  read GetBaseDir write SetBaseDir;
+    property  id     : string  read FId        write SetId;
+    property  basedir: string  read GetBaseDir write SetBaseDir;
   published
-    function CreateProperty    :TPropertyElement; virtual;
+    function CreateProperty   : TPropertyElement; virtual;
 
-    property Name : string read FName write FName stored True;
+    property Name:  string read FName write FName stored True;
   end;
 
 
@@ -197,75 +197,75 @@ type
     FDescription:   string;
     FProperties:    TStrings;
 
-    FPropertyElement :TPropertyElement;
+    FPropertyElement: TPropertyElement;
 
-    FOnLog :TLogMethod;
+    FOnLog: TLogMethod;
 
     procedure Notification(AComponent: TComponent; Operation: TOperation); override;
     function  GetTarget(Index: Integer):TTarget;
-    procedure BuildSchedule(TargetName :string; Sched :TList);
-    procedure DoParseXML(Node :MiniDom.IElement);
-    procedure SetBaseDir(Path :TPath);  override;
-    function  GetBaseDir :TPath;        override;
+    procedure BuildSchedule(TargetName: string; Sched: TList);
+    procedure DoParseXML(Node: MiniDom.IElement);
+    procedure SetBaseDir(Path: TPath);  override;
+    function  GetBaseDir: TPath;        override;
 
   public
     constructor Create(Owner: TDanteElement = nil); override;
     destructor  Destroy; override;
 
-    procedure SetInitialBaseDir(Path :TPath);
+    procedure SetInitialBaseDir(Path: TPath);
 
-    class function XMLTag :string; override;
-    function FindBuildFile(BuildFile :string = ''):string;
+    class function XMLTag: string; override;
+    function FindBuildFile(BuildFile: string = ''):string;
 
 
-    function  ToXML(Dom :IDocument) : IElement; override;
+    function  ToXML(Dom: IDocument):  IElement; override;
 
     procedure Parse(const Image: string);
-    procedure ParseXMLText(const XML :string);
+    procedure ParseXMLText(const XML: string);
 
     procedure Load(const Path: string);
-    procedure LoadXML(const SystemPath: string = ''; FindFile :boolean = true);
+    procedure LoadXML(const SystemPath: string = ''; FindFile: boolean = true);
     procedure Save(const Path: string);
 
 
-    function  FindChild(Id :string; ChildClass :TClass = nil) :TDanteElement;
+    function  FindChild(Id: string; ChildClass: TClass = nil): TDanteElement;
 
 
     // use this to get the fully qualified base path
-    function  BasePath :string; override;
+    function  BasePath: string; override;
     // use this function in Tasks to let the user specify relative
     // directories that work consistently
 
     function  AsString:     string;
-    function  AddTarget(Name :string) :TTarget;
+    function  AddTarget(Name: string): TTarget;
     function  TargetCount:  Integer;
 
-    function  GetTargetByName(Name :string):TTarget;
+    function  GetTargetByName(Name: string):TTarget;
 
-    procedure SetProperty(Name, Value :string);          override;
-    function  PropertyDefined(Name :string): boolean;    override;
-    function  PropertyValue(Name :string) :string;       override;
-    function  EnvironmentValue(Name :string): string;    override;
-    function  ExpandMacros(Value :string) :string;       override;
+    procedure SetProperty(Name, Value: string);          override;
+    function  PropertyDefined(Name: string): boolean;    override;
+    function  PropertyValue(Name: string): string;       override;
+    function  EnvironmentValue(Name: string): string;    override;
+    function  ExpandMacros(Value: string): string;       override;
 
-    procedure SetProperties(Value :TStrings);
+    procedure SetProperties(Value: TStrings);
 
-    function  Schedule(Target :string) :TTargetArray;
-    procedure Build(Targets :array of string); overload;
-    procedure Build(Target :string = ''); overload;
+    function  Schedule(Target: string): TTargetArray;
+    procedure Build(Targets: array of string); overload;
+    procedure Build(Target: string = ''); overload;
 
-    procedure Log(Msg :string = ''; Verbosity :TVerbosityLevel = vlNormal); override;
+    procedure Log(Msg: string = ''; Verbosity: TVerbosityLevel = vlNormal); override;
 
-    property RunPath :string read FRunPath write FRunPath;
+    property RunPath: string read FRunPath write FRunPath;
 
     property Targets[i: Integer]: TTarget             read GetTarget; default;
-    property TargetNames[TargetName :string] :TTarget read GetTargetByName;
+    property TargetNames[TargetName: string]: TTarget read GetTargetByName;
 
-    property OnLog :TLogMethod read FOnLog write FOnLog;
+    property OnLog: TLogMethod read FOnLog write FOnLog;
   published
-    function CreateTarget     :TTarget;
-    function CreateProperty   :TPropertyElement; override;
-    function CreatePatternSet :TPatternSet;      virtual;
+    function CreateTarget    : TTarget;
+    function CreateProperty  : TPropertyElement; override;
+    function CreatePatternSet: TPatternSet;      virtual;
 
 
     property basedir;
@@ -294,14 +294,14 @@ type
     constructor Create(Owner: TDanteElement); override;
     destructor  Destroy; override;
 
-    class function XMLTag :string; override;
-    function  ParseXMLChild(Child :MiniDom.IElement):boolean; override;
-    function  ToXML(Dom :IDocument) : IElement; override;
+    class function XMLTag: string; override;
+    function  ParseXMLChild(Child: MiniDom.IElement):boolean; override;
+    function  ToXML(Dom: IDocument):  IElement; override;
 
     function TaskCount: Integer;
     procedure Build;
 
-    procedure Log(Msg :string = ''; Verbosity :TVerbosityLevel = vlNormal); override;
+    procedure Log(Msg: string = ''; Verbosity: TVerbosityLevel = vlNormal); override;
 
     property Tasks[i: Integer]: TTask read GetTask; default;
   published
@@ -309,38 +309,31 @@ type
     property Depends: string read FDepends write FDepends;
   end;
 
-
-
   TTask = class(TDanteElement)
   protected
     procedure DoExecute;
-
   public
-    class function XMLTag :string; override;
+    class function XMLTag: string; override;
 
-    function  BasePath :string; override;
-
-    function Target :TTarget;
+    function BasePath: string; override;
+    function Target: TTarget;
 
     procedure Execute; virtual; abstract;
-    procedure Log(Msg :string = ''; Verbosity :TVerbosityLevel = vlNormal); override;
+    procedure Log(Msg: string = ''; Verbosity: TVerbosityLevel = vlNormal); override;
 
     property Name stored False;
-
   published
   end;
 
-
-
   TPropertyElement = class(TDanteElement)
   protected
-    FName  :string;
-    FValue :string;
+    FName: string;
+    FValue: string;
   public
     procedure Validate; override;
   published
-    property name  :string read FName  write FName;
-    property value :string read FValue write FValue;
+    property name: string read FName  write FName;
+    property value: string read FValue write FValue;
   end;
 
 
@@ -348,17 +341,17 @@ type
 
   TPatternPart = class(TDanteElement)
   protected
-    procedure SetValue(Value :string); virtual; abstract;
+    procedure SetValue(Value: string); virtual; abstract;
   published
-    property name :string write SetValue;
+    property name: string write SetValue;
   end;
 
   TIncludeElement = class(TPatternPart)
-    procedure SetValue(Value :string); override;
+    procedure SetValue(Value: string); override;
   end;
 
   TExcludeElement = class(TPatternPart)
-    procedure SetValue(Value :string); override;
+    procedure SetValue(Value: string); override;
   end;
 
   TPatternSet = class(TDanteElement)
@@ -369,72 +362,72 @@ type
     FIncluder: TIncludeElement;
     FExcluder: TExcludeElement;
 
-    FPatternSets :array of TPatternSet;
+    FPatternSets: array of TPatternSet;
 
-    procedure AddPatternSet(APatternSet :TPatternSet);
+    procedure AddPatternSet(APatternSet: TPatternSet);
 
-    procedure SetIncludes(Value :TStrings);
-    procedure SetExcludes(Value :TStrings);
+    procedure SetIncludes(Value: TStrings);
+    procedure SetExcludes(Value: TStrings);
 
-    procedure DoInclude(Files :TStrings; Pattern :TPath; Base :string);
-    procedure DoExclude(Files :TStrings; Pattern :TPath; Base :string);
+    procedure DoInclude(Files: TStrings; Pattern: TPath; Base: string);
+    procedure DoExclude(Files: TStrings; Pattern: TPath; Base: string);
 
-    procedure DoIncludes(Files :TStrings; Base :string);
-    procedure DoExcludes(Files :TStrings; Base :string);
+    procedure DoIncludes(Files: TStrings; Base: string);
+    procedure DoExcludes(Files: TStrings; Base: string);
 
   public
-    constructor Create(Owner :TDanteElement); override;
+    constructor Create(Owner: TDanteElement); override;
     destructor  Destroy; override;
 
-    function ParseXMLChild(Child :MiniDom.IElement):boolean; override;
+    function ParseXMLChild(Child: MiniDom.IElement):boolean; override;
 
-    procedure Include(Pattern :TPath);  overload;
-    procedure Exclude(Pattern :TPath);  overload;
+    procedure Include(Pattern: TPath);  overload;
+    procedure Exclude(Pattern: TPath);  overload;
 
 
-    function  Paths   :TPaths;
-    procedure GetPaths(Files :TStrings);
-    procedure AddPaths(Paths :TPaths);
+    function  Paths  : TPaths;
+    procedure GetPaths(Files: TStrings);
+    procedure AddPaths(Paths: TPaths);
 
-    function SystemPaths :TPaths;
-    function RelativePaths :TPaths;
-    function MovePaths(ToBase :TPath) :TPaths;
+    function SystemPaths: TPaths;
+    function RelativePaths: TPaths;
+    function MovePaths(ToBase: TPath): TPaths;
 
     property Includes: TStrings read FIncludes;
     property Excludes: TStrings read FExcludes;
   published
-    function createInclude :TIncludeElement;
-    function createExclude :TExcludeElement;
-    function createPatternSet :TPatternSet;
+    function createInclude: TIncludeElement;
+    function createExclude: TExcludeElement;
+    function createPatternSet: TPatternSet;
 
     property id;
   end;
 
 
 
-function  FindTask(Tag :string): TTaskClass;
-procedure RegisterTask(TaskClass :TTaskClass);
-procedure RegisterTasks(TaskClasses :array of TTaskClass);
+function  FindTask(Tag: string): TTaskClass;
+procedure RegisterTask(TaskClass: TTaskClass);
+procedure RegisterTasks(TaskClasses: array of TTaskClass);
 
-function CommaTextToArray(Text :string) :TStringArray;
+function CommaTextToArray(Text: string): TStringArray;
 
-procedure RaiseLastSystemError(Msg :string = '');
-procedure DanteError(Msg :string = '');
-procedure TaskError(Msg :string = '');
-procedure TaskFailure(Msg :string = '');
+procedure RaiseLastSystemError(Msg: string = '');
+procedure DanteError(Msg: string = '');
+procedure TaskError(Msg: string = '');
+procedure TaskFailure(Msg: string = '');
 
 implementation
 
 var
-  __TaskRegistry :TStringList = nil;
+  __TaskRegistry: TStringList = nil;
 
 
-procedure RaiseLastSystemError(Msg :string = '');
+procedure RaiseLastSystemError(Msg: string = '');
 begin
   raise ETaskError.Create(SysErrorMessage(GetLastError) + Msg)
 end;
 
-function CommaTextToArray(Text :string) :TStringArray;
+function CommaTextToArray(Text: string): TStringArray;
 var
   S: TStrings;
   i: Integer;
@@ -451,17 +444,17 @@ begin
 end;
 
 
-procedure DanteError(Msg :string = '');
+procedure DanteError(Msg: string = '');
 begin
    raise EDanteError.Create('!!! ' + Msg + ' !!!' );
 end;
 
-procedure TaskError(Msg :string);
+procedure TaskError(Msg: string);
 begin
    raise ETaskError.Create('!!! ' + Msg + ' !!!' );
 end;
 
-procedure TaskFailure(Msg :string);
+procedure TaskFailure(Msg: string);
 begin
    raise ETaskFailure.Create('fail: '+ Msg);
 end;
@@ -545,11 +538,11 @@ end;
 
 procedure TDanteElement.ParseXML(Node: IElement);
 var
-  i     :IIterator;
-  valid :boolean;
-  child :MiniDom.INode;
-  elem  :MiniDom.IElement;
-  text  :MiniDom.ITextNode;
+  i    : IIterator;
+  valid: boolean;
+  child: MiniDom.INode;
+  elem : MiniDom.IElement;
+  text : MiniDom.ITextNode;
 begin
   if Node.Name <> Self.XMLTag then
     ParseError(Format('XML tag of class <%s> is <%s> but found <%s>',
@@ -565,7 +558,7 @@ begin
       try
         valid := Self.SetAttribute(Name, ExpandMacros(Value));
       except
-        on e :Exception do
+        on e: Exception do
           ParseError(e.Message, Node.LineNo);
       end;
       if not valid then
@@ -594,8 +587,8 @@ end;
 
 function TDanteElement.SetAttribute(Name, Value: string): boolean;
 var
-  TypeInfo :PTypeInfo;
-  PropInfo :PPropInfo;
+  TypeInfo: PTypeInfo;
+  PropInfo: PPropInfo;
 begin
   Result := True;
 
@@ -621,19 +614,19 @@ begin
           Result := False;
       end;
     except
-      on e :EDanteParseException do
+      on e: EDanteParseException do
         raise;
-      on e :Exception do
+      on e: Exception do
         raise EDanteException.Create(Format('ERROR: "%s", setting value of attribute %s.%s', [e.Message, XMLTag, Name]));
     end;
   end;
 end;
 
-function TDanteElement.ParseXMLChild(Child: IElement) :boolean;
+function TDanteElement.ParseXMLChild(Child: IElement): boolean;
 var
-  MethodName :string;
-  Method     :TMethod;
-  Comp       :TDanteElement;
+  MethodName: string;
+  Method    : TMethod;
+  Comp      : TDanteElement;
 begin
   Result := true;
 
@@ -652,7 +645,7 @@ begin
   end;
 end;
 
-procedure TDanteElement.ParseError(Msg: string; Line :Integer);
+procedure TDanteElement.ParseError(Msg: string; Line: Integer);
 begin
   raise EDanteParseException.Create(Format('(%d): %s',[Line, Msg]));
 end;
@@ -662,7 +655,7 @@ begin
   Result := toXML(TDocument.Create).toString;
 end;
 
-function TDanteElement.ToXML(Dom :MiniDom.IDocument) :MiniDom.IElement;
+function TDanteElement.ToXML(Dom: MiniDom.IDocument): MiniDom.IElement;
 var
   TypeInfo:  PTypeInfo;
   PropList:  PPropList;
@@ -726,7 +719,7 @@ begin
   Result := PathConcat(BasePath, Path);
 end;
 
-function TDanteElement.ToRelativePath(Path: string; Base :string): string;
+function TDanteElement.ToRelativePath(Path: string; Base: string): string;
 begin
   if Base = '' then
     Base := BasePath;
@@ -735,8 +728,8 @@ end;
 
 function TDanteElement.StringsToSystemPathList(List: TStrings; Base: string): string;
 var
-  i, p  :Integer;
-  Paths :TStringArray;
+  i, p : Integer;
+  Paths: TStringArray;
 begin
   Result := '';
   Paths  := nil;
@@ -761,9 +754,9 @@ end;
 
 function TDanteElement.GetChildrenTyped(AClass: TDanteElementClass): TDanteElementArray;
 var
-  List :TList;
-  C    :TComponent;
-  i    :Integer;
+  List: TList;
+  C   : TComponent;
+  i   : Integer;
 begin
   List := TList.Create;
   try
@@ -793,8 +786,8 @@ end;
 
 procedure TDanteElement.Log(Tag, Msg: string; Verbosity: TVerbosityLevel);
 var
-  Lines :TStrings;
-  i     :Integer;
+  Lines: TStrings;
+  i    : Integer;
 begin
   Msg := StringReplace(Msg, #13#10,'@@', [rfReplaceAll]);
   Msg := StringReplace(Msg, #10#13,'@@', [rfReplaceAll]);
@@ -852,7 +845,7 @@ begin
   Result := WildPaths.ToPath(Path, BasePath);
 end;
 
-function TDanteElement.ToSystemPath(Path: string; Base :string): string;
+function TDanteElement.ToSystemPath(Path: string; Base: string): string;
 begin
   Result := ToRelativePath(Path, ToAbsolutePath(Base));
   Result := WildPaths.ToSystemPath(Result);
@@ -1009,8 +1002,8 @@ end;
 
 function TProject.FindChild(Id: string; ChildClass: TClass): TDanteElement;
 var
-  E    :TDanteElement;
-  i    :Integer;
+  E   : TDanteElement;
+  i   : Integer;
 begin
   Result := nil;
   for i := 0 to ComponentCount-1 do
@@ -1028,7 +1021,7 @@ end;
 
 function TProject.GetTargetByName(Name: string): TTarget;
 var
-  t :Integer;
+  t: Integer;
 begin
   Result := nil;
   for t := 0 to FTargets.Count-1 do
@@ -1045,9 +1038,9 @@ end;
 
 procedure TProject.BuildSchedule(TargetName: string; Sched: TList);
 var
-  Target : TTarget;
-  i      : Integer;
-  Deps   : TStringArray;
+  Target:  TTarget;
+  i     :  Integer;
+  Deps  :  TStringArray;
 begin
   Target := GetTargetByName(TargetName);
   if Sched.IndexOf(Target) >= 0 then
@@ -1062,10 +1055,10 @@ begin
   Sched.Add(Target);
 end;
 
-function TProject.Schedule(Target :string): TTargetArray;
+function TProject.Schedule(Target: string): TTargetArray;
 var
-  Sched :TList;
-  i     :Integer;
+  Sched: TList;
+  i    : Integer;
 begin
   Sched := TList.Create;
   try
@@ -1078,7 +1071,7 @@ begin
   end;
 end;
 
-procedure TProject.Log(Msg: string; Verbosity :TVerbosityLevel);
+procedure TProject.Log(Msg: string; Verbosity: TVerbosityLevel);
 begin
   if Assigned(FOnLog) then
     FOnLog(Msg, Verbosity)
@@ -1088,8 +1081,8 @@ end;
 
 procedure TProject.Build(Target: string);
 var
-  i     :Integer;
-  Sched :TTargetArray;
+  i    : Integer;
+  Sched: TTargetArray;
 begin
   if Target = '' then
   begin
@@ -1110,9 +1103,9 @@ begin
       end;
     end;
   except
-    on e :ETaskException do
+    on e: ETaskException do
       raise;
-    on e :Exception do
+    on e: Exception do
     begin
       Log(vlErrors, Format('!ERROR: %s', [e.Message]));
       raise;
@@ -1121,10 +1114,10 @@ begin
 end;
 
 
-procedure TProject.Build(Targets :array of string);
+procedure TProject.Build(Targets: array of string);
 var
-  t     :Integer;
-  Sched :TTargetArray;
+  t    : Integer;
+  Sched: TTargetArray;
 begin
   Sched := nil;
   if Length(Targets) = 0 then
@@ -1165,10 +1158,10 @@ end;
 
 // XML handling
 
-procedure TProject.LoadXML(const SystemPath: string; FindFile :boolean);
+procedure TProject.LoadXML(const SystemPath: string; FindFile: boolean);
 var
-  Dom       :IDocument;
-  BuildFile :TPath;
+  Dom      : IDocument;
+  BuildFile: TPath;
 begin
   BuildFile := ToPath(SystemPath);
   if FindFile then
@@ -1202,9 +1195,9 @@ begin
   try
     ParseXML(Node);
   except
-    on e :EDanteParseException do
+    on e: EDanteParseException do
       raise;
-    on e :Exception do
+    on e: Exception do
     begin
       Log(vlErrors, e.Message);
       ParseError(e.Message, Node.LineNo);
@@ -1219,7 +1212,7 @@ end;
 
 function TProject.ToXML(Dom: IDocument): IElement;
 var
-  i :Integer;
+  i: Integer;
 begin
   Result := inherited ToXML(Dom);
   for i := 0 to TargetCount-1 do
@@ -1253,13 +1246,13 @@ end;
 
 function TProject.ExpandMacros(Value: string): string;
 type
-  TMacroExpansion = function(Name :string) :string of object;
+  TMacroExpansion = function(Name: string): string of object;
 
-  function Expand(StartPat, EndPat, Val :string; MacroExpansion : TMacroExpansion) :string;
+  function Expand(StartPat, EndPat, Val: string; MacroExpansion:  TMacroExpansion): string;
   var
     MacroStart,
-    MacroEnd    :Integer;
-    SubPropName :string;
+    MacroEnd   : Integer;
+    SubPropName: string;
   begin
     Result := Val;
     MacroStart := StrSearch(StartPat, Result);
@@ -1306,7 +1299,7 @@ end;
 
 function TProject.FindBuildFile(BuildFile: string): string;
 var
-  Dir :string;
+  Dir: string;
 begin
   if BuildFile = '' then
     BuildFile := BuildFileName;
@@ -1341,7 +1334,7 @@ end;
 
 procedure TTarget.Build;
 var
-  i :Integer;
+  i: Integer;
 begin
   Project.Log;
   Log;
@@ -1374,7 +1367,7 @@ begin
   Result := FTasks[Index];
 end;
 
-procedure TTarget.Log(Msg: string; Verbosity :TVerbosityLevel);
+procedure TTarget.Log(Msg: string; Verbosity: TVerbosityLevel);
 begin
   Project.Log(Format('%s: %s', [Name, Msg]), Verbosity);
 end;
@@ -1387,7 +1380,7 @@ end;
 
 function TTarget.ParseXMLChild(Child: IElement): boolean;
 var
-  Task :TTask;
+  Task: TTask;
 begin
   Result := inherited ParseXMLChild(Child);
   if not Result then
@@ -1400,7 +1393,7 @@ end;
 
 function TTarget.ToXML(Dom: IDocument): IElement;
 var
-  i :Integer;
+  i: Integer;
 begin
   Result := inherited ToXML(Dom);
   for i := 0 to TaskCount-1 do
@@ -1421,7 +1414,7 @@ end;
 
 { TTask }
 
-procedure TTask.Log(Msg: string; Verbosity :TVerbosityLevel);
+procedure TTask.Log(Msg: string; Verbosity: TVerbosityLevel);
 begin
   Log(XMLTag, Msg, Verbosity);
 end;
@@ -1438,12 +1431,12 @@ begin
       ChangeDir(BasePath);
       Execute;
     except
-      on e :EDanteException do
+      on e: EDanteException do
       begin
         Log(vlErrors, e.Message);
         raise;
       end;
-      on e :Exception do
+      on e: Exception do
       begin
         Log(vlErrors, e.Message);
         TaskFailure(e.Message);
@@ -1464,9 +1457,9 @@ end;
 
 { TaskRegistry }
 
-function FindTask(Tag :string) :TTaskClass;
+function FindTask(Tag: string): TTaskClass;
 var
-  Index :Integer;
+  Index: Integer;
 begin
   Result := nil;
   Index := __TaskRegistry.IndexOf(Tag);
@@ -1477,9 +1470,9 @@ begin
 end;
 
 
-procedure RegisterTask(TaskClass :TTaskClass);
+procedure RegisterTask(TaskClass: TTaskClass);
 var
-  Index :Integer;
+  Index: Integer;
 begin
   Index :=__TaskRegistry.IndexOf(TaskClass.XMLTag);
   if Index >= 0 then
@@ -1492,9 +1485,9 @@ begin
   end;
 end;
 
-procedure RegisterTasks(TaskClasses :array of TTaskClass);
+procedure RegisterTasks(TaskClasses: array of TTaskClass);
 var
-  i :Integer;
+  i: Integer;
 begin
   for i := Low(TaskClasses) to High(TaskClasses) do
     RegisterTask(TaskClasses[i]);
@@ -1540,7 +1533,7 @@ end;
 
 { TPatternSet }
 
-constructor TPatternSet.Create(Owner :TDanteElement);
+constructor TPatternSet.Create(Owner: TDanteElement);
 begin
   inherited Create(Owner);
   FIncludes := TStringList.Create;
@@ -1574,15 +1567,15 @@ begin
   FExcludes.Add(Pattern);
 end;
 
-procedure TPatternSet.DoInclude(Files: TStrings; Pattern: TPath; Base :string);
+procedure TPatternSet.DoInclude(Files: TStrings; Pattern: TPath; Base: string);
 begin
   Wild(Files, Pattern, Base);
 end;
 
-procedure TPatternSet.DoExclude(Files :TStrings; Pattern: TPath; Base :string);
+procedure TPatternSet.DoExclude(Files: TStrings; Pattern: TPath; Base: string);
 var
-  Excluded :TPaths;
-  f        :Integer;
+  Excluded: TPaths;
+  f       : Integer;
 begin
   Excluded := SplitPath(PathConcat(Base, Pattern));
   for f := Files.Count-1 downto 0 do
@@ -1604,9 +1597,9 @@ begin
   Result := FExcluder;
 end;
 
-procedure TPatternSet.DoIncludes(Files: TStrings; Base :string);
+procedure TPatternSet.DoIncludes(Files: TStrings; Base: string);
 var
-  i :Integer;
+  i: Integer;
 begin
   for i := 0 to FIncludes.Count-1 do
     DoInclude(Files, FIncludes[i], Base);
@@ -1616,9 +1609,9 @@ begin
 end;
 
 
-procedure TPatternSet.DoExcludes(Files: TStrings; Base :string);
+procedure TPatternSet.DoExcludes(Files: TStrings; Base: string);
 var
-  i :Integer;
+  i: Integer;
 begin
   for i := 0 to FExcludes.Count-1 do
     DoExclude(Files, FExcludes[i], Base);
@@ -1653,7 +1646,7 @@ end;
 
 function TPatternSet.Paths: TPaths;
 var
-  Files    :TStringList;
+  Files   : TStringList;
 begin
   Files := TStringList.Create;
   try
@@ -1671,8 +1664,8 @@ end;
 
 procedure TPatternSet.AddPaths(Paths: TPaths);
 var
-  Files    :TStringList;
-  i, n     :Integer;
+  Files   : TStringList;
+  i, n    : Integer;
 begin
   Files := TStringList.Create;
   try
