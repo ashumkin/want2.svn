@@ -18,6 +18,7 @@ uses
   Windows,
   SysUtils,
   Classes,
+  TypInfo,
 
   JclBase,
   JclSysUtils,
@@ -102,6 +103,17 @@ type
     property versions: string read FVersions  write FVersions;
   end;
 
+type
+  TWarning = (
+    UNSAFE_CODE,
+    SYMBOL_PLATFORM,
+    SYMBOL_DEPRECATED,
+    UNIT_PLATFORM,
+    UNIT_DEPRECATED
+  );
+  TWarnings = set of TWarning;
+
+
   TDelphiCompileTask = class(TCustomDelphiTask)
   protected
     FExesPath: TPath;
@@ -130,7 +142,7 @@ type
 
     FDefines        : TStrings;
     FPackages       : TStrings;
-    FWarnings       : TStrings;
+    FWarnings       : TWarnings;
 
     FRenamedCFGs    :boolean;
 
@@ -159,7 +171,7 @@ type
     procedure AddObjectPath(Path : TPath);
     procedure AddDefine(Name, Value :string);
     procedure AddPackage(Path :string);
-    procedure AddWarning(Name :string; Value :boolean);
+    procedure AddWarning(Name :TWarning; Value :boolean);
 
     procedure RestoreCFGs;
 
@@ -255,14 +267,15 @@ type
     property value :TMapType read FValue write FValue;
   end;
 
-  TWarningElement = class(TOptionElement)
+  TWarningElement = class(TScriptElement)
   protected
+    FName  :TWarning;
     FValue :boolean;
 
   public
     procedure Init; override;
   published
-    property Name;
+    property Name :TWarning read FName write FName;
     property Value :boolean read FValue write FValue;
   end;
 
@@ -404,15 +417,15 @@ begin
   
   FDefines        := TStringList.Create;
   FPackages       := TStringList.Create;
-  FWarnings       := TStringList.Create;
+
   FEnableWarnings := true;
   FLongStrings    := true;
 
-  AddWarning('UNSAFE_CODE',       false);
-  AddWarning('SYMBOL_PLATFORM',   false);
-  AddWarning('SYMBOL_DEPRECATED', false);
-  AddWarning('UNIT_PLATFORM',     false);
-  AddWarning('UNIT_DEPRECATED',   false);
+  AddWarning(UNSAFE_CODE,       false);
+  AddWarning(SYMBOL_PLATFORM,   false);
+  AddWarning(SYMBOL_DEPRECATED, false);
+  AddWarning(UNIT_PLATFORM,     false);
+  AddWarning(UNIT_DEPRECATED,   false);
 end;
 
 destructor TDelphiCompileTask.Destroy;
@@ -474,9 +487,10 @@ var
   d      : Integer;
   s      : Integer;
   p      : Integer;
-  w      : Integer;
+  w      : TWarning;
   PS     : TStringArray;
   cfg    : TPath;
+  wname  : string;
 begin
   Result := inherited BuildArguments + ' ';
 
@@ -602,10 +616,13 @@ begin
   end;
 
 
-  for w := 0 to FWarnings.Count-1 do
+  for w := Low(TWarning) to High(TWarning) do
   begin
-    Log(vlVerbose, 'warning %s', [FWarnings[w]]);
-    Result := Result + ' -W' + FWarnings[w];
+    wname := GetEnumName(TypeInfo(TWarning), Ord(w));
+    if w in FWarnings then
+      Result := Result + ' -W+' + wname
+    else
+      Result := Result + ' -W-' + wname;
   end;
 
   for p := 0 to FPackages.Count-1 do
@@ -738,12 +755,12 @@ begin
 end;
 
 
-procedure TDelphiCompileTask.AddWarning(Name: string; Value :boolean);
+procedure TDelphiCompileTask.AddWarning(Name: TWarning; Value :boolean);
 begin
   if Value then
-    FWarnings.Add('+' + Name)
+    Include(FWarnings, Name)
   else
-    FWarnings.Add('-' + Name);
+    Exclude(FWarnings, Name);
 end;
 
 { TResourceCompileTask }
@@ -840,7 +857,7 @@ end;
 procedure TWarningElement.Init;
 begin
   inherited;
-  dcc.AddWarning(Name, Value);
+  TDelphiCompileTask(Owner).AddWarning(Name, Value);
 end;
 
 initialization
