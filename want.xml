@@ -3,7 +3,7 @@
 <project name="dante"
          basedir=".."
          default="dist" >
-  
+
   <property name="version" value="0.0.1-beta" />
 
   <echo message="${basedir}" />
@@ -51,7 +51,7 @@
          quiet="true"
          build="true"
          optimize="true"
-			debug="false"
+         debug="false"
     >
       <unit path="${jcl}" />
       <unit path="${src}" />
@@ -62,9 +62,9 @@
 
       <unit path="${paszlib}" />
       <unit path="${paszlib}/minizip" />
-		
+
       <include path="${jcl}" />
-      
+
       <resource path="${src}" />
       <resource path="${res}" />
     </dcc>
@@ -81,9 +81,9 @@
 	 <delete file="${zipfile}" />
 	 <zip zipfile="${zipfile}" >
          <exclude name="${dist}/**" />
-	      
+
 	      <include name="${basedir}/dante.exe" />
-			
+
 	      <include name="**/*.pas" />
 	      <include name="**/*.dpr" />
 	      <include name="**/*.inc" />
@@ -94,7 +94,8 @@
 	      <include name="**/*.png" />
 	      <include name="**/*.jpg" />
 	      <include name="**/*.jpeg" />
-	      
+	      <include name="**/*.txt" />
+
 			<include name="${lib}/paszlib*.zip" />
 			<exclude name="${lib}/paszlib/**"   />
 			<include name="${lib}/jcl*.zip" />
