@@ -80,29 +80,45 @@ LRDockWidth=421
 Dockable=1
 
 [Closed Files]
-File_0=SourceModule,'C:\home\want\src\WantClasses.pas',0,1,1,1,1,0,0
-File_1=SourceModule,'C:\home\want\src\tasks\ZipTasks.pas',0,1,1,1,1,0,0
-File_2=SourceModule,'C:\home\want\lib\dunit\TestModules.pas',0,1,62,1,78,0,0
-File_3=SourceModule,'C:\home\want\lib\jal\src\JALGZipStreams.pas',0,1,621,1,637,0,0
-File_4=SourceModule,'C:\home\want\src\tasks\FileTasks.pas',0,1,179,1,195,0,0
-File_5=SourceModule,'C:\home\want\src\elements\PatternSets.pas',0,1,229,1,245,0,0
-File_6=SourceModule,'C:\home\want\lib\dunit\TestFramework.pas',0,1,1255,1,1271,0,0
-File_7=SourceModule,'C:\home\want\src\win32\ConsoleScriptRunner.pas',0,1,102,1,118,0,0
-File_8=SourceModule,'C:\home\want\src\tasks\DUnitTasks.pas',0,1,127,1,148,0,0
+File_0=SourceModule,'C:\home\want\src\tasks\ZipTasks.pas',0,1,1,1,1,0,0
+File_1=SourceModule,'C:\home\want\lib\dunit\TestModules.pas',0,1,62,1,78,0,0
+File_2=SourceModule,'C:\home\want\lib\jal\src\JALGZipStreams.pas',0,1,621,1,637,0,0
+File_3=SourceModule,'C:\home\want\src\tasks\FileTasks.pas',0,1,179,1,195,0,0
+File_4=SourceModule,'C:\home\want\src\elements\PatternSets.pas',0,1,229,1,245,0,0
+File_5=SourceModule,'C:\home\want\src\win32\ConsoleScriptRunner.pas',0,1,102,1,118,0,0
+File_6=SourceModule,'C:\home\want\src\tasks\DUnitTasks.pas',0,1,127,1,148,0,0
 
 [Modules]
-Module0=C:\home\want\src\lib\WildPaths.pas
-Module1=C:\home\want\src\tasks\DelphiTasks.pas
-Module2=C:\home\want\lib\jal\src\JalPaths.pas
-Count=3
+Module0=C:\home\want\lib\dunit\TestFramework.pas
+Module1=C:\home\want\src\tasks\WantTasks.pas
+Module2=C:\home\want\src\WantClasses.pas
+Module3=C:\home\want\src\tasks\DelphiTasks.pas
+Module4=C:\home\want\src\lib\WildPaths.pas
+Module5=C:\home\want\lib\jal\src\JalPaths.pas
+Count=6
 EditWindowCount=1
 
-[C:\home\want\src\lib\WildPaths.pas]
+[C:\home\want\lib\dunit\TestFramework.pas]
+ModuleType=SourceModule
+FormState=0
+FormOnTop=0
+
+[C:\home\want\src\tasks\WantTasks.pas]
+ModuleType=SourceModule
+FormState=0
+FormOnTop=0
+
+[C:\home\want\src\WantClasses.pas]
 ModuleType=SourceModule
 FormState=0
 FormOnTop=0
 
 [C:\home\want\src\tasks\DelphiTasks.pas]
+ModuleType=SourceModule
+FormState=0
+FormOnTop=0
+
+[C:\home\want\src\lib\WildPaths.pas]
 ModuleType=SourceModule
 FormState=0
 FormOnTop=0
@@ -149,11 +165,14 @@ RightPanelSize=0
 BottomPanelSize=195
 BottomPanelClients=MessageView@EditWindow0,LocalVarsWindow
 BottomPanelData=00000400010000000B0000004D657373616765566965773E0300000000000002C30000000000000001000000003E0300000F0000004C6F63616C5661727357696E646F77FFFFFFFF
-ViewCount=3
-CurrentView=0
+ViewCount=6
+CurrentView=2
 View0=0
 View1=1
 View2=2
+View3=3
+View4=4
+View5=5
 
 [CodeExplorer@EditWindow0]
 Create=1
@@ -189,19 +208,40 @@ Dockable=1
 
 [View0]
 Module=C:\home\want\src\lib\WildPaths.pas
-CursorX=35
-CursorY=392
-TopLine=379
+CursorX=1
+CursorY=786
+TopLine=770
 LeftCol=1
 
 [View1]
-Module=C:\home\want\src\tasks\DelphiTasks.pas
+Module=C:\home\want\src\tasks\WantTasks.pas
 CursorX=1
-CursorY=1
-TopLine=1
+CursorY=87
+TopLine=76
 LeftCol=1
 
 [View2]
+Module=C:\home\want\lib\dunit\TestFramework.pas
+CursorX=1
+CursorY=1271
+TopLine=1255
+LeftCol=1
+
+[View3]
+Module=C:\home\want\src\WantClasses.pas
+CursorX=1
+CursorY=1039
+TopLine=1023
+LeftCol=1
+
+[View4]
+Module=C:\home\want\src\tasks\DelphiTasks.pas
+CursorX=1
+CursorY=552
+TopLine=536
+LeftCol=1
+
+[View5]
 Module=C:\home\want\lib\jal\src\JalPaths.pas
 CursorX=1
 CursorY=28
@@ -222,7 +262,7 @@ Watch4='FIncludes[i]',256,0,18,1
 [Breakpoints]
 Count=2
 Breakpoint0='C:\home\want\src\tasks\DUnitTasks.pas',148,'',0,1
-Breakpoint1='C:\home\want\src\tasks\DelphiTasks.pas',552,'',0,1
+Breakpoint1='C:\home\want\src\tasks\WantTasks.pas',77,'',0,1
 
 [AddressBreakpoints]
 Count=0

@@ -88,8 +88,11 @@ type
     procedure Log(Level: TLogLevel; Msg: string = '');              virtual; abstract;
     procedure BuildFileLoaded(Project :TProject; FileName :string); virtual; abstract;
 
-    procedure BuildStarted(Project :TProject);                      virtual; abstract;
-    procedure BuildFinished(Project :TProject);                     virtual; abstract;
+    procedure BuildStarted;                                         virtual; abstract;
+    procedure BuildFinished;                                        virtual; abstract;
+
+    procedure ProjectStarted(Project :TProject);                    virtual; abstract;
+    procedure ProjectFinished(Project :TProject);                   virtual; abstract;
     procedure BuildFailed(Project :TProject; Msg :string = '');     virtual; abstract;
 
     procedure TargetStarted(Target :TTarget);                       virtual; abstract;
@@ -765,10 +768,7 @@ end;
 
 function TScriptElement.GetBaseDir: TPath;
 begin
-  if Owner <> nil then
-    Result := Owner.ToRelativePath(FBaseDir)
-  else
-    Result := FBaseDir;
+  Result := FBaseDir;
 end;
 
 procedure TScriptElement.SetBaseDir(const Value: TPath);

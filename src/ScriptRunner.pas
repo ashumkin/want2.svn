@@ -82,7 +82,10 @@ end;
 destructor TScriptRunner.Destroy;
 begin
   if ListenerCreated then
+  begin
+    FListener.BuildFinished;
     FreeAndNil(FListener);
+  end;
   inherited Destroy;
 end;
 
@@ -180,16 +183,16 @@ var
   LastDir: TPath;
 begin
   Sched := nil;
-  Listener.BuildStarted(Project);
+  Listener.ProjectStarted(Project);
   try
-    Sched := nil;
-    Project.Listener := Listener;
-
-    Log(vlVerbose, Format('basedir="%s"',   [Project.RootPath]));
-    Log(vlVerbose, Format('basedir="%s"',   [Project.BaseDir]));
-    Log(vlVerbose, Format('basepath="%s"',  [Project.BasePath]));
-
     try
+      Sched := nil;
+      Project.Listener := Listener;
+
+      Log(vlVerbose, Format('basedir="%s"',   [Project.RootPath]));
+      Log(vlVerbose, Format('basedir="%s"',   [Project.BaseDir]));
+      Log(vlVerbose, Format('basepath="%s"',  [Project.BasePath]));
+
       if Target = '' then
       begin
         if Project._Default <> '' then
@@ -217,19 +220,19 @@ begin
           ChangeDir(LastDir);
         end;
       end;
-      Listener.BuildFinished(Project);
-    finally
-      Project.Listener := nil;
+    except
+      on e :Exception do
+      begin
+        if e is ETaskException then
+          Listener.BuildFailed(Project)
+        else
+          Listener.BuildFailed(Project, e.Message);
+        raise;
+      end;
     end;
-  except
-    on e :Exception do
-    begin
-      if e is ETaskException then
-        Listener.BuildFailed(Project)
-      else
-        Listener.BuildFailed(Project, e.Message);
-      raise;
-    end;
+  finally
+    Listener.ProjectFinished(Project);
+    Project.Listener := nil;
   end;
 end;
 

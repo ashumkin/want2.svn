@@ -21,6 +21,9 @@ const
 type
   TBasicListener = class(TBuildListener)
   protected
+    FErrors   :boolean;
+    FFailures :boolean;
+
     procedure LogLine(Msg: string; Level: TLogLevel = vlNormal);    virtual;
   public
     constructor Create;
@@ -29,9 +32,12 @@ type
 
     procedure BuildFileLoaded(Project :TProject; FileName :string); override;
 
-    procedure BuildStarted(Project :TProject);                      override;
-    procedure BuildFinished(Project :TProject);                     override;
+    procedure BuildStarted;                                         override;
+    procedure BuildFinished;                                        override;
     procedure BuildFailed(Project :TProject; Msg :string = '');     override;
+
+    procedure ProjectStarted(Project :TProject);                    override;
+    procedure ProjectFinished(Project :TProject);                   override;
 
     procedure TargetStarted(Target :TTarget);                       override;
     procedure TargetFinished(Target :TTarget);                      override;
@@ -39,6 +45,9 @@ type
     procedure TaskStarted( Task :TTask);                            override;
     procedure TaskFinished(Task :TTask);                            override;
     procedure TaskFailed(  Task :TTask; Msg :string);               override;
+
+    property Failures :boolean read FFailures;
+    property Errors   :boolean read FErrors;
   end;
 
 implementation
@@ -50,19 +59,20 @@ begin
 
 end;
 
-procedure TBasicListener.BuildStarted(Project: TProject);
+procedure TBasicListener.ProjectStarted(Project: TProject);
 begin
 
 end;
 
-procedure TBasicListener.BuildFinished(Project: TProject);
+procedure TBasicListener.ProjectFinished(Project: TProject);
 begin
 
 end;
 
 procedure TBasicListener.BuildFailed(Project: TProject; Msg :string);
 begin
-
+  FErrors   := True;
+  FFailures := True;
 end;
 
 procedure TBasicListener.TargetStarted(Target: TTarget);
@@ -108,7 +118,7 @@ end;
 
 procedure TBasicListener.TaskFailed(Task: TTask; Msg :string);
 begin
-
+  FFailures := True;
 end;
 
 procedure TBasicListener.LogLine(Msg: string; Level: TLogLevel);
@@ -120,6 +130,16 @@ constructor TBasicListener.Create;
 begin
   inherited Create;
   FLevel := vlNormal;
+end;
+
+procedure TBasicListener.BuildStarted;
+begin
+
+end;
+
+procedure TBasicListener.BuildFinished;
+begin
+
 end;
 
 end.

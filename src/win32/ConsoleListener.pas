@@ -52,9 +52,11 @@ type
 
     procedure BuildFileLoaded(Project :TProject; FileName :string); override;
 
-    procedure BuildStarted(Project :TProject);   override;
-    procedure BuildFinished(Project :TProject);  override;
-    procedure BuildFailed(Project :TProject; Msg :string = '');    override;
+    procedure BuildStarted;                        override;
+    procedure BuildFinished;                       override;
+
+    procedure ProjectStarted(Project :TProject);   override;
+    procedure ProjectFinished(Project :TProject);  override;
 
     procedure TargetStarted(Target :TTarget);    override;
     procedure TargetFinished(Target: TTarget);   override;
@@ -158,38 +160,36 @@ end;
 
 procedure TConsoleListener.BuildFileLoaded(Project: TProject; FileName: string);
 begin
+  inherited BuildFileLoaded(Project, FileName);
   Log(vlNormal, 'buildfile: ' + FileName);
 end;
 
-procedure TConsoleListener.BuildStarted(Project: TProject);
+procedure TConsoleListener.ProjectStarted(Project: TProject);
 begin
+  inherited ProjectStarted(Project);
   Log(vlNormal, Project.Description);
 end;
 
-procedure TConsoleListener.BuildFinished(Project: TProject);
+procedure TConsoleListener.ProjectFinished(Project: TProject);
 begin
-  Log(vlNormal);
-  Log(vlNormal, 'Build complete.');
-end;
-
-procedure TConsoleListener.BuildFailed(Project: TProject; Msg :string);
-begin
-  Log(vlErrors, Msg);
-  LogMessage('BUILD FAILED', '', vlErrors);
+  inherited ProjectFinished(Project);
 end;
 
 procedure TConsoleListener.TargetStarted(Target: TTarget);
 begin
+  inherited TargetStarted(Target);
   Log(vlNormal, Target.Name + ': ' + Target.Description);
 end;
 
 procedure TConsoleListener.TargetFinished(Target: TTarget);
 begin
+  inherited TargetFinished(Target);
   Log(vlNormal);
 end;
 
 procedure TConsoleListener.TaskStarted(Task: TTask);
 begin
+  inherited TaskStarted(Task);
   FPrefix := Format('%14s ', [Trim(FPrefix) + '[' + Task.TagName + ']' ] );
   if Task.Description <> '' then
     Log(vlNormal, Task.Description);
@@ -197,14 +197,33 @@ end;
 
 procedure TConsoleListener.TaskFinished(Task: TTask);
 begin
+  inherited TaskFinished(Task);
   DeleteTaskPrefix(Task);
 end;
 
 procedure TConsoleListener.TaskFailed(Task: TTask; Msg: string);
 begin
+  inherited TaskFailed(Task, Msg);
   Log(vlErrors, Msg);
   DeleteTaskPrefix(Task);
 end;
 
+
+procedure TConsoleListener.BuildStarted;
+begin
+
+end;
+
+procedure TConsoleListener.BuildFinished;
+begin
+  inherited BuildFinished;
+  if Failures or Errors then
+    LogMessage('BUILD FAILED', '', vlErrors)
+  else
+  begin
+    Log(vlNormal);
+    Log(vlNormal, 'Build complete.');
+  end;
+end;
 
 end.
