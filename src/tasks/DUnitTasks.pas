@@ -18,7 +18,8 @@ uses
 
   WildPaths,
   WantClasses,
-  TestFramework;
+  TestFramework,
+  TestModules;
 
 type
   TDUnitTask = class(TTask, ITestListener)
@@ -129,45 +130,26 @@ begin
 end;
 
 procedure TDUnitTask.Execute;
-type
-  TGestTestFunc = function :ITest;
 var
-  LibHandle :TModuleHandle;
-  GetTest   :TGestTestFunc;
-  LibName   :string;
-  Test      :ITest;
+  Test :ITest;
 begin
   inherited Execute;
-  LibName := testlib;
-  if ExtractFileExt(LibName) = '' then
-  begin
-    LibName := ChangeFileExt(LibName, '.dtl');
-    if not PathIsFile(LibName) then
-       LibName := ChangeFileExt(LibName, '.dll');
-  end;
-  Log(ToRelativePath(LibName));
-
-
-  if not LoadModule(LibHandle, ToSystemPath(LibName)) then
-      TaskError(Format('Could not find test library "%s"', [ToRelativePath(testlib)]))
-  else
+  Log(ToRelativePath(testlib));
+  try
+    Test := LoadModuleTests(ToSystemPath(testlib));
     try
-      GetTest := GetModuleSymbol(LibHandle, 'Test');
-      if not Assigned(GetTest) then
-        TaskError(Format('Library "%s" does not export a Test method', [ToRelativePath(testlib)]))
-      else
-      begin
-        Test := GetTest;
-        try
-          if not TestFramework.RunTest(Test, [Self]).WasSuccessful then
-            TaskFailure('');
-        finally
-          Test := nil;
-        end;
-      end;
+      if not TestFramework.RunTest(Test, [Self]).WasSuccessful then
+        TaskFailure('');
     finally
-      UnloadModule(LibHandle);
+      Test := nil;
+      UnloadTestModules;
     end;
+  except
+    on e :EWantException do
+      raise;
+    on e :Exception do
+      TaskError(e.Message, ExceptAddr);
+  end;
 end;
 
 initialization
