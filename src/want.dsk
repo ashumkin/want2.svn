@@ -12,14 +12,19 @@ File_9=SourceModule,'C:\home\want\lib\jcl\JclResources.pas',0,1,659,1,675,0,0
 
 [Modules]
 Module0=c:\opt\borland\delphi6\source\rtl\Sys\sysutils.pas
-Module1=C:\home\want\src\lib\WildPaths.pas
-Module2=C:\home\want\src\tasks\DelphiTasks.pas
-Module3=C:\home\want\src\ScriptRunner.pas
+Module1=C:\home\want\src\ScriptRunner.pas
+Module2=C:\home\want\src\lib\WildPaths.pas
+Module3=C:\home\want\src\tasks\DelphiTasks.pas
 Module4=C:\home\want\src\tasks\ExecTasks.pas
 Count=5
 EditWindowCount=1
 
 [c:\opt\borland\delphi6\source\rtl\Sys\sysutils.pas]
+ModuleType=SourceModule
+FormState=0
+FormOnTop=0
+
+[C:\home\want\src\ScriptRunner.pas]
 ModuleType=SourceModule
 FormState=0
 FormOnTop=0
@@ -30,11 +35,6 @@ FormState=0
 FormOnTop=0
 
 [C:\home\want\src\tasks\DelphiTasks.pas]
-ModuleType=SourceModule
-FormState=0
-FormOnTop=0
-
-[C:\home\want\src\ScriptRunner.pas]
 ModuleType=SourceModule
 FormState=0
 FormOnTop=0

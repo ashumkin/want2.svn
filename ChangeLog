@@ -1,3 +1,46 @@
+2002-02-16 21:23  juanco
+
+	* make/bootstrap.bat: minor changes to make bootstrapping work
+
+2002-02-14 18:14  juanco
+
+	* want.xml: add want task for retreiving cvs tarball with wget
+
+2002-02-13 13:23  juanca
+
+	* lib/jal/src/: JALFiles.pas, JALGZipStreams.pas, JalDebug.pas:
+	removed platform dependencies
+
+2002-02-13 12:21  pshrimpton
+
+	* src/win32/WIN32.dcu: Removed
+
+2002-02-13 12:19  pshrimpton
+
+	* src/win32/WIN32.dcu: Phils Test
+
+2002-02-13 02:52  juanco
+
+	* ChangeLog, release.ini, doc/index.html, src/want.cfg,
+	src/want.dof, src/want.dsk, src/tasks/DelphiTasks.pas: removed
+	minor prublems when using delphi 6
+
+2002-02-13 01:56  juanca
+
+	* lib/jal/: lib/paszlib/TREES.PAS, lib/paszlib/inftrees.pas,
+	src/JALGZipStreams.pas: removed problems with writeable consts and
+	third party libraries
+
+2002-02-13 01:39  juanca
+
+	* lib/jal/: lib/paszlib/strutils.pas, src/JALFiles.pas,
+	src/JALGeometry.pas, src/JalDebug.pas: Adopted version 2.5 of
+	XStringGrid.
+	
+	Moved extensions to TXStringGrid to TYStringGrid.
+	
+	Program compiles and runs under Delphi 6.
+
 2002-02-06 14:50  juanco
 
 	* release.ini, src/want.dsk: routine
@@ -19,29 +62,20 @@
 
 2002-01-29 21:54  juanco
 
-	* want.xml, dist/want-0.1.115.zip, doc/index.html,
-	doc/index.template.html, doc/index.html: move dist directory to
-	under doc directory to aid with web site management
+	* want.xml, doc/index.html, doc/index.template.html,
+	doc/index.html: move dist directory to under doc directory to aid
+	with web site management
 
-2002-01-29 15:06  juanco
+2002-01-29 15:29  juanco
 
-	* dist/want-0.1.115.zip: release 0.1.115, now as binary
+	* ChangeLog, release.ini, doc/index.html, make/bootstrap.bat,
+	test/WantAcceptTestLib.drc, doc/dist/want-0.1.115.zip: release
+	0.1.115
 
 2002-01-29 14:54  juanco
 
 	* CVSROOT/cvswrappers: Added cvswrappers to catch known extensions
 	for binary files and check them in as -kb.
-
-2002-01-29 14:51  juanco
-
-	* dist/want-0.1.115.zip: removed non binary distro file
-
-2002-01-29 14:49  juanco
-
-	* dist/want-0.1.115.zip, dist/want-0.1.115.zip, ChangeLog,
-	release.ini, doc/index.html, make/bootstrap.bat,
-	test/WantAcceptTestLib.drc, doc/dist/want-0.1.115.zip: release
-	0.1.115
 
 2002-01-29 14:41  juanco
 
@@ -982,8 +1016,9 @@
 
 2001-05-22 18:20  juanca
 
-	* lib/jal/src/: JALFiles.pas, JALOwnedTrees.pas, JALStrings.pas:
-	Updated copyrights.
+	* lib/jal/src/: JalDebug.pas (tags: base_2001_05_24_13),
+	JALFiles.pas, JALOwnedTrees.pas, JALStrings.pas: Updated
+	copyrights.
 
 2001-05-22 17:53  juanca
 
@@ -1049,8 +1084,8 @@
 
 2001-05-17 20:12  juanca
 
-	* lib/jal/src/JALStrings.pas: Agregados archivos de libreria usados
-	por EVA
+	* lib/jal/src/: JalDebug.pas, JALStrings.pas: Agregados archivos de
+	libreria usados por EVA
 
 2001-05-17 20:05  juanca
 
