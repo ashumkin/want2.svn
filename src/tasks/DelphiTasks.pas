@@ -541,8 +541,8 @@ begin
   PS := nil;
   if not useLibraryPath then
   begin
-    Result := Result + ' -U' + DelphiDir + '\Lib';
-    Result := Result + ' -R' + DelphiDir + '\Lib';
+    Result := Result + PathOpt('U', DelphiDir + '\Lib');
+    Result := Result + PathOpt('R', DelphiDir + '\Lib');
   end
   else
   begin
