@@ -43,9 +43,10 @@ uses
 {$R *.RES}
 
 begin
-  if IsConsole then
+  {$IFDEF USE_TEXT_RUNNER}
     TextTestRunner.RunRegisteredTests(rxbHaltOnFailures)
-  else
+  {$ELSE}
     GUITestRunner.RunRegisteredTests;
+  {$ENDIF}
 end.
 
