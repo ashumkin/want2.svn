@@ -44,6 +44,7 @@ type
     FValue: string;
     FFileName: TPath;
     FSection: string;
+    FOverwrite :boolean;
     procedure ProcessFile;
   public
     procedure Init;    override;
@@ -52,6 +53,7 @@ type
     property value: string read FValue write FValue;
     property _file: TPath read FFileName  write FFileName;
     property section: string read FSection write FSection;
+    property overwrite :boolean read FOverwrite write FOverwrite;
   end;
 
 implementation
@@ -71,7 +73,7 @@ begin
     end
     else
     begin
-      Owner.SetProperty(name, value);
+      Owner.SetProperty(name, value, overwrite);
     end;
   end;
 end;
@@ -109,7 +111,7 @@ begin
       Value := PropList.Values[Name];
       if (Name <> '') and (Name[1] <> '#') then
       begin
-        Owner.SetProperty(Name, Value);
+        Owner.SetProperty(Name, Value, overwrite);
       end;
     end;
   finally

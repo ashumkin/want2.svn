@@ -32,49 +32,63 @@ uses
   WantClasses;
 
 type
-  TRegexpElement = class(TScriptElement)
+  TRegexpTask = class(TTask)
   protected
     FProperty :string;
     FText     :string;
     FPattern  :string;
     FSubst    :string;
-    FTrim     :boolean;
+    FTrim      :boolean;
+    FOverwrite :boolean;
+    FToUpper   :boolean;
+    FToLower   :boolean;
 
     function Substitute(Pattern, Subst, Text :string) :string;
   public
     procedure Init; override;
+    procedure Execute; override;
   published
-    property _property :string   read FProperty write FProperty;
-    property _text     :string   read FText     write FText;
-    property pattern   :string   read FPattern  write FPattern;
-    property subst     :string   read FSubst    write FSubst;
-    property trim      :boolean  read FTrim     write FTrim;
+    property _property :string   read FProperty   write FProperty;
+    property _text     :string   read FText       write FText;
+    property pattern   :string   read FPattern    write FPattern;
+    property subst     :string   read FSubst      write FSubst;
+    property trim      :boolean  read FTrim       write FTrim;
+    property overwrite :boolean  read FOverwrite  write FOverwrite;
+    property toupper   :boolean  read FToUpper    write FToUpper;
+    property tolower   :boolean  read FToLower    write FToLower;
   end;
 
 implementation
 
-{ TRegexpElement }
+{ TCustomRegexpElement }
 
-procedure TRegexpElement.Init;
+procedure TRegexpTask.Init;
 begin
   inherited Init;
   RequireAttribute('property');
   RequireAttribute('pattern');
-
-  // this task sets a property
-  // that needs to be implemented here, in the Init method.
-  if not HasAttribute('subst') then
-    Owner.SetProperty(_property, Substitute('.*('+pattern+').*', '\1', _text))
-  else
-    Owner.SetProperty(_property, Substitute(pattern, subst, _text));
 end;
 
-function TRegexpElement.Substitute(Pattern, Subst, Text : string): string;
+procedure TRegexpTask.Execute;
+begin
+  inherited;
+  if not HasAttribute('subst') then
+    Owner.SetProperty(_property, Substitute('.*('+pattern+').*', '\1', _text), overwrite)
+  else
+    Owner.SetProperty(_property, Substitute(pattern, subst, _text), overwrite);
+end;
+
+function TRegexpTask.Substitute(Pattern, Subst, Text : string): string;
 begin
   Log(vlDebug, 'Replacing /%s/ with /%s/', [Pattern, Subst]);
   Result := XPerlRe.Replace(Pattern, Subst, Text, True);
+  if ToUpper then
+    Result := UpperCase(Result)
+  else if ToLower then
+    Result := LowerCase(Result);
 end;
 
+
 initialization
-  RegisterElement(TRegexpElement);
+  RegisterElement(TRegexpTask);
 end.

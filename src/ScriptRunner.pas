@@ -264,8 +264,10 @@ end;
 
 procedure TScriptRunner.BuildTarget(Target: TTarget);
 var
-  i: Integer;
+  i :Integer;
+  p :Integer;
   LastDir :TPath;
+  PathList :TPaths;
 begin
   if not Target.Enabled then
     EXIT;
@@ -279,8 +281,20 @@ begin
   try
     ChangeDir(Target.BasePath);
 
-    for i := 0 to Target.TaskCount-1 do
-      ExecuteTask(Target.Tasks[i]);
+    PathList := WildPaths.Wild(Target.ForEach);
+    if Length(PathList) = 0 then
+    begin
+      SetLength(PathList, 1);
+      PathList[0] := '';
+    end;
+
+    for p := Low(PathList) to High(PathList) do
+    begin
+      Target.SetProperty(Target._Property, PathList[p], true);
+      for i := 0 to Target.TaskCount-1 do
+        ExecuteTask(Target.Tasks[i]);
+      Target.SetProperty(Target._Property, '');
+    end;
 
     Listener.TargetFinished(Target);
   finally

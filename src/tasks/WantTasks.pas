@@ -42,7 +42,7 @@ type
   TSubProjectPropertyElement = class(TScriptElement)
   public
     class function TagName :string;              override;
-    procedure SetProperty(Name, Value :string); override;
+    procedure SetProperty(Name, Value :string; overwrite :boolean = false); override;
   end;
 
   TCustomWantTask = class(TTask)
@@ -128,9 +128,9 @@ begin
   Result := 'property';
 end;
 
-procedure TSubProjectPropertyElement.SetProperty(Name, Value: string);
+procedure TSubProjectPropertyElement.SetProperty(Name, Value: string; overwrite :boolean);
 begin
-  (Owner as TWantTask).FSubProject.SetProperty(Name, Value);
+  (Owner as TWantTask).FSubProject.SetProperty(Name, Value, overwrite);
 end;
 
 initialization

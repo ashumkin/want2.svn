@@ -179,6 +179,7 @@ type
     procedure AttributeRequiredError(AttName: string);
 
     procedure Init;   virtual;
+    procedure Execute; virtual;
 
     function GetNoChanges :boolean; virtual;
   public
@@ -192,7 +193,7 @@ type
     function  SetupChild(ChildName :string; Atts :TStrings):TScriptElement; virtual;
     procedure Configure; virtual;
 
-    procedure SetProperty(Name, Value: string);          virtual;
+    procedure SetProperty(Name, Value: string; overwrite :boolean = false); virtual;
     function  PropertyDefined(Name: string): boolean;    virtual;
     function  PropertyValue(Name: string): string;       virtual;
     function  EnvironmentValue(Name: string): string;    virtual;
@@ -325,6 +326,8 @@ type
   protected
     FTasks:   TList;
     FDepends: string;
+    FForEach  :string;
+    FProperty :string;
 
     procedure InsertNotification(Child :TTree); override;
     procedure RemoveNotification(Child :TTree); override;
@@ -342,6 +345,8 @@ type
   published
     property Name stored True;
     property Depends: string read FDepends write FDepends;
+    property ForEach :string read FForEach write FForEach;
+    property _Property :string read FProperty write FProperty;
   end;
 
 
@@ -352,7 +357,7 @@ type
     procedure TaskError(Msg: string = ''; Addr :Pointer = nil);
     procedure WantError(Msg: string = ''; Addr :Pointer = nil); override;
 
-    procedure Execute; virtual;
+    procedure Execute; override;
   public
     class function TagName: string; override;
 
@@ -616,7 +621,9 @@ begin
       end;
 
       ChangeDir(BasePath, false);
-      Self.Init;
+      self.Init;
+      if (Parent <> nil) and (Parent.ClassType <> TTarget) then
+        Self.Execute;
     except
       on e :Exception do
          WantError(Format('(%d:%d) could not configure <%s>: %s',
@@ -685,7 +692,8 @@ end;
 
 function TScriptElement.HasAttribute(Name: string): boolean;
 begin
-  Result := FAttributes.IndexOfName(Name) >= 0;
+  Result := (FAttributes.IndexOfName(Name) >= 0)
+             or (GetDelphiProperty(Name) <> '')
 end;
 
 
@@ -837,8 +845,7 @@ begin
   Names := StringToArray(Name, '|', ttBoth);
   for i := 0 to High(Names) do
   begin
-    if HasAttribute(Names[i])
-    or (GetAttribute(Names[i]) <> '') then
+    if HasAttribute(Names[i]) then
     begin
       AttributeFound := true;
       break;
@@ -880,13 +887,13 @@ begin
   FProperties.Assign(Value);
 end;
 
-procedure TScriptElement.SetProperty(Name, Value: string);
+procedure TScriptElement.SetProperty(Name, Value: string; overwrite :boolean);
 begin
   if Name = '' then
     WantError('property name missing');
   if Value = '' then
     Value := #0;
-  if not PropertyDefined(Name) then
+  if overwrite or not PropertyDefined(Name) then
     Properties.Values[Name] := Value;
 end;
 
@@ -1154,6 +1161,11 @@ begin
   Result := (Owner <> nil) and Owner.NoChanges;
 end;
 
+procedure TScriptElement.Execute;
+begin
+
+end;
+
 { TProject }
 
 constructor TProject.Create(Owner: TScriptElement);
@@ -1362,6 +1374,7 @@ constructor TTarget.Create(Owner: TScriptElement);
 begin
   inherited Create(Owner);
   FTasks   := TList.Create;
+  FProperty := 'each';
 end;
 
 destructor TTarget.Destroy;
@@ -1450,6 +1463,7 @@ begin
   LastDir := CurrentDir;
   try
     ChangeDir(BasePath);
+    Configure;
     Execute;
   finally
     ChangeDir(LastDir);
