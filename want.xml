@@ -70,12 +70,6 @@ See http://www.suigeneris.org/want/ for details.
 
   <target name="compile" depends="clean,prepare,versioninfo,resources">
 
-    <!-- Delete want.cfg first to get a reproducible build.
-         (Should this be automated?)
-    -->
-    <touch  file="${src}/want.cfg"  />
-    <delete file="${src}/want.cfg" />
-
     <dcc basedir="${src}" source="want.dpr"  >
       <exeoutput path="${bin}"  />
       <dcuoutput path="${dcu}"      />
