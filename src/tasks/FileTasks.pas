@@ -37,12 +37,13 @@ unit FileTasks;
 interface
 
 uses
+  SysUtils,
+  Classes,
+
   DanteClasses,
   WildPaths,
-  FileSets,
+  FileSets;
 
-  SysUtils,
-  Classes;
 
 type
   TFileTask = class(TTask)
@@ -224,13 +225,13 @@ begin
   Log(vlVerbose, Format('creating dir "%s"', [ToSystempath(ToAbsolutePath(dir))]) );
   if dir = '' then
     TaskError('<dir> attribute not set');
-  if not IsDir(dir) then
+  if not PathIsDir(dir) then
   begin
     if PathExists(dir) then
       TaskFailure(Format('cannot create dir "%s". A file is in the way.', [dir]));
     Log(ToRelativePath(dir));
     WildPaths.MakeDir(ToAbsolutePath(dir));
-    if not IsDir(dir) then
+    if not PathIsDir(dir) then
       TaskFailure(Format('cannot create dir "%s".', [dir]));
   end;
 end;
@@ -354,9 +355,13 @@ procedure TCopyTask.DoFiles(Fileset :TFileSet; FromPath, ToPath: TPath);
 begin
   Log(vlVerbose, Format('copy %s -> %s', [ToSystemPath(FromPath), ToSystemPath(ToPath)]));
   AboutToScratchPath(ToPath);
-  WildPaths.CopyFile(FromPath, ToPath);
-  if not FileExists(ToSystemPath(ToPath)) then
-    TaskFailure(ToPath);
+  if not PathIsDir(FromPath) then
+  begin
+    MakeDir(SuperPath(ToPath));
+    WildPaths.CopyFile(FromPath, ToPath);
+    if not PathExists(ToPath) then
+      TaskFailure(Format('Could not copy"%s" to "%s', [ToRelativepath(FromPath), ToRelativepath(ToPath)]));
+  end;
 end;
 
 procedure TCopyTask.DoPaths(Fileset :TFileSet; FromPaths, ToPaths: TPaths);
@@ -374,7 +379,7 @@ procedure TMoveTask.DoFiles(Fileset :TFileSet; FromPath, ToPath: TPath);
 begin
   Log(vlVerbose, Format('move %s -> %s', [ToSystemPath(FromPath), ToSystemPath(ToPath)]));
   AboutToScratchPath(ToPath);
-  if not IsDir(FromPath) then
+  if not PathIsDir(FromPath) then
   begin
     MakeDir(SuperPath(ToPath));
     WildPaths.MoveFile(FromPath, ToPath);
@@ -391,8 +396,11 @@ begin
   Log(Format('moving %d files from %s to %s', [Length(FromPaths), FileSet.dir, todir]));
   inherited DoPaths(Fileset, FromPaths, ToPaths);
 
-  for i := 0 to High(FromPaths) do
-    RemoveDir(FromPaths[i]);
+  for i := High(FromPaths) downto 0 do
+  begin
+    if PathIsDir(FromPaths[i]) then
+      WildPaths.DeleteFile(FromPaths[i]);
+  end;
 end;
 
 

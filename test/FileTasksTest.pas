@@ -113,7 +113,7 @@ procedure TTestMkDirTask.DoTest;
 begin
   FMkDirTask.Execute;
   Check(DirectoryExists(FMkDirTask.ToSystemPath(FMkDirTask.dir)), 'directory not made');
-  Check(WildPaths.IsDir(FMkDirTask.dir), 'directory not made');
+  Check(WildPaths.PathIsDir(FMkDirTask.dir), 'directory not made');
 end;
 
 procedure TTestMkDirTask.Setup;

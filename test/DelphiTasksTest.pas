@@ -106,10 +106,10 @@ var
   exe:  string;
 begin
   exe := PathConcat(FDelphiTask.exes, 'dante.exe');
-  if IsFile(exe) then
+  if PathIsFile(exe) then
     DeleteFile(exe);
   FProject.Build('compile');
-  Check(IsFile(exe), 'dante exe not found');
+  Check(PathIsFile(exe), 'dante exe not found');
 end;
 
 { TTestIncVerRcTask }

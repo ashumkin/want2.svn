@@ -131,8 +131,13 @@ begin
       FinalList, [flRecursive, flFullNames]);
     *)
 
+    SetupList.Sorted := True;
+    FinalList.Sorted := True;
     WildPaths.Wild(SetupList, '**', ToPath(FTestExeSetupDir));
     WildPaths.Wild(FinalList, '**', ToPath(FTestExeFinalDir));
+
+    SetupList.Sorted := False;
+    FinalList.Sorted := False;
     ToSystemPaths(SetupList, ToPath(FTestExeSetupDir));
     ToSystemPaths(FinalList, ToPath(FTestExeFinalDir));
 

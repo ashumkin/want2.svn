@@ -206,7 +206,7 @@ begin
     FS.Exclude('test/*');
     FS.Exclude('**/*Test*');
     TouchFile('/tmp/test.txt');
-    Check(IsFile('/tmp/test.txt'));
+    Check(PathIsFile('/tmp/test.txt'));
     (*
     FS.DeleteFiles;
     FS.CopyFiles('//dumbo/c/temp');

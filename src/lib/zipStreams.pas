@@ -281,12 +281,12 @@ var
   Stream  :TFileStream;
   FileDir :TPath;
 begin
-  if IsDir(FileName) then
+  if PathIsDir(FileName) then
     WriteDirEntry(FileName, CheckFileTime(FileName), Comment)
   else
   begin
     FileDir := SuperPath(FileName);
-    if IsDir(FileDir) then
+    if PathIsDir(FileDir) then
        WriteDirEntry(FileDir);
     Stream := TFileStream.Create(ToSystemPath(FileName), fmOpenRead or fmShareDenyWrite);
     try

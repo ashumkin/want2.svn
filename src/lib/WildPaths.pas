@@ -147,8 +147,8 @@ function IsMatch(const Path, Pattern :TPath):boolean; overload;
 function IsMatch(const Paths :TPaths; const Patterns :TPatterns; p :Integer = 0; s :Integer = 0):boolean; overload;
 
 function  PathExists(const Path :TPath):boolean;
-function  IsDir(const Path :TPath):boolean;
-function  IsFile(const Path :TPath):boolean;
+function  PathIsDir(const Path :TPath):boolean;
+function  PathIsFile(const Path :TPath):boolean;
 function  SuperPath(const Path :TPath) :TPath;
 
 
@@ -690,14 +690,14 @@ begin
   Result := Length(FindPaths(Path)) >= 1;
 end;
 
-function  IsDir(const Path :TPath):boolean;
+function  PathIsDir(const Path :TPath):boolean;
 begin
   AssertIsSystemIndependentPath(Path);
 
   Result := Length(FindDirs(Path)) = 1;
 end;
 
-function  IsFile(const Path :TPath):boolean;
+function  PathIsFile(const Path :TPath):boolean;
 begin
    AssertIsSystemIndependentPath(Path);
 
@@ -734,11 +734,11 @@ procedure MakeDir(const Path :TPath);
 begin
   if (Length(Path) > 0)
   and (Path[Length(Path)] <> ':')  // Oops! Windows specific!
-  and not IsDir(Path) then
+  and not PathIsDir(Path) then
   begin
     MakeDir(SuperPath(Path));
     SysUtils.CreateDir(ToSystemPath(Path));
-    if not IsDir(Path) then
+    if not PathIsDir(Path) then
       raise EFileOpException.Create(Format('Could not create directory "%s"', [Path]));
   end;
 end;
@@ -758,7 +758,7 @@ end;
 procedure CopyFile(const Src, Dst :TPath);
 begin
    MakeDir(SuperPath(Dst));
-   if IsDir(Src) then
+   if PathIsDir(Src) then
      MakeDir(Dst)
    else if not Windows.CopyFile( PChar(ToSystemPath(Src)),
                                  PChar(ToSystemPath(Dst)),
@@ -789,7 +789,7 @@ end;
 
 procedure MoveFile(const Src, Dst :TPath);
 begin
-   if IsDir(Src) then
+   if PathIsDir(Src) then
    begin
      raise EFileOpException.Create(Format('Don''t know how to move dir "%s" to "%s"', [Src, Dst]));
    end;
@@ -823,7 +823,7 @@ end;
 
 procedure DeleteFile(const Path :TPath);
 begin
-  if not IsDir(Path) then
+  if not PathIsDir(Path) then
     SysUtils.DeleteFile(ToSystemPath(Path))
   else
     SysUtils.RemoveDir(ToSystemPath(Path));
@@ -839,10 +839,10 @@ var
   f :Integer;
 begin
   for f := Low(Files) to High(Files) do
-    if not IsDir(Files[f]) then
+    if not PathIsDir(Files[f]) then
       DeleteFile(Files[f]);
   for f := Low(Files) to High(Files) do
-    if IsDir(Files[f]) then
+    if PathIsDir(Files[f]) then
       DeleteFile(Files[f]);
 end;
 

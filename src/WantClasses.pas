@@ -1402,9 +1402,9 @@ begin
   Result := ToAbsolutePath(BuildFile);
   Dir    := SuperPath(Result);
 
-  while not IsFile(Result) do
+  while not PathIsFile(Result) do
   begin
-    if IsDir(SuperPath(Dir)) then
+    if PathIsDir(SuperPath(Dir)) then
     begin
       Dir := SuperPath(Dir);
       Result := PathConcat(Dir, BuildFile)
@@ -1413,7 +1413,7 @@ begin
       break;
   end;
 
-  if not IsFile(Result) then
+  if not PathIsFile(Result) then
     DanteError(Format('cannot find build file "%s" in "%s": ',[BuildFile, BaseDir]));
 end;
 
