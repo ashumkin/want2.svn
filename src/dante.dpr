@@ -38,8 +38,7 @@ program dante;
 uses
   SysUtils,
   clUtilConsole,
-  ExecTasks,
-  DelphiTasks,
+  StandardTasks,
   DanteMain;
 
 const
