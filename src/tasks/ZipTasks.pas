@@ -113,6 +113,8 @@ begin
   AboutToScratchPath(zipfile);
   FZipStream := TZipStream.Create(zipfile);
   try
+    if not compress then
+      FZipStream.CompressionLevel := zlNone;
     inherited Execute;
   finally
     FZipStream.Free;
