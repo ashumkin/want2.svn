@@ -39,7 +39,8 @@ uses
   FileSetTests in 'FileSetTests.pas',
   ExecTasksTest in 'ExecTasksTest.pas',
   FileTasksTest in 'FileTasksTest.pas',
-  DelphiTasksTest in 'DelphiTasksTest.pas';
+  DelphiTasksTest in 'DelphiTasksTest.pas',
+  VersionInfoTasksTest in 'VersionInfoTasksTest.pas';
 
 {$R *.RES}
 
