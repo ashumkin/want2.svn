@@ -2045,5 +2045,4 @@ end;
 
 end.
 
-#$D#$A'<project default="compile" description="a test project" name="test">'#$D#$A'  <target name="prepare">'#$D#$A'    <dummy1 />'#$D#$A'  </target>'#$D#$A'  <target depends="prepare" name="compile">'#$D#$A'    <dummy2 />'#$D#$A'    <dummy3 aprop="25" />'#$D#$A'  </target>'#$D#$A'</project>'#$D#$A
-#$D#$A'<project default="compile" description="a test project" name="test">'#$D#$A'   <target name="prepare">'#$D#$A'     <dummy1 />'#$D#$A'  </target>'#$D#$A'   <target depends="prepare" name="compile">'#$D#$A'     <dummy2 />'#$D#$A'     <dummy3 aprop="25" />'#$D#$A'  </target>'#$D#$A'</project>'#$D#$A
+
