@@ -12,7 +12,7 @@ This is the Want script for building Want.
 See http://www.suigeneris.org/want/ for details.
 -->
 <project name="want"
-         basedir=".."
+         basedir="."
          default="dist" >
 
   <property name="version" value="0.9.0" />
@@ -54,9 +54,12 @@ See http://www.suigeneris.org/want/ for details.
     <delete dir="${bin}/**" />
   </target>
 
-  <target name="compile" depends="clean,prepare">
+  <target name="resources" depends="prepare" >
     <brcc file="${src}/wantver.rc" output="${bin}/wantver.res" />
     <brcc file="${src}/license.rc" output="${bin}/license.res" />
+  </target>
+
+  <target name="compile" depends="clean,prepare,resources">
 
     <!-- Delete want.cfg first to get a reproducible build.
          (Should this be automated?)
