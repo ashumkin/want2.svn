@@ -17,6 +17,7 @@ uses
   PatternSets,
   Attributes,
   TimeElements,
-  RegexpElements;
+  RegexpElements,
+  FilterElements;
 
 end.

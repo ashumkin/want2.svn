@@ -26,8 +26,10 @@ uses
   RegexpElementsTest in 'RegexpElementsTest.pas',
   WantStandardTasks in '..\src\tasks\WantStandardTasks.pas',
   StandardTasks in '..\src\tasks\StandardTasks.pas',
-  LoadFileTests,
-  FilterChainsElementsTests;
+  TempFileTests in 'TempFileTests.pas',
+  XmlPropertyTests in 'XmlPropertyTests.pas',
+  FilterElementsTests in 'FilterElementsTests.pas',
+  LoadFileTests in 'LoadFileTests.pas';
 
 {$R *.RES}
 

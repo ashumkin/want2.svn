@@ -24,7 +24,8 @@ uses
   IniFileTasks,
   CVSTasks,
   LoadFileTasks,
-  FilterElements;
+  TempFileTasks,
+  XmlPropertyTasks;
 
 
 implementation
