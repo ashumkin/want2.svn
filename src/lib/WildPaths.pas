@@ -79,7 +79,7 @@ type
   TFileAttributes = set of TFileAttribute;
 
 const
-  AnyFileAttribute = [ReadOnly..Archive];
+  AnyFileAttribute = [];
 
 function  IsLocalPath(const Path: TPath): boolean;
 procedure AssertIsLocalPath(const Path: TPath);
@@ -88,7 +88,8 @@ function IsWindowsPath(const Path: TPath):boolean;
 
 function PathDrive(const Path: TPath): string;
 function PathServer(Path: TPath): string;
-function PathFile(const Path: TPath): string;
+function PathFile(const Path: TPath): TPath;
+function PathDir(const Path: TPath): TPath;
 
 function RemovePathDrive(Path: TPath):TPath;
 function RemovePathServer(Path: TPath):TPath;
@@ -106,6 +107,7 @@ procedure ToSystemPaths(Paths: TStrings; const BasePath: TPath = ''); overload;
 
 function StringsToPaths(S: TStrings):TPaths;
 function SplitPath(Path: TPath): TPaths;
+function JoinPaths(Paths: TPaths): TPath;
 
 function  MovePath(Path, FromBase: TPath; ToBase: TPath = ''): TPath;
 function  MovePaths(const Paths: TPaths; const FromBase: TPath; const ToBase: TPath = ''): TPaths;
@@ -234,7 +236,7 @@ begin
   end;
 end;
 
-function PathFile(const Path: TPath): string;
+function PathFile(const Path: TPath): TPath;
 var
   splits :TPaths;
 begin
@@ -242,6 +244,19 @@ begin
   splits := SplitPath(Path);
   if Length(splits) > 0 then
     Result := splits[High(splits)];
+end;
+
+function PathDir(const Path: TPath): TPath;
+var
+  splits :TPaths;
+begin
+  Result := '';
+  splits := SplitPath(Path);
+  if Length(splits) > 0 then
+  begin
+    SetLength(splits, Length(splits)-1);
+    Result := JoinPaths(splits); 
+  end;
 end;
 
 function RemovePathDrive(Path: TPath):TPath;
@@ -390,20 +405,31 @@ var
   S: TStringList;
   Search: TSearchRec;
   SearchResult: Integer;
+  Pattern :TPath;
+  Dir     :TPath;
+  Lookup  :TPath;
 begin
-  Path := ToPath(Path);
+  Path    := ToPath(Path);
+  Dir     := PathDir(Path);
+  Pattern := PathFile(Path);
+
+  if (Pos('*', Pattern) > 0) or (Pos('?', Pattern) > 0)then
+    Lookup := ToSystemPath(PathConcat(Dir, '*'), BasePath)
+  else
+    Lookup := ToSystemPath(Path, BasePath);
 
   S := TStringList.Create;
   S.Sorted := True;
   try
-    SearchResult := FindFirst(ToSystemPath(Path, BasePath), faAnyFile, Search);
+    SearchResult := FindFirst(Lookup, faAnyFile, Search);
     try
       while SearchResult = 0 do
       begin
-        if  ((SystemAttributesToFileAttributes(Search.Attr) * IncludeAttr) <> [])
-        and ((SystemAttributesToFileAttributes(Search.Attr) * ExcludeAttr) =  [])
-        and (Search.Name <> '.' )
+        if  (Search.Name <> '.' )
         and (Search.Name <> '..' )
+        and ((IncludeAttr = AnyFileAttribute) or ((SystemAttributesToFileAttributes(Search.Attr) * IncludeAttr) <> []))
+        and ((SystemAttributesToFileAttributes(Search.Attr) * ExcludeAttr) =  [])
+        and IsMatch(Pattern, Search.Name)
         then
           S.Add(ToPath(Search.Name, BasePath));
         SearchResult := FindNext(Search);
@@ -456,6 +482,21 @@ begin
     FreeAndNil(S);
   end;
 end;
+
+function JoinPaths(Paths: TPaths): TPath;
+var
+ i :Integer;
+begin
+  if Length(Paths) = 0 then
+    Result := ''
+  else
+  begin
+    Result := Paths[0];
+    for i := 1 to High(Paths) do
+      Result := PathConcat(Result, Paths[i]);
+  end;
+end;
+
 
 function StringsToPaths(S: TStrings): TPaths;
 var
@@ -914,7 +955,7 @@ begin
     begin
       { take off read only attribute if it exists }
       FileAttr := SysUtils.FileGetAttr(SysPath);
-      FileAttr := FileAttr and (not faReadOnly);
+      FileAttr := FileAttr and (not $00000001); // faReadOnly. Avoid warning.
       SysUtils.FileSetAttr(SysPath, FileAttr);
     end;
     SysUtils.DeleteFile(SysPath)
