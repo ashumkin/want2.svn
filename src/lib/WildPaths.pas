@@ -793,6 +793,7 @@ begin
   else if B[j] = '*' then
     Result :=    Matches(A, B, i+1, j+1)
               or Matches(A, B, i+1, j)
+              or Matches(A, B, i  , j+1)
   else
     Result := False;
 end;
