@@ -66,6 +66,7 @@ type
     FArguments   :TStrings;
     FSkipLines   :Integer;
     FFailOnError :boolean;
+    FTimeOut     :Longint;
 
     function BuildExecutable :string; virtual;
     function BuildArguments  :string; virtual;
@@ -90,6 +91,10 @@ type
     property SkipLines:    Integer  read FSkipLines   write FSkipLines;
     property OS:           string   read FOS          write FOS;
     property failonerror:  boolean  read FFailOnError write FFailOnError default True;
+    {:@TODO Implement a TWaitableTimer class to implement timeouts.
+      Use Windows.CreateWaitableTimer and Windows.SetWaitableTimer.
+    }
+    property timeout:      Longint  read FTimeout     write FTimeout;       
   published
     function CreateArg :TArgElement;
   end;
