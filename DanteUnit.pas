@@ -47,7 +47,6 @@ type
 
 implementation
 
-
 { TDante }
 
 procedure TDante.DoBuild(ABuildFileName: string);

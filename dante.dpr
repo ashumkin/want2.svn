@@ -36,11 +36,36 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 program dante;
 
 uses
-  DanteUnit;
+  DanteUnit, SysUtils;
 
-{$R *.RES}
-
+function DanteHeader: string;
 begin
+  Result := 'Dante v0.0.0 Build 0. Build Management tool for Delphi';
+end;
 
+const
+  SwitchChars = ['-', '/'];
+begin
+  if FindCmdLineSwitch('?', SwitchChars, true) or
+     FindCmdLineSwitch('h', SwitchChars, true) then
+  begin
+    WriteLn(DanteHeader);
+    WriteLn('For licensing info, use the -L switch');
+    WriteLn;
+    WriteLn('Usage:');
+    WriteLn('  dante.exe [options]');
+    WriteLn;
+    WriteLn('Options:');
+    WriteLn('  -buildfile [file]   Specifies the build file. Default is');
+    WriteLn('                      build.txt (will be build.xml in future)');
+  end
+  else if FindCmdLineSwitch('L', SwitchChars, false) then
+  begin
+    WriteLn(DanteHeader);
+    //WriteLn(License);
+  end
+  else begin
+    WriteLn('not functional yet.');
+  end;
 end.
 
