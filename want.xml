@@ -139,7 +139,11 @@ See http://www.suigeneris.org/want/ for details.
     <dunit testlib="${bin}/${test.app}" />
  </target>
 
- <target name="dist" depends="clean,prepare,compile,test,changelog" > 
+ <target name="dist" depends="clean,prepare,compile,test,changelog,package" /> 
+         
+ <target name="zip" depends="package" />
+
+ <target name="package" >
     <mkdir dir="${dist}" />
     <delete file="${zipfile}" />
     <zip zipfile="${zipfile}" >
@@ -165,9 +169,8 @@ See http://www.suigeneris.org/want/ for details.
          <include name="${test}/data/**" />
 
          <include name="${lib}/*.zip" />    <!-- include third party library .zips -->
-         <exclude name="${lib}/*/**"   />   <!-- exclude subdirectories -->
+         <exclude name="${lib}/*/**/*"  />   <!-- exclude subdirectories -->
          <exclude name="${basedir}/private/**" />
-         <exclude name="**/CVS/**" />
     </zip>
   </target>
 
