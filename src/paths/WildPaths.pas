@@ -263,7 +263,7 @@ end;
 
 function MovePath(Path :TPath; FromBase :TPath; ToBase :TPath) :TPath;
 begin
-   if Pos(FromBase+'/', Path) = 1 then
+   if (FromBase <> '') and (Pos(FromBase+'/', Path) = 1) then
      Result := PathConcat(ToBase, Copy(Path, 2+Length(FromBase), Length(Path)))
    else if PathIsAbsolute(Path) then
      Result :=  Path
