@@ -11,6 +11,12 @@ MaxTop=-1
 ClientWidth=804
 ClientHeight=78
 
+[BreakpointWindow]
+Column0Width=100
+Column1Width=75
+Column2Width=225
+Column3Width=40
+
 [CallStackWindow]
 Create=1
 Visible=1
@@ -68,10 +74,10 @@ File_4=SourceModule,'C:\home\want\src\tasks\EditTasks.pas',0,1,542,9,545,0,0
 File_5=SourceModule,'C:\home\want\test\WildPathsTest.pas',0,1,25,26,33,0,0
 
 [Modules]
-Module0=C:\home\want\src\ScriptRunner.pas
-Module1=C:\home\want\test\WantAcceptTestLib.dpr
-Module2=C:\home\want\src\tasks\DelphiTasks.pas
-Module3=C:\home\want\src\win32\WIN32.pas
+Module0=C:\home\want\src\tasks\DelphiTasks.pas
+Module1=C:\home\want\src\win32\WIN32.pas
+Module2=C:\home\want\src\ScriptRunner.pas
+Module3=C:\home\want\test\WantAcceptTestLib.dpr
 Module4=C:\home\want\src\win32\ConsoleListener.pas
 Module5=C:\home\want\test\ExternalTests.pas
 Module6=c:\home\dunit\src\TestFramework.pas
@@ -79,22 +85,22 @@ Module7=C:\home\want\src\lib\WildPaths.pas
 Count=8
 EditWindowCount=1
 
-[C:\home\want\src\ScriptRunner.pas]
-ModuleType=SourceModule
-FormState=0
-FormOnTop=0
-
-[C:\home\want\test\WantAcceptTestLib.dpr]
-ModuleType=SourceModule
-FormState=0
-FormOnTop=0
-
 [C:\home\want\src\tasks\DelphiTasks.pas]
 ModuleType=SourceModule
 FormState=0
 FormOnTop=0
 
 [C:\home\want\src\win32\WIN32.pas]
+ModuleType=SourceModule
+FormState=0
+FormOnTop=0
+
+[C:\home\want\src\ScriptRunner.pas]
+ModuleType=SourceModule
+FormState=0
+FormOnTop=0
+
+[C:\home\want\test\WantAcceptTestLib.dpr]
 ModuleType=SourceModule
 FormState=0
 FormOnTop=0
@@ -151,9 +157,9 @@ LeftPanelData=00000400010000000C000000436F64654578706C6F726572000000000000000000
 RightPanelSize=0
 BottomPanelSize=149
 BottomPanelClients=MessageView@EditWindow0,LocalVarsWindow
-BottomPanelData=00000400010000000B0000004D65737361676556696577F6020000000000000095000000000000000100000000F60200000F0000004C6F63616C5661727357696E646F77FFFFFFFF
+BottomPanelData=00000400010000000B0000004D65737361676556696577F6020000000000000295000000000000000100000000F60200000F0000004C6F63616C5661727357696E646F77FFFFFFFF
 ViewCount=8
-CurrentView=5
+CurrentView=4
 View0=0
 View1=1
 View2=2
@@ -183,13 +189,13 @@ Dockable=1
 Create=1
 Visible=0
 State=0
-Left=11
+Left=390
 Top=0
-Width=747
+Width=368
 Height=149
 MaxLeft=-1
 MaxTop=-1
-ClientWidth=747
+ClientWidth=368
 ClientHeight=149
 TBDockHeight=149
 LRDockWidth=443
@@ -219,21 +225,21 @@ LeftCol=1
 [View3]
 Module=C:\home\want\src\win32\WIN32.pas
 CursorX=1
-CursorY=31
+CursorY=32
 TopLine=16
 LeftCol=1
 
 [View4]
 Module=C:\home\want\src\tasks\DelphiTasks.pas
 CursorX=1
-CursorY=232
-TopLine=210
+CursorY=1
+TopLine=1
 LeftCol=1
 
 [View5]
 Module=C:\home\want\src\ScriptRunner.pas
-CursorX=16
-CursorY=161
+CursorX=24
+CursorY=155
 TopLine=141
 LeftCol=1
 

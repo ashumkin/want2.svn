@@ -394,18 +394,22 @@ begin
 
   if not usecfg then
   begin
-    for s := Low(Sources) to High(Sources) do
-    begin
-      if LowerCase(StrRight(Sources[s], 4)) = '.dpr' then
+    try
+      for s := Low(Sources) to High(Sources) do
       begin
-        cfg := Sources[s];
-        Delete(cfg, Length(cfg)-3, 4);
-        if PathIsFile(cfg + '.cfg') then
+        if LowerCase(StrRight(Sources[s], 4)) = '.dpr' then
         begin
-          Log(vlVerbose, 'Renaming configuration file for %s', [ Sources[s] ]);
-          WildPaths.MoveFile(cfg + '.cfg', cfg + __RENAMED_CFG_EXT);
+          cfg := Sources[s];
+          Delete(cfg, Length(cfg)-3, 4);
+          if PathIsFile(cfg + '.cfg') then
+          begin
+            Log(vlVerbose, 'Renaming configuration file for %s', [ Sources[s] ]);
+            WildPaths.MoveFile(cfg + '.cfg', cfg + __RENAMED_CFG_EXT);
+          end;
         end;
       end;
+    except
+      Log(vlWarnings, 'Could rename configuration file: %s', [cfg]);
     end;
   end
   else
@@ -574,11 +578,16 @@ begin
   if not usecfg then
   begin
     cfgs := Wild('*' +__RENAMED_CFG_EXT);
-    for c := Low(cfgs) to High(cfgs) do
-    begin
-      cfg := cfgs[c];
-      Delete(cfg, 1+Length(cfg) - Length(__RENAMED_CFG_EXT), Length(__RENAMED_CFG_EXT));
-      WildPaths.MoveFile(cfgs[c], cfg + '.cfg');
+    try
+      for c := Low(cfgs) to High(cfgs) do
+      begin
+        cfg := cfgs[c];
+        Delete(cfg, 1+Length(cfg) - Length(__RENAMED_CFG_EXT), Length(__RENAMED_CFG_EXT));
+        cfg := cfg + '.cfg';
+          WildPaths.MoveFile(cfgs[c], cfg);
+      end;
+    except
+      Log(vlWarnings, 'Could not restore configuration file: %s', [cfg]);
     end;
   end;
 end;
