@@ -1,10 +1,19 @@
-<!-- This is a test Dante script -->
+<!-- Test move task, overwriting read-only files -->
 <project name="move_test"
          basedir="."
          default="test" >
 
   <target name="test" >
     <mkdir dir="${basedir}/dirb" />
+
+    <!-- move task will not overwrite read-only files. Future
+         version of task might support this directly. Until
+         then, have to delete first -->
+    <delete deletereadonly="true" >
+      <fileset dir="${basedir}/dirb" >
+        <include name="*.*" />
+      </fileset>
+    </delete>
 
     <move todir="${basedir}/dirb" >
       <fileset dir="${basedir}/dira" >
