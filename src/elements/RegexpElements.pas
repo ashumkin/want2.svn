@@ -63,7 +63,7 @@ begin
 
   // this task sets a property
   // that needs to be implemented here, in the Init method.
-  if subst = '' then
+  if not HasAttribute('subst') then
     Owner.SetProperty(_property, Substitute('.*('+pattern+').*', '\1', _text))
   else
     Owner.SetProperty(_property, Substitute(pattern, subst, _text));
