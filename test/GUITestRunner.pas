@@ -1,7 +1,7 @@
-{ $Id: GUITestRunner.pas,v 1.50 2001/02/13 14:12:43 juanco Exp $ }
+{ $Id: GUITestRunner.pas,v 1.45 2000/12/20 20:49:29 juanco Exp $ }
 {: DUnit: An XTreme testing framework for Delphi programs.
    @author  The DUnit Group.
-   @version $Revision: 1.50 $
+   @version $Revision: 1.45 $
 }
 (*
  * The contents of this file are subject to the Mozilla Public
@@ -39,21 +39,15 @@ interface
 uses
   TestFramework,
 
-  {$IFNDEF WIN32}
-    {$DEFINE NO_CHECKBOXES}
-    Types,
-  {$ENDIF}
-  Windows,
-  Graphics, Controls, Forms, Dialogs,
-  ComCtrls, ExtCtrls, StdCtrls, ImgList, Buttons, Menus, ActnList,
-  SysUtils, Classes;
+  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
+  ComCtrls, ExtCtrls, StdCtrls, ImgList, Buttons, Menus, ActnList;
 
 const
   {: Section of the dunit.ini file where GUI information will be stored }
   cnConfigIniSection = 'GUITestRunner Config';
 
   {: Color constants for the progress bar and failure details panel }
-  clOK      = clGreen;
+  clOK      = clGREEN;
   clFAILURE = clFuchsia;
   clERROR   = clRed;
 
@@ -62,7 +56,6 @@ const
   imgRUN     = 1;
   imgFAILED  = 2;
   imgERROR   = 3;
-  imgRUNNING = 4;
 
   {: Indexes of the images used for test tree checkboxes }
   imgDISABLED        = 1;
@@ -78,6 +71,7 @@ type
 
   TGUITestRunner = class(TForm, ITestListener)
     BottomPanel: TPanel;
+    ListImages: TImageList;
     StateImages: TImageList;
     RunImages: TImageList;
     ButtonPanel: TPanel;
@@ -114,6 +108,7 @@ type
     ResultsView: TListView;
     FailureListView: TListView;
     ErrorBoxPanel: TPanel;
+    ErrorMessageRTF: TRichEdit;
     ErrorBoxSplitter: TSplitter;
     ResultsSplitter: TSplitter;
     AutoFocusAction: TAction;
@@ -134,21 +129,16 @@ type
     HideTestNodesOnOpenAction: TAction;
     HideTestNodesItem: TMenuItem;
     ExpandAllNodesAction: TAction;
-    TestTreeMenuSeparator: TMenuItem;
+    N1: TMenuItem;
     ExpandAllItem: TMenuItem;
-    TestTreeLocalMenuSeparator: TMenuItem;
+    N2: TMenuItem;
     ExpandAll2: TMenuItem;
     lblTestTree: TLabel;
     RunAction: TAction;
     CloseAction: TAction;
     BreakOnFailuresAction: TAction;
     BreakonFailuresItem: TMenuItem;
-    ShowTestedNodeAction: TAction;
-    SelectTestedNodeItem: TMenuItem;
-    FailureTitlePanel: TPanel;
-    TestNameLabel: TLabel;
-    ErrorTypeLabel: TLabel;
-    MessageLabel: TLabel;
+    AllImages: TImageList;
     procedure FormCreate(Sender: TObject);
     procedure TestTreeClick(Sender: TObject);
     procedure FailureListViewSelectItem(Sender: TObject; Item: TListItem;
@@ -173,7 +163,7 @@ type
     procedure CloseActionExecute(Sender: TObject);
     procedure BreakOnFailuresActionExecute(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
-    procedure ShowTestedNodeActionExecute(Sender: TObject);
+  private
   protected
     FSuite:       ITest;
     FSTartTime:   TDateTime;
@@ -183,11 +173,8 @@ type
     FTests:       TInterfaceList;
 
     procedure Setup;
-    procedure SetUpStateImages;
     procedure SetSuite(value: ITest);
     procedure ClearResult;
-    procedure DisplayFailureMessage(Item :TListItem);
-    procedure ClearFailureMessage;
 
     function  AddFailureItem(failure: TTestFailure): TListItem;
     procedure UpdateStatus;
@@ -195,13 +182,11 @@ type
     procedure FillTestTree(RootNode: TTreeNode; ATest: ITest); overload;
     procedure FillTestTree(ATest: ITest);                      overload;
 
-    procedure UpdateNodeImage(node: TTreeNode);
     procedure UpdateNodeState(node: TTreeNode);
     procedure SetNodeState(node: TTreeNode; enabled :boolean);
     procedure SwitchNodeState(node: TTreeNode);
     procedure UpdateTestTreeState;
 
-    procedure MakeNodeVisible(node :TTreeNode);
     procedure SetTreeNodeImage(Node :TTReeNode; imgIndex :Integer);
 
     function  NodeToTest(node :TTreeNode) :ITest;
@@ -216,15 +201,13 @@ type
     procedure InitTree; virtual;
 
     function  IniFileName :string;
+
     procedure SaveConfiguration;
     procedure LoadConfiguration;
-    procedure LoadSuiteConfiguration;
     procedure AutoSaveConfiguration;
 
     function NodeIsGrandparent(ANode: TTreeNode): boolean;
     procedure CollapseNonGrandparentNodes(RootNode: TTreeNode);
-
-    procedure ProcessClickOnStateIcon;
   public
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
@@ -250,7 +233,7 @@ implementation
 uses
   IniFiles;
 
-{$R *.dfm}
+{$R *.DFM}
 
 type
   TProgressBarCrack = class(TProgressBar);
@@ -319,7 +302,6 @@ begin
   assert(assigned(Node));
 
   index  := Integer(Node.data);
-  assert((index >= 0) and (index < FTests.Count));
   result := FTests[index] as ITest;
 end;
 
@@ -349,20 +331,12 @@ end;
 
 //------------------------------------------------------------------------------
 procedure TGUITestRunner.StartTest(test: ITest);
-var
-  node :TTreeNode;
 begin
   assert(assigned(testResult));
   assert(assigned(test));
-  node := TestToNode(test);
-  assert(assigned(node));
-  SetTreeNodeImage(node, imgRUN);
-  if ShowTestedNodeAction.Checked then
-  begin
-    MakeNodeVisible(node);
-    TestTree.Update;
-  end;
   UpdateStatus;
+  SetTreeNodeImage(TestToNode(test), imgRUN);
+  Application.ProcessMessages;
 end;
 
 //------------------------------------------------------------------------------
@@ -375,8 +349,7 @@ end;
 procedure TGUITestRunner.TestingStarts;
 begin
   UpdateStatus;
-  TProgressBarCrack(ScoreBar).ParentColor := true;
-  ScoreBar.Refresh;
+  // sleep(100); // !!! for testing
 end;
 
 //------------------------------------------------------------------------------
@@ -384,12 +357,12 @@ procedure TGUITestRunner.AddError(failure: TTestFailure);
 var
   ListItem: TListItem;
 begin
+  UpdateStatus;
   ListItem := AddFailureItem(failure);
   ListItem.ImageIndex := imgERROR;
   TProgressBarCrack(ScoreBar).Color := clERROR;
 
   SetTreeNodeImage(TestToNode(failure.failedTest), imgERROR);
-  UpdateStatus;
 end;
 
 //------------------------------------------------------------------------------
@@ -397,14 +370,14 @@ procedure TGUITestRunner.AddFailure(failure: TTestFailure);
 var
   ListItem: TListItem;
 begin
+  UpdateStatus;
   ListItem := AddFailureItem(failure);
-  ListItem.ImageIndex := imgFAILED;
+  ListItem.ImageIndex := 0;
   if testResult.errorCount = 0 then
   begin
      TProgressBarCrack(ScoreBar).Color := clFAILURE;
   end;
   SetTreeNodeImage(TestToNode(failure.failedTest), imgFAILED);
-  UpdateStatus;
 end;
 
 //------------------------------------------------------------------------------
@@ -417,10 +390,9 @@ end;
 
 //------------------------------------------------------------------------------
 procedure TGUITestRunner.LoadConfiguration;
-var
-  i :Integer;
 begin
-  LoadSuiteConfiguration;
+  if FSuite <> nil then
+    FSuite.LoadConfiguration(IniFileName);
 
   with TIniFile.Create(IniFileName) do
   try
@@ -447,12 +419,10 @@ begin
 
     { failure list configuration }
     with FailureListView do begin
-      for i := 0 to Columns.Count-1 do
-      begin
-        Columns[i].Width := ReadInteger(cnConfigIniSection,
-                                        Format('FailureList.ColumnWidth[%d]', [i]),
-                                        Columns[i].Width);
-      end;
+      Columns[0].Width := ReadInteger(cnConfigIniSection, 'FailureList.ColumnWidth[0]',
+          Columns[0].Width);
+      Columns[1].Width := ReadInteger(cnConfigIniSection, 'FailureList.ColumnWidth[1]',
+          Columns[1].Width);
     end;
 
     { other options }
@@ -462,9 +432,6 @@ begin
       'HideTestNodesOnOpen', HideTestNodesOnOpenAction.Checked);
     BreakOnFailuresAction.Checked := ReadBool(cnConfigIniSection,
       'BreakOnFailures', BreakOnFailuresAction.Checked);
-
-    ShowTestedNodeAction.Checked := ReadBool(cnConfigIniSection,
-      'SelectTestedNode', ShowTestedNodeAction.Checked);
   finally
     Free;
   end;
@@ -482,12 +449,10 @@ end;
 
 //------------------------------------------------------------------------------
 procedure TGUITestRunner.SaveConfiguration;
-var
-  i :Integer;
 begin
   if FSuite <> nil then
     FSuite.SaveConfiguration(IniFileName);
-
+    
   with TIniFile.Create(IniFileName) do
   try
     WriteBool(cnConfigIniSection, 'AutoSave', AutoSaveAction.Checked);
@@ -509,19 +474,16 @@ begin
 
     { failure list configuration }
     with FailureListView do begin
-      for i := 0 to Columns.Count-1 do
-      begin
-       WriteInteger( cnConfigIniSection,
-                     Format('FailureList.ColumnWidth[%d]', [i]),
-                     Columns[i].Width);
-      end;
+      WriteInteger(cnConfigIniSection, 'FailureList.ColumnWidth[0]',
+        Columns[0].Width);
+      WriteInteger(cnConfigIniSection, 'FailureList.ColumnWidth[1]',
+        Columns[1].Width);
     end;
 
     { other options }
     WriteBool(cnConfigIniSection, 'AutoFocus',           AutoFocusAction.Checked);
     WriteBool(cnConfigIniSection, 'HideTestNodesOnOpen', HideTestNodesOnOpenAction.Checked);
     WriteBool(cnConfigIniSection, 'BreakOnFailures',     BreakOnFailuresAction.Checked);
-    WriteBool(cnConfigIniSection, 'SelectTestedNode',     ShowTestedNodeAction.Checked);
   finally
     Free;
   end;
@@ -545,8 +507,19 @@ begin
   assert(assigned(node));
   test := NodeToTest(node);
   assert(assigned(test));
-
-  UpdateNodeImage(node);
+  if not test.enabled then
+  begin
+    node.StateIndex := imgDISABLED;
+  end
+  else if (node.Parent <> nil)
+  and (node.Parent.StateIndex <= imgPARENT_DISABLED) then
+  begin
+    node.StateIndex := imgPARENT_DISABLED;
+  end
+  else
+  begin
+    node.StateIndex := imgENABLED;
+  end;
 
   if node.HasChildren then
   begin
@@ -556,6 +529,9 @@ begin
       UpdateNodeState(node);
       node := node.getNextSibling;
     end;
+
+
+
   end;
 end;
 
@@ -575,11 +551,11 @@ begin
      while Node.Parent <> nil do
      begin
        Node := Node.Parent;
-       if not NodeToTest(Node).Enabled then
+       if Node.StateIndex < imgENABLED then
        begin // changed
           NodeToTest(Node).Enabled := true;
+          Node.StateIndex   := imgENABLED;
           MostSeniorChanged := Node;
-          UpdateNodeImage(Node);
        end
      end;
    end;
@@ -653,12 +629,6 @@ begin
     ScoreBar.Position := 0;
     ProgressBar.Position := 0;
   end;
-  TestTree.Items.BeginUpdate;
-  try
-    //
-  finally
-    TestTree.Items.EndUpdate;
-  end;
 end;
 
 //------------------------------------------------------------------------------
@@ -673,7 +643,6 @@ begin
   item.Caption := failure.failedTest.Name;
   item.SubItems.Add(failure.thrownExceptionName);
   item.SubItems.Add(failure.thrownExceptionMessage);
-  item.SubItems.Add(failure.LocationInfo);
 
   node := testToNode(failure.failedTest);
   while node <> nil do
@@ -699,6 +668,7 @@ begin
   index := FTests.Add(ATest);
   RootNode.data := Pointer(index);
 
+  RootNode.StateIndex := imgENABLED;
   Tests := ATest.Tests;
   for i := 0 to Tests.count - 1 do
   begin
@@ -731,28 +701,10 @@ end;
 procedure TGUITestRunner.SetSuite(value: ITest);
 begin
   FSuite := value;
-  LoadSuiteConfiguration;
+  if FSuite <> nil then
+    FSuite.LoadConfiguration(IniFileName);
   EnableUI(FSuite <> nil);
   InitTree;
-end;
-
-procedure TGUITestRunner.DisplayFailureMessage(Item: TListItem);
-begin
-  TestTree.Selected := TTreeNode(Item.data);
-  TestNameLabel.Caption  := Item.Caption + ':  ';
-  ErrorTypeLabel.Caption := Item.SubItems[0] + ' at ' + Item.SubItems[2];
-  MessageLabel.Caption   := Item.SubItems[1];
-  if Item.ImageIndex >= imgERROR then
-     ErrorTypeLabel.Font.Color := clERROR
-  else
-     ErrorTypeLabel.Font.Color := clFAILURE;
-end;
-
-procedure TGUITestRunner.ClearFailureMessage;
-begin
-  TestNameLabel.Caption  := '';
-  ErrorTypeLabel.Caption := '';
-  MessageLabel.Caption   := '';
 end;
 
 procedure TGUITestRunner.ClearResult;
@@ -761,7 +713,6 @@ begin
   begin
     FTestResult.Free;
     FTestResult := nil;
-    ClearFailureMessage;
   end;
 end;
 
@@ -775,7 +726,6 @@ begin
   ProgressBar.Position := 0;
   ScoreBar.Position       := 0;
   TProgressBarCrack(ScoreBar).ParentColor := true;
-  ScoreBar.Refresh;
 
   with ResultsView.Items[0] do
   begin
@@ -824,11 +774,9 @@ end;
 procedure TGUITestRunner.FormCreate(Sender: TObject);
 begin
   inherited;
-  SetUpStateImages;
   TestTree.Items.Clear;
   EnableUI(false);
   FTestResult := TTestResult.Create;
-  ClearFailureMessage;
   Setup;
 end;
 
@@ -841,12 +789,25 @@ end;
 //------------------------------------------------------------------------------
 procedure TGUITestRunner.TestTreeClick(Sender: TObject);
 var
+  node: TTreeNode;
+  HitInfo: THitTests;
+  Pos: TPoint;
   i : Integer;
 begin
   if FRunning then
     EXIT;
 
-  ProcessClickOnStateIcon;
+  GetCursorPos(Pos);
+  Pos := TestTree.ScreenToClient(Pos);
+  with Pos do
+  begin
+    HitInfo := TestTree.GetHitTestInfoAt(X, Y);
+    node := TestTree.GetNodeAt(X, Y);
+  end;
+  if (node <> nil) and (HtOnStateIcon in HitInfo) then
+  begin
+    SwitchNodeState(node);
+  end;
 
   FailureListView.Selected := nil;
   for i := 0 to FailureListView.Items.count - 1 do
@@ -869,11 +830,29 @@ begin
 end;
 
 procedure TGUITestRunner.FailureListViewSelectItem(Sender: TObject; Item: TListItem; Selected: Boolean);
+var
+  hlColor :TColor;
 begin
-  if not Selected then
-    ClearFailureMessage
-  else
-    DisplayFailureMessage(Item);
+  if Selected then
+  begin
+    TestTree.Selected := TTreeNode(Item.data);
+    hlColor := clFAILURE;
+    if Item.ImageIndex >= 1 then
+       hlColor := clERROR;
+    with ErrorMessageRTF do
+    begin
+      Clear;
+      SelAttributes.Style := [fsBold];
+      SelText := Item.Caption + ': ';
+      SelAttributes.Color := hlColor;
+      SelAttributes.Style := [fsBold];
+      SelText := Item.SubItems[0];
+      SelAttributes.Color := clWindowText;
+      Lines.Add('');
+      SelAttributes.Style := [];
+      SelText := Item.SubItems[1];
+    end
+  end
 end;
 
 function TGUITestRunner.DisableTest(test: ITest): boolean;
@@ -1074,7 +1053,7 @@ begin
       ANode.Expand(true);
       CollapseNonGrandparentNodes(ANode);
       ANode.Selected := true;
-      MakeNodeVisible(ANode);
+      ANode.MakeVisible;
     end;
   finally
     TestTree.Items.EndUpdate;
@@ -1090,7 +1069,7 @@ procedure TGUITestRunner.ExpandAllNodesActionExecute(Sender: TObject);
 begin
   TestTree.FullExpand;
   if (TestTree.Selected <> nil) then
-    MakeNodeVisible(TestTree.Selected)
+    TestTree.Selected.MakeVisible
   else if(TestTree.Items.Count > 0) then
     TestTree.Selected := TestTree.Items[0];
 end;
@@ -1116,9 +1095,14 @@ begin
     TestResult := TTestResult.create;
     try
       testResult.addListener(self);
-      testResult.BreakOnFailures := BreakOnFailuresAction.Checked;
-      FSTartTime := now;
-      suite.run(testResult);
+      TestFramework.SetBreakOnFailures(BreakOnFailuresAction.Checked);
+      TestTree.Items.BeginUpdate;
+      try
+        FSTartTime := now;
+        suite.run(testResult);
+      finally
+        TestTree.Items.EndUpdate;
+      end;
       {:@todo autofocus logic should be refactored into its own set of routines }
       if AutoFocusAction.Checked
       and testResult.WasSuccessful
@@ -1155,86 +1139,6 @@ procedure TGUITestRunner.BreakOnFailuresActionExecute(Sender: TObject);
 begin
   with BreakOnFailuresAction do
    Checked := not Checked;
-end;
-
-procedure TGUITestRunner.ShowTestedNodeActionExecute(Sender: TObject);
-begin
-  with ShowTestedNodeAction do
-    Checked := not Checked;
-end;
-
-procedure TGUITestRunner.SetUpStateImages;
-begin
-  {$IFNDEF NO_CHECKBOXES}
-    TestTree.Images             := RunImages;
-    TestTree.StateImages        := StateImages;
-    FailureListView.SmallImages := RunImages;
-  {$ELSE}
-    SelectAllAction.Visible       := false;
-    DeselectAllAction.Visible     := false;
-    SelectFailedAction.Visible    := false;
-    TestTreeMenuSeparator.Visible      := false;
-    TestTreeLocalMenuSeparator.Visible := false;
-  {$ENDIF}
-end;
-
-procedure TGUITestRunner.LoadSuiteConfiguration;
-begin
-  {$IFNDEF NO_CHECKBOXES}
-  if FSuite <> nil then
-    FSuite.LoadConfiguration(IniFileName);
-  {$ENDIF}
-end;
-
-procedure TGUITestRunner.MakeNodeVisible(node: TTreeNode);
-begin
-  node.MakeVisible {$IFNDEF WIN32}(false){$ENDIF}
-end;
-
-procedure TGUITestRunner.ProcessClickOnStateIcon;
-{$IFDEF NO_CHECKBOXES}
-begin
-end;
-{$ELSE}
-var
-  HitInfo: THitTests;
-  node: TTreeNode;
-  Pos: TPoint;
-begin
-  GetCursorPos(Pos);
-  Pos := TestTree.ScreenToClient(Pos);
-  with Pos do
-  begin
-    HitInfo := TestTree.GetHitTestInfoAt(X, Y);
-    node := TestTree.GetNodeAt(X, Y);
-  end;
-  if (node <> nil) and (HtOnStateIcon in HitInfo) then
-  begin
-    SwitchNodeState(node);
-  end;
-end;
-{$ENDIF}
-
-procedure TGUITestRunner.UpdateNodeImage(node: TTreeNode);
-var
-  test :ITest;
-begin
-  test := NodeToTest(node);
-  {$IFNDEF NO_CHECKBOXES}
-  if not test.enabled then
-  begin
-    node.StateIndex := imgDISABLED;
-  end
-  else if (node.Parent <> nil)
-  and (node.Parent.StateIndex <= imgPARENT_DISABLED) then
-  begin
-    node.StateIndex := imgPARENT_DISABLED;
-  end
-  else
-  begin
-    node.StateIndex := imgENABLED;
-  end;
-  {$ENDIF}
 end;
 
 end.

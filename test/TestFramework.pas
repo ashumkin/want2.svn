@@ -1,4 +1,4 @@
-{#(@)$Id: TestFramework.pas,v 1.43 2001/02/09 19:25:37 juanco Exp $ }
+{#(@)$Id: TestFramework.pas,v 1.38 2000/12/20 20:24:41 juanco Exp $ }
 {  DUnit: An XTreme testing framework for Delphi programs. }
 (*
  * The contents of this file are subject to the Mozilla Public
@@ -39,7 +39,7 @@
   The <a href="IDH_Class_TTestCase.htm">TTestCase</a> class should be
   ther first stop for all new users.
     @author  The DUnit Group.
-    @version $Revision: 1.43 $
+    @version $Revision: 1.38 $
 }
 unit TestFramework;
 
@@ -53,7 +53,7 @@ const
   {:
   This is the version of the testframework which this documentation describes.
   }
-  rcs_id: string = '#(@)$Id: TestFramework.pas,v 1.43 2001/02/09 19:25:37 juanco Exp $';
+  rcs_id: string = '#(@)$Id: TestFramework.pas,v 1.38 2000/12/20 20:24:41 juanco Exp $';
 
 type
   {: A method on a TTestCase descendent which implements a unit test. }
@@ -266,7 +266,6 @@ type
     fListeners: IInterfaceList;
     fRunTests: integer;
     fStop: boolean;
-    FBreakOnFailures :boolean;
 
     {:
     Runs a TestCase.
@@ -318,7 +317,7 @@ type
     @param e The exception that caused the error.
     @returns the TTestFailure object representing this error.
     }
-    function AddError(test: ITest; e: Exception; addr :Pointer; msg :string = ''): TTestFailure; virtual;
+    function AddError(test: ITest; e: Exception; msg :string = ''): TTestFailure; virtual;
 
     {:
     Adds a failure to the list of failures.
@@ -331,7 +330,7 @@ type
     @param e The exception that caused the failure.
     @returns The TTestFailure object representing this failure.
     }
-    function AddFailure(test: ITest; e: Exception; addr :Pointer): TTestFailure; virtual;
+    function AddFailure(test: ITest; e: Exception): TTestFailure; virtual;
 
     {:
     Registers an ITestListener to listen to the status of the testing.
@@ -404,17 +403,6 @@ type
     @param test The test case to run.
     }
     procedure RunSuite(test: TAbstractTest);  overload;
-    {: Allow the IDE to break on failure exceptions.
-       When set to True, the framework raises EEBreakingTestFailure when a test fails.
-       The Delphi IDE will break on this type of exception by default.
-       When set to False, the framework will raise ETestFailure instead, which is derived
-       from EAbort, and on which the IDE will not brak by default.
-       The default value is False.
-       @seeAlso <See Class="EBreakingTestFailure">
-       @seeAlso <See Class="ETestFailure"> }
-    property BreakOnFailures :boolean
-      read  FBreakOnFailures
-      write FBreakOnFailures;
   end;
 
 
@@ -559,9 +547,7 @@ see TTestSuite
 *)
   TTestCase = class(TAbstractTest, ITest)
   protected
-    fMethod:    TTestMethod;
-    fStartTime: TDateTime;
-    fStopTime:  TDateTime;
+    fMethod: TTestMethod;
 
     {:
     Sets up the fixture, for example, open a network connection.
@@ -625,13 +611,6 @@ see TTestSuite
     }
     procedure StopTests(msg :String = ''); virtual;
 
-    {: Elapsed test time.
-       Returns the time elapsed since the test was started. If the
-       test already ended, return the total test time.
-       @returns The elapsed test time in milliseconds.
-    }
-    function ElapsedTestTime :Longint; virtual;
-
     {: Create a test suite.
     Creates a test suite composed of the published methods in the current
     TTestCase class.
@@ -693,9 +672,8 @@ see TTestSuite
   TTestFailure = class(TObject)
   protected
     fFailedTest: ITest;
-    fThrownExceptionClass: TClass;
+    fThrownExceptionName: string;
     fThrownExceptionMessage: string;
-    FThrownExceptionAddress :Pointer;
   public
     {: Constructs a record of a failed test.
     Constructs a TTestFailure with the given test and the exception which occurred
@@ -704,17 +682,13 @@ see TTestSuite
     see TTestResult.AddError
     see TTestResult.AddFailure
     }
-    constructor Create(failedTest: ITest; thrownException: Exception; Addr :Pointer; msg :string = '');
+    constructor Create(failedTest: ITest; thrownException: Exception; msg :string = '');
 
     {: Returns the test which failed.
 
     see ITest
     }
     function FailedTest: ITest; virtual;
-
-    {: Returns the class of the exception which triggered the failure of this test.
-    }
-    function ThrownExceptionClass: TClass; virtual;
 
     {: Returns the name of the exception which triggered the failure of this test.
     }
@@ -723,14 +697,6 @@ see TTestSuite
     {: Returns the message from the exception which triggered the failure of this test.
     }
     function ThrownExceptionMessage: string; virtual;
-
-    {: Returns address of the exception which triggered the failure of this test.
-    }
-    function ThrownExceptionAddress :pointer; virtual;
-
-    {: Returns the location info of the exception which triggered the failure of this test.
-    }
-    function LocationInfo :string; virtual;
   end;
 
   {:
@@ -932,24 +898,30 @@ function RunTest(aclass :TTestCaseClass; listeners :array of ITestListener) :TTe
 }
 function RunRegisteredTests(listeners :array of ITestListener) :TTestResult;
 
+{: Allow the IDE to break on failure exceptions.
+   When set to True, the framework raises EEBreakingTestFailure when a test fails.
+   The Delphi IDE will break on this type of exception by default.
+   When set to False, the framework will raise ETestFailure instead, which is derived
+   from EAbort, and on which the IDE will not brak by default.
+   The default value is False.
+   @param  Enable True means enable IDE breaking on failure exceptions.
+   @seeAlso <See Class="EBreakingTestFailure">
+   @seeAlso <See Class="ETestFailure"> }
+procedure SetBreakOnFailures(Enable :boolean);
+
 {: Returns the address that the calling procedure will return to.
    Used internally by the framework. Don't use directly. }
 
 function CallerAddr :Pointer; assembler;
-
-{: Convert a pointer into its string representation }
-function PtrToStr(p :Pointer) :string;
-
-function AddressLocationInfo(Addr :Pointer) :string;
-
-///////////////////////////////////////////////////////////////////////////
 implementation
-{$IFDEF USE_JEDI_JCL}
 uses
-  JclDebug;
-{$ENDIF}
+  Windows;
+//*** Stack frames are required to support raising exceptions at the
+// callers address.
+{$STACKFRAMES ON}
 
-{$STACKFRAMES ON} //required retreive caller's address
+var
+  __FailureExceptionClass :ExceptClass = ETestFailure;
 
 {: Convert a pointer into its string representation }
 function PtrToStr(p :Pointer) :string;
@@ -957,23 +929,13 @@ begin
    Result := Format('%p', [p])
 end;
 
-function IsBadPointer(P :Pointer):boolean; register;
-begin
-  try
-    Result  := (p = nil)
-              or ((Pointer(P^) <> P) and (Pointer(P^) = P));
-  except
-    Result := false
-  end
-end;
-
-
 function CallerAddr :Pointer; assembler;
 const
   CallerIP = $4;
 asm
-   mov   eax, ebp
-   call  IsBadPointer
+   push  4
+   push  ebp
+   call  IsBadReadPtr
    test  eax,eax
    jne   @@Error
 
@@ -981,7 +943,9 @@ asm
    sub   eax, 5   // 5 bytes for call
 
    push  eax
-   call  IsBadPointer
+   push  4
+   push  ebx
+   call  IsBadReadPtr
    test  eax,eax
    pop   eax
    je    @@Finish
@@ -990,29 +954,6 @@ asm
    xor eax, eax
 @@Finish:
 end;
-
-function AddressLocationInfo(Addr :Pointer) :string;
-{$IFNDEF USE_JEDI_JCL}
-begin
- Result := '$'+PtrToStr(Addr);
-end;
-{$ELSE}
-var
-  _file,
-  _module,
-  _proc :string;
-  _line :integer;
-  fileInfo   :string;
-  moduleInfo :string;
-begin
-  JclDebug.__MAP_OF_ADDR__(Addr, _file, _module, _proc, _line);
-
-  fileInfo   := Format('%s:%d', [_file, _line]);
-  moduleInfo := Format('%s$%p', [_proc, Addr]);
-  Result := Format('%s (%s)', [ fileInfo, moduleInfo]);
-end;
-{$ENDIF}
-
 
 { TTestResult }
 
@@ -1044,7 +985,7 @@ begin
   inherited Destroy;
 end;
 
-function TTestResult.AddError(test: ITest; e: Exception; addr :Pointer; msg :string): TTestFailure;
+function TTestResult.AddError(test: ITest; e: Exception; msg :string): TTestFailure;
 var
   i: integer;
   error : TTestFailure;
@@ -1053,7 +994,7 @@ begin
   assert(assigned(e));
   assert(assigned(fErrors));
 
-  error := TTestFailure.Create(test, e, addr, msg);
+  error := TTestFailure.Create(test, e, msg);
   fErrors.add(error);
   for i := 0 to fListeners.count - 1 do
   begin
@@ -1064,7 +1005,7 @@ begin
   Result := error;
 end;
 
-function TTestResult.AddFailure(test: ITest; e: Exception; addr :Pointer): TTestFailure;
+function TTestResult.AddFailure(test: ITest; e: Exception): TTestFailure;
 var
   i: integer;
   Failure : TTestFailure;
@@ -1073,7 +1014,7 @@ begin
   assert(assigned(e));
   assert(assigned(fFailures));
 
-  Failure := TTestFailure.Create(test, e, addr);
+  Failure := TTestFailure.Create(test, e);
   fFailures.add(Failure);
   for i := 0 to fListeners.count - 1 do
   begin
@@ -1115,14 +1056,12 @@ end;
 function TTestResult.RunTestSetup(test: TTestCase):boolean;
 begin
   try
-    test.fStopTime  := 0;
-    test.fStartTime := Now;
     test.SetUp;
     Result := true;
   except
     on e: Exception do
     begin
-      AddError(test, e, ExceptAddr, 'SetUp FAILED: ');
+      AddError(test, e, 'SetUp FAILED: ');
       Result := false;
     end
   end;
@@ -1134,46 +1073,31 @@ begin
     test.TearDown;
   except
     on e: Exception do
-      AddError(test, e, ExceptAddr, 'TearDown FAILED: ');
+      AddError(test, e, 'TearDown FAILED: ');
   end;
-  test.fStopTime := Now;
 end;
 
 procedure TTestResult.RunTestRun(test: TTestCase);
-var
-  failure :TTestFailure;
 begin
-  failure := nil;
   try
     test.RunTest;
   except
     on e: EStopTestsFailure do
     begin
-      failure := AddFailure(test, e, ExceptAddr);
+      AddFailure(test, e);
       FStop := True;
     end;
     on e: ETestFailure do
     begin
-      failure := AddFailure(test, e, ExceptAddr);
+      AddFailure(test, e);
     end;
     on e: EBreakingTestFailure do
     begin
-      failure := AddFailure(test, e, ExceptAddr);
+      AddFailure(test, e);
     end;
     on e: Exception do
     begin
-      failure := AddError(test, e, ExceptAddr);
-    end;
-  end;
-  if BreakOnFailures
-  and (failure <> nil)
-  and (failure.FThrownExceptionClass.InheritsFrom(ETestFailure))
-  then
-  begin
-    try
-       raise EBreakingTestFailure.Create(failure.ThrownExceptionMessage)
-          at failure.ThrownExceptionAddress;
-    except
+      AddError(test, e);
     end;
   end;
 end;
@@ -1430,9 +1354,9 @@ end;
 procedure TTestCase.Fail(msg: string; errorAddr :Pointer = nil);
 begin
   if errorAddr = nil then
-    raise ETestFailure.Create(msg) at CallerAddr
+    raise __FailureExceptionClass.Create(msg) at CallerAddr
   else
-    raise ETestFailure.Create(msg) at errorAddr;
+    raise __FailureExceptionClass.Create(msg) at errorAddr;
 end;
 
 procedure TTestCase.StopTests(msg :String);
@@ -1492,8 +1416,9 @@ end;
 
 procedure TTestCase.CheckSame(expected, actual: IUnknown; msg :string = '');
 begin
-    if (expected <> actual) then
-      FailNotSame(PtrToStr(Pointer(expected)), PtrToStr(Pointer(actual)), msg, CallerAddr);
+    if (expected = actual) then
+        exit;
+    FailNotSame(PtrToStr(Pointer(expected)), PtrToStr(Pointer(actual)), msg, CallerAddr);
 end;
 
 procedure TTestCase.CheckEquals(expected, actual: string; msg: string = '');
@@ -1518,8 +1443,8 @@ end;
 
 procedure TTestCase.CheckNotEquals(expected, actual :integer; msg :string = '');
 begin
-  if expected = actual then
-    FailEquals(IntToStr(expected), IntToStr(actual), msg, CallerAddr);
+  if expected <> actual then
+    FailNotEquals(IntToStr(expected), IntToStr(actual), msg, CallerAddr);
 end;
 
 procedure TTestCase.CheckNotEquals(expected :double; actual :double; delta :double = 0; msg :string = '');
@@ -1550,21 +1475,21 @@ function TTestCase.NotEqualsErrorMessage(expected, actual :string; msg :string) 
 begin
     if (msg <> '') then
         msg := msg + ', ';
-    Result := Format('%sexpected: <%s> but was: <%s>', [msg, expected, actual])
+    Result := Format('%s expected:<%s> but was:<%s>', [msg, expected, actual])
 end;
 
 function TTestCase.EqualsErrorMessage(expected, actual :string; msg :string) :string;
 begin
     if (msg <> '') then
         msg := msg + ', ';
-    Result := Format('%sexpected and actual were: <%s>', [msg, expected])
+    Result := Format('%s expected and actual were:<%s>', [msg, expected])
 end;
 
 function TTestCase.NotSameErrorMessage(expected, actual, msg: string): string;
 begin
     if (msg <> '') then
         msg := msg + ', ';
-    Result := Format('%sexpected: <%s> but was: <%s>', [msg, expected, actual])
+    Result := Format('%s expected:<%s> but was:<%s>', [msg, expected, actual])
 end;
 
 class function TTestCase.Suite: ITestSuite;
@@ -1572,29 +1497,16 @@ begin
   Result := TestSuiteOf(Self);
 end;
 
-function TTestCase.ElapsedTestTime: Longint;
-var
-  t :TDateTime;
-begin
-  if fStopTime > 0 then
-    t := fStopTime
-  else
-    t := Now;
-  t := t - fStartTime;
-  Result := Round(t*24*60*60*1000);
-end;
-
 { TTestFailure }
 
-constructor TTestFailure.Create(FailedTest: ITest; thrownException: Exception; Addr :Pointer; msg :string);
+constructor TTestFailure.Create(FailedTest: ITest; thrownException: Exception; msg :string);
 begin
   assert(assigned(thrownException));
 
   inherited Create;
   fFailedTest := FailedTest;
-  fThrownExceptionClass := thrownException.ClassType;
+  fThrownExceptionName := thrownException.ClassName;
   fThrownExceptionMessage := msg + thrownException.message;
-  FThrownExceptionAddress := Addr;
 end;
 
 function TTestFailure.FailedTest: ITest;
@@ -1604,27 +1516,12 @@ end;
 
 function TTestFailure.ThrownExceptionName: string;
 begin
-  result := fThrownExceptionClass.ClassName;
+  result := fThrownExceptionName;
 end;
 
 function TTestFailure.ThrownExceptionMessage: string;
 begin
   result := fThrownExceptionMessage;
-end;
-
-function TTestFailure.ThrownExceptionAddress: pointer;
-begin
-  Result := FThrownExceptionAddress;
-end;
-
-function TTestFailure.ThrownExceptionClass: TClass;
-begin
-  Result := FThrownExceptionClass;
-end;
-
-function TTestFailure.LocationInfo: string;
-begin
-  Result := AddressLocationInfo(ThrownExceptionAddress);
 end;
 
 { TTestSuite }
@@ -2016,6 +1913,13 @@ begin
    result := RunTest(RegisteredTests, listeners)
 end;
 
+procedure SetBreakOnFailures(Enable :boolean);
+begin
+  if Enable then
+    __FailureExceptionClass := EBreakingTestFailure
+  else
+    __FailureExceptionClass := ETestFailure
+end;
 
 end.
 
