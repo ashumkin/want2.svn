@@ -355,7 +355,7 @@ end;
 constructor TDelphiCompileTask.Create(Owner: TScriptElement);
 begin
   inherited Create(Owner);
-  SkipLines  := 1;
+  SkipLines  := 2;
   quiet      := true;
 
   FUnitPaths      := TUnitPathElement.Create(Self);
