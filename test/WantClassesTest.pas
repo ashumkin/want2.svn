@@ -63,6 +63,7 @@ type
   protected
     FLongFNTestDir: string;
     FTestDir: string;
+    FDanteTestDir: string;
 
     function MakeSampleTextFile: string;
   public
@@ -170,6 +171,8 @@ begin
   FLongFNTestDir := ExtractFilePath(ParamStr(0)) + 'my test dir';
   JclFileUtils.ForceDirectories(FTestDir);
   JclFileUtils.ForceDirectories(FLongFNTestDir);
+
+  FDanteTestDir := WildPaths.ToPath(FTestDir);
 end;
 
 procedure TTestDirCase.TearDown;
@@ -444,8 +447,8 @@ begin
     WildPaths.ToSystemPath(FDanteElement.ToAbsolutePath(ToPath(AbsPath))),
     'ToAbsolutePath');
   CheckEquals(
-    '.',
-    FDanteElement.ToSystemPath(ToPath(AbsPath)),
+    FDanteElement.ToDantePath(AbsPath),
+    ToPath(AbsPath),
     'ToAbsolutePath');
 end;
 

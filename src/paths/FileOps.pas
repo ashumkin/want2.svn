@@ -223,7 +223,7 @@ end;
 
 function FileAttributes(Path :TPath):TFileAttributes;
 begin
-  Result := TFileAttributes(SystemFileAttributes(ToSystemPath(Path)));
+  Result := TFileAttributes(SystemFileAttributes(Path));
 end;
 
 function  FileTime(Path :TPath) :TDateTime;

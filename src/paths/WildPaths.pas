@@ -59,7 +59,11 @@ const
   InvalidPathChars = ''; //';:,';
   WildChars        = '?*';
 
+  {$IFDEF LINUX}
+  SystemPathDelimiter :string = '/';
+  {$ELSE}
   SystemPathDelimiter :string = '\';
+  {$ENDIF}
 
 type
   TPath  = string;
@@ -70,6 +74,8 @@ type
   EWildPathsException = class(Exception);
   EWildPathsError     = class(EWildPathsException);
 
+procedure AssertIsSystemIndependentPath(Path :string);
+
 function PathConcat(P1, P2 :TPath) :TPath;
 
 function ToSystemPath(Path :TPath; BasePath :string = ''):string;
@@ -77,6 +83,7 @@ function ToPath(SystemPath :string; BasePath :string = ''):TPath;
 
 function ToSystemPaths(Paths :TPaths; BasePath :string = '') :TPaths;
 function ToPaths(OSPaths :TPaths; BasePath :string = '') :TPaths;
+
 
 
 function StringsToPaths(S :TStrings):TPaths;
@@ -118,11 +125,22 @@ procedure Wild(Files :TStrings; Patterns :TPatterns; BasePath: TPath = ''; Index
   overload; forward;
 
 
+procedure AssertIsSystemIndependentPath(Path :string);
+begin
+  if Pos(SystemPathDelimiter, Path) <> 0 then
+    raise EWildPathsError.Create( Format( '"%s" looks like a system path. Expected a system independent one.',
+                                  [Path])
+                            );
+end;
+
 function PathConcat(P1, P2 :TPath) :TPath;
 var
   Parts :TPaths;
   i     :Integer;
 begin
+   AssertIsSystemIndependentPath(P1);
+   AssertIsSystemIndependentPath(P2);
+
    Parts := nil;
    if (Length(P1) = 0)
    //or (P1 = '.')
@@ -149,7 +167,7 @@ end;
 
 function ToPath(SystemPath: string; BasePath :string): TPath;
 begin
-  if LastDelimiter(InvalidPathChars, SystemPath) > 0 then
+  if Pos(InvalidPathChars, SystemPath) <> 0 then
     raise EWildPathsException.Create('invalid path chars in ' + SystemPath)
   else
   begin
@@ -173,6 +191,9 @@ end;
 
 function ToSystemPath(Path: TPath; BasePath :string): string;
 begin
+   AssertIsSystemIndependentPath(Path);
+   AssertIsSystemIndependentPath(BasePath);
+
    Result := MovePath(Path, '', BasePath);
    if (Length(Result) >= 1) and (Result[Length(Result)] = '/') then
      Delete(Result,Length(Result), 1);
@@ -208,6 +229,8 @@ var
   Search :TSearchRec;
   SearchResult :Integer;
 begin
+  AssertIsSystemIndependentPath(Path);
+
   S := TStringList.Create;
   S.Sorted := True;
   try
@@ -242,10 +265,12 @@ begin
    Result := FindPaths(Path, BasePath, faAnyFile, faDirectory);
 end;
 
-function SplitPath(path: TPath): TPaths;
+function SplitPath(Path: TPath): TPaths;
 var
   S :TStrings;
 begin
+  AssertIsSystemIndependentPath(Path);
+
   S := TStringList.Create;
   try
     StrToStrings(path, '/', S);
@@ -268,12 +293,16 @@ end;
 
 function MovePath(Path :TPath; FromBase :TPath; ToBase :TPath) :TPath;
 begin
-   if (FromBase <> '') and (Pos(FromBase+'/', Path) = 1) then
-     Result := PathConcat(ToBase, Copy(Path, 2+Length(FromBase), Length(Path)))
-   else if PathIsAbsolute(Path) then
-     Result :=  Path
-   else
-     Result := PathConcat(ToBase, Path);
+  AssertIsSystemIndependentPath(Path);
+  AssertIsSystemIndependentPath(FromBase);
+  AssertIsSystemIndependentPath(ToBase);
+
+  if (FromBase <> '') and (Pos(FromBase+'/', Path) = 1) then
+    Result := PathConcat(ToBase, Copy(Path, 2+Length(FromBase), Length(Path)))
+  else if PathIsAbsolute(Path) then
+    Result :=  Path
+  else
+    Result := PathConcat(ToBase, Path);
 end;
 
 
@@ -291,6 +320,9 @@ var
   P, B   :TPaths;
   i, j :Integer;
 begin
+  AssertIsSystemIndependentPath(Path);
+  AssertIsSystemIndependentPath(BasePath);
+  
   P := nil;
   B := nil;
   if not PathIsAbsolute(Path)
@@ -337,7 +369,9 @@ end;
 
 function  PathIsAbsolute(Path :TPath) :boolean;
 begin
-   Result :=    (Length(Path) > 0) and (Path[1] = '/')
+  AssertIsSystemIndependentPath(Path);
+
+  Result :=    (Length(Path) > 0) and (Path[1] = '/')
              or (Length(Path) >= 3) and (Path[2] = ':') and (Path[3] = '/')
              and (Path[1] <> '.')
 end;
@@ -346,6 +380,9 @@ procedure ForceRelativePath(var Path, BasePath :TPath);
 var
   p :Integer;
 begin
+  AssertIsSystemIndependentPath(Path);
+  AssertIsSystemIndependentPath(BasePath);
+  
   if PathIsAbsolute(Path) then
   begin
     BasePath := '';
@@ -365,6 +402,9 @@ function Wild(Pattern: TPath; BasePath: string):TPaths;
 var
   Files :TStringList;
 begin
+  AssertIsSystemIndependentPath(Pattern);
+  AssertIsSystemIndependentPath(BasePath);
+
   Files := TStringList.Create;
   try
     Files.Sorted := True;
@@ -377,6 +417,9 @@ end;
 
 procedure Wild(Files :TStrings; Pattern :TPath; BasePath :string = '');
 begin
+  AssertIsSystemIndependentPath(Pattern);
+  AssertIsSystemIndependentPath(BasePath);
+
   ForceRelativePath(Pattern, BasePath);
   Wild(Files, SplitPath(Pattern), BasePath);
 end;
@@ -386,6 +429,8 @@ var
   i       :Integer;
   Matches :TPaths;
 begin
+  AssertIsSystemIndependentPath(BasePath);
+
   if Index > High(Patterns) then
     EXIT;
   // absorb all non-wildcard patterns
@@ -468,21 +513,30 @@ end;
 
 function IsMatch(Path, Pattern :TPath):boolean;
 begin
+  AssertIsSystemIndependentPath(Path);
+  AssertIsSystemIndependentPath(Pattern);
+
   Result := IsMatch(SplitPath(Path), SplitPath(Pattern));
 end;
 
 function  PathExists(Path :TPath):boolean;
 begin
+  AssertIsSystemIndependentPath(Path);
+
   Result := Length(FindPaths(Path)) >= 1;
 end;
 
 function  IsDir(Path :TPath):boolean;
 begin
+  AssertIsSystemIndependentPath(Path);
+
   Result := Length(FindDirs(Path)) = 1;
 end;
 
 function  IsFile(Path :TPath):boolean;
 begin
+   AssertIsSystemIndependentPath(Path);
+
   Result := Length(FindFiles(Path)) = 1;
 end;
 
@@ -490,6 +544,8 @@ function  SuperPath(Path :TPath) :TPath;
 var
   p    :Integer;
 begin
+  AssertIsSystemIndependentPath(Path);
+  
   p := LastDelimiter('/', path);
   Result := Copy(Path, 1, p-1);
 end;

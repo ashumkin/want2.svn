@@ -208,7 +208,7 @@ begin
   FResourcePaths  := TStringList.Create;
   FIncludePaths   := TStringList.Create;
 
-  self.Executable := FindCompiler;
+  self.Executable := ToDantePath(FindCompiler);
 end;
 
 destructor TDelphiCompileTask.Destroy;
@@ -366,7 +366,7 @@ end;
 
 function TResourceCompileTask.BuildExecutable: string;
 begin
-  Executable := FindBRCC;
+  Executable := ToDantePath(FindBRCC);
   Result := inherited BuildExecutable;
 end;
 

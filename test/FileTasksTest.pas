@@ -34,7 +34,7 @@ unit FileTasksTest;
 
 interface
 
-uses TestFramework, FileTasks, DanteClassesTest;
+uses TestFramework, WildPaths, FileTasks, DanteClassesTest;
 
 type
   TTestDeleteTask = class(TTestDirCase)
@@ -81,11 +81,16 @@ end;
 
 procedure TTestDeleteTask.TestDeleteDir;
 begin
+
   CheckEquals('delete', TDeleteTask.XMLTag, 'XMLTag is wrong');
   MakeSampleTextFile;
-  FDeleteTask.Dir := FTestDir;
+  Check(DirectoryExists(FTestDir), 'no directory to start with');
+
+  FDeleteTask.Dir := FDeleteTask.ToDantePath(FTestDir);
   FDeleteTask.Execute;
-  Check(DirectoryExists(FTestDir), 'directory not deleted');
+
+  // the following test was reversed in the previous version
+  Check(not DirectoryExists(FTestDir), 'directory not deleted');
 
   // ensure it doesn't blow up trying to delete a directory that's gone
   FDeleteTask.Execute;
@@ -107,7 +112,8 @@ end;
 procedure TTestMkDirTask.DoTest;
 begin
   FMkDirTask.Execute;
-  Check(DirectoryExists(FMkDirTask.dir), 'directory not made');
+  Check(DirectoryExists(FMkDirTask.ToSystemPath(FMkDirTask.dir)), 'directory not made');
+  Check(WildPaths.IsDir(FMkDirTask.dir), 'directory not made');
 end;
 
 procedure TTestMkDirTask.Setup;
@@ -125,13 +131,13 @@ end;
 
 procedure TTestMkDirTask.TestMkDirTaskAbsolute;
 begin
-  FMkDirTask.dir := FTestDir + '\new';
+  FMkDirTask.dir := FMkDirTask.ToDantePath(FTestDir + '\new');
   DoTest;
 end;
 
 procedure TTestMkDirTask.TestMkDirTaskRelative;
 begin
-  FMkDirTask.dir := '.\test\new';
+  FMkDirTask.dir := './test/new';
   DoTest;
 end;
 

@@ -37,7 +37,7 @@ end;
 
 procedure TTestIncVerRcTask.TestIncVerRcTask;
 begin
-  FIncVerRcTask.RcFileName := FTestRcName;
+  FIncVerRcTask.RcFileName := FIncVerRcTask.ToDantePath(FTestRcName);
   FIncVerRcTask.Increment  := True;
   FIncVerRcTask.Init;
   FIncVerRcTask.Execute;
