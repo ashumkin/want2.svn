@@ -1,3 +1,107 @@
+2002-09-18 23:19  juanco
+
+	* lib/: jcl-1.11.zip, jcl-1.12.zip: upgraded to JCL v 1.12
+
+2002-09-13 21:07  juanca
+
+	* lib/jal/src/: JALGeometry.pas, JALStdIO.pas (utags: build_6_9_16,
+	build_6_9_17): BUG: fixed problems with scaling. World bounds were
+	wrong when no DXF files were open
+
+2002-09-06 00:49  juanca
+
+	* lib/jal/src/JALGeometry.pas (tags: build_6_9_15): deal with
+	various memory leaks and inefficiencies
+
+2002-09-04 15:25  juanca
+
+	* lib/jal/want.xml (tags: build_6_9_17, build_6_9_16,
+	build_6_9_15): updated copyright info
+
+2002-08-22 17:57  juanca
+
+	* lib/jal/src/JALUIHandler.pas (tags: build_6_9_17, build_6_9_16,
+	build_6_9_15, build_6_9_14, build_6_9_13): UI handling delegated to
+	a separate object
+
+2002-08-09 16:53  juanca
+
+	* lib/jal/src/: JALCollections.pas (tags: build_6_9_17,
+	build_6_9_16, build_6_9_15), JALGeomModels.pas (tags: build_6_9_17,
+	build_6_9_16, build_6_9_15), JALGeometry.pas (utags: build_6_9_13,
+	build_6_9_14): optimize (again) handling of geom models
+
+2002-07-29 16:17  juanca
+
+	* lib/jal/src/JALCollections.pas: added IList.move and fixed
+	TLinkList.insert
+
+2002-07-18 21:43  juanca
+
+	* lib/jal/src/JALGeomModels.pas: fixes and optimizations in DXF
+	file viewing
+
+2002-07-16 13:29  juanca
+
+	* lib/jal/src/: JALCollections.pas, JALGZipStreams.pas (tags:
+	build_6_9_17, build_6_9_16, build_6_9_15, build_6_9_14,
+	build_6_9_13), JALGeomModels.pas, JALGeometry.pas: several bugs in
+	insertion on TLinkedList
+
+2002-07-13 17:58  juanca
+
+	* lib/jal/src/JALStrings.pas (tags: build_6_9_17, build_6_9_16,
+	build_6_9_15, build_6_9_14, build_6_9_13): bugs repotados por Tomas
+	introducidos con manejo de DXF
+
+2002-06-27 17:10  juanca
+
+	* lib/jal/src/JalUTM.pas (tags: build_6_9_17, build_6_9_16,
+	build_6_9_15, build_6_9_14, build_6_9_13): Lat-Long <-> UTM
+	conversion
+
+2002-06-27 16:50  juanca
+
+	* lib/jal/: release.ini (tags: build_6_9_17, build_6_9_16,
+	build_6_9_15, build_6_9_14, build_6_9_13), src/JALAlgorithms.pas
+	(tags: build_6_9_17, build_6_9_16, build_6_9_15, build_6_9_14,
+	build_6_9_13), src/JALCollections.pas, src/JALExpressions.pas
+	(tags: build_6_9_17, build_6_9_16, build_6_9_15, build_6_9_14,
+	build_6_9_13), src/JALFiles.pas (tags: build_6_9_17, build_6_9_16,
+	build_6_9_15, build_6_9_14, build_6_9_13), src/JALGZipStreams.pas,
+	src/JALGeomModels.pas, src/JALGeometry.pas, src/JALMath.pas (tags:
+	build_6_9_17, build_6_9_16, build_6_9_15, build_6_9_14,
+	build_6_9_13), src/JALMiniDOM.pas (tags: build_6_9_17,
+	build_6_9_16, build_6_9_15, build_6_9_14, build_6_9_13),
+	src/JALOwnedTrees.pas (tags: build_6_9_17, build_6_9_16,
+	build_6_9_15, build_6_9_14, build_6_9_13), src/JALSAX.pas (tags:
+	build_6_9_17, build_6_9_16, build_6_9_15, build_6_9_14,
+	build_6_9_13), src/JALStdIO.pas (tags: build_6_9_15, build_6_9_14,
+	build_6_9_13), src/JALStrings.pas, src/JALXML.pas (tags:
+	build_6_9_17, build_6_9_16, build_6_9_15, build_6_9_14,
+	build_6_9_13), src/JalDXF.pas (tags: build_6_9_17, build_6_9_16,
+	build_6_9_15, build_6_9_14, build_6_9_13), src/JalDebug.pas (tags:
+	build_6_9_17, build_6_9_16, build_6_9_15, build_6_9_14,
+	build_6_9_13), src/JalPaths.pas (tags: build_6_9_17, build_6_9_16,
+	build_6_9_15, build_6_9_14, build_6_9_13), src/JalProxyStreams.pas
+	(tags: build_6_9_17, build_6_9_16, build_6_9_15, build_6_9_14,
+	build_6_9_13), src/JalZipStreams.pas (tags: build_6_9_17,
+	build_6_9_16, build_6_9_15, build_6_9_14, build_6_9_13),
+	test/JALTestLib.cfg (tags: build_6_9_17, build_6_9_16,
+	build_6_9_15, build_6_9_14, build_6_9_13), test/JALTestLib.dof
+	(tags: build_6_9_17, build_6_9_16, build_6_9_15, build_6_9_14,
+	build_6_9_13), test/JALTestLib.dpr, test/JALTestLib.dpr (tags:
+	build_6_9_17, build_6_9_16, build_6_9_15, build_6_9_14,
+	build_6_9_13): updated copyright and boilerplate
+
+2002-06-25 14:26  juanco
+
+	* doc/index.html: fixed broken link
+
+2002-06-24 15:56  juanco
+
+	* ChangeLog, release.ini, doc/index.html: 0.1.125 release
+
 2002-06-22 04:15  juanco
 
 	* lib/jal-0.1.4.zip: new version of JAL library
@@ -29,10 +133,6 @@
 	
 	Make sure DXF files are drawn in light gray (silver).
 
-2002-04-05 22:35  juanco
-
-	* doc/dist/want-0.1.120.zip: routine
-
 2002-03-31 14:04  juanca
 
 	* lib/jal/src/JALMath.pas: routine
@@ -54,7 +154,8 @@
 
 2002-03-30 00:29  juanca
 
-	* lib/jal/src/JalParse.pas: added better EOL support
+	* lib/jal/src/JalParse.pas (tags: build_6_9_17, build_6_9_16,
+	build_6_9_15, build_6_9_14, build_6_9_13): added better EOL support
 
 2002-02-21 22:29  juanco
 
@@ -100,9 +201,12 @@
 
 2002-02-13 01:56  juanca
 
-	* lib/jal/: lib/paszlib/TREES.PAS (tags: v_6_9_2),
-	lib/paszlib/inftrees.pas (tags: v_6_9_2), src/JALGZipStreams.pas:
-	removed problems with writeable consts and third party libraries
+	* lib/jal/: lib/paszlib/TREES.PAS (tags: build_6_9_17,
+	build_6_9_16, build_6_9_15, build_6_9_14, build_6_9_13, v_6_9_2),
+	lib/paszlib/inftrees.pas (tags: build_6_9_17, build_6_9_16,
+	build_6_9_15, build_6_9_14, build_6_9_13, v_6_9_2),
+	src/JALGZipStreams.pas: removed problems with writeable consts and
+	third party libraries
 
 2002-02-13 01:39  juanca
 
@@ -142,8 +246,7 @@
 2002-01-29 15:29  juanco
 
 	* ChangeLog, release.ini, doc/index.html, make/bootstrap.bat,
-	test/WantAcceptTestLib.drc, doc/dist/want-0.1.115.zip (tags:
-	v_0_1_10): release 0.1.115
+	test/WantAcceptTestLib.drc: release 0.1.115
 
 2002-01-29 14:54  juanco
 
@@ -234,7 +337,9 @@
 	test/WantTests.dof (tags: v_0_1_10, v_0_1_109), test/WantTests.dpr
 	(tags: v_0_1_10, v_0_1_109), lib/jal/release.ini (tags: v_6_9_2),
 	lib/jal/src/JALCollections.pas (tags: v_6_9_2),
-	lib/jal/src/JALXMLParser.pas (tags: v_6_9_2): repaired memory leaks
+	lib/jal/src/JALXMLParser.pas (tags: build_6_9_17, build_6_9_16,
+	build_6_9_15, build_6_9_14, build_6_9_13, v_6_9_2): repaired memory
+	leaks
 
 2002-01-05 15:47  juanca
 
@@ -392,7 +497,9 @@
 
 2001-12-03 12:56  juanca
 
-	* lib/jal/.cvsignore (tags: v_6_9_2): ignore generated directories
+	* lib/jal/.cvsignore (tags: build_6_9_17, build_6_9_16,
+	build_6_9_15, build_6_9_14, build_6_9_13, v_6_9_2): ignore
+	generated directories
 
 2001-11-27 19:41  juanca
 
@@ -414,7 +521,8 @@
 	* release.ini, doc/index.html, test/WantAcceptTestLib.drc,
 	release.ini, doc/index.html, src/.cvsignore (tags: v_0_1_10,
 	v_0_1_109), src/want.cfg, src/want.dof, src/want.dsk,
-	lib/jal/test/.cvsignore (tags: v_6_9_2): routine
+	lib/jal/test/.cvsignore (tags: build_6_9_17, build_6_9_16,
+	build_6_9_15, build_6_9_14, build_6_9_13, v_6_9_2): routine
 
 2001-11-27 18:32  juanca
 
@@ -434,7 +542,8 @@
 2001-11-27 18:29  juanca
 
 	* lib/jal/test/: ExpressionTests.pas, JALTestLib.dsk (utags:
-	v_6_9_2): stricter tests for expression parsing
+	v_6_9_2, build_6_9_13, build_6_9_14, build_6_9_15, build_6_9_16,
+	build_6_9_17): stricter tests for expression parsing
 
 2001-11-27 18:27  juanca
 
@@ -455,8 +564,9 @@
 
 2001-11-27 18:23  juanca
 
-	* lib/jal/: release.ini, want.xml (tags: v_6_9_2): added want
-	script to test and package the library
+	* lib/jal/: release.ini, want.xml (tags: build_6_9_14,
+	build_6_9_13, v_6_9_2): added want script to test and package the
+	library
 
 2001-11-27 18:11  juanca
 
@@ -635,9 +745,10 @@
 2001-10-26 15:58  juanca
 
 	* lib/jal/src/: JALGZipStreams.pas, JALStrings.pas, JalPaths.pas,
-	JalProxyStreams.pas (tags: v_6_9_2), JalUtils.pas (tags: v_6_9_2),
-	JalZipStreams.pas (tags: v_6_9_2): Moved zip streams into JAL
-	library.
+	JalProxyStreams.pas (tags: v_6_9_2), JalUtils.pas (tags:
+	build_6_9_17, build_6_9_16, build_6_9_15, build_6_9_14,
+	build_6_9_13, v_6_9_2), JalZipStreams.pas (tags: v_6_9_2): Moved
+	zip streams into JAL library.
 	
 	Several minor bug fixes.
 
@@ -726,12 +837,14 @@
 2001-10-23 17:52  juanca
 
 	* lib/jal/lib/paszlib/: ZCONF.INC, ZDEFLATE.PAS, ZIPUTILS.PAS,
-	zutil.pas, UNZIP.PAS, ZIP.PAS (utags: v_6_9_2): adopted fixed
-	version of paszlib from want
+	zutil.pas, UNZIP.PAS, ZIP.PAS (utags: v_6_9_2, build_6_9_13,
+	build_6_9_14, build_6_9_15, build_6_9_16, build_6_9_17): adopted
+	fixed version of paszlib from want
 
 2001-10-23 17:49  juanca
 
-	* lib/jal/lib/paszlib/: CRC.PAS (tags: v_6_9_2), ZDEFLATE.PAS,
+	* lib/jal/lib/paszlib/: CRC.PAS (tags: build_6_9_17, build_6_9_16,
+	build_6_9_15, build_6_9_14, build_6_9_13, v_6_9_2), ZDEFLATE.PAS,
 	zutil.pas: removed superfluous warnings
 
 2001-10-23 15:31  juanca
@@ -745,18 +858,40 @@
 
 2001-10-23 15:11  juanca
 
-	* lib/jal/lib/paszlib/: ADLER.PAS (tags: v_6_9_2), CRC.PAS,
-	TREES.PAS, ZCONF.INC, ZDEFLATE.PAS, ZINFLATE.PAS (tags: v_6_9_2),
-	ZIPUTILS.PAS, ZLIB.PAS (tags: v_6_9_2), dzlib.pas (tags: v_6_9_2),
-	dzlib.txt (tags: v_6_9_2), example.pas (tags: v_6_9_2), gzio.pas
-	(tags: v_6_9_2), infblock.pas (tags: v_6_9_2), infcodes.pas (tags:
-	v_6_9_2), inffast.pas (tags: v_6_9_2), inftrees.pas, infutil.pas
-	(tags: v_6_9_2), minigzip.pas (tags: v_6_9_2), paszlib.html (tags:
-	v_6_9_2), MINIUNZ.PAS (tags: v_6_9_2), paszlib.xbm (tags: v_6_9_2),
-	readme.txt (tags: v_6_9_2), strutils.pas, zcompres.pas (tags:
-	v_6_9_2), zuncompr.pas (tags: v_6_9_2), zutil.pas, MINIZIP.PAS
-	(tags: v_6_9_2), UNZIP.PAS, ZIP.PAS: added paszlib, required for
-	zip and gzip file support
+	* lib/jal/lib/paszlib/: ADLER.PAS (tags: build_6_9_17,
+	build_6_9_16, build_6_9_15, build_6_9_14, build_6_9_13, v_6_9_2),
+	CRC.PAS, TREES.PAS, ZCONF.INC, ZDEFLATE.PAS, ZINFLATE.PAS (tags:
+	build_6_9_17, build_6_9_16, build_6_9_15, build_6_9_14,
+	build_6_9_13, v_6_9_2), ZIPUTILS.PAS, ZLIB.PAS (tags: build_6_9_17,
+	build_6_9_16, build_6_9_15, build_6_9_14, build_6_9_13, v_6_9_2),
+	dzlib.pas (tags: build_6_9_17, build_6_9_16, build_6_9_15,
+	build_6_9_14, build_6_9_13, v_6_9_2), dzlib.txt (tags:
+	build_6_9_17, build_6_9_16, build_6_9_15, build_6_9_14,
+	build_6_9_13, v_6_9_2), example.pas (tags: build_6_9_17,
+	build_6_9_16, build_6_9_15, build_6_9_14, build_6_9_13, v_6_9_2),
+	gzio.pas (tags: build_6_9_17, build_6_9_16, build_6_9_15,
+	build_6_9_14, build_6_9_13, v_6_9_2), infblock.pas (tags:
+	build_6_9_17, build_6_9_16, build_6_9_15, build_6_9_14,
+	build_6_9_13, v_6_9_2), infcodes.pas (tags: build_6_9_17,
+	build_6_9_16, build_6_9_15, build_6_9_14, build_6_9_13, v_6_9_2),
+	inffast.pas (tags: build_6_9_17, build_6_9_16, build_6_9_15,
+	build_6_9_14, build_6_9_13, v_6_9_2), inftrees.pas, infutil.pas
+	(tags: build_6_9_17, build_6_9_16, build_6_9_15, build_6_9_14,
+	build_6_9_13, v_6_9_2), minigzip.pas (tags: build_6_9_17,
+	build_6_9_16, build_6_9_15, build_6_9_14, build_6_9_13, v_6_9_2),
+	paszlib.html (tags: build_6_9_17, build_6_9_16, build_6_9_15,
+	build_6_9_14, build_6_9_13, v_6_9_2), MINIUNZ.PAS (tags:
+	build_6_9_17, build_6_9_16, build_6_9_15, build_6_9_14,
+	build_6_9_13, v_6_9_2), paszlib.xbm (tags: build_6_9_17,
+	build_6_9_16, build_6_9_15, build_6_9_14, build_6_9_13, v_6_9_2),
+	readme.txt (tags: build_6_9_17, build_6_9_16, build_6_9_15,
+	build_6_9_14, build_6_9_13, v_6_9_2), strutils.pas, zcompres.pas
+	(tags: build_6_9_17, build_6_9_16, build_6_9_15, build_6_9_14,
+	build_6_9_13, v_6_9_2), zuncompr.pas (tags: build_6_9_17,
+	build_6_9_16, build_6_9_15, build_6_9_14, build_6_9_13, v_6_9_2),
+	zutil.pas, MINIZIP.PAS (tags: build_6_9_17, build_6_9_16,
+	build_6_9_15, build_6_9_14, build_6_9_13, v_6_9_2), UNZIP.PAS,
+	ZIP.PAS: added paszlib, required for zip and gzip file support
 
 2001-10-19 19:50  juanca
 
@@ -827,11 +962,20 @@
 	* lib/jal/: src/JALGeomModels.pas, src/JALGeometry.pas,
 	src/JALMath.pas (tags: v_6_9_2), src/JALStrings.pas,
 	src/JalDXF.pas, src/JalParse.pas, test/JalDXFTestLib.dpr (tags:
-	v_6_9_2), test/JalDXFTests.cfg (tags: v_6_9_2),
-	test/JalDXFTests.dof (tags: v_6_9_2), test/JalDXFTests.dpr (tags:
-	v_6_9_2), test/JalDXFTests.dsk (tags: v_6_9_2),
-	test/JalDXFTests.res (tags: v_6_9_2), test/TestDXFParse.pas (tags:
-	v_6_9_2): Added basic DXF parser and shape classes
+	build_6_9_17, build_6_9_16, build_6_9_15, build_6_9_14,
+	build_6_9_13, v_6_9_2), test/JalDXFTests.cfg (tags: build_6_9_17,
+	build_6_9_16, build_6_9_15, build_6_9_14, build_6_9_13, v_6_9_2),
+	test/JalDXFTests.dof (tags: build_6_9_17, build_6_9_16,
+	build_6_9_15, build_6_9_14, build_6_9_13, v_6_9_2),
+	test/JalDXFTests.dpr (tags: build_6_9_17, build_6_9_16,
+	build_6_9_15, build_6_9_14, build_6_9_13, v_6_9_2),
+	test/JalDXFTests.dsk (tags: build_6_9_17, build_6_9_16,
+	build_6_9_15, build_6_9_14, build_6_9_13, v_6_9_2),
+	test/JalDXFTests.res (tags: build_6_9_17, build_6_9_16,
+	build_6_9_15, build_6_9_14, build_6_9_13, v_6_9_2),
+	test/TestDXFParse.pas (tags: build_6_9_17, build_6_9_16,
+	build_6_9_15, build_6_9_14, build_6_9_13, v_6_9_2): Added basic DXF
+	parser and shape classes
 
 2001-08-22 18:53  juanca
 
@@ -1072,7 +1216,9 @@
 
 2001-05-23 22:58  juanca
 
-	* lib/jal/etc/bku.bat (tags: v_6_9_2): Added bku.bat batch script.
+	* lib/jal/etc/bku.bat (tags: build_6_9_17, build_6_9_16,
+	build_6_9_15, build_6_9_14, build_6_9_13, v_6_9_2): Added bku.bat
+	batch script.
 
 2001-05-23 22:35  juanca
 

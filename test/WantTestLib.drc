@@ -8,173 +8,184 @@
   resources were bound to the produced executable.
 */
 
-#define RTLConsts_SListIndexError 65408
-#define RTLConsts_SMemoryStreamError 65409
-#define RTLConsts_SReadError 65410
-#define RTLConsts_SRegCreateFailed 65411
-#define RTLConsts_SRegGetDataFailed 65412
-#define RTLConsts_SRegSetDataFailed 65413
-#define RTLConsts_SSeekNotImplemented 65414
-#define RTLConsts_SSortedListError 65415
-#define RTLConsts_SWriteError 65416
-#define JclResources_RsCannotCreateDir 65417
-#define JclResources_RsFileUtilsNoVersionInfo 65418
-#define Consts_SNoCanvasHandle 65419
-#define ComConst_SOleError 65420
-#define ComConst_SNoMethod 65421
-#define ComConst_SVarNotObject 65422
-#define ComConst_STooManyParams 65423
-#define SysConst_SLongDayNameMon 65424
-#define SysConst_SLongDayNameTue 65425
-#define SysConst_SLongDayNameWed 65426
-#define SysConst_SLongDayNameThu 65427
-#define SysConst_SLongDayNameFri 65428
-#define SysConst_SLongDayNameSat 65429
-#define RTLConsts_SAssignError 65430
-#define RTLConsts_SDuplicateItem 65431
-#define RTLConsts_SDuplicateString 65432
-#define RTLConsts_SFCreateErrorEX 65433
-#define RTLConsts_SFOpenErrorEx 65434
-#define RTLConsts_SIniFileWriteError 65435
-#define RTLConsts_SInvalidPropertyValue 65436
-#define RTLConsts_SInvalidRegType 65437
-#define RTLConsts_SListCapacityError 65438
-#define RTLConsts_SListCountError 65439
-#define SysConst_SLongMonthNameMay 65440
-#define SysConst_SLongMonthNameJun 65441
-#define SysConst_SLongMonthNameJul 65442
-#define SysConst_SLongMonthNameAug 65443
-#define SysConst_SLongMonthNameSep 65444
-#define SysConst_SLongMonthNameOct 65445
-#define SysConst_SLongMonthNameNov 65446
-#define SysConst_SLongMonthNameDec 65447
-#define SysConst_SShortDayNameSun 65448
-#define SysConst_SShortDayNameMon 65449
-#define SysConst_SShortDayNameTue 65450
-#define SysConst_SShortDayNameWed 65451
-#define SysConst_SShortDayNameThu 65452
-#define SysConst_SShortDayNameFri 65453
-#define SysConst_SShortDayNameSat 65454
-#define SysConst_SLongDayNameSun 65455
-#define SysConst_SShortMonthNameJan 65456
-#define SysConst_SShortMonthNameFeb 65457
-#define SysConst_SShortMonthNameMar 65458
-#define SysConst_SShortMonthNameApr 65459
-#define SysConst_SShortMonthNameMay 65460
-#define SysConst_SShortMonthNameJun 65461
-#define SysConst_SShortMonthNameJul 65462
-#define SysConst_SShortMonthNameAug 65463
-#define SysConst_SShortMonthNameSep 65464
-#define SysConst_SShortMonthNameOct 65465
-#define SysConst_SShortMonthNameNov 65466
-#define SysConst_SShortMonthNameDec 65467
-#define SysConst_SLongMonthNameJan 65468
-#define SysConst_SLongMonthNameFeb 65469
-#define SysConst_SLongMonthNameMar 65470
-#define SysConst_SLongMonthNameApr 65471
-#define SysConst_SVarTypeCouldNotConvert 65472
-#define SysConst_SVarTypeConvertOverflow 65473
-#define SysConst_SVarOverflow 65474
-#define SysConst_SVarInvalid 65475
-#define SysConst_SVarBadType 65476
-#define SysConst_SVarNotImplemented 65477
-#define SysConst_SVarUnexpected 65478
-#define SysConst_SExternalException 65479
-#define SysConst_SAssertionFailed 65480
-#define SysConst_SIntfCastError 65481
-#define SysConst_SSafecallException 65482
-#define SysConst_SAssertError 65483
-#define SysConst_SAbstractError 65484
-#define SysConst_SModuleAccessViolation 65485
-#define SysConst_SOSError 65486
-#define SysConst_SUnkOSError 65487
-#define SysConst_SExceptTitle 65488
-#define SysConst_SInvalidFormat 65489
-#define SysConst_SArgumentMissing 65490
-#define SysConst_SDispatchError 65491
-#define SysConst_SReadAccess 65492
-#define SysConst_SWriteAccess 65493
-#define SysConst_SVarArrayCreate 65494
-#define SysConst_SVarArrayBounds 65495
-#define SysConst_SVarArrayLocked 65496
-#define SysConst_SInvalidVarCast 65497
-#define SysConst_SInvalidVarOp 65498
-#define SysConst_SInvalidVarNullOp 65499
-#define SysConst_SInvalidVarOpWithHResult 65500
-#define SysConst_SVarTypeRangeCheck1 65501
-#define SysConst_SVarTypeRangeCheck2 65502
-#define SysConst_SVarNotArray 65503
-#define SysConst_SDiskFull 65504
-#define SysConst_SInvalidInput 65505
-#define SysConst_SDivByZero 65506
-#define SysConst_SRangeError 65507
-#define SysConst_SIntOverflow 65508
-#define SysConst_SInvalidOp 65509
-#define SysConst_SZeroDivide 65510
-#define SysConst_SOverflow 65511
-#define SysConst_SUnderflow 65512
-#define SysConst_SInvalidPointer 65513
-#define SysConst_SInvalidCast 65514
-#define SysConst_SAccessViolation 65515
-#define SysConst_SStackOverflow 65516
-#define SysConst_SControlC 65517
-#define SysConst_SPrivilege 65518
-#define SysConst_SException 65519
+#define JclResources_RsIntelCacheDescr43 65392
+#define JclResources_RsIntelCacheDescr44 65393
+#define JclResources_RsIntelCacheDescr45 65394
+#define Consts_SNoCanvasHandle 65395
+#define ComConst_SOleError 65396
+#define ComConst_SNoMethod 65397
+#define ComConst_SVarNotObject 65398
+#define ComConst_STooManyParams 65399
+#define RTLConsts_SRegSetDataFailed 65408
+#define RTLConsts_SSeekNotImplemented 65409
+#define RTLConsts_SSortedListError 65410
+#define RTLConsts_SWriteError 65411
+#define JclResources_RsCannotCreateDir 65412
+#define JclResources_RsIntelCacheDescr01 65413
+#define JclResources_RsIntelCacheDescr02 65414
+#define JclResources_RsIntelCacheDescr03 65415
+#define JclResources_RsIntelCacheDescr04 65416
+#define JclResources_RsIntelCacheDescr06 65417
+#define JclResources_RsIntelCacheDescr08 65418
+#define JclResources_RsIntelCacheDescr0A 65419
+#define JclResources_RsIntelCacheDescr0C 65420
+#define JclResources_RsIntelCacheDescr40 65421
+#define JclResources_RsIntelCacheDescr41 65422
+#define JclResources_RsIntelCacheDescr42 65423
+#define SysConst_SLongDayNameSat 65424
+#define RTLConsts_SAssignError 65425
+#define RTLConsts_SDuplicateItem 65426
+#define RTLConsts_SDuplicateString 65427
+#define RTLConsts_SFCreateErrorEx 65428
+#define RTLConsts_SFOpenErrorEx 65429
+#define RTLConsts_SIniFileWriteError 65430
+#define RTLConsts_SInvalidPropertyValue 65431
+#define RTLConsts_SInvalidRegType 65432
+#define RTLConsts_SListCapacityError 65433
+#define RTLConsts_SListCountError 65434
+#define RTLConsts_SListIndexError 65435
+#define RTLConsts_SMemoryStreamError 65436
+#define RTLConsts_SReadError 65437
+#define RTLConsts_SRegCreateFailed 65438
+#define RTLConsts_SRegGetDataFailed 65439
+#define SysConst_SLongMonthNameOct 65440
+#define SysConst_SLongMonthNameNov 65441
+#define SysConst_SLongMonthNameDec 65442
+#define SysConst_SShortDayNameSun 65443
+#define SysConst_SShortDayNameMon 65444
+#define SysConst_SShortDayNameTue 65445
+#define SysConst_SShortDayNameWed 65446
+#define SysConst_SShortDayNameThu 65447
+#define SysConst_SShortDayNameFri 65448
+#define SysConst_SShortDayNameSat 65449
+#define SysConst_SLongDayNameSun 65450
+#define SysConst_SLongDayNameMon 65451
+#define SysConst_SLongDayNameTue 65452
+#define SysConst_SLongDayNameWed 65453
+#define SysConst_SLongDayNameThu 65454
+#define SysConst_SLongDayNameFri 65455
+#define SysConst_SShortMonthNameJun 65456
+#define SysConst_SShortMonthNameJul 65457
+#define SysConst_SShortMonthNameAug 65458
+#define SysConst_SShortMonthNameSep 65459
+#define SysConst_SShortMonthNameOct 65460
+#define SysConst_SShortMonthNameNov 65461
+#define SysConst_SShortMonthNameDec 65462
+#define SysConst_SLongMonthNameJan 65463
+#define SysConst_SLongMonthNameFeb 65464
+#define SysConst_SLongMonthNameMar 65465
+#define SysConst_SLongMonthNameApr 65466
+#define SysConst_SLongMonthNameMay 65467
+#define SysConst_SLongMonthNameJun 65468
+#define SysConst_SLongMonthNameJul 65469
+#define SysConst_SLongMonthNameAug 65470
+#define SysConst_SLongMonthNameSep 65471
+#define SysConst_SVarNotImplemented 65472
+#define SysConst_SVarUnexpected 65473
+#define SysConst_SExternalException 65474
+#define SysConst_SAssertionFailed 65475
+#define SysConst_SIntfCastError 65476
+#define SysConst_SSafecallException 65477
+#define SysConst_SAssertError 65478
+#define SysConst_SAbstractError 65479
+#define SysConst_SModuleAccessViolation 65480
+#define SysConst_SOSError 65481
+#define SysConst_SUnkOSError 65482
+#define SysConst_SShortMonthNameJan 65483
+#define SysConst_SShortMonthNameFeb 65484
+#define SysConst_SShortMonthNameMar 65485
+#define SysConst_SShortMonthNameApr 65486
+#define SysConst_SShortMonthNameMay 65487
+#define SysConst_SInvalidFormat 65488
+#define SysConst_SArgumentMissing 65489
+#define SysConst_SDispatchError 65490
+#define SysConst_SReadAccess 65491
+#define SysConst_SWriteAccess 65492
+#define SysConst_SVarArrayCreate 65493
+#define SysConst_SVarArrayBounds 65494
+#define SysConst_SVarArrayLocked 65495
+#define SysConst_SInvalidVarCast 65496
+#define SysConst_SInvalidVarOp 65497
+#define SysConst_SInvalidVarOpWithHResultWithPrefix 65498
+#define SysConst_SVarTypeCouldNotConvert 65499
+#define SysConst_SVarTypeConvertOverflow 65500
+#define SysConst_SVarOverflow 65501
+#define SysConst_SVarInvalid 65502
+#define SysConst_SVarBadType 65503
+#define SysConst_SDivByZero 65504
+#define SysConst_SRangeError 65505
+#define SysConst_SIntOverflow 65506
+#define SysConst_SInvalidOp 65507
+#define SysConst_SZeroDivide 65508
+#define SysConst_SOverflow 65509
+#define SysConst_SUnderflow 65510
+#define SysConst_SInvalidPointer 65511
+#define SysConst_SInvalidCast 65512
+#define SysConst_SAccessViolationArg3 65513
+#define SysConst_SAccessViolationNoArg 65514
+#define SysConst_SStackOverflow 65515
+#define SysConst_SControlC 65516
+#define SysConst_SPrivilege 65517
+#define SysConst_SException 65518
+#define SysConst_SExceptTitle 65519
 #define SysConst_SInvalidInteger 65520
 #define SysConst_SInvalidFloat 65521
-#define SysConst_SInvalidCurrency 65522
-#define SysConst_SInvalidDate 65523
-#define SysConst_SInvalidTime 65524
-#define SysConst_SInvalidDateTime 65525
-#define SysConst_SInvalidDateTimeFloat 65526
-#define SysConst_STimeEncodeError 65527
-#define SysConst_SDateEncodeError 65528
-#define SysConst_SOutOfMemory 65529
-#define SysConst_SInOutError 65530
-#define SysConst_SFileNotFound 65531
-#define SysConst_SInvalidFilename 65532
-#define SysConst_STooManyOpenFiles 65533
-#define SysConst_SAccessDenied 65534
-#define SysConst_SEndOfFile 65535
+#define SysConst_SInvalidDate 65522
+#define SysConst_SInvalidTime 65523
+#define SysConst_SInvalidDateTime 65524
+#define SysConst_STimeEncodeError 65525
+#define SysConst_SDateEncodeError 65526
+#define SysConst_SOutOfMemory 65527
+#define SysConst_SInOutError 65528
+#define SysConst_SFileNotFound 65529
+#define SysConst_SInvalidFilename 65530
+#define SysConst_STooManyOpenFiles 65531
+#define SysConst_SAccessDenied 65532
+#define SysConst_SEndOfFile 65533
+#define SysConst_SDiskFull 65534
+#define SysConst_SInvalidInput 65535
 STRINGTABLE
 BEGIN
-	RTLConsts_SListIndexError,	"List index out of bounds (%d)"
-	RTLConsts_SMemoryStreamError,	"Out of memory while expanding memory stream"
-	RTLConsts_SReadError,	"Stream read error"
-	RTLConsts_SRegCreateFailed,	"Failed to create key %s"
-	RTLConsts_SRegGetDataFailed,	"Failed to get data for '%s'"
-	RTLConsts_SRegSetDataFailed,	"Failed to set data for '%s'"
-	RTLConsts_SSeekNotImplemented,	"%s.Seek not implemented"
-	RTLConsts_SSortedListError,	"Operation not allowed on sorted list"
-	RTLConsts_SWriteError,	"Stream write error"
-	JclResources_RsCannotCreateDir,	"Unable to create directory"
-	JclResources_RsFileUtilsNoVersionInfo,	"File contains no version information"
+	JclResources_RsIntelCacheDescr43,	"Unified cache, 32 byte cache line, 4-way set associative, 512Kb"
+	JclResources_RsIntelCacheDescr44,	"Unified cache, 32 byte cache line, 4-way set associative, 1Mb"
+	JclResources_RsIntelCacheDescr45,	"Unified cache, 32 byte cache line, 4-way set associative, 2Mb"
 	Consts_SNoCanvasHandle,	"Canvas does not allow drawing"
 	ComConst_SOleError,	"OLE error %.8x"
 	ComConst_SNoMethod,	"Method '%s' not supported by automation object"
 	ComConst_SVarNotObject,	"Variant does not reference an automation object"
 	ComConst_STooManyParams,	"Dispatch methods do not support more than 64 parameters"
-	SysConst_SLongDayNameMon,	"Monday"
-	SysConst_SLongDayNameTue,	"Tuesday"
-	SysConst_SLongDayNameWed,	"Wednesday"
-	SysConst_SLongDayNameThu,	"Thursday"
-	SysConst_SLongDayNameFri,	"Friday"
+	RTLConsts_SRegSetDataFailed,	"Failed to set data for '%s'"
+	RTLConsts_SSeekNotImplemented,	"%s.Seek not implemented"
+	RTLConsts_SSortedListError,	"Operation not allowed on sorted list"
+	RTLConsts_SWriteError,	"Stream write error"
+	JclResources_RsCannotCreateDir,	"Unable to create directory"
+	JclResources_RsIntelCacheDescr01,	"Instruction TLB, 4Kb pages, 4-way set associative, 32 entries"
+	JclResources_RsIntelCacheDescr02,	"Instruction TLB, 4Mb pages, fully associative, 2 entries"
+	JclResources_RsIntelCacheDescr03,	"Data TLB, 4Kb pages, 4-way set associative, 64 entries"
+	JclResources_RsIntelCacheDescr04,	"Data TLB, 4Mb pages, 4-way set associative, 8 entries"
+	JclResources_RsIntelCacheDescr06,	"8KB instruction cache, 4-way set associative, 32 byte line size"
+	JclResources_RsIntelCacheDescr08,	"16KB instruction cache, 4-way set associative, 32 byte line size"
+	JclResources_RsIntelCacheDescr0A,	"8KB data cache 2-way set associative, 32 byte line size"
+	JclResources_RsIntelCacheDescr0C,	"16KB data cache, 4-way set associative, 32 byte line size"
+	JclResources_RsIntelCacheDescr40,	"No L2 cache"
+	JclResources_RsIntelCacheDescr41,	"Unified cache, 32 byte cache line, 4-way set associative, 128Kb"
+	JclResources_RsIntelCacheDescr42,	"Unified cache, 32 byte cache line, 4-way set associative, 256Kb"
 	SysConst_SLongDayNameSat,	"Saturday"
 	RTLConsts_SAssignError,	"Cannot assign a %s to a %s"
 	RTLConsts_SDuplicateItem,	"List does not allow duplicates ($0%x)"
 	RTLConsts_SDuplicateString,	"String list does not allow duplicates"
-	RTLConsts_SFCreateErrorEX,	"Cannot create file \"%s\". %s"
+	RTLConsts_SFCreateErrorEx,	"Cannot create file \"%s\". %s"
 	RTLConsts_SFOpenErrorEx,	"Cannot open file \"%s\". %s"
 	RTLConsts_SIniFileWriteError,	"Unable to write to %s"
 	RTLConsts_SInvalidPropertyValue,	"Invalid property value"
 	RTLConsts_SInvalidRegType,	"Invalid data type for '%s'"
 	RTLConsts_SListCapacityError,	"List capacity out of bounds (%d)"
 	RTLConsts_SListCountError,	"List count out of bounds (%d)"
-	SysConst_SLongMonthNameMay,	"May"
-	SysConst_SLongMonthNameJun,	"June"
-	SysConst_SLongMonthNameJul,	"July"
-	SysConst_SLongMonthNameAug,	"August"
-	SysConst_SLongMonthNameSep,	"September"
+	RTLConsts_SListIndexError,	"List index out of bounds (%d)"
+	RTLConsts_SMemoryStreamError,	"Out of memory while expanding memory stream"
+	RTLConsts_SReadError,	"Stream read error"
+	RTLConsts_SRegCreateFailed,	"Failed to create key %s"
+	RTLConsts_SRegGetDataFailed,	"Failed to get data for '%s'"
 	SysConst_SLongMonthNameOct,	"October"
 	SysConst_SLongMonthNameNov,	"November"
 	SysConst_SLongMonthNameDec,	"December"
@@ -186,11 +197,11 @@ BEGIN
 	SysConst_SShortDayNameFri,	"Fri"
 	SysConst_SShortDayNameSat,	"Sat"
 	SysConst_SLongDayNameSun,	"Sunday"
-	SysConst_SShortMonthNameJan,	"Jan"
-	SysConst_SShortMonthNameFeb,	"Feb"
-	SysConst_SShortMonthNameMar,	"Mar"
-	SysConst_SShortMonthNameApr,	"Apr"
-	SysConst_SShortMonthNameMay,	"May"
+	SysConst_SLongDayNameMon,	"Monday"
+	SysConst_SLongDayNameTue,	"Tuesday"
+	SysConst_SLongDayNameWed,	"Wednesday"
+	SysConst_SLongDayNameThu,	"Thursday"
+	SysConst_SLongDayNameFri,	"Friday"
 	SysConst_SShortMonthNameJun,	"Jun"
 	SysConst_SShortMonthNameJul,	"Jul"
 	SysConst_SShortMonthNameAug,	"Aug"
@@ -202,11 +213,11 @@ BEGIN
 	SysConst_SLongMonthNameFeb,	"February"
 	SysConst_SLongMonthNameMar,	"March"
 	SysConst_SLongMonthNameApr,	"April"
-	SysConst_SVarTypeCouldNotConvert,	"Could not convert variant of type (%s) into type (%s)"
-	SysConst_SVarTypeConvertOverflow,	"Overflow while converting variant of type (%s) into type (%s)"
-	SysConst_SVarOverflow,	"Variant overflow"
-	SysConst_SVarInvalid,	"Invalid argument"
-	SysConst_SVarBadType,	"Invalid variant type"
+	SysConst_SLongMonthNameMay,	"May"
+	SysConst_SLongMonthNameJun,	"June"
+	SysConst_SLongMonthNameJul,	"July"
+	SysConst_SLongMonthNameAug,	"August"
+	SysConst_SLongMonthNameSep,	"September"
 	SysConst_SVarNotImplemented,	"Operation not supported"
 	SysConst_SVarUnexpected,	"Unexpected variant error"
 	SysConst_SExternalException,	"External exception %x"
@@ -218,24 +229,27 @@ BEGIN
 	SysConst_SModuleAccessViolation,	"Access violation at address %p in module '%s'. %s of address %p"
 	SysConst_SOSError,	"System Error.  Code: %d.\r\n%s"
 	SysConst_SUnkOSError,	"A call to an OS function failed"
-	SysConst_SExceptTitle,	"Application Error"
+	SysConst_SShortMonthNameJan,	"Jan"
+	SysConst_SShortMonthNameFeb,	"Feb"
+	SysConst_SShortMonthNameMar,	"Mar"
+	SysConst_SShortMonthNameApr,	"Apr"
+	SysConst_SShortMonthNameMay,	"May"
 	SysConst_SInvalidFormat,	"Format '%s' invalid or incompatible with argument"
 	SysConst_SArgumentMissing,	"No argument for format '%s'"
 	SysConst_SDispatchError,	"Variant method calls not supported"
 	SysConst_SReadAccess,	"Read"
 	SysConst_SWriteAccess,	"Write"
-	SysConst_SVarArrayCreate,	"Error creating variant array"
-	SysConst_SVarArrayBounds,	"Variant array index out of bounds"
-	SysConst_SVarArrayLocked,	"Variant array is locked"
+	SysConst_SVarArrayCreate,	"Error creating variant or safe array"
+	SysConst_SVarArrayBounds,	"Variant or safe array index out of bounds"
+	SysConst_SVarArrayLocked,	"Variant or safe array is locked"
 	SysConst_SInvalidVarCast,	"Invalid variant type conversion"
 	SysConst_SInvalidVarOp,	"Invalid variant operation"
-	SysConst_SInvalidVarNullOp,	"Invalid NULL variant operation"
-	SysConst_SInvalidVarOpWithHResult,	"Invalid variant operation (%s%.8x)"
-	SysConst_SVarTypeRangeCheck1,	"Range check error for variant of type (%s)"
-	SysConst_SVarTypeRangeCheck2,	"Range check error while converting variant of type (%s) into type (%s)"
-	SysConst_SVarNotArray,	"Variant is not an array"
-	SysConst_SDiskFull,	"Disk full"
-	SysConst_SInvalidInput,	"Invalid numeric input"
+	SysConst_SInvalidVarOpWithHResultWithPrefix,	"Invalid variant operation (%s%.8x)\n%s"
+	SysConst_SVarTypeCouldNotConvert,	"Could not convert variant of type (%s) into type (%s)"
+	SysConst_SVarTypeConvertOverflow,	"Overflow while converting variant of type (%s) into type (%s)"
+	SysConst_SVarOverflow,	"Variant overflow"
+	SysConst_SVarInvalid,	"Invalid argument"
+	SysConst_SVarBadType,	"Invalid variant type"
 	SysConst_SDivByZero,	"Division by zero"
 	SysConst_SRangeError,	"Range check error"
 	SysConst_SIntOverflow,	"Integer overflow"
@@ -245,18 +259,18 @@ BEGIN
 	SysConst_SUnderflow,	"Floating point underflow"
 	SysConst_SInvalidPointer,	"Invalid pointer operation"
 	SysConst_SInvalidCast,	"Invalid class typecast"
-	SysConst_SAccessViolation,	"Access violation at address %p. %s of address %p"
+	SysConst_SAccessViolationArg3,	"Access violation at address %p. %s of address %p"
+	SysConst_SAccessViolationNoArg,	"Access violation"
 	SysConst_SStackOverflow,	"Stack overflow"
 	SysConst_SControlC,	"Control-C hit"
 	SysConst_SPrivilege,	"Privileged instruction"
 	SysConst_SException,	"Exception %s in module %s at %p.\r\n%s%s\r\n"
+	SysConst_SExceptTitle,	"Application Error"
 	SysConst_SInvalidInteger,	"'%s' is not a valid integer value"
 	SysConst_SInvalidFloat,	"'%s' is not a valid floating point value"
-	SysConst_SInvalidCurrency,	"'%s' is not a valid currency value"
 	SysConst_SInvalidDate,	"'%s' is not a valid date"
 	SysConst_SInvalidTime,	"'%s' is not a valid time"
 	SysConst_SInvalidDateTime,	"'%s' is not a valid date and time"
-	SysConst_SInvalidDateTimeFloat,	"'%g' is not a valid date and time"
 	SysConst_STimeEncodeError,	"Invalid argument to time encode"
 	SysConst_SDateEncodeError,	"Invalid argument to date encode"
 	SysConst_SOutOfMemory,	"Out of memory"
@@ -266,5 +280,7 @@ BEGIN
 	SysConst_STooManyOpenFiles,	"Too many open files"
 	SysConst_SAccessDenied,	"File access denied"
 	SysConst_SEndOfFile,	"Read beyond end of file"
+	SysConst_SDiskFull,	"Disk full"
+	SysConst_SInvalidInput,	"Invalid numeric input"
 END
 
