@@ -86,11 +86,12 @@ type
 
     property Arguments;
     property ArgumentList stored False;
+    property SkipLines :Integer     read FSkipLines   write FSkipLines;
 
     property exes :string    read FOutputPath     write FOutputPath;
     property dcus :string    read FUnitOutputPath write FUnitOutputPath;
 
-    property quiet :boolean read FQuiet write FQuiet;
+    property quiet :boolean read FQuiet write FQuiet default true;
     property make  :boolean read FMake  write FMake;
     property build :boolean read FBuild write FBuild;
 
@@ -136,6 +137,8 @@ constructor TDelphiCompileTask.Create(owner: TComponent);
 begin
   inherited Create(owner);
   FUnitPaths := TStringList.Create;
+  SkipLines  := 2;
+  quiet      := true;
 end;
 
 destructor TDelphiCompileTask.Destroy;
