@@ -73,48 +73,38 @@ File_3=SourceModule,'C:\home\want\test\DelphiTasksTest.pas',0,1,1,12,8,0,0
 File_4=SourceModule,'C:\home\want\src\win32\Win32ChildProcesses.pas',0,1,1,37,24,0,0
 
 [Modules]
-Module0=C:\home\want\test\WantTestLib.dpr
-Module1=C:\home\want\src\want.dpr
-Module2=C:\home\want\test\WantAcceptTestLib.dpr
-Module3=C:\home\want\src\WantClasses.pas
-Module4=C:\home\want\src\elements\PatternSets.pas
-Module5=C:\home\want\src\win32\ConsoleScriptRunner.pas
-Module6=C:\home\want\src\ScriptRunner.pas
-Module7=C:\home\want\src\tasks\DelphiTasks.pas
-Module8=C:\home\want\src\tasks\FileTasks.pas
-Module9=C:\home\want\lib\jal\JALStrings.pas
-Module10=C:\home\want\lib\jal\xml\JALXMLParser.pas
-Module11=C:\home\want\lib\jal\xml\JALMiniDom.pas
-Module12=C:\home\want\lib\jal\JALCollections.pas
-Module13=C:\home\want\lib\jal\xml\JALSAX.pas
-Module14=C:\home\want\lib\jal\xml\JALXML.pas
-Module15=C:\home\want\src\lib\ScriptParser.pas
-Module16=C:\home\want\src\tasks\EchoTasks.pas
-Module17=C:\home\want\src\tasks\ExecTasks.pas
+Module0=C:\home\want\src\want.dpr
+Module1=C:\home\want\src\elements\PatternSets.pas
+Module2=C:\home\want\test\WantTestLib.dpr
+Module3=C:\home\want\src\win32\ConsoleScriptRunner.pas
+Module4=C:\home\want\src\ScriptRunner.pas
+Module5=C:\home\want\lib\jal\JALCollections.pas
+Module6=C:\home\want\lib\jal\xml\JALSAX.pas
+Module7=C:\home\want\lib\jal\xml\JALXML.pas
+Module8=C:\home\want\lib\jal\JALStrings.pas
+Module9=C:\home\want\test\WantAcceptTestLib.dpr
+Module10=C:\home\want\src\WantClasses.pas
+Module11=C:\home\want\src\tasks\DelphiTasks.pas
+Module12=C:\home\want\lib\jal\xml\JALXMLParser.pas
+Module13=C:\home\want\lib\jal\xml\JALMiniDom.pas
+Module14=C:\home\want\src\lib\ScriptParser.pas
+Module15=C:\home\want\src\tasks\EchoTasks.pas
+Module16=C:\home\want\src\tasks\ExecTasks.pas
+Module17=C:\home\want\src\tasks\FileTasks.pas
 Count=18
 EditWindowCount=1
-
-[C:\home\want\test\WantTestLib.dpr]
-ModuleType=SourceModule
-FormState=0
-FormOnTop=0
 
 [C:\home\want\src\want.dpr]
 ModuleType=SourceModule
 FormState=0
 FormOnTop=0
 
-[C:\home\want\test\WantAcceptTestLib.dpr]
-ModuleType=SourceModule
-FormState=0
-FormOnTop=0
-
-[C:\home\want\src\WantClasses.pas]
-ModuleType=SourceModule
-FormState=0
-FormOnTop=0
-
 [C:\home\want\src\elements\PatternSets.pas]
+ModuleType=SourceModule
+FormState=0
+FormOnTop=0
+
+[C:\home\want\test\WantTestLib.dpr]
 ModuleType=SourceModule
 FormState=0
 FormOnTop=0
@@ -125,31 +115,6 @@ FormState=0
 FormOnTop=0
 
 [C:\home\want\src\ScriptRunner.pas]
-ModuleType=SourceModule
-FormState=0
-FormOnTop=0
-
-[C:\home\want\src\tasks\DelphiTasks.pas]
-ModuleType=SourceModule
-FormState=0
-FormOnTop=0
-
-[C:\home\want\src\tasks\FileTasks.pas]
-ModuleType=SourceModule
-FormState=0
-FormOnTop=0
-
-[C:\home\want\lib\jal\JALStrings.pas]
-ModuleType=SourceModule
-FormState=0
-FormOnTop=0
-
-[C:\home\want\lib\jal\xml\JALXMLParser.pas]
-ModuleType=SourceModule
-FormState=0
-FormOnTop=0
-
-[C:\home\want\lib\jal\xml\JALMiniDom.pas]
 ModuleType=SourceModule
 FormState=0
 FormOnTop=0
@@ -169,6 +134,36 @@ ModuleType=SourceModule
 FormState=0
 FormOnTop=0
 
+[C:\home\want\lib\jal\JALStrings.pas]
+ModuleType=SourceModule
+FormState=0
+FormOnTop=0
+
+[C:\home\want\test\WantAcceptTestLib.dpr]
+ModuleType=SourceModule
+FormState=0
+FormOnTop=0
+
+[C:\home\want\src\WantClasses.pas]
+ModuleType=SourceModule
+FormState=0
+FormOnTop=0
+
+[C:\home\want\src\tasks\DelphiTasks.pas]
+ModuleType=SourceModule
+FormState=0
+FormOnTop=0
+
+[C:\home\want\lib\jal\xml\JALXMLParser.pas]
+ModuleType=SourceModule
+FormState=0
+FormOnTop=0
+
+[C:\home\want\lib\jal\xml\JALMiniDom.pas]
+ModuleType=SourceModule
+FormState=0
+FormOnTop=0
+
 [C:\home\want\src\lib\ScriptParser.pas]
 ModuleType=SourceModule
 FormState=0
@@ -180,6 +175,11 @@ FormState=0
 FormOnTop=0
 
 [C:\home\want\src\tasks\ExecTasks.pas]
+ModuleType=SourceModule
+FormState=0
+FormOnTop=0
+
+[C:\home\want\src\tasks\FileTasks.pas]
 ModuleType=SourceModule
 FormState=0
 FormOnTop=0
@@ -210,7 +210,7 @@ BottomPanelSize=149
 BottomPanelClients=MessageView@EditWindow0,LocalVarsWindow
 BottomPanelData=00000400010000000B0000004D6573736167655669657795000000000000000164030000000000000100000000950000000F0000004C6F63616C5661727357696E646F77FFFFFFFF
 ViewCount=18
-CurrentView=15
+CurrentView=17
 View0=0
 View1=1
 View2=2
@@ -264,37 +264,37 @@ Dockable=1
 
 [View0]
 Module=C:\home\want\src\tasks\FileTasks.pas
-CursorX=25
-CursorY=167
-TopLine=143
+CursorX=1
+CursorY=14
+TopLine=1
 LeftCol=1
 
 [View1]
 Module=C:\home\want\src\tasks\ExecTasks.pas
-CursorX=49
-CursorY=262
-TopLine=247
+CursorX=1
+CursorY=14
+TopLine=1
 LeftCol=1
 
 [View2]
 Module=C:\home\want\src\tasks\EchoTasks.pas
-CursorX=61
-CursorY=136
-TopLine=112
+CursorX=1
+CursorY=14
+TopLine=1
 LeftCol=1
 
 [View3]
 Module=C:\home\want\src\lib\ScriptParser.pas
 CursorX=1
-CursorY=1
+CursorY=14
 TopLine=1
 LeftCol=1
 
 [View4]
 Module=C:\home\want\lib\jal\xml\JALMiniDom.pas
-CursorX=6
-CursorY=203
-TopLine=189
+CursorX=1
+CursorY=1
+TopLine=1
 LeftCol=1
 
 [View5]
@@ -306,29 +306,29 @@ LeftCol=1
 
 [View6]
 Module=C:\home\want\src\tasks\DelphiTasks.pas
-CursorX=26
-CursorY=223
-TopLine=209
+CursorX=1
+CursorY=14
+TopLine=1
 LeftCol=1
 
 [View7]
 Module=C:\home\want\src\WantClasses.pas
-CursorX=6
-CursorY=22
-TopLine=8
+CursorX=1
+CursorY=14
+TopLine=1
 LeftCol=1
 
 [View8]
 Module=C:\home\want\test\WantAcceptTestLib.dpr
-CursorX=35
-CursorY=17
+CursorX=1
+CursorY=14
 TopLine=1
 LeftCol=1
 
 [View9]
 Module=C:\home\want\lib\jal\JALStrings.pas
-CursorX=63
-CursorY=25
+CursorX=1
+CursorY=14
 TopLine=1
 LeftCol=1
 
@@ -341,9 +341,9 @@ LeftCol=1
 
 [View11]
 Module=C:\home\want\lib\jal\xml\JALSAX.pas
-CursorX=6
-CursorY=18
-TopLine=14
+CursorX=1
+CursorY=1
+TopLine=1
 LeftCol=1
 
 [View12]
@@ -355,15 +355,15 @@ LeftCol=1
 
 [View13]
 Module=C:\home\want\src\ScriptRunner.pas
-CursorX=14
-CursorY=20
+CursorX=1
+CursorY=14
 TopLine=1
 LeftCol=1
 
 [View14]
 Module=C:\home\want\src\win32\ConsoleScriptRunner.pas
-CursorX=14
-CursorY=18
+CursorX=1
+CursorY=14
 TopLine=1
 LeftCol=1
 
@@ -377,15 +377,15 @@ LeftCol=1
 [View16]
 Module=C:\home\want\src\elements\PatternSets.pas
 CursorX=1
-CursorY=15
+CursorY=14
 TopLine=1
 LeftCol=1
 
 [View17]
 Module=C:\home\want\src\want.dpr
-CursorX=43
-CursorY=49
-TopLine=35
+CursorX=1
+CursorY=1
+TopLine=1
 LeftCol=1
 
 [DockHosts]
@@ -402,9 +402,9 @@ Watch4='FIncludes[i]',256,0,18,1
 [Breakpoints]
 Count=4
 Breakpoint0='C:\home\want\test\ExternalTests.pas',256,'',0,1
-Breakpoint1='C:\home\want\src\ScriptRunner.pas',281,'',0,1
-Breakpoint2='C:\home\want\src\tasks\FileTasks.pas',360,'',0,1
-Breakpoint3='C:\home\want\src\tasks\FileTasks.pas',343,'',0,1
+Breakpoint1='C:\home\want\src\ScriptRunner.pas',285,'',0,1
+Breakpoint2='C:\home\want\src\tasks\FileTasks.pas',364,'',0,1
+Breakpoint3='C:\home\want\src\tasks\FileTasks.pas',347,'',0,1
 
 [AddressBreakpoints]
 Count=0

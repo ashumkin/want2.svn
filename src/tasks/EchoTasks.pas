@@ -1,11 +1,15 @@
-(*******************************************************************
-*  WANT - A build management tool.                                 *
-*  Copyright (c) 2001 Juancarlo Añez, Caracas, Venezuela.          *
-*  All rights reserved.                                            *
-*                                                                  *
-*******************************************************************)
+{%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%}
+{                                              }
+{   \\\                                        }
+{  -(j)-                                       }
+{    /juanca (R)                               }
+{    ~                                         }
+{     Copyright (C) 1995,2001 Juancarlo Añez   }
+{     All rights reserved.                     }
+{            http://www.suigeneris.org/juanca  }
+{%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%}
 
-{ $Id$ }
+{#(@)$Id$}
 
 unit EchoTasks;
 

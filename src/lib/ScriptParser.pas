@@ -1,3 +1,16 @@
+{%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%}
+{                                              }
+{   \\\                                        }
+{  -(j)-                                       }
+{    /juanca (R)                               }
+{    ~                                         }
+{     Copyright (C) 1995,2001 Juancarlo Añez   }
+{     All rights reserved.                     }
+{            http://www.suigeneris.org/juanca  }
+{%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%}
+
+{#(@)$Id$}
+
 unit ScriptParser;
 
 interface
