@@ -88,6 +88,7 @@ type
     property Arguments;
     property ArgumentList stored False;
     property Executable;
+    property SkipLines :Integer     read FSkipLines   write FSkipLines;
     property OS;
   end;
 
