@@ -1,39 +1,17 @@
-<!-- $Id$
-================================================================================
-Copyright (c) 2001, Dante Authors - See authors.txt for complete list
-All rights reserved.
-
-Redistribution and use in source and binary forms, with or without modification,
-are permitted provided that the following conditions are met:
-
-1. Redistributions of source code must retain the above copyright notice, this
-list of conditions and the following disclaimer.
-
-2. Redistributions in binary form must reproduce the above copyright notice,
-this list of conditions and the following disclaimer in the documentation and/or
-other materials provided with the distribution.
-
-3. The name Dante, the names of the authors in authors.txt and the names of
-other contributors to this software may not be used to endorse or promote
-products derived from this software without specific prior written permission.
-
-THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS ``AS IS''
-AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDERS OR CONTRIBUTORS BE LIABLE
-FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
-DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
-SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
-CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR
-TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
-THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-================================================================================
--->
 <!--
-This is the Dante script for building Dante.
-See http://dante.sourceforge.net for details
+********************************************************************
+*  WANT - A build management tool.                                 *
+*  Copyright (c) 2001 Juancarlo Anez, Caracas, Venezuela.          *
+*  All rights reserved.                                            *
+*                                                                  *
+********************************************************************
+
+{ $Id$ }
+
+This is the Want script for building Want.
+See http://www.suigeneris.org/want/ for details.
 -->
-<project name="dante"
+<project name="want"
          basedir=".."
          default="dist" >
 
@@ -71,114 +49,91 @@ See http://dante.sourceforge.net for details
   </target>
 
   <target name="clean" >
-    <delete dir="${dist}" />
-    <delete dir="${dcu}" />
-    <delete dir="${bin}" />
+    <!-- delete dir="${dist}" / -->
+    <delete dir="${dcu}/**" />
+    <delete dir="${bin}/**" />
   </target>
 
-  <target name="compile" depends="prepare">
-    <versioninfo rcfilename="${src}/dantever.rc"
-	              increment="${increment.build}"
-	 />
-	 <echo message="Build number is '${build}'" />
-    <brcc file="${src}/dantever.rc" output="${bin}/dantever.res" />
+  <target name="compile" depends="clean,prepare">
+    <brcc file="${src}/wantver.rc" output="${bin}/wantver.res" />
+    <brcc file="${src}/license.rc" output="${bin}/license.res" />
 
-    <!-- Delete dante.cfg first to get a reproducible build.
+    <!-- Delete want.cfg first to get a reproducible build.
          (Should this be automated?)
     -->
-    <touch  file="${src}/dante.cfg"  />
-    <delete file="${src}/dante.cfg" />
+    <touch  file="${src}/want.cfg"  />
+    <delete file="${src}/want.cfg" />
 
-    <dcc basedir="${src}"
-         source="dante.dpr"
-         exes="${basedir}"
-         dcus="${dcu}"
-         quiet="true"
-         build="true"
-         optimize="true"
-         debug="false"
-    >
-      <unit>
-        <patternset refid="sources" />
-      </unit>
-      <include>
-        <patternset refid="sources" />
-      </include>
-      <resource>
-        <patternset refid="resources" />
-      </resource>
+    <dcc basedir="${src}" source="want.dpr"  >
+      <exeoutput path="${bin}"  />
+      <dcuoutput path="${dcu}"      />
+      <build     value="true" />
+      <optimize  value="true" />
+      <console   value="true" />
+
+      <unitpath     refid="sources"   />
+      <includepath  refid="sources"   />
+      <resourcepath refid="resources" />
     </dcc>
   </target>
 
 
   <target name="test" depends="internal_tests,acceptance_tests" />
 
-  <target name="internal_tests" >
-    <property name="test.app" value="DanteTest" />
-    <dcc basedir="${test}"
-         source="${test.app}.dpr"
-         exes="${bin}"
-         dcus="${dcu}"
-         quiet="true"
-         build="true"
-         optimize="false"
-         debug="true"
-         console="true"
-         uselibrarypath="true"
-    >
+  <target name="internal_tests" depends="clean,prepare">
+    <property name="test.app" value="WantTestLib" />
+    <dcc basedir="${test}" source="${test.app}.dpr" >
+      <exeoutput path="${bin}"  />
+      <dcuoutput path="${dcu}"  />
+      <build     value="true" />
+      <debug     value="true" />
+      <console   value="true" />
+
       <define name="USE_TEXT_RUNNER" />
-      <unit>
-        <patternset refid="sources" />
+      <define name="USE_JEDI_JCL" />
+      <unitpath     refid="sources" >
         <include name="${test}/**" />
-      </unit>
-      <include>
-        <patternset refid="sources" />
-      </include>
-      <resource>
-        <patternset refid="resources" />
-      </resource>
+        <exclude  name="${test}/data" />
+        <exclude  name="${test}/data/**" />
+      </unitpath>
+      <includepath  refid="sources"   />
+      <resourcepath refid="resources" />
     </dcc>
-    <exec executable="${bin}/${test.app}.exe" />
+    <dunit testlib="${bin}/${test.app}" />
  </target>
 
 
-  <target name="acceptance_tests" >
-    <property name="test.app" value="DanteAcceptTest" />
-    <dcc basedir="${test}"
-         source="${test.app}.dpr"
-         exes="${bin}"
-         dcus="${dcu}"
-         quiet="true"
-         build="true"
-         optimize="false"
-         debug="true"
-         console="true"
-         uselibrarypath="true"
-  >
+  <target name="acceptance_tests" depends="clean,prepare" >
+    <property name="test.app" value="wantAcceptTestLib" />
+    <dcc basedir="${test}" source="${test.app}.dpr" >
+      <exeoutput path="${bin}"  />
+      <dcuoutput path="${dcu}"  />
+      <build     value="true" />
+      <debug     value="true" />
+      <console   value="true" />
+
       <define name="USE_TEXT_RUNNER" />
-      <define name="NO_RUN_VSS_TESTS" />
-      <unit>
-        <patternset refid="sources" />
+      <define name="NO_RUN_VSS_TESTS" unless="include.vss" />
+
+      <unitpath     refid="sources" >
         <include name="${test}/**" />
-      </unit>
-      <include>
-        <patternset refid="sources" />
-      </include>
-      <resource>
-        <patternset refid="resources" />
-      </resource>
+        <exclude  name="${test}/data" />
+        <exclude  name="${test}/data/**" />
+      </unitpath>
+      <includepath  refid="sources"   />
+      <resourcepath refid="resources" />
     </dcc>
-    <exec executable="${bin}/${test.app}.exe" />
+    <dunit testlib="${bin}/${test.app}" />
  </target>
 
-  <target name="dist" depends="prepare,compile,test" >
+  <target name="dist" depends="clean,prepare,compile,test" >
     <mkdir dir="${dist}" />
-    <property name="zipfile" value="${dist}/dante-${version}.${build}.zip" />
+    <property name="zipfile" value="${dist}/want-${version}.zip" />
     <delete file="${zipfile}" />
     <zip zipfile="${zipfile}" >
          <exclude name="${dist}/**" />
 
-         <include name="${basedir}/dante.exe" />
+         <include name="${bin}/want.exe" />
 
          <include name="**/*.pas" />
          <include name="**/*.dpr" />
@@ -192,11 +147,10 @@ See http://dante.sourceforge.net for details
          <include name="**/*.jpeg" />
          <include name="**/*.txt" />
 
-         <include name="${lib}/paszlib*.zip" />
-         <exclude name="${lib}/paszlib/**"   />
-         <include name="${lib}/jcl*.zip" />
-         <exclude name="${lib}/jcl/**"   />
-         <exclude name="${src}/jcl/**"   />
+         <include name="${test}/data/**" />
+
+         <include name="${lib}/*.zip" />    <!-- include third party library .zips -->
+         <exclude name="${lib}/*/**"   />   <!-- exclude subdirectories -->
          <exclude name="${basedir}/private/**" />
     </zip>
   </target>

@@ -3,9 +3,9 @@
  Copyright (c) 1999-2001 The DUnit Group. All rights reserved.
  $Id$
 ======================================================================== 
- This build file specifies how to build DUnit using the Dante build tool.
+ This build file specifies how to build DUnit using the Want build tool.
  See:
-  http://dante.sourceforge.net/
+  http://www.suigeneris.org/want
  for details.
 ======================================================================== 
 
@@ -15,7 +15,7 @@
   basedir=".">
  
   <property name="app.name"       value="dunit" />
-  <property name="version"        value="3.2.8.1" />
+  <property name="version"        value="3.2.8.2" />
   <regexp   property="cvs.tag" text="build_${version}" pattern="\." subst="_" />
   
   <property name="src.dir"        value="${basedir}/src" />
@@ -25,6 +25,7 @@
   <property name="scratch.dir"    value="${basedir}/scratch"/>
   <property name="bin.dir"        value="${basedir}/bin"/>
   <property name="dist.dir"       value="${basedir}/dist"/>
+  <property name="framework.dir"  value="${basedir}/framework"/>
   <property name="contrib.dir"    value="${basedir}/contrib"/>
 
   <patternset id="source.code" >
@@ -54,33 +55,31 @@
   <target name="prepare" description="build directory structure" >
     <mkdir dir="${scratch.dir}" />
     <mkdir dir="${bin.dir}" />
+    <mkdir dir="${framework.dir}" />
   </target>
 
   <target name="clean">
     <delete dir="${scratch.dir}" />
-    <!-- <delete file="${bin.dir}/**" /> -->
+    <delete dir="${bin.dir}" />
+    <delete dir="${framework.dir}" />
   </target>
 
-  <property name="test.app" value="UnitTests" />
+  <property name="test.app" value="DUnitTestLib" />
 
   <target name="compile" depends="prepare" >
-    <dcc basedir="${test.dir}"
-         source="${test.app}.dpr"
-         dcus="${scratch.dir}"
-         exes="${bin.dir}"
-         debug="true"
-         build="true"
-    >
-      <define name="USE_JEDI_JCL" />
-      <unit path="${src.dir}" />
-      <resource path="${src.dir}" />
+    <dcc basedir="${test.dir}" source="${test.app}.dpr" >
+      <dcuoutput path="${scratch.dir}" />
+      <exeoutput path="${bin.dir}"     />
+      <debug value="true" />
+      <build value="true" />
+
+      <unitpath path="${src.dir}" />
+      <resourcepath path="${src.dir}" />
     </dcc>
   </target>
 
   <target name="test_dunit" depends="compile" >
-    <exec executable="${bin.dir}/${test.app}.exe" 
-	       arguments="-text-mode"
-	 />
+    <dunit testlib="${bin.dir}/${test.app}" />
   </target>
 
   <target name="examples"  
@@ -91,7 +90,8 @@
                    registry,
                    tlist,
                    structure,
-                   cmdline
+                   cmdline,
+                   testexception
                    " 
                    > 
                    <!-- list all example dirs here -->
@@ -131,35 +131,39 @@
   </target>
 
   <!-- EXAMPLES 
-       Each has its own Dante build.xml file.
+       Each has its own build.xml file.
   -->
   
   <target name="xpgen" depends="prepare" >
-    <dante dir="${contrib.dir}/xpgen" description="test compiler" />
+    <want dir="${contrib.dir}/xpgen" description="test compiler" />
   </target>
 
   <target name="registration" depends="prepare" >
-    <dante dir="${samp.dir}/registration" />
+    <want dir="${samp.dir}/registration" />
   </target>
 
   <target name="collection" depends="prepare" >
-    <dante dir="${samp.dir}/collection" />
+    <want dir="${samp.dir}/collection" />
   </target>
 
   <target name="registry" depends="prepare" >
-    <dante dir="${samp.dir}/registry" />
+    <want dir="${samp.dir}/registry" />
   </target>
 
   <target name="tlist" depends="prepare" >
-    <dante dir="${samp.dir}/TListTest" />
+    <want dir="${samp.dir}/TListTest" />
   </target>
 
   <target name="structure" depends="prepare" >
-    <dante dir="${samp.dir}/structure" />
+    <want dir="${samp.dir}/structure" />
   </target>
 
   <target name="cmdline" depends="prepare" >
-    <dante dir="${samp.dir}/cmdline" />
+    <want dir="${samp.dir}/cmdline" />
+  </target>
+
+  <target name="testexception" depends="prepare" >
+    <want dir="${samp.dir}/testexception" />
   </target>
 
   <!-- ...add a target for each example... -->
