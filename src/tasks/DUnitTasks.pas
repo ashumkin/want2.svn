@@ -171,7 +171,7 @@ begin
         TaskFailure('tests failed');
     finally
       Test := nil;
-      UnloadTestModules;
+//      UnloadTestModules;
     end;
   except
     on e :EWantException do
