@@ -43,7 +43,7 @@ OutputDir=..\bin
 UnitOutputDir=..\dcu
 PackageDLLOutputDir=
 PackageDCPOutputDir=
-SearchPath=$(DELPHI)\lib;.\tasks;.\jcl\;.\xml;.\paths;.\zip;..\lib\paszlib;..\lib\paszlib\minizip
+SearchPath=$(DELPHI)\lib;.\lib;.\tasks;..\lib\jcl;..\lib\sax;..\lib\paszlib;..\lib\paszlib\minizip
 Packages=Vcl50;Vclx50;VclSmp50;Vcldb50;vclado50;ibevnt50;Vclbde50;vcldbx50;Qrpt50;TeeUI50;TeeDB50;Tee50;Dss50;TeeQR50;VCLIB50;Vclmid50;vclie50;Inetdb50;Inet50;NMFast50;webmid50;dclocx50;dclaxserver50;Indy50;OE;RxCtl5;RxBDE5;RxDB5;msxml;OpenXML_D5
 Conditionals=
 DebugSourceDirs=
@@ -76,45 +76,32 @@ OriginalFilename=
 ProductName=
 ProductVersion=1.0.0.0
 Comments=
-[Excluded Packages]
-C:\WINDOWS\system32\nmfast40.bpl=NetMasters Fastnet Tools
-C:\lib\pascal\control\portio\delphi\delphi.4\DLPortIO.bpl=DriverLINX driver wrapper component
-C:\lib\pascal\jcl\djcl40\DJCL40.bpl=JEDI Code Library Design-time package for Delphi 4
-C:\lib\pascal\jcl\debug\JclDebugIde40.bpl=JCL Debug IDE extension for Delphi 4.03
-$(DELPHI)\Bin\dcl31w40.bpl=Delphi 1.0 Compatibility Components
-C:\lib\pascal\xml\openxml\XDOMP.bpl=OpenXML
-c:\lib\pascal\db\kdao\kdao.bpl=KA DAO Data Access Components
-$(DELPHI)\Bin\dcldb40.bpl=Borland Database Components
-$(DELPHI)\Bin\dclint40.bpl=Borland Resource DLL Wizard
-$(DELPHI)\Bin\dcltee40.bpl=Borland TeeChart Components
-$(DELPHI)\Bin\dclqrt40.bpl=QuickReport Components
-C:\WINDOWS\system32\ibevnt40.bpl=Borland Interbase Event Alerter Component
-$(DELPHI)\Bin\dclocx40.bpl=Borland Sample Imported ActiveX Controls
 [HistoryLists\hlDebugSourcePath]
-Count=2
-Item0=..\src\
-Item1=..\src
+Count=3
+Item0=$(DELPHI)\Lib;..\src\;..\src\xml;..\src\tasks;..\src\jcl;..\src\paths;..\src\xml;..\src\LogMgr
+Item1=..\src\
+Item2=..\src
 [HistoryLists\hlConditionals]
-Count=1
-Item0=USE_JEDI_JCL
+Count=2
+Item0=RUN_VSS_TESTS
+Item1=USE_JEDI_JCL
 [HistoryLists\hlUnitAliases]
 Count=1
 Item0=WinTypes=Windows;WinProcs=Windows;DbiTypes=BDE;DbiProcs=BDE;DbiErrs=BDE;
 [HistoryLists\hlSearchPath]
-Count=13
-Item0=$(DELPHI)\lib;.\tasks;.\jcl\;.\xml;.\paths;.\zip;..\lib\paszlib;..\lib\paszlib\minizip
-Item1=$(DELPHI)\lib;.\tasks;.\jcl\;.\xml;.\paths;..\lib\paszlib;..\lib\paszlib\minizip
-Item2=$(DELPHI)\lib;.\tasks;.\jcl\;.\xml;.\paths
-Item3=.\tasks;.\jcl\;.\xml;.\paths
-Item4=.\jcl\;.\xml;.\paths
-Item5=$(DELPHI)\Lib\Debug;..\src\;..\src\xml;..\src\tasks;..\src\jcl
-Item6=.\jcl\
-Item7=..\jcl\
-Item8=..\src\;..\src\xml;..\src\tasks;..\src\jcl
-Item9=..\src\;..\src\xml
-Item10=..\src\
-Item11=..\src
-Item12=..
+Count=12
+Item0=$(DELPHI)\Lib;..\src\;..\src\xml;..\src\tasks;..\src\jcl;..\src\paths;..\src\xml;..\src\LogMgr
+Item1=$(DELPHI)\Lib;..\src\;..\src\xml;..\src\tasks;..\src\jcl;..\src\paths;..\src\xml
+Item2=$(DELPHI)\Lib\Debug;..\src\;..\src\xml;..\src\tasks;..\src\jcl;..\src\paths;..\src\xml
+Item3=$(DELPHI)\Lib\Debug;..\src\;..\src\xml;..\src\tasks;..\src\jcl;..\src\paths
+Item4=$(DELPHI)\Lib\Debug;..\src\;..\src\xml;..\src\tasks;..\src\jcl
+Item5=.\jcl\
+Item6=..\jcl\
+Item7=..\src\;..\src\xml;..\src\tasks;..\src\jcl
+Item8=..\src\;..\src\xml
+Item9=..\src\
+Item10=..\src
+Item11=..
 [HistoryLists\hlUnitOutputDirectory]
 Count=1
 Item0=..\dcu
@@ -122,34 +109,5 @@ Item0=..\dcu
 Count=1
 Item0=..\bin
 [HistoryLists\hlRunParameters]
-Count=30
+Count=1
 Item0=-buildfile ..\make\build.xml  dist -Dparam="hello, dude!" -debug
-Item1=-buildfile ..\make\build.xml  dist -Dparam="hello, dude!" -verbose
-Item2=-buildfile ..\make\build.xml  dist -Dparam="hello, dude!"
-Item3=-buildfile \home\dunit\build.xml examples -debug
-Item4=-buildfile \home\dunit\build.xml examples
-Item5=-buildfile ..\make\build.xml  dist
-Item6=-buildfile ..\make\build.xml 
-Item7=-buildfile \home\dunit\examples\registry\build.xml
-Item8=-buildfile \home\dunit\build.xml dist 
-Item9=-buildfile \home\dunit\build.xml dist -debug
-Item10=-buildfile \home\dunit\build.xml dist -verbose
-Item11=-buildfile \home\dunit\build.xml -debug
-Item12=-buildfile \home\dunit\build.xml -verbose
-Item13=-buildfile ..\make\build.xml compile -debug
-Item14=-buildfile ..\make\build.xml dist  -debug
-Item15=-buildfile ..\make\build.xml dist  -verbose
-Item16=-buildfile ..\make\build.xml dist 
-Item17=-buildfile ..\make\build.xml dist -verbose
-Item18=-buildfile ..\make\build.xml dist-verbose
-Item19=-buildfile ..\make\build.xml examples -verbose
-Item20=-buildfile ..\make\build.xml dist
-Item21=-buildfile ..\make\build.xml clean dist
-Item22=-buildfile ..\make\build.xml clean
-Item23=-buildfile ..\make\build.xml clean dist
-Item24=-buildfile ..\make\build.xml dist
-Item25=-buildfile ..\make\build.xml clean dist -verbose
-Item26=-buildfile ..\make\build.xml clean dist
-Item27=-buildfile ..\make\build.xml clean dist
-Item28=-buildfile ..\make\build.xml clean dist -debug
-Item29=-buildfile ..\make\build.xml clean dist  -verbose

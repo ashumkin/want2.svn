@@ -36,7 +36,6 @@ interface
 uses
   WildPaths,
   FileSets,
-  FileOps,
   TestFramework,
 
   SysUtils,

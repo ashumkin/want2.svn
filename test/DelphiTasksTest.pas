@@ -35,7 +35,10 @@ unit DelphiTasksTest;
 interface
 
 uses
-  WildPaths, FileOps, DanteClasses, DelphiTasks, TestFramework,
+  WildPaths,
+  DanteClasses,
+  DelphiTasks,
+  TestFramework,
   DanteClassesTest;
 
 type
@@ -76,11 +79,11 @@ begin
       build   := true;
       quiet   := true;
 
-      AddUnitPath('jcl');
-      AddUnitPath('paths');
-      AddUnitPath('xml');
+      AddUnitPath('lib');
       AddUnitPath('tasks');
-      AddUnitPath('zip');
+
+      AddUnitPath('../lib/jcl');
+      AddUnitPath('../lib/xml');
       AddUnitPath('../lib/paszlib');
       AddUnitPath('../lib/paszlib/minizip');
     end;

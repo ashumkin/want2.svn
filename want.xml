@@ -49,7 +49,8 @@ See http://dante.sourceforge.net for details
   <property name="bin" value="${basedir}/bin" />
   <property name="dcu" value="${basedir}/dcu" />
 
-  <property name="jcl"     value="${src}/jcl" />
+  <property name="jcl"     value="${lib}/jcl" />
+  <property name="xml"     value="${lib}/xml" />
   <property name="paszlib" value="${lib}/paszlib" />
 
 
@@ -87,11 +88,10 @@ See http://dante.sourceforge.net for details
          debug="false"
     >
       <unit path="${jcl}" />
-      <unit path="${src}" />
+      <unit path="${xml}" />
+
+      <unit path="${src}/lib" />
       <unit path="${src}/tasks" />
-      <unit path="${src}/xml" />
-      <unit path="${src}/paths" />
-      <unit path="${src}/zip" />
 
       <unit path="${paszlib}" />
       <unit path="${paszlib}/minizip" />
