@@ -49,19 +49,23 @@ type
 
   TFileSetTask = class(TFileTask)
   protected
-    FFileSet:         TFileSet;
+    FFileSets: array of TFileSet;
     FDefaultExcludes: boolean;
 
-    procedure AddDefaultExcludes;
+    procedure AddDefaultPatterns; virtual;
 
     procedure AddCommaSeparatedIncludes(Value :string);
     procedure AddCommaSeparatedExcludes(Value :string);
+
+    procedure DoFileset(Fileset :TFileSet); virtual;
   public
     constructor Create(Owner :TDanteElement); override;
 
+    procedure Execute; override;
   published
-    function CreateInclude :TIncludeComponent;
-    function CreateExclude :TExcludeComponent;
+    function CreateFileSet :TFileSet;
+    function CreateInclude :TIncludeElement;
+    function CreateExclude :TExcludeElement;
 
     property DefaultExcludes :boolean
       read FDefaultExcludes write FDefaultExcludes default True;
@@ -92,39 +96,42 @@ type
     FDir  :string;
     FFile :string;
 
-    procedure SetDir(Value :string);
+    procedure AddDefaultPatterns; override;
+
     procedure SetFile(Value :string);
+
+    procedure DoFileset(Fileset :TFileSet); override;
   public
     procedure Validate; override;
-    procedure Execute; override;
   published
     property _File :string  read FFile write SetFile stored True;
-    property Dir   :string  read FDir  write SetDir;
+    property Dir   :string  read FDir  write FDir;
   end;
 
   TMoveCopyTask = class(TFileSetTask)
   protected
     FToDir  :string;
 
-    procedure DoPaths(FromPaths, ToPaths :TPaths); virtual;
-    procedure DoFiles(FromPath, ToPath :TPath);    virtual; abstract;
+    procedure DoFileset(Fileset :TFileSet); override;
+
+    procedure DoPaths(Fileset :TFileSet; FromPaths, ToPaths :TPaths); virtual;
+    procedure DoFiles(Fileset :TFileSet; FromPath, ToPath :TPath);    virtual; abstract;
   public
     procedure Validate; override;
-    procedure Execute; override;
   published
     property todir  :string read FToDir  write FToDir;
   end;
 
   TCopyTask = class(TMoveCopyTask)
   protected
-    procedure DoPaths(FromPaths, ToPaths :TPaths); override;
-    procedure DoFiles(FromPath, ToPath :TPath);    override;
+    procedure DoPaths(Fileset :TFileSet; FromPaths, ToPaths :TPaths); override;
+    procedure DoFiles(Fileset :TFileSet; FromPath, ToPath :TPath);    override;
   end;
 
   TMoveTask = class(TMoveCopyTask)
   protected
-    procedure DoPaths(FromPaths, ToPaths :TPaths); override;
-    procedure DoFiles(FromPath, ToPath :TPath);    override;
+    procedure DoPaths(Fileset :TFileSet; FromPaths, ToPaths :TPaths); override;
+    procedure DoFiles(Fileset :TFileSet; FromPath, ToPath :TPath);    override;
   end;
 
 implementation
@@ -135,38 +142,28 @@ constructor TFileSetTask.Create(Owner: TDanteElement);
 begin
   inherited Create(Owner);
   DefaultExcludes := True;
-  FFileSet := TFileSet.Create(Self);
-  FFileSet.Dir := BasePath;
+  CreateFileSet;
 end;
 
-function TFileSetTask.CreateInclude: TIncludeComponent;
+function TFileSetTask.CreateInclude: TIncludeElement;
 begin
-  Result := FFileSet.CreateInclude;
+  Result := FFileSets[0].CreateInclude;
 end;
 
-function TFileSetTask.CreateExclude: TExcludeComponent;
+function TFileSetTask.CreateExclude: TExcludeElement;
 begin
-  Result := FFileSet.CreateExclude;
+  Result := FFileSets[0].CreateExclude;
 end;
 
-procedure TFileSetTask.AddDefaultExcludes;
+procedure TFileSetTask.AddDefaultPatterns;
+var
+  i :Integer;
 begin
   if DefaultExcludes then
-    with FFileSet do
-    begin
-      // add the default Ant excludes
-      Exclude('**/*~');
-      Exclude('**/#*#');
-      Exclude('**/%*%');
-      Exclude('**/CVS');
-      Exclude('**/CVS/*');
-      Exclude('**/.cvsignore');
-
-      // Some additional excludes
-      Exclude('**/*.*~*');
-      Exclude('**/*.bak');
-      Exclude('**/dunit.ini');
-    end;
+  begin
+    for i := Low(FFileSets) to High(FFileSets) do
+      FFileSets[i].AddDefaultPatterns;
+  end;
 end;
 
 procedure TFileSetTask.AddCommaSeparatedIncludes(Value: string);
@@ -176,7 +173,7 @@ var
 begin
   Paths := CommaTextToArray(Value);
   for p := Low(Paths) to High(Paths) do
-    FFileSet.Include(Paths[p]);
+    FFileSets[0].Include(Paths[p]);
 end;
 
 procedure TFileSetTask.AddCommaSeparatedExcludes(Value: string);
@@ -186,10 +183,31 @@ var
 begin
   Paths := CommaTextToArray(Value);
   for p := Low(Paths) to High(Paths) do
-    FFileSet.Exclude(Paths[p]);
+    FFileSets[0].Exclude(Paths[p]);
 end;
 
 
+
+function TFileSetTask.CreateFileSet: TFileSet;
+begin
+  Result := TFileSet.Create(Self);
+
+  SetLength(FFileSets, 1 + Length(FFileSets));
+  FFileSets[High(FFileSets)] := Result;
+end;
+
+procedure TFileSetTask.DoFileset(Fileset: TFileSet);
+begin
+
+end;
+
+procedure TFileSetTask.Execute;
+var
+  f :Integer;
+begin
+  for f := Low(FFileSets) to High(FFileSets) do
+    Self.DoFileset(FFileSets[f]);
+end;
 
 { TMkDirTask }
 
@@ -202,6 +220,7 @@ end;
 
 procedure TMkDirTask.Execute;
 begin
+  Log(vlVerbose, Format('creating dir "%s"', [ToSystempath(ToAbsolutePath(dir))]) );
   if dir = '' then
     TaskError('<dir> attribute not set');
   if not IsDir(dir) then
@@ -209,7 +228,6 @@ begin
     if PathExists(dir) then
       TaskFailure(Format('cannot create dir "%s". A file is in the way.', [dir]));
     Log(ToRelativePath(dir));
-    Log(vlVerbose, 'mkdir ' + ToSystemPath(dir));
     FileOps.MakeDir(ToAbsolutePath(dir));
     if not IsDir(dir) then
       TaskFailure(Format('cannot create dir "%s".', [dir]));
@@ -236,18 +254,33 @@ end;
 
 { TDeleteTask }
 
-procedure TDeleteTask.Execute;
+procedure TDeleteTask.AddDefaultPatterns;
 var
-  Paths :TPaths;
-  p     :Integer;
+  RelDir :TPath;
+begin
+  inherited AddDefaultPatterns;
+
+  if dir <> '' then
+  begin
+    RelDir := ToRelativePath(dir);
+    with FFileSets[0] do
+    begin
+      Include(RelDir);
+      Include(PathConcat(RelDir, '**'));
+    end;
+  end;
+end;
+
+procedure TDeleteTask.DoFileset(Fileset: TFileSet);
+var
+  Paths  :TPaths;
+  p      :Integer;
 begin
   if dir <> '' then
-    AddDefaultExcludes;
+    AddDefaultPatterns;
 
-  if FFileSet <> nil then
-    Paths := FFileSet.Paths
-  else
-    Paths := nil;
+
+  Paths := Fileset.Paths;
 
   if Paths = nil then
     Log(vlVerbose, 'nothing to delete')
@@ -270,21 +303,10 @@ begin
   end;
 end;
 
-procedure TDeleteTask.SetDir(Value: string);
-begin
-  Value := ToRelativePath(Value);
-  FDir := Value;
-  with FFileSet do
-  begin
-    Include(Value);
-    Include(PathConcat(Value, '**'));
-  end;
-end;
-
 procedure TDeleteTask.SetFile(Value: string);
 begin
   FFile := Value;
-  FFileSet.Include(Value);
+  FFileSets[0].Include(Value);
 end;
 
 procedure TDeleteTask.Validate;
@@ -297,27 +319,25 @@ end;
 { TMoveCopyTask }
 
 
-procedure TMoveCopyTask.DoPaths(FromPaths, ToPaths: TPaths);
+procedure TMoveCopyTask.DoPaths(Fileset :TFileSet; FromPaths, ToPaths: TPaths);
 var
   p       :Integer;
 begin
   for p := Low(FromPaths) to High(FromPaths) do
-    DoFiles(FromPaths[p], ToPaths[p]);
+    DoFiles(Fileset, FromPaths[p], ToPaths[p]);
 end;
 
-procedure TMoveCopyTask.Execute;
+procedure TMoveCopyTask.DoFileset(Fileset: TFileSet);
 var
   FromPaths,
   ToPaths   :TPaths;
 begin
-  if todir = '' then
-    TaskError('todir not set');
-  AddDefaultExcludes;
+  AddDefaultPatterns;
 
-  FromPaths := FFileSet.Paths;
-  ToPaths   := FFileSet.MovePaths(todir);
+  FromPaths := Fileset.Paths;
+  ToPaths   := Fileset.MovePaths(todir);
 
-  DoPaths(FromPaths, ToPaths);
+  DoPaths(Fileset, FromPaths, ToPaths);
 end;
 
 procedure TMoveCopyTask.Validate;
@@ -328,7 +348,7 @@ end;
 
 { TCopyTask }
 
-procedure TCopyTask.DoFiles(FromPath, ToPath: TPath);
+procedure TCopyTask.DoFiles(Fileset :TFileSet; FromPath, ToPath: TPath);
 begin
   Log(vlVerbose, Format('copy %s -> %s', [ToSystemPath(FromPath), ToSystemPath(ToPath)]));
   AboutToScratchPath(ToPath);
@@ -337,18 +357,18 @@ begin
     TaskFailure(ToPath);
 end;
 
-procedure TCopyTask.DoPaths(FromPaths, ToPaths: TPaths);
+procedure TCopyTask.DoPaths(Fileset :TFileSet; FromPaths, ToPaths: TPaths);
 begin
   Log(Format('copy %d files from "%s" to "%s"', [
          Length(FromPaths),
-         ToRelativePath(BasePath),
+         ToRelativePath(Fileset.BasePath),
          ToRelativePath(todir)]));
-  inherited DoPaths(FromPaths, ToPaths);
+  inherited DoPaths(Fileset, FromPaths, ToPaths);
 end;
 
 { TMoveTask }
 
-procedure TMoveTask.DoFiles(FromPath, ToPath: TPath);
+procedure TMoveTask.DoFiles(Fileset :TFileSet; FromPath, ToPath: TPath);
 begin
   Log(vlVerbose, Format('move %s -> %s', [ToSystemPath(FromPath), ToSystemPath(ToPath)]));
   AboutToScratchPath(ToPath);
@@ -357,10 +377,10 @@ begin
     TaskFailure(ToPath);
 end;
 
-procedure TMoveTask.DoPaths(FromPaths, ToPaths: TPaths);
+procedure TMoveTask.DoPaths(Fileset :TFileSet; FromPaths, ToPaths: TPaths);
 begin
-  Log(Format('moving %d files from %s to %s', [Length(FromPaths), FFileSet.dir, todir]));
-  inherited DoPaths(FromPaths, ToPaths);
+  Log(Format('moving %d files from %s to %s', [Length(FromPaths), FileSet.dir, todir]));
+  inherited DoPaths(Fileset, FromPaths, ToPaths);
 end;
 
 

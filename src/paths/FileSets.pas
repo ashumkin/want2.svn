@@ -35,6 +35,7 @@ unit FileSets;
 
 interface
 uses
+  MiniDOM,
   DanteClasses,
   WildPaths,
   FileOps,
@@ -43,202 +44,31 @@ uses
   Classes;
 
 type
-  EFileSetException = class(EDanteException);
-  EFileSetError     = class(EFileSetException);
-
-  TFileSetPart = class(TDanteElement)
-  protected
-    procedure SetValue(Value :string); virtual; abstract;
-  published
-    property name :string write SetValue;
-  end;
-
-  TIncludeComponent = class(TFileSetPart)
-    procedure SetValue(Value :string); override;
-  end;
-
-  TExcludeComponent = class(TFileSetPart)
-    procedure SetValue(Value :string); override;
-  end;
-
-  TFileSet = class(TDanteElement)
-  protected
-    FIncludes: TStrings;
-    FExcludes: TStrings;
-    FPaths:    TPaths;
-
-    FIncluder: TIncludeComponent;
-    FExcluder: TExcludeComponent;
-
-    procedure SetBaseDir(Value :string);   override;
-
-    procedure SetChanged;
-
-    procedure SetIncludes(Value :TStrings);
-    procedure SetExcludes(Value :TStrings);
-
-    procedure DoInclude(Files :TStrings; Pattern :TPath);
-    procedure DoExclude(Files :TStrings; Pattern :TPath);
+  TFileSet  = class(TPatternSet)
   public
-    constructor Create(Owner :TDanteElement); override; 
-    destructor  Destroy; override;
-
-    procedure Include(Pattern :TPath);  overload;
-    procedure Exclude(Pattern :TPath);  overload;
-
-    function Paths   :TPaths;
-    function SystemPaths :TPaths;
-    function RelativePaths :TPaths;
-    function MovePaths(ToBase :TPath) :TPaths;
-
-    function  AbsoluteDir :TPath;
-
-    property Includes: TStrings read FIncludes;
-    property Excludes: TStrings read FExcludes;
+    procedure AddDefaultPatterns; virtual;
   published
-    function createInclude :TIncludeComponent;
-    function createExclude :TExcludeComponent;
-
     property dir: TPath read GetBaseDir write SetBaseDir;
   end;
-
 
 implementation
 
 { TFileSet }
 
-constructor TFileSet.Create(Owner :TDanteElement);
+procedure TFileSet.AddDefaultPatterns;
 begin
-  inherited Create(Owner);
-  FIncludes := TStringList.Create;
-  FExcludes := TStringList.Create;
-end;
+  // add the default Ant excludes
+  Exclude('**/*~');
+  Exclude('**/#*#');
+  Exclude('**/%*%');
+  Exclude('**/CVS');
+  Exclude('**/CVS/*');
+  Exclude('**/.cvsignore');                                                                 
 
-destructor TFileSet.Destroy;
-begin
-  FIncludes.Free;
-  FExcludes.Free;
-  inherited Destroy;
-end;
-
-procedure TFileSet.SetIncludes(Value: TStrings);
-begin
-  FIncludes.Assign(Value);
-end;
-
-procedure TFileSet.SetExcludes(Value: TStrings);
-begin
-  FExcludes.Assign(Value);
-  SetChanged;
-end;
-
-procedure TFileSet.SetChanged;
-begin
-  FPaths := nil;
-end;
-
-procedure TFileSet.Include(Pattern: TPath);
-begin
-  FIncludes.Add(WildPaths.ToRelativePath(Pattern, Dir));
-  SetChanged;
-end;
-
-procedure TFileSet.Exclude(Pattern: TPath);
-begin
-  FExcludes.Add(WildPaths.ToRelativePath(Pattern, Dir));
-  SetChanged;
-end;
-
-procedure TFileSet.DoInclude(Files: TStrings; Pattern: TPath);
-begin
-  Wild(Files, Pattern, AbsoluteDir);
-end;
-
-procedure TFileSet.DoExclude(Files :TStrings; Pattern: TPath);
-var
-  Excluded :TPaths;
-  f        :Integer;
-begin
-  Excluded := SplitPath(PathConcat(AbsoluteDir, Pattern));
-  for f := Files.Count-1 downto 0 do
-    if IsMatch(SplitPath(Files[f]), Excluded) then
-      Files.Delete(f);
-end;
-
-function TFileSet.SystemPaths: TPaths;
-begin
-   Result := ToSystemPaths(Paths);
-end;
-
-function TFileSet.RelativePaths: TPaths;
-begin
-  Result := ToRelativePaths(Paths, AbsoluteDir);
-end;
-
-function TFileSet.MovePaths(ToBase: TPath): TPaths;
-begin
-  Result := WildPaths.MovePaths(Paths, AbsoluteDir, ToBase);
-end;
-
-function TFileSet.Paths: TPaths;
-var
-  Files    :TStringList;
-  i        :Integer;
-begin
-  if FPaths = nil then
-  begin
-    Files := TStringList.Create;
-    try
-      Files.Sorted := True;
-      for i := 0 to FIncludes.Count-1 do
-        DoInclude(Files, FIncludes[i]);
-      for i := 0 to FExcludes.Count-1 do
-        DoExclude(Files, FExcludes[i]);
-      FPaths := StringsToPaths(Files);
-    finally
-      Files.Free;
-    end;
-  end;
-  Result := FPaths;
-end;
-
-function TFileSet.AbsoluteDir: TPath;
-begin
-  Result := PathConcat(BasePath, dir);
-end;
-
-procedure TFileSet.SetBaseDir(Value: TPath);
-begin
-  inherited SetBaseDir(Value);
-  SetChanged;
-end;
-
-function TFileSet.createInclude: TIncludeComponent;
-begin
-  if FIncluder = nil then
-    FIncluder := TIncludeComponent.Create(Self);
-  Result := FIncluder;
-end;
-
-function TFileSet.createExclude: TExcludeComponent;
-begin
-  if FExcluder = nil then
-    FExcluder := TExcludeComponent.Create(Self);
-  Result := FExcluder;
-end;
-
-{ TIncludeComponent }
-
-procedure TIncludeComponent.SetValue(Value: string);
-begin
- (Owner as TFileSet).Include(Value);
-end;
-
-{ TExcludeComponent }
-
-procedure TExcludeComponent.SetValue(Value: string);
-begin
- (Owner as TFileSet).Exclude(Value);
+  // Some additional excludes
+  Exclude('**/*.*~*');
+  Exclude('**/*.bak');
+  Exclude('**/dunit.ini');
 end;
 
 end.

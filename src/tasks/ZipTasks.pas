@@ -37,21 +37,27 @@ uses
   SysUtils,
   WildPaths,
   FileOps,
+  FileSets,
   ZipStreams,
   DanteClasses,
   FileTasks;
 
+
 type
   TZipTask = class(TFileSetTask)
   protected
-    FZipFile  :string;
-    FCompress :boolean;
+    FZipFile   :string;
+    FCompress  :boolean;
+
+    FZipStream :TZipStream;
 
   public
     constructor Create(Owner :TDanteElement); override;
 
     procedure Validate; override;
-    procedure Execute;  override;
+    procedure DoFileset(Fileset :TFileSet); override;
+
+    procedure Execute; override;
   published
     property basedir;
     
@@ -78,28 +84,41 @@ begin
   RequireAttribute('zipfile', zipfile);
 end;
 
-procedure TZipTask.Execute;
+procedure TZipTask.DoFileset(Fileset: TFileSet);
 var
   Paths   :TPaths;
-  Zip     :TZipStream;
   p       :Integer;
 begin
+  Log(vlVerbose, Format('Fileset with basedir "%s"', [Fileset.dir]));
+  Log(vlVerbose, CurrentDir);
   AboutToScratchPath(zipfile);
-  Paths := FFileSet.RelativePaths;
-  Log(Format('Zipping %d files to %s', [Length(Paths), ToRelativePath(zipfile)]));
-  ChangeDir(FFileSet.Dir);
 
-  Zip := TZipStream.Create(zipfile);
+  Paths := ToRelativePaths(FileSet.Paths, BasePath);
+
+  if Length(Paths) = 0 then
+    Log
+  else
+    Log(Format('Zipping %4d files to %s', [Length(Paths), ToRelativePath(zipfile)]));
+
+  for p := Low(Paths) to High(Paths) do
+  begin
+    Log(vlDebug, Paths[p]);
+    FZipStream.WriteFile(Paths[p]);
+  end;
+end;
+
+procedure TZipTask.Execute;
+begin
+  AboutToScratchPath(zipfile);
+  FZipStream := TZipStream.Create(zipfile);
   try
-    for p := Low(Paths) to High(Paths) do
-    begin
-      Log(vlVerbose, Paths[p]);
-      Zip.WriteFile(Paths[p]);
-    end;
+    inherited Execute;
   finally
-    Zip.Free;
+    FZipStream.Free;
+    FZipStream := nil;
   end
 end;
+
 
 initialization
   RegisterTask(TZipTask);

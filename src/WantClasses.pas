@@ -69,6 +69,7 @@ type
   TTarget     = class;
   TTask       = class;
   TTaskClass  = class of TTask;
+  TPatternSet = class;
 
   EDanteException   = class(Exception);
   EDanteError       = class(Exception);
@@ -113,12 +114,15 @@ type
 
   TDanteElement = class(TComponent)
   protected
-    FName :string;         // ditch TComponent.Name
+    FName    :string;      // ditch TComponent.Name
     FBaseDir :string;      // wher paths for this object are based
+    FId      :string;      // element Id
 
 
     function  GetBaseDir :string;          virtual;
     procedure SetBaseDir(Value :string);   virtual;
+
+    procedure SetID(Value :string); virtual;
 
     function GetOwner: TDanteElement; reintroduce;
     function GetProject: TProject;
@@ -175,9 +179,10 @@ type
     property  Owner  : TDanteElement read GetOwner;
     property  Tag stored False;
 
-    property  basedir :string   read GetBaseDir write SetBaseDir;
+    property  id      :string  read FId        write SetId;
+    property  basedir :string  read GetBaseDir write SetBaseDir;
   published
-    function CreateProperty :TPropertyElement; virtual;
+    function CreateProperty    :TPropertyElement; virtual;
 
     property Name : string read FName write FName stored True;
   end;
@@ -219,8 +224,11 @@ type
     procedure ParseXMLText(const XML :string);
 
     procedure Load(const Path: string);
-    procedure LoadXML(const SystemPath: string = '');
+    procedure LoadXML(const SystemPath: string = ''; FindFile :boolean = true);
     procedure Save(const Path: string);
+
+
+    function  FindChild(Id :string; ChildClass :TClass = nil) :TDanteElement;
 
 
     // use this to get the fully qualified base path
@@ -255,8 +263,9 @@ type
 
     property OnLog :TLogMethod read FOnLog write FOnLog;
   published
-    function CreateTarget: TTarget;
-    function CreateProperty :TPropertyElement; override;
+    function CreateTarget     :TTarget;
+    function CreateProperty   :TPropertyElement; override;
+    function CreatePatternSet :TPatternSet;      virtual;
 
 
     property basedir;
@@ -322,6 +331,7 @@ type
   end;
 
 
+
   TPropertyElement = class(TDanteElement)
   protected
     FName  :string;
@@ -332,6 +342,74 @@ type
     property name  :string read FName  write FName;
     property value :string read FValue write FValue;
   end;
+
+
+  // implementation of <patternset> elements
+
+  TPatternPart = class(TDanteElement)
+  protected
+    procedure SetValue(Value :string); virtual; abstract;
+  published
+    property name :string write SetValue;
+  end;
+
+  TIncludeElement = class(TPatternPart)
+    procedure SetValue(Value :string); override;
+  end;
+
+  TExcludeElement = class(TPatternPart)
+    procedure SetValue(Value :string); override;
+  end;
+
+  TPatternSet = class(TDanteElement)
+  protected
+    FIncludes: TStrings;
+    FExcludes: TStrings;
+
+    FIncluder: TIncludeElement;
+    FExcluder: TExcludeElement;
+
+    FPatternSets :array of TPatternSet;
+
+    procedure AddPatternSet(APatternSet :TPatternSet);
+
+    procedure SetIncludes(Value :TStrings);
+    procedure SetExcludes(Value :TStrings);
+
+    procedure DoInclude(Files :TStrings; Pattern :TPath; Base :string);
+    procedure DoExclude(Files :TStrings; Pattern :TPath; Base :string);
+
+    procedure DoIncludes(Files :TStrings; Base :string);
+    procedure DoExcludes(Files :TStrings; Base :string);
+
+  public
+    constructor Create(Owner :TDanteElement); override;
+    destructor  Destroy; override;
+
+    function ParseXMLChild(Child :MiniDom.IElement):boolean; override;
+
+    procedure Include(Pattern :TPath);  overload;
+    procedure Exclude(Pattern :TPath);  overload;
+
+
+    function  Paths   :TPaths;
+    procedure GetPaths(Files :TStrings);
+    procedure AddPaths(Paths :TPaths);
+
+    function SystemPaths :TPaths;
+    function RelativePaths :TPaths;
+    function MovePaths(ToBase :TPath) :TPaths;
+
+    property Includes: TStrings read FIncludes;
+    property Excludes: TStrings read FExcludes;
+  published
+    function createInclude :TIncludeElement;
+    function createExclude :TExcludeElement;
+    function createPatternSet :TPatternSet;
+
+    property id;
+  end;
+
 
 
 function  FindTask(Tag :string): TTaskClass;
@@ -366,7 +444,7 @@ begin
     S.CommaText := Text;
     SetLength(Result, S.Count);
     for i := 0 to S.Count-1 do
-       Result[i] := S[i];
+       Result[i] := Trim(S[i]);
   finally
     S.Free;
   end;
@@ -385,7 +463,7 @@ end;
 
 procedure TaskFailure(Msg :string);
 begin
-   raise ETaskFailure.Create(Msg);
+   raise ETaskFailure.Create('fail: '+ Msg);
 end;
 
 { TDanteElement }
@@ -637,10 +715,10 @@ end;
 
 function TDanteElement.BasePath: string;
 begin
-  if PathIsAbsolute(BaseDir) then
-    Result := BaseDir
+  if (Owner = nil) or PathIsAbsolute(FBaseDir) then
+    Result := FBaseDir
   else
-    Result := PathConcat(Project.BasePath, BaseDir);
+    Result := PathConcat((Owner as TDanteElement).BasePath, FBaseDir);
 end;
 
 function TDanteElement.ToAbsolutePath(Path: string): string;
@@ -652,7 +730,7 @@ function TDanteElement.ToRelativePath(Path: string; Base :string): string;
 begin
   if Base = '' then
     Base := BasePath;
-  Result := WildPaths.ToRelativePath(Path, ToAbsolutePath(Base));
+  Result := WildPaths.ToRelativePath(Path, Base);
 end;
 
 function TDanteElement.StringsToSystemPathList(List: TStrings; Base: string): string;
@@ -720,8 +798,8 @@ var
 begin
   Msg := StringReplace(Msg, #13#10,'@@', [rfReplaceAll]);
   Msg := StringReplace(Msg, #10#13,'@@', [rfReplaceAll]);
-  Msg := StringReplace(Msg, #13,'@@', [rfReplaceAll]);
-  Msg := StringReplace(Msg, #10,'@@', [rfReplaceAll]);
+  Msg := StringReplace(Msg, #13,'@@',    [rfReplaceAll]);
+  Msg := StringReplace(Msg, #10,'@@',    [rfReplaceAll]);
 
   Msg := WrapText(Msg, '@@   ', [' ',#13,#10,#9,';',','], 64);
   Lines := TStringList.Create;
@@ -813,6 +891,12 @@ begin
 end;
 
 
+
+
+procedure TDanteElement.SetID(Value: string);
+begin
+  FId := Value;
+end;
 
 
 { TProject }
@@ -923,6 +1007,25 @@ begin
 end;
 
 
+function TProject.FindChild(Id: string; ChildClass: TClass): TDanteElement;
+var
+  E    :TDanteElement;
+  i    :Integer;
+begin
+  Result := nil;
+  for i := 0 to ComponentCount-1 do
+  begin
+    E := Components[i] as TDanteElement;
+    if (E.Id = Id) and ((ChildClass = nil) or E.InheritsFrom(ChildClass)) then
+    begin
+      Result := E;
+      break;
+    end;
+  end;
+  if Result = nil then
+    DanteError(Format('element id="%s" not found', [Id]));
+end;
+
 function TProject.GetTargetByName(Name: string): TTarget;
 var
   t :Integer;
@@ -1002,7 +1105,6 @@ begin
     begin
       try
         Sched[i].Build;
-        Log;
       finally
         ChangeDir(FRunpath);
       end;
@@ -1063,12 +1165,14 @@ end;
 
 // XML handling
 
-procedure TProject.LoadXML(const SystemPath: string);
+procedure TProject.LoadXML(const SystemPath: string; FindFile :boolean);
 var
   Dom       :IDocument;
   BuildFile :TPath;
 begin
-  BuildFile := FindBuildFile(ToPath(SystemPath));
+  BuildFile := ToPath(SystemPath);
+  if FindFile then
+    BuildFile := FindBuildFile(BuildFile);
   try
     RunPath := SuperPath(BuildFile);
     ChangeDir(BasePath);
@@ -1227,6 +1331,12 @@ end;
 
 
 
+function TProject.CreatePatternSet: TPatternSet;
+begin
+  Result := TPatternSet.Create(Self);
+end;
+
+
 { TTarget }
 
 procedure TTarget.Build;
@@ -1238,7 +1348,6 @@ begin
   for i := 0 to TaskCount-1 do
   begin
     Tasks[i].DoExecute;
-    Project.Log;
   end;
 end;
 
@@ -1394,7 +1503,7 @@ end;
 function TTask.BasePath: string;
 begin
   if (Owner = nil) or PathIsAbsolute(BaseDir) then
-    Result := BaseDir
+    Result := FBaseDir
   else
     Result := PathConcat((Owner as TDanteElement).BasePath, BaseDir);
 end;
@@ -1411,6 +1520,197 @@ begin
 
   SetProperty(name, value);
 end;
+
+
+
+
+{ TIncludeElement }
+
+procedure TIncludeElement.SetValue(Value: string);
+begin
+ (Owner as TPatternSet).Include(Value);
+end;
+
+{ TExcludeElement }
+
+procedure TExcludeElement.SetValue(Value: string);
+begin
+ (Owner as TPatternSet).Exclude(Value);
+end;
+
+{ TPatternSet }
+
+constructor TPatternSet.Create(Owner :TDanteElement);
+begin
+  inherited Create(Owner);
+  FIncludes := TStringList.Create;
+  FExcludes := TStringList.Create;
+end;
+
+destructor TPatternSet.Destroy;
+begin
+  FIncludes.Free;
+  FExcludes.Free;
+  inherited Destroy;
+end;
+
+procedure TPatternSet.SetIncludes(Value: TStrings);
+begin
+  FIncludes.Assign(Value);
+end;
+
+procedure TPatternSet.SetExcludes(Value: TStrings);
+begin
+  FExcludes.Assign(Value);
+end;
+
+procedure TPatternSet.Include(Pattern: TPath);
+begin
+  FIncludes.Add(Pattern);
+end;
+
+procedure TPatternSet.Exclude(Pattern: TPath);
+begin
+  FExcludes.Add(Pattern);
+end;
+
+procedure TPatternSet.DoInclude(Files: TStrings; Pattern: TPath; Base :string);
+begin
+  Wild(Files, Pattern, Base);
+end;
+
+procedure TPatternSet.DoExclude(Files :TStrings; Pattern: TPath; Base :string);
+var
+  Excluded :TPaths;
+  f        :Integer;
+begin
+  Excluded := SplitPath(PathConcat(Base, Pattern));
+  for f := Files.Count-1 downto 0 do
+    if IsMatch(SplitPath(Files[f]), Excluded) then
+      Files.Delete(f);
+end;
+
+function TPatternSet.createInclude: TIncludeElement;
+begin
+  if FIncluder = nil then
+    FIncluder := TIncludeElement.Create(Self);
+  Result := FIncluder;
+end;
+
+function TPatternSet.createExclude: TExcludeElement;
+begin
+  if FExcluder = nil then
+    FExcluder := TExcludeElement.Create(Self);
+  Result := FExcluder;
+end;
+
+procedure TPatternSet.DoIncludes(Files: TStrings; Base :string);
+var
+  i :Integer;
+begin
+  for i := 0 to FIncludes.Count-1 do
+    DoInclude(Files, FIncludes[i], Base);
+
+  for i := Low(FPatternSets) to High(FPatternSets) do
+    FPatternSets[i].DoIncludes(Files, Base);
+end;
+
+
+procedure TPatternSet.DoExcludes(Files: TStrings; Base :string);
+var
+  i :Integer;
+begin
+  for i := 0 to FExcludes.Count-1 do
+    DoExclude(Files, FExcludes[i], Base);
+
+  for i := Low(FPatternSets) to High(FPatternSets) do
+    FPatternSets[i].DoExcludes(Files, Base);
+end;
+
+procedure TPatternSet.AddPatternSet(APatternSet: TPatternSet);
+begin
+  SetLength(FPatternSets, 1+Length(FPatternSets));
+  FPatternSets[High(FPatternSets)] := APatternSet;
+end;
+
+function TPatternSet.ParseXMLChild(Child: IElement): boolean;
+begin
+  if (Child.Name = 'patternset')
+  and (Child.attribute('refid') <> nil) then
+  begin
+    AddPatternSet(Project.FindChild(Child.attributeValue('refid'), TPatternSet) as TPatternSet);
+    Result := true;
+  end
+  else
+    Result := inherited ParseXMLChild(Child);
+end;
+
+function TPatternSet.createPatternSet: TPatternSet;
+begin
+  Result := TPatternSet.Create(Self);
+  AddPatternSet(Result);
+end;
+
+function TPatternSet.Paths: TPaths;
+var
+  Files    :TStringList;
+begin
+  Files := TStringList.Create;
+  try
+    Files.Sorted := True;
+
+    Log(vlDebug, Format('fileset basedir="%s"', [basedir]) );
+    GetPaths(Files);
+
+    Result := StringsToPaths(Files);
+  finally
+    Files.Free;
+  end;
+end;
+
+
+procedure TPatternSet.AddPaths(Paths: TPaths);
+var
+  Files    :TStringList;
+  i, n     :Integer;
+begin
+  Files := TStringList.Create;
+  try
+    Files.Sorted := True;
+
+    GetPaths(Files);
+
+    n := Length(Paths);
+    SetLength(Paths, n + Files.Count);
+    for i := 0 to Files.Count-1 do
+      Paths[i+n] := Files[i];
+  finally
+    Files.Free;
+  end;
+end;
+
+
+procedure TPatternSet.GetPaths(Files: TStrings);
+begin
+  DoIncludes(Files, BasePath);
+  DoExcludes(Files, BasePath);
+end;
+
+function TPatternSet.MovePaths(ToBase: TPath): TPaths;
+begin
+  Result := WildPaths.MovePaths(Paths, BasePath, ToBase);
+end;
+
+function TPatternSet.RelativePaths: TPaths;
+begin
+  Result := ToRelativePaths(Paths, BasePath);
+end;
+
+function TPatternSet.SystemPaths: TPaths;
+begin
+   Result := ToSystemPaths(Paths);
+end;
+
 
 initialization
   __TaskRegistry := TStringList.Create;

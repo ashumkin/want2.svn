@@ -4,7 +4,7 @@
          basedir=".."
          default="dist" >
 
-  <property name="version" value="0.0.1-beta" />
+  <property name="version" value="0.0.1-beta-1" />
 
   <property name="src"       value="${basedir}/src" />
   <property name="dist"      value="${basedir}/dist" />

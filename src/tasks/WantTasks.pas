@@ -129,7 +129,7 @@ begin
                      ]);
 
 
-  FSubProject.LoadXML(buildfile);
+  FSubProject.LoadXML(buildfile, false);
   FSubProject.Build(_target);
 end;
 

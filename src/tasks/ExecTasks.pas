@@ -146,7 +146,7 @@ end;
 
 function TCustomExecTask.BuildExecutable: string;
 begin
-  Result := Executable;
+  Result := ToSystemPath(Executable);
 end;
 
 function TCustomExecTask.BuildCmdLine: string;
@@ -246,8 +246,11 @@ begin
   if (hOutputRead <> 0)
   and not CloseHandle(hOutputRead) then
     RaiseLastSystemError('CloseHandle');
-  if (hChild <> 0) and not CloseHandle(hChild) then
-    RaiseLastSystemError('CloseHandle');
+  if (hChild <> 0) then
+  begin
+    if not CloseHandle(hChild) then
+      RaiseLastSystemError('CloseHandle');
+  end;
   inherited Destroy;
 end;
 

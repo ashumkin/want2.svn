@@ -104,7 +104,8 @@ end;
 
 procedure ChangeDir(Path :TPath);
 begin
-  SetCurrentDir(ToSystemPath(Path));
+  if Path <> '' then
+    SetCurrentDir(ToSystemPath(Path));
 end;
 
 function  CurrentDir :TPath;
