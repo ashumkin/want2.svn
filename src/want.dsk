@@ -11,20 +11,33 @@ File_8=SourceModule,'C:\home\want\lib\jal\src\JALGZipStreams.pas',0,1,278,22,292
 File_9=SourceModule,'C:\home\want\lib\jcl\JclResources.pas',0,1,659,1,675,0,0
 
 [Modules]
-Module0=c:\opt\borland\delphi6\source\rtl\Sys\sysutils.pas
-Module1=C:\home\want\src\ScriptRunner.pas
-Module2=C:\home\want\src\lib\WildPaths.pas
-Module3=C:\home\want\src\tasks\DelphiTasks.pas
-Module4=C:\home\want\src\tasks\ExecTasks.pas
-Count=5
+Module0=C:\home\want\src\tasks\DelphiTasks.pas
+Module1=C:\home\want\src\WantUtils.pas
+Module2=C:\home\want\src\win32\WIN32.pas
+Module3=C:\home\want\src\tasks\DUnitTasks.pas
+Module4=C:\home\want\src\lib\WildPaths.pas
+Module5=c:\opt\borland\delphi7\source\rtl\Sys\sysutils.pas
+Module6=C:\home\want\src\ScriptRunner.pas
+Module7=C:\home\want\src\tasks\ExecTasks.pas
+Count=8
 EditWindowCount=1
 
-[c:\opt\borland\delphi6\source\rtl\Sys\sysutils.pas]
+[C:\home\want\src\tasks\DelphiTasks.pas]
 ModuleType=SourceModule
 FormState=0
 FormOnTop=0
 
-[C:\home\want\src\ScriptRunner.pas]
+[C:\home\want\src\WantUtils.pas]
+ModuleType=SourceModule
+FormState=0
+FormOnTop=0
+
+[C:\home\want\src\win32\WIN32.pas]
+ModuleType=SourceModule
+FormState=0
+FormOnTop=0
+
+[C:\home\want\src\tasks\DUnitTasks.pas]
 ModuleType=SourceModule
 FormState=0
 FormOnTop=0
@@ -34,7 +47,12 @@ ModuleType=SourceModule
 FormState=0
 FormOnTop=0
 
-[C:\home\want\src\tasks\DelphiTasks.pas]
+[c:\opt\borland\delphi7\source\rtl\Sys\sysutils.pas]
+ModuleType=SourceModule
+FormState=0
+FormOnTop=0
+
+[C:\home\want\src\ScriptRunner.pas]
 ModuleType=SourceModule
 FormState=0
 FormOnTop=0
@@ -61,13 +79,16 @@ FormState=0
 FormOnTop=0
 
 [EditWindow0]
-ViewCount=5
-CurrentView=3
+ViewCount=8
+CurrentView=1
 View0=0
 View1=1
 View2=2
 View3=3
 View4=4
+View5=5
+View6=6
+View7=7
 CodeExplorer=CodeExplorer@EditWindow0
 MessageView=MessageView@EditWindow0
 Create=1
@@ -98,26 +119,47 @@ LeftCol=1
 
 [View1]
 Module=C:\home\want\src\tasks\DelphiTasks.pas
-CursorX=1
-CursorY=331
-TopLine=321
+CursorX=37
+CursorY=786
+TopLine=781
 LeftCol=1
 
 [View2]
+Module=C:\home\want\src\WantUtils.pas
+CursorX=1
+CursorY=46
+TopLine=26
+LeftCol=1
+
+[View3]
+Module=C:\home\want\src\win32\WIN32.pas
+CursorX=48
+CursorY=36
+TopLine=26
+LeftCol=1
+
+[View4]
+Module=C:\home\want\src\tasks\DUnitTasks.pas
+CursorX=1
+CursorY=18
+TopLine=1
+LeftCol=1
+
+[View5]
 Module=C:\home\want\src\lib\WildPaths.pas
 CursorX=41
 CursorY=917
 TopLine=907
 LeftCol=1
 
-[View3]
-Module=c:\opt\borland\delphi6\source\rtl\Sys\sysutils.pas
-CursorX=10
-CursorY=1037
-TopLine=1018
+[View6]
+Module=c:\opt\borland\delphi7\source\rtl\Sys\sysutils.pas
+CursorX=1
+CursorY=54
+TopLine=44
 LeftCol=1
 
-[View4]
+[View7]
 Module=C:\home\want\src\ScriptRunner.pas
 CursorX=1
 CursorY=1
@@ -125,13 +167,25 @@ TopLine=1
 LeftCol=1
 
 [Watches]
-Count=6
-Watch0='Paths[p]',256,0,18,1,0
-Watch1='Patterns[s]',256,0,18,1,0
-Watch2='p',256,0,18,1,0
-Watch3='s',256,0,18,1,0
-Watch4='Paths',256,0,18,1,0
-Watch5='Patterns',256,0,18,1,0
+Count=0
+
+[WatchWindow]
+WatchColumnWidth=100
+WatchShowColumnHeaders=1
+Create=1
+Visible=0
+State=0
+Left=11
+Top=0
+Width=628
+Height=18
+MaxLeft=-1
+MaxTop=-1
+ClientWidth=612
+ClientHeight=18
+TBDockHeight=18
+LRDockWidth=421
+Dockable=1
 
 [Breakpoints]
 Count=0
@@ -225,22 +279,6 @@ SelectedItem=
 ExpandedItems=Action,Images,KeyOptions,Locale,Miscellaneous,Miscellaneous.Options,Options,Visual
 HiddenCategories=Locale,Legacy,"Drag, Drop and Docking",Localizable
 
-[WatchWindow]
-Create=1
-Visible=0
-State=0
-Left=11
-Top=0
-Width=628
-Height=18
-MaxLeft=-1
-MaxTop=-1
-ClientWidth=628
-ClientHeight=18
-TBDockHeight=18
-LRDockWidth=421
-Dockable=1
-
 [BreakpointWindow]
 Create=1
 Visible=0
@@ -279,6 +317,26 @@ TBDockHeight=161
 LRDockWidth=294
 Dockable=1
 
+[ThreadStatusWindow]
+Create=1
+Visible=0
+State=0
+Left=193
+Top=107
+Width=624
+Height=152
+MaxLeft=-1
+MaxTop=-1
+ClientWidth=616
+ClientHeight=128
+TBDockHeight=152
+LRDockWidth=624
+Dockable=1
+Column0Width=145
+Column1Width=100
+Column2Width=115
+Column3Width=250
+
 [ObjectTree]
 Create=1
 Visible=0
@@ -293,6 +351,22 @@ ClientWidth=222
 ClientHeight=376
 TBDockHeight=246
 LRDockWidth=190
+Dockable=1
+
+[DebugLogView]
+Create=1
+Visible=0
+State=0
+Left=303
+Top=238
+Width=417
+Height=291
+MaxLeft=-1
+MaxTop=-1
+ClientWidth=409
+ClientHeight=267
+TBDockHeight=291
+LRDockWidth=417
 Dockable=1
 
 [LocalVarsWindow]
@@ -310,6 +384,51 @@ ClientHeight=151
 TBDockHeight=40
 LRDockWidth=421
 Dockable=1
+
+[ToDo List]
+Create=1
+Visible=0
+State=0
+Left=277
+Top=259
+Width=470
+Height=250
+MaxLeft=-1
+MaxTop=-1
+ClientWidth=462
+ClientHeight=226
+TBDockHeight=250
+LRDockWidth=470
+Dockable=1
+Column0Width=200
+Column1Width=30
+Column2Width=100
+Column3Width=70
+Column4Width=70
+SortOrder=4
+ShowHints=1
+ShowChecked=1
+
+[ModuleWindow]
+Create=1
+Visible=0
+State=0
+Left=481
+Top=422
+Width=638
+Height=355
+MaxLeft=-1
+MaxTop=-1
+ClientWidth=630
+ClientHeight=331
+TBDockHeight=355
+LRDockWidth=638
+Dockable=1
+Column0Width=125
+Column1Width=100
+Column2Width=155
+EntryPointPane=225
+CompUnitPane=104
 
 [CodeExplorer@EditWindow0]
 Create=1
@@ -329,7 +448,7 @@ Dockable=1
 
 [MessageView@EditWindow0]
 Create=1
-Visible=1
+Visible=0
 State=0
 Left=0
 Top=0
@@ -363,7 +482,7 @@ TBDockHeight=180
 LRDockWidth=283
 Dockable=1
 TabPosition=0
-ActiveTab=Messages
+ActiveTab=Local Variables
 TabDockClients=MessageView@EditWindow0,LocalVarsWindow
 
 [ActiveProject]

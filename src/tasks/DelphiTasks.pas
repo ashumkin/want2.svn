@@ -53,6 +53,12 @@ type
 
   TMapType = (none, segments, publics, detailed);
 
+  TDelphiVersion = record
+    Version    :string;
+    Directory  :string;
+    ToolPath   :string;
+  end;
+
   TPathSet = class(TCustomDirSet)
   protected
     procedure SetPath(Value: string); virtual;
@@ -76,14 +82,15 @@ type
 
     procedure HandleOutputLine(Line :string); override;
 
-    function RootForVersion(version: string): string;
-    function ReadDelphiDir(ver :string = '') :string;
+    class function RootForVersion(version: string): string;
+    class function ReadDelphiDir(ver :string = '') :string;
+    class function ReadUserOption(Key, Name, Ver :string):string;
+    class function ReadMachineOption(Key, Name, Ver :string):string;
 
-    function ToolName :string; virtual;  abstract;
+    class function FindDelphi: TDelphiVersion;
+    class function ToolName :string; virtual;  abstract;
+
     procedure FindTool;
-
-    function ReadUserOption(Key, Name :string):string;
-    function ReadMachineOption(Key, Name :string):string;
   public
     function BuildExecutable: string; override;
     procedure Execute;  override;
@@ -126,7 +133,7 @@ type
 
     function BuildArguments: string; override;
 
-    function ToolName :string; override;
+    class function ToolName :string; override;
 
     function ReadLibraryPaths :string;
 
@@ -189,7 +196,7 @@ type
     FFile:   string;
     FOutput: string;
 
-    function ToolName :string; override;
+    class function ToolName :string; override;
 
     function BuildArguments: string; override;
   public
@@ -242,24 +249,21 @@ implementation
 
 { TCustomDelphiTask }
 
-procedure TCustomDelphiTask.FindTool;
+class function TCustomDelphiTask.FindDelphi : TDelphiVersion;
 var
   vers: TStringArray;
+  V     :string;
   i     :Integer;
   Path  :string;
   Tool  :string;
 begin
-  FVersionFound := '';
-  FDelphiDir    := '';
-  FToolPath     := '';
-
+  FillChar(Result, SizeOf(Result), #0);
   vers := nil;
-  if versions = '' then
-    WantUtils.GetEnvironmentVar('delphi_version', FVersions, true);
-  if versions = '' then
-     versions := '8,7,6,5,4';
+  WantUtils.GetEnvironmentVar('delphi_version', V, true);
+  if V = '' then
+     V := '10,9,8,7,6,5,4';
 
-  vers := StringToArray(versions);
+  vers := StringToArray(V);
   for i := 0 to High(vers) do
   begin
      if StrLeft(vers[i], 2) <> '.0' then
@@ -270,37 +274,47 @@ begin
        Tool := Path + '\' + ToolName;
        if FileExists(Tool) then // found it !
        begin
-         FVersionFound := vers[i];
-         FDelphiDir    := Path;
-         FToolPath     := Tool;
+         Result.Version   := vers[i];
+         Result.Directory := Path;
+         Result.ToolPath  := Tool;
          BREAK;
        end;
      end;
+  end;
+end;
+
+
+
+procedure TCustomDelphiTask.FindTool;
+begin
+  with FindDelphi do
+  begin
+    FVersionFound := Version;
+    FDelphiDir    := Directory;
+    FToolPath     := ToolPath;
   end;
   if FToolPath = '' then
     TaskError('Could not find ' + ToolName);
 end;
 
 
-function TCustomDelphiTask.ReadDelphiDir(ver: string): string;
+class function TCustomDelphiTask.ReadDelphiDir(ver: string): string;
 begin
-  if ver = '' then
-    ver := FVersionFound;
+  assert(ver <> '');
   Result := RegReadStringDef(HKEY_LOCAL_MACHINE, RootForVersion(ver), DelphiRootKey, '');
-  Log(vlVerbose, 'delphi dir: %s', [Result]);
 end;
 
-function TCustomDelphiTask.ReadMachineOption(Key, Name: string): string;
+class function TCustomDelphiTask.ReadMachineOption(Key, Name, Ver: string): string;
 begin
-  Result := RegReadStringDef(HKEY_LOCAL_MACHINE, RootForVersion(FVersionFound)+'\'+Key, Name, '');
+  Result := RegReadStringDef(HKEY_LOCAL_MACHINE, RootForVersion(Ver)+'\'+Key, Name, '');
 end;
 
-function TCustomDelphiTask.ReadUserOption(Key, Name: string): string;
+class function TCustomDelphiTask.ReadUserOption(Key, Name, Ver: string): string;
 begin
-  Result := RegReadStringDef(HKEY_CURRENT_USER, RootForVersion(FVersionFound)+'\'+Key, Name, '');
+  Result := RegReadStringDef(HKEY_CURRENT_USER, RootForVersion(Ver)+'\'+Key, Name, '');
 end;
 
-function TCustomDelphiTask.RootForVersion(version: string): string;
+class function TCustomDelphiTask.RootForVersion(version: string): string;
 begin
   if Pos('.', version) = 0 then
     version := version + '.0';
@@ -384,7 +398,7 @@ begin
 end;
 
 
-function TDelphiCompileTask.ToolName: string;
+class function TDelphiCompileTask.ToolName: string;
 begin
   Result := 'bin\dcc32.exe';
 end;
@@ -617,8 +631,8 @@ end;
 
 function TDelphiCompileTask.ReadLibraryPaths: string;
 begin
-  Result := ReadUserOption('Library', 'Search Path') + ';' +
-            ReadUserOption('Library', 'SearchPath')
+  Result := ReadUserOption('Library', 'Search Path', FVersionFound) + ';' +
+            ReadUserOption('Library', 'SearchPath',  FVersionFound)
 end;
 
 
@@ -710,7 +724,7 @@ begin
   Result := 'brcc';
 end;
 
-function TResourceCompileTask.ToolName: string;
+class function TResourceCompileTask.ToolName: string;
 begin
   Result := 'bin\brcc32.exe';
 end;
@@ -769,4 +783,9 @@ initialization
   RegisterElements(TDelphiCompileTask, [
                          TDefineElement
                          ]);
+  with TDelphiCompileTask.FindDelphi do
+  begin
+    JclSysInfo.SetEnvironmentVar('delphi.version', Version);
+    JclSysInfo.SetEnvironmentVar('delphi.dir',     Directory);
+  end;
 end.
