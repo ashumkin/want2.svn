@@ -69,6 +69,15 @@ type
     procedure TearDown; override;
   end;
 
+  TSaveProjectTests = class(TProjectBaseCase)
+    procedure BuildTestProject;
+    procedure __TestParse;
+  published
+    procedure TestInMemoryConstruction;
+    procedure TestParseXML;
+    procedure TestSaveLoad;
+  end;
+
   TBuildTests = class(TProjectBaseCase)
   protected
     procedure BuildProject;
@@ -80,20 +89,20 @@ type
 
   TDummyTask1 = class(TTask)
   public
-    class function TagName: String; override;
+    class function XMLTag :string; override;
     procedure Execute; override;
   end;
 
   TDummyTask2 = class(TDummyTask1)
-    class function TagName: String; override;
+    class function XMLTag :string; override;
   end;
 
   TDummyTask3 = class(TDummyTask1)
   protected
     FAProp: string;
-  public
-    class function TagName: String; override;
-    function SetAttribute(const aName: String; const aValue: String): Boolean; override;
+  published
+    class function XMLTag :string; override;
+    property AProp: string read FAProp write FAProp;
   end;
 
   TTestExecTask = class(TTestDirCase)
@@ -113,12 +122,12 @@ implementation
 
 procedure TProjectBaseCase.SetUp;
 begin
-  FProject := TProject.Create(nil);
+  FProject := TProject.Create;
 end;
 
 procedure TProjectBaseCase.TearDown;
 begin
-  FreeAndNil(FProject);
+  FProject.Free;
 end;
 
 { TTestDirCase }
@@ -152,6 +161,23 @@ end;
 const
   CR = #13#10;
 
+  Expected =
+    'object my_project: TProject'                                          + CR +
+    '  BaseDir = ''..'''                                                   + CR +
+    '  object prepare: TTarget'                                            + CR +
+    '    object TDummyTask1'                                               + CR +
+    '    end'                                                              + CR +
+    '  end'                                                                + CR +
+    '  object compile: TTarget'                                            + CR +
+    '    object TDummyTask2'                                               + CR +
+    '    end'                                                              + CR +
+    '    object TDummyTask3'                                               + CR +
+    '      AProp = ''aValue'''                                             + CR +
+    '    end'                                                              + CR +
+    '  end'                                                                + CR +
+    'end'                                                                  + CR;
+
+
   ExpectedXML =
     CR+
     '<project basedir="." default="compile" description="a test project" name="test">' + CR +
@@ -164,6 +190,63 @@ const
     '  </target>'                                                          + CR +
     '</project>'                                                           + CR;
 
+
+procedure TSaveProjectTests.BuildTestProject;
+var
+  T: TTarget;
+begin
+  with FProject do
+  begin
+    BaseDir := '..';
+    Name := 'my_project';
+    T := AddTarget('prepare');
+    TDummyTask1.Create(T);
+
+    T := AddTarget('compile');
+    TDummyTask2.Create(T);
+    TDummyTask3.Create(T).AProp := 'aValue';
+  end;
+end;
+
+procedure TSaveProjectTests.TestInMemoryConstruction;
+begin
+  BuildTestProject;
+  CheckEquals(2, FProject.TargetCount);
+  CheckEquals(1, FProject[0].TaskCount);
+  CheckEquals(2, FProject[1].TaskCount);
+  CheckEquals('TDummyTask3', FProject[1][1].ClassName);
+end;
+
+procedure TSaveProjectTests.__TestParse;
+begin
+  FProject.Parse(Expected);
+  CheckEquals(Expected, FProject.AsString);
+end;
+
+procedure TSaveProjectTests.TestParseXML;
+begin
+  FProject.ParseXMLText(ExpectedXML);
+  CheckEquals(ExpectedXML, CR+FProject.AsXML);
+end;
+
+procedure TSaveProjectTests.TestSaveLoad;
+var
+  P: TProject;
+begin
+  BuildTestProject;
+  FProject.Save('build1.dfm');
+  P := TProject.Create;
+  try
+    P.Load('build1.dfm');
+    CheckEquals(FProject.AsString, P.AsString);
+    CheckEquals(2, P.TargetCount);
+    CheckEquals(1, P[0].TaskCount);
+    CheckEquals(2, P[1].TaskCount);
+    CheckEquals('TDummyTask3', P[1][1].ClassName);
+  finally
+    P.Free;
+  end;
+end;
 
 { TTestExecTask }
 
@@ -198,43 +281,31 @@ end;
 
 procedure TBuildTests.BuildProject;
 var
-  Target: TTarget;
-  Task:   TExecTask;
-  fname:  String;
+  T: TTarget;
+  fname: string;
 begin
-//  FProject.ParseXMLText(ExpectedXML);
+  with FProject do
+  begin
+    Name := 'my_project';
+    T := AddTarget('prepare');
+    TDummyTask1.Create(T);
 
-  FProject.SetAttribute('name', 'my_project');
+    T := AddTarget('compile');
+    T.Depends := 'prepare';
+    TDummyTask2.Create(T);
+    TDummyTask3.Create(T);
 
-  Target := FProject.AddTarget('prepare');
-
-  Target.Add(TDummyTask1.Create(Target));
-
-  Target := FProject.AddTarget('compile');
-
-  Target.ParseDepends('prepare');
-
-  Target.Add(TDummyTask2.Create(Target));
-
-  Target.Add(TDummyTask3.Create(Target));
-
-  Target := FProject.AddTarget('copy');
-
-  Target.ParseDepends('compile');
-
-  Task := TExecTask.Create(Target);
-
-  Task.Executable := 'copy';
-
-  fname := ExtractFilePath(ParamStr(0)) + 'test\sample.txt';
-
-  Task.ArgumentList.Add(fname);
-
-  fname := ExtractFilePath(fname) + 'new.txt';
-
-  Task.ArgumentList.Add(fname);
-
-  Target.Add(Task);
+    T := AddTarget('copy');
+    T.Depends := 'compile';
+    with TShellTask.Create(T) do
+    begin
+      Executable := 'copy';
+      fname := ExtractFilePath(ParamStr(0)) + 'test\sample.txt';
+      ArgumentList.Add(fname);
+      fname := ExtractFilePath(fname) + 'new.txt';
+      ArgumentList.Add(fname);
+    end;
+  end;
 end;
 
 
@@ -246,99 +317,75 @@ end;
 
 procedure TBuildTests.TestSchedule;
 var
-  s: TTargetList;
+  S: TTargetArray;
 begin
-  s := TTargetList.Create(nil);
-
-  try
-    FProject.Schedule(FProject.Names['copy'], s);
-
-    CheckEquals(3, s.Count);
-    CheckEquals('prepare', s.Target[0].Name);
-    CheckEquals('compile', s.Target[1].Name);
-    CheckEquals('copy',    s.Target[2].Name);
-
-  finally
-    FreeAndNil(s);
-  end;
+  S := FProject.Schedule('copy');
+  CheckEquals(3, Length(S));
+  CheckEquals('prepare', S[0].Name);
+  CheckEquals('compile', S[1].Name);
+  CheckEquals('copy',    S[2].Name);
 end;
 
 procedure TBuildTests.TestBuild;
 var
-  OldFileName: String;
-  NewFileName: String;
-  Target:      TTarget;
-  ExecTask:    TExecTask;
+  OldFileName,
+  NewFileName: string;
   F          :Text;
 begin
-  Target := FProject.Names['copy'];
+ with FProject.TargetNames['copy'].Tasks[0] as TExecTask do
+ begin
+   OldFileName := ArgumentList[0];
+   NewFileName := ArgumentList[1];
+ end;
 
-  ExecTask := TExecTask(Target.Task[0]);
+ try
+   CreateDir(ExtractFileDir(OldFileName));
+   Assign(F, OldFileName);
+   Rewrite(F);
+   Writeln(F, 'A test');
+   Close(F);
 
-  OldFileName := ExecTask.ArgumentList[0];
-  NewFileName := ExecTask.ArgumentList[1];
+   Check(not FileExists(NewFileName), 'file not copied');
 
-  try
-    CreateDir(ExtractFileDir(OldFileName));
-    Assign(F, OldFileName);
-    Rewrite(F);
-    Writeln(F, 'A test');
-    Close(F);
+   FProject.Build(['copy']);
 
-    Check(not FileExists(NewFileName), 'file not copied');
-
-    FProject.Build(['copy']);
-
-    Check(FileExists(NewFileName), 'file not copied');
-  finally
-    DeleteFile(OldFileName);
-    DeleteFile(NewFileName);
-    RemoveDir(ExtractFileDir(OldFileName));
-  end;
+   Check(FileExists(NewFileName), 'file not copied');
+ finally
+   DeleteFile(OldFileName);
+   DeleteFile(NewFileName);
+   RemoveDir(ExtractFileDir(OldFileName));
+ end;
 end;
 
 { TDummyTask1 }
 
 procedure TDummyTask1.Execute;
 begin
-
 end;
 
-class function TDummyTask1.TagName: String;
+class function TDummyTask1.XMLTag: string;
 begin
   Result := 'dummy1';
 end;
-
 { TDummyTask2 }
 
-class function TDummyTask2.TagName: String;
+class function TDummyTask2.XMLTag: string;
 begin
   Result := 'dummy2';
 end;
 
 { TDummyTask3 }
 
-class function TDummyTask3.TagName: String;
+class function TDummyTask3.XMLTag: string;
 begin
   Result := 'dummy3';
 end;
-
-function TDummyTask3.SetAttribute(const aName, aValue: String): Boolean;
-begin
-  Result := True;
-
-  if CompareText(aName, 'aprop') = 0 then
-    FAProp := aValue
-  else
-    Result := inherited SetAttribute(aName, aValue);
-end;
-
-
 
 initialization
   RegisterTasks([TDummyTask1, TDummyTask2, TDummyTask3]);
 
   RegisterTests('Unit Tests', [
+             TSaveProjectTests.Suite,
              TTestExecTask.Suite,
              TBuildTests.Suite
            ]);
