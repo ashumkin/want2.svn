@@ -112,11 +112,19 @@ ModuleType=SourceModule
 FormState=0
 FormOnTop=0
 
-[c:\dvl\bor\d4\ProjectGroup1.bpg]
+[C:\home\want\src\want.bpg]
 FormState=0
 FormOnTop=0
 
 [C:\home\want\src\want.dpr]
+FormState=0
+FormOnTop=0
+
+[C:\home\want\test\WantTestLib.dpr]
+FormState=0
+FormOnTop=0
+
+[C:\home\want\test\WantAcceptTestLib.dpr]
 FormState=0
 FormOnTop=0
 
