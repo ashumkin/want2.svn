@@ -52,7 +52,8 @@ uses
   DanteClasses,
   ExecTasks,
   WildPaths,
-  PatternSets;
+  PatternSets,
+  Attributes;
 
 
 
@@ -186,53 +187,20 @@ type
     property output: string read FOutput write FOutput;
   end;
 
+  TQuietElement          = class(TBooleanAttributeElement);
+  TMakeElement           = class(TBooleanAttributeElement);
+  TBuildElement          = class(TBooleanAttributeElement);
+  TOptimizeElement       = class(TBooleanAttributeElement);
+  TDebugElement          = class(TBooleanAttributeElement);
+  TConsoleElement        = class(TBooleanAttributeElement);
+  TUseLibraryPathElement = class(TBooleanAttributeElement);
+
+  TDCUOutputElement = class(TPathAttributeElement);
+  TEXEOutputElement = class(TPathAttributeElement);
+
   TOptionElement = class(TDanteElement)
   protected
-    function dcc :TDelphiCompileTask;
-  end;
-
-  TBooleanOptionElement = class(TOptionElement)
-  protected
-    FValue :boolean;
-  public
-    procedure Init; override;
-  published
-    property value :boolean read FValue write FValue;
-  end;
-
-  TQuietElement = class(TBooleanOptionElement)
-  public
-    procedure Init; override;
-  end;
-
-  TMakeElement = class(TBooleanOptionElement)
-  public
-    procedure Init; override;
-  end;
-
-  TBuildElement = class(TBooleanOptionElement)
-  public
-    procedure Init; override;
-  end;
-
-  TOptimizeElement = class(TBooleanOptionElement)
-  public
-    procedure Init; override;
-  end;
-
-  TDebugElement = class(TBooleanOptionElement)
-  public
-    procedure Init; override;
-  end;
-
-  TConsoleElement = class(TBooleanOptionElement)
-  public
-    procedure Init; override;
-  end;
-
-  TUseLibraryPathElement = class(TBooleanOptionElement)
-  public
-    procedure Init; override;
+    function dcc: TDelphiCompileTask;
   end;
 
   TDefineElement = class(TOptionElement)
@@ -247,24 +215,6 @@ type
     property Value :string read FValue write FValue;
   end;
 
-  TPathOptionElement = class(TOptionElement)
-  protected
-    FPath :TPath;
-  public
-    procedure Init; override;
-  published
-    property path :TPath read FPath write FPath;
-  end;
-
-  TDCUOutputElement = class(TPathOptionElement)
-  public
-    procedure Init; override;
-  end;
-
-  TEXEOutputElement = class(TPathOptionElement)
-  public
-    procedure Init; override;
-  end;
 
 implementation
 
@@ -631,97 +581,6 @@ end;
 function TOptionElement.dcc: TDelphiCompileTask;
 begin
   Result := Owner as TDelphiCompileTask;
-end;
-
-{ TBooleanOptionElement }
-
-procedure TBooleanOptionElement.Init;
-begin
-  inherited Init;
-  if value then
-    Log(vlDebug, '%s=true',  [TagName])
-  else
-    Log(vlDebug, '%s=false', [TagName])
-end;
-
-{ TQuietElement }
-
-procedure TQuietElement.Init;
-begin
-  inherited Init;
-  dcc.quiet := value;
-end;
-
-{ TMakeElement }
-
-procedure TMakeElement.Init;
-begin
-  inherited Init;
-  dcc.make := value;
-end;
-
-{ TBuildElement }
-
-procedure TBuildElement.Init;
-begin
-  inherited Init;
-  dcc.build := value;
-end;
-
-{ TOptimizeElement }
-
-procedure TOptimizeElement.Init;
-begin
-  inherited Init;
-  dcc.optimize := value;
-end;
-
-{ TDebugElement }
-
-procedure TDebugElement.Init;
-begin
-  inherited Init;
-  dcc.debug := value;
-end;
-
-{ TConsoleElement }
-
-procedure TConsoleElement.Init;
-begin
-  inherited Init;
-  dcc.console := value;
-end;
-
-{ TUseLibraryPathElement }
-
-procedure TUseLibraryPathElement.Init;
-begin
-  inherited Init;
-  dcc.uselibrarypath := value;
-end;
-
-{ TPathOptionElement }
-
-procedure TPathOptionElement.Init;
-begin
-  inherited Init;
-  Log(vlDebug, '%s=%s', [TagName, path]);
-end;
-
-{ TDCUOutputElement }
-
-procedure TDCUOutputElement.Init;
-begin
-  inherited Init;
-  dcc.dcuoutput := path;
-end;
-
-{ TEXEutputElement }
-
-procedure TEXEOutputElement.Init;
-begin
-  inherited Init;
-  dcc.exeoutput := path;
 end;
 
 initialization

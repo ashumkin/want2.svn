@@ -40,6 +40,7 @@ implementation
 uses
   Properties,
   PatternSets,
+  Attributes,
   TimeElements,
   RegexpElements;
 
