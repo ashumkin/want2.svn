@@ -21,6 +21,7 @@ uses
   JclSysUtils,
 
   JALCollections,
+  JALSAX,
   JALMiniDom,
 
   WildPaths,
@@ -171,11 +172,13 @@ begin
     WantError(Format('Cannot find build file "%s"',[BuildFile]));
 
   BuildFile := Project.ToAbsolutePath(BuildFile);
-  Project.RootPath := SuperPath(BuildFile);
-  Dom := JALMiniDOM.ParseToDom(ToSystemPath(BuildFile));
   try
+    Project.RootPath := SuperPath(BuildFile);
+    Dom := JALMiniDOM.ParseToDom(ToSystemPath(BuildFile));
     ParseProject(Project, Dom);
   except
+    on e :SAXParseException do
+      WantError(ToRelativePath(BuildFile, CurrentDir) + ' ' +  e.Message);
     on e :Exception do
     begin
       e.Message := ToRelativePath(BuildFile, CurrentDir) + ' ' +  e.Message;
