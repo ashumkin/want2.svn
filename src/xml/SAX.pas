@@ -14,7 +14,7 @@ list of conditions and the following disclaimer.
 this list of conditions and the following disclaimer in the documentation and/or
 other materials provided with the distribution.
 
-3. The names Chris Morris, Dante and the names of contributors to this software
+3. The name Juancarlo Añez and the names of contributors to this software
 may not be used to endorse or promote products derived from this software
 without specific prior written permission.
 
@@ -29,7 +29,8 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR
 TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
 THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 --------------------------------------------------------------------------------
-(based on BSD Open Source License)
+Original author: Juancarlo Añez
+Contributors   :
 }
 unit SAX;
 interface
