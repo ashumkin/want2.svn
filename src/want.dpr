@@ -47,7 +47,9 @@ uses
   ConsoleScriptRunner in 'win32\ConsoleScriptRunner.pas',
   BuildListeners in 'BuildListeners.pas',
   WantUtils in 'WantUtils.pas',
-  IniFileTasks in 'tasks\IniFileTasks.pas';
+  IniFileTasks in 'tasks\IniFileTasks.pas',
+  StyleTasks in 'tasks\StyleTasks.pas',
+  MSXMLEngineImpl in 'win32\MSXMLEngineImpl.pas';
 
 {$APPTYPE CONSOLE}
 

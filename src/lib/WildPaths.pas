@@ -150,6 +150,7 @@ function  SuperPath(Path: TPath): TPath;
 
 procedure MakeDir(const Path: TPath);
 function  ChangeDir(const Path: TPath; Verify :boolean = true) :boolean;
+
 function  CurrentDir: TPath;
 function  CurrentDrive :TPath;
 
@@ -181,7 +182,7 @@ function  SystemFileTime(const Path: TPath): Longint;
 function  TimeToSystemFileTime(const Time: TDateTime):Integer;
 function  FileAttributesToSystemAttributes(const Attr: TFileAttributes):Byte;
 function  SystemAttributesToFileAttributes(Attr: Integer) :TFileAttributes;
-
+function  ChangeExtension( Path: TPath; extension : String ): TPath;
 
 implementation
 
@@ -1069,5 +1070,16 @@ begin
   Result := TFileAttributes(Byte(Attr));
 end;
 
+function ChangeExtension( Path: TPath; extension : String ): TPath;
+var
+  p : integer ;
+begin
+  p:=LastDelimiter('.',Path);
+  if (p < Length(Path)) then
+  begin
+    Result:=copy(Path,1,p)+extension;
+  end
+  else Result:=Path
+end;
 
 end.
