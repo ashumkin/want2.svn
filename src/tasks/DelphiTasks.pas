@@ -50,6 +50,8 @@ type
   EDelphiNotFoundError   = class(EDelphiTaskError);
   ECompilerNotFoundError = class(EDelphiTaskError);
 
+  TMapType = (none, segments, publics, detailed); 
+
   TPathSet = class(TCustomDirSet)
   protected
     procedure SetPath(Value: string); virtual;
@@ -96,6 +98,8 @@ type
     FWarnings       : boolean;
     FUseLibraryPath : boolean;
     FUseCFG         : boolean;
+
+    FMap            : TMapType;
 
     FUnitPaths      : TUnitPathElement;
     FResourcePaths  : TResourcePathElement;
@@ -155,6 +159,8 @@ type
     property console:  boolean read FConsole  write FConsole;
     property warnings: boolean read FWarnings write FWarnings default true;
     property usecfg:   boolean read FUseCFG   write FUseCFG;
+
+    property map       :TMapType read FMap write FMap;
 
     property uselibrarypath : boolean read FUseLibraryPath write FUseLibraryPath;
 
@@ -221,6 +227,13 @@ type
     property Path :TPath read FPath write FPath;
   end;
 
+  TMapElement = class(TCustomAttributeElement)
+  protected
+    FValue :TMapType;
+  public
+  published
+    property value :TMapType read FValue write FValue;
+  end;
 
 implementation
 
@@ -490,6 +503,12 @@ begin
   else if optimize then
     Result := Result + ' -$D- -$L- -$R- -$Q- -$C-';
 
+  case map of
+    segments : Result := Result + ' -GS';
+    publics  : Result := Result + ' -GP';
+    detailed : Result := Result + ' -GD';
+  end;
+
   for d := 0 to FDefines.Count-1 do
   begin
     Log(vlVerbose, 'define %s', [FDefines.Names[d]]);
@@ -731,6 +750,8 @@ begin
   dcc.AddPackage(Path);
 end;
 
+{ TMapElement }
+
 initialization
   RegisterTasks( [TDelphiCompileTask, TResourceCompileTask]);
   RegisterElements(TDelphiCompileTask, [
@@ -749,6 +770,8 @@ initialization
                          TDCUOutputElement,
                          TEXEOutputElement,
 
-                         TUsePackageElement
+                         TUsePackageElement,
+
+                         TMapElement
                          ]);
 end.
