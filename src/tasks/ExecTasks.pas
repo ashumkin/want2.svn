@@ -77,6 +77,7 @@ type
     FSkipLines   :Integer;
     FFailOnError :boolean;
     FTimeOut     :Longint;
+    FOutput      :string;
 
     function BuildExecutable :string; virtual;
     function BuildArguments  :string; virtual;
@@ -101,6 +102,7 @@ type
     property SkipLines:    Integer  read FSkipLines   write FSkipLines;
     property OS:           string   read FOS          write FOS;
     property failonerror:  boolean  read FFailOnError write FFailOnError default True;
+    property output:       string   read FOutput      write FOutput;
     {:@TODO Implement a TWaitableTimer class to implement timeouts.
       Use Windows.CreateWaitableTimer and Windows.SetWaitableTimer.
     }
@@ -121,6 +123,7 @@ type
     property SkipLines :Integer     read FSkipLines   write FSkipLines;
     property OS;
     property failonerror;
+    property output;
   end;
 
   // this class will pass commands through the command processor
@@ -266,14 +269,37 @@ const
 var
   Line          :String;
   LineNo        :Integer;
+  OutFile       :Text;
 begin
   LineNo := 0;
-  while not Child.EOF do
+
+  if output <> '' then
   begin
-    Line := Child.ReadLn;
-    Inc(LineNo);
-    if LineNo > SkipLines then
-      Log(LIne);
+    Log(vlVerbose, 'output to "%s"', [output]);
+    Assign(OutFile, ToSystemPath(output));
+    Rewrite(OutFile);
+  end;
+
+  try
+    while not Child.EOF
+    and (LineNo < SkipLines) do
+    begin
+      Child.ReadLn;
+      Inc(LineNo);
+    end;
+
+    while not Child.EOF do
+    begin
+      Line := Child.ReadLn;
+      //!!! Inc(LineNo); // never used
+      if output <> '' then
+        Writeln(OutFile, Line)
+      else
+        Log(Line);
+    end;
+  finally
+    if output <> '' then
+      Close(OutFile);
   end;
 end;
 
