@@ -165,10 +165,10 @@ begin
   inherited Execute;
   Log(ToRelativePath(testlib));
   try
-    Test := LoadModuleTests(ToSystemPath(testlib));
+    Test := LoadModuleTests(ToSystemPath(testlib)) as ITest;
     try
       if not TestFramework.RunTest(Test, [Self]).WasSuccessful then
-        TaskFailure('');
+        TaskFailure('tests failed');
     finally
       Test := nil;
       UnloadTestModules;

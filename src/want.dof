@@ -100,7 +100,7 @@ Conditionals=USE_JEDI_JCL;DUNIT_DLL
 DebugSourceDirs=
 UsePackages=0
 [Parameters]
-RunParams=-buildfile c:\tmp\xxx\build.xml -debug
+RunParams=-buildfile c:\home\tranus\want.xml dist -verbose
 HostApplication=
 Launcher=
 UseLauncher=0

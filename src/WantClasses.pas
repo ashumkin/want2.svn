@@ -735,10 +735,9 @@ end;
 
 function TScriptElement.BasePath: TPath;
 begin
-  if (Owner = nil) or PathIsAbsolute(FBaseDir) then
-    Result := FBaseDir
-  else
-    Result := PathConcat((Owner as TScriptElement).BasePath, FBaseDir);
+  Result := BaseDir;
+  if Owner <> nil then
+    Result := PathConcat((Owner as TScriptElement).BasePath, Result);
 end;
 
 function TScriptElement.ToAbsolutePath(const Path: TPath): TPath;
@@ -1240,10 +1239,7 @@ end;
 
 function TProject.BasePath: TPath;
 begin
-  if PathIsAbsolute(BaseDir) then
-    Result := BaseDir
-  else
-    Result := PathConcat(RootPath, BaseDir);
+  Result := PathConcat(RootPath, inherited BasePath);
 end;
 
 procedure TProject.SetBaseDir(const Value: TPath);
