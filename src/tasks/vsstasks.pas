@@ -37,7 +37,10 @@ unit VssTasks;
 interface
 
 uses
-  DanteClasses, ExecTasks, JclStrings, WildPaths;
+  WantClasses,
+  ExecTasks,
+  JclStrings,
+  WildPaths;
 
 type
   TVssBaseTask = class(TCustomExecTask)
@@ -114,7 +117,7 @@ begin
     ArgumentList.Add('-Y' + FLogin);
 
   if FLocalPath <> '' then
-    ArgumentList.Add('"-GL' + WildPaths.ToSystemPath(ToAbsolutePath(ToDantePath(FLocalPath))) + '"');
+    ArgumentList.Add('"-GL' + WildPaths.ToSystemPath(ToAbsolutePath(ToWantPath(FLocalPath))) + '"');
 
   { ignore prompts for information - chooses default. Vss is, AFAIK, good
     about having non-destructive defaults. }

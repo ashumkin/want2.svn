@@ -1,7 +1,7 @@
 { $Id$ }
 {
 --------------------------------------------------------------------------------
-Copyright (c) 2001, Dante Authors -- See authors.txt for complete list
+Copyright (c) 2001, Want Authors -- See authors.txt for complete list
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification,
@@ -14,7 +14,7 @@ list of conditions and the following disclaimer.
 this list of conditions and the following disclaimer in the documentation and/or
 other materials provided with the distribution.
 
-3. The name Dante, the names of the authors in authors.txt and the names of
+3. The name Want, the names of the authors in authors.txt and the names of
 other contributors to this software may not be used to endorse or promote
 products derived from this software without specific prior written permission.
 
@@ -35,8 +35,15 @@ unit VssTasksTest;
 interface
 
 uses
-  VssTasks, TestFramework, DanteClassesTest, JclMiscel, SysUtils, JclShell,
-  DanteClasses, JclSysInfo, Classes;
+  VssTasks,
+  TestFramework,
+  WantClassesTest,
+  JclMiscel,
+  SysUtils,
+  JclShell,
+  WantClasses,
+  JclSysInfo,
+  Classes;
 
 type
   TTestVssTasksBase = class(TTestDirCase)
@@ -220,7 +227,7 @@ begin
       Visual SourceSafe database. TearDown will issue a Delete and Purge
       command on the test file. If there's any bug introduced in any of this
       code, you run the risk of purging production data. Please re-read the
-      disclaimer contained within the Dante license. }
+      disclaimer contained within the Want license. }
 
     { sets SSDIR env variable for this session to a path containing a
       srcsafe.ini file which has the settings indicating which VSS database
@@ -236,8 +243,8 @@ begin
     FVssPath := '$/test';
 
     { if the test user you use has a password, set it like so:
-        FUserPwd := 'dante,password'; }
-    FUserPwd := 'dante';
+        FUserPwd := 'Want,password'; }
+    FUserPwd := 'Want';
 
     FTestPathFileNames := TStringList.Create;
     AddTestFile;
@@ -253,7 +260,7 @@ begin
       Visual SourceSafe database. TearDown will issue a Delete and Purge
       command on the test file. If there's any bug introduced in any of this
       code, you run the risk of purging production data. Please re-read the
-      disclaimers contained within the Dante license. }
+      disclaimers contained within the Want license. }
     Exec('ss CP "' + FVssPath + '" -I- -Y' + FUserPwd);
     DeleteTestFiles;
     FTestPathFileNames.Free;
@@ -281,7 +288,7 @@ begin
     FVssGetTask.Init;
     Fail('validation should have failed');
   except
-    on EDanteError do { nada }
+    on EWantError do { nada }
   end;
 
   FVssGetTask.VssPath := FVssPath;

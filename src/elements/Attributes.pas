@@ -4,7 +4,7 @@ interface
 uses
   SysUtils,
   WildPaths,
-  DanteClasses;
+  WantClasses;
 
 type
   TCustomAttributeElement = class(TScriptElement)

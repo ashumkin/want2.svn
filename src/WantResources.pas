@@ -1,37 +1,13 @@
-{
---------------------------------------------------------------------------------
-Copyright (c) 2001, Dante Authors -- See authors.txt for complete list
-All rights reserved.
+(*******************************************************************
+*  WANT - A build management tool.                                 *
+*  Copyright (c) 2001 Juancarlo Añez, Caracas, Venezuela.          *
+*  All rights reserved.                                            *
+*                                                                  *
+*******************************************************************)
 
-Redistribution and use in source and binary forms, with or without modification,
-are permitted provided that the following conditions are met:
+{ $Id$ }
 
-1. Redistributions of source code must retain the above copyright notice, this
-list of conditions and the following disclaimer.
-
-2. Redistributions in binary form must reproduce the above copyright notice,
-this list of conditions and the following disclaimer in the documentation and/or
-other materials provided with the distribution.
-
-3. The name Dante, the names of the authors in authors.txt and the names of
-other contributors to this software may not be used to endorse or promote
-products derived from this software without specific prior written permission.
-
-THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS ``AS IS''
-AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDERS OR CONTRIBUTORS BE LIABLE
-FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
-DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
-SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
-CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR
-TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
-THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
---------------------------------------------------------------------------------
-Original Author: Juancarlo Añez
-Contributors   : 
-}
-unit DanteBase;
+unit WantBase;
 
 interface
 
@@ -49,66 +25,11 @@ const
 
   BooleanToString : array[boolean] of string = ('false', 'true');
 
-type
-  EDanteException  = class(Exception);
-  EDanteError      = class(EDanteException);
-  ETargetException = class(EDanteException);
-  ETaskException   = class(EDanteException);
-
-  ENoDefaultTargetError     = class(ETargetException);
-  ETargetNotFoundException  = class(ETargetException);
-  ECircularTargetDependency = class(ETargetException);
-
-  ETaskError   = class(ETaskException);
-  ETaskFailure = class(ETaskException);
-
-  EDanteParseException = class(EDanteException);
-
-  TDanteBase = class
-    private
-      FParent: TDanteBase;
-      FName:   String;
-
-    protected
-      class function TagName: String; virtual;
-
-      function    SetAttribute(const aName: String; const aValue: String): Boolean; virtual;
-
-    public
-      constructor Create(const aParent: TDanteBase); virtual;
-
-      property    Name:   String     read FName;
-      property    Parent: TDanteBase read FParent;
-  end;
-
-  TDanteList = class(TDanteBase)
-    protected
-      FList:  TStringList;
-
-      class function TagName: String; override;
-
-      function    SetAttribute(const aName: String; const aValue: String): Boolean; override;
-
-      function    GetCount: Integer;
-
-    public
-      constructor Create(const aParent: TDanteBase); override;
-      destructor  Destroy;                           override;
-
-      procedure   Clear; virtual;
-
-      procedure   Add(aElement: TDanteBase);            overload;
-      function    Get(const aName: String): TDanteBase; overload;
-
-      property    List:  TStringList read FList;
-      property    Count: Integer     read GetCount;
-  end;
-
 resourcestring
-  DanteUsageText   = 'For licensing info, use the -L switch'                      + C_EOL +
+  WantUsageText   = 'For licensing info, use the -L switch'                      + C_EOL +
                                                                                     C_EOL +
                      'Usage:'                                                     + C_EOL +
-                     '  dante.exe [options] [target]'                             + C_EOL +
+                     '  Want.exe [options] [target]'                             + C_EOL +
                                                                                     C_EOL +
                      'Options:'                                                   + C_EOL +
                      '  -h, -H, -?          Displays this help text.'             + C_EOL +
@@ -120,9 +41,9 @@ resourcestring
                      '  -debug              Print debugging information.'         + C_EOL +
                      '  -color              Output to console using color.'       + C_EOL;
 
-  F_DanteStartupFailed        = 'Dante startup failed';
+  F_WantStartupFailed        = 'Want startup failed';
 
-  F_DanteError                = '!!! %s !!!';
+  F_WantError                = '!!! %s !!!';
   F_TaskError                 = '!!! %s !!!';
   F_TaskFailure               = '%s';
 
@@ -142,15 +63,15 @@ resourcestring
   F_ParseChildError           = '(%d): Unknown element <%s><%s>';
   F_ParseChildTextError       = '(%d): Element <%s> does not accept text';
 
-  F_DanteClassNotFound        = 'Dante class <%s> not found';
-  F_DuplicateDanteClass       = 'Duplicate Dante tag <%s> in class <%s>';
+  F_WantClassNotFound        = 'Want class <%s> not found';
+  F_DuplicateWantClass       = 'Duplicate Want tag <%s> in class <%s>';
 
 
 procedure RaiseLastSystemError(Msg :string = '');
 
 function ConvertToBoolean(const aValue: String): Boolean;
 
-function  DanteHeader: string;
+function  WantHeader: string;
 function  License :string;
 procedure Usage;
 function  GetVersionString: string;
@@ -162,7 +83,7 @@ uses
 
 procedure RaiseLastSystemError(Msg :string = '');
 begin
-  raise ETaskError.Create(SysErrorMessage(GetLastError) + Msg)
+  raise Exception.Create(SysErrorMessage(GetLastError) + Msg)
 end;
 
 function ConvertToBoolean(const aValue: String): Boolean;
@@ -197,11 +118,11 @@ begin
 end;
 
 
-function DanteHeader: string;
+function WantHeader: string;
 begin
   Result :=
-    'Dante ' + GetVersionString + ' Build Management tool                  '+ C_EOL +
-    'Copyright (c) 2001, Dante Authors -- See authors.txt for complete list'+ C_EOL +
+    'Want ' + GetVersionString + ' Build Management tool'              + C_EOL +
+    'Copyright (c) 2001, Juancarlo Añez, Caracas, Venezuela.'          + C_EOL +
     'For complete licensing info, execute with -L switch';
 end;
 
@@ -214,7 +135,7 @@ var
   procedure RaiseError(ErrorTxt: string);
   begin
     raise Exception.Create('Internal error: ' + ErrorTxt + ' ' +
-      '[DanteBase.License]');
+      '[WantBase.License]');
   end;
 begin
   FindHandle := FindResource(HInstance, PChar('LICENSE'), 'TEXT');
@@ -246,106 +167,8 @@ end;
 
 procedure Usage;
 begin
-  Writeln(DanteUsageText);
+  Writeln(WantUsageText);
 end;
 
-  { TDanteBase }
-
-constructor TDanteBase.Create(const aParent: TDanteBase);
-begin
-  FParent := aParent;
-  FName   := '';
-end;
-
-function TDanteBase.SetAttribute(const aName, aValue: String): Boolean;
-begin
-  if CompareText(aName, 'name') = 0 then
-    begin
-      FName  := aValue;
-      Result := True;
-    end
-  else
-    Result := False;
-end;
-
-class function TDanteBase.TagName: String;
-begin
-  Result := 'DanteBase';
-end;
-
-  { TDanteList }
-
-constructor TDanteList.Create(const aParent: TDanteBase);
-begin
-  inherited Create(aParent);
-
-  FList          := TStringList.Create;
-  FList.Capacity := 100;
-end;
-
-destructor TDanteList.Destroy; { override }
-begin
-  Clear;
-
-  FreeAndNil(FList);
-
-  inherited Destroy;
-end;
-
-class function TDanteList.TagName: String;
-begin
-  Result := 'DanteList';
-end;
-
-function TDanteList.SetAttribute(const aName, aValue: String): Boolean;
-begin
-  Result := inherited SetAttribute(aName, aValue);
-end;
-
-procedure TDanteList.Clear;
-var
-  i: Integer;
-begin
-  for i := 0 to Pred(FList.Count) do
-    TDanteBase(FList.Objects[i]).Free;
-
-  FList.Clear;
-end;
-
-procedure TDanteList.Add(aElement: TDanteBase);
-begin
-  FList.AddObject(aElement.Name, aElement);
-end;
-
-function TDanteList.Get(const aName: String): TDanteBase;
-var
-  i: Integer;
-  o: TDanteBase;
-begin
-  Result := nil;
-
-  if Length(aName) > 0 then
-    begin
-      i := 0;
-
-      while i < FList.Count do
-        begin
-          o := TDanteBase(FList.Objects[i]);
-
-          if o.Name = aName then
-            begin
-              Result := o;
-              i      := FList.Count
-            end
-          else
-            Inc(i);
-        end;
-    end;
-end;
-
-function TDanteList.GetCount: Integer;
-begin
-  Result := FList.Count;
-end;
 
 end.

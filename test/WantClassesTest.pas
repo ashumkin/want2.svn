@@ -1,36 +1,13 @@
+(*******************************************************************
+*  WANT - A build management tool.                                 *
+*  Copyright (c) 2001 Juancarlo Añez, Caracas, Venezuela.          *
+*  All rights reserved.                                            *
+*                                                                  *
+*******************************************************************)
+
 { $Id$ }
-{
---------------------------------------------------------------------------------
-Copyright (c) 2001, Dante Authors -- See authors.txt for complete list
-All rights reserved.
 
-Redistribution and use in source and binary forms, with or without modification,
-are permitted provided that the following conditions are met:
-
-1. Redistributions of source code must retain the above copyright notice, this
-list of conditions and the following disclaimer.
-
-2. Redistributions in binary form must reproduce the above copyright notice,
-this list of conditions and the following disclaimer in the documentation and/or
-other materials provided with the distribution.
-
-3. The name Dante, the names of the authors in authors.txt and the names of
-other contributors to this software may not be used to endorse or promote
-products derived from this software without specific prior written permission.
-
-THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS ``AS IS''
-AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDERS OR CONTRIBUTORS BE LIABLE
-FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
-DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
-SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
-CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR
-TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
-THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
---------------------------------------------------------------------------------
-}
-unit DanteClassesTest;
+unit WantClassesTest;
 
 interface
 
@@ -42,7 +19,7 @@ uses
   JclShell,
 
   WildPaths,
-  DanteClasses,
+  WantClasses,
   ScriptParser,
   StandardElements,
   ExecTasks,
@@ -69,7 +46,7 @@ type
   protected
     FLongFNTestDir: string;
     FTestDir: string;
-    FDanteTestDir: string;
+    FWantTestDir: string;
     FFileNameInc: Integer;
 
     function MakeSampleTextFile: string;
@@ -101,14 +78,14 @@ type
     procedure TestInvalidPath;
   end;
 
-  TTestDanteElement = class(TProjectBaseCase)
+  TTestWantElement = class(TProjectBaseCase)
   private
-    FDanteElement: TScriptElement;
+    FWantElement: TScriptElement;
   public
     procedure Setup; override;
     procedure TearDown; override;
   published
-    procedure TestDanteElementPaths;
+    procedure TestWantElementPaths;
   end;
 
 
@@ -197,7 +174,7 @@ begin
   JclFileUtils.ForceDirectories(FTestDir);
   JclFileUtils.ForceDirectories(FLongFNTestDir);
 
-  FDanteTestDir := WildPaths.ToPath(FTestDir);
+  FWantTestDir := WildPaths.ToPath(FTestDir);
 end;
 
 procedure TTestDirCase.TearDown;
@@ -451,38 +428,38 @@ begin
     FProject.Build;
     fail('expected exception about invalid path')
   except
-    on e :EDanteParseException do
+    on e :EWantParseException do
     begin
     end;
   end;
 end;
 
 
-{ TTestDanteElement }
+{ TTestWantElement }
 
-procedure TTestDanteElement.Setup;
+procedure TTestWantElement.Setup;
 begin
   inherited;
-  FDanteElement := TScriptElement.Create(FProject.AddTarget('test'));
+  FWantElement := TScriptElement.Create(FProject.AddTarget('test'));
 end;
 
-procedure TTestDanteElement.TearDown;
+procedure TTestWantElement.TearDown;
 begin
-  FDanteElement.Free;
+  FWantElement.Free;
   inherited;
 end;
 
-procedure TTestDanteElement.TestDanteElementPaths;
+procedure TTestWantElement.TestWantElementPaths;
 var
   AbsPath: string;
 begin
   AbsPath := ExtractFileDir(ParamStr(0));
   CheckEquals(
     AbsPath,
-    WildPaths.ToSystemPath(FDanteElement.ToAbsolutePath(ToPath(AbsPath))),
+    WildPaths.ToSystemPath(FWantElement.ToAbsolutePath(ToPath(AbsPath))),
     'ToAbsolutePath');
   CheckEquals(
-    FDanteElement.ToDantePath(AbsPath),
+    FWantElement.ToWantPath(AbsPath),
     ToPath(AbsPath),
     'ToAbsolutePath');
 end;
@@ -494,11 +471,11 @@ initialization
                   TCompareValuesTask,
                   TWithPathTask]);
 
-  RegisterTests('Dante Classes', [
+  RegisterTests('Want Classes', [
              TSaveProjectTests.Suite,
              TBuildTests.Suite,
              TPropertyTests.Suite,
-             TTestDanteElement.Suite
+             TTestWantElement.Suite
            ]);
 end.
 

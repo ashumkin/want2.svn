@@ -37,7 +37,7 @@ unit VersionInfoTasks;
 interface
 uses
   SysUtils,
-  DanteClasses,
+  WantClasses,
   clVersionRcUnit;
 
 type

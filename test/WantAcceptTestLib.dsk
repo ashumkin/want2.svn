@@ -5,11 +5,11 @@ State=0
 Left=0
 Top=0
 Width=812
-Height=108
+Height=105
 MaxLeft=-1
 MaxTop=-1
 ClientWidth=804
-ClientHeight=81
+ClientHeight=78
 
 [BreakpointWindow]
 Column0Width=100
@@ -28,7 +28,7 @@ Height=161
 MaxLeft=-1
 MaxTop=-1
 ClientWidth=366
-ClientHeight=135
+ClientHeight=137
 TBDockHeight=161
 LRDockWidth=294
 Dockable=1
@@ -44,34 +44,38 @@ Height=447
 MaxLeft=-1
 MaxTop=-1
 ClientWidth=421
-ClientHeight=421
+ClientHeight=423
 TBDockHeight=441
 LRDockWidth=421
 Dockable=1
 
 [Closed Files]
-File_0=SourceModule,'C:\home\dante\src\lib\LogMgr.pas',0,1,301,17,312,0,0
-File_1=SourceModule,'C:\home\dante\test\DanteMainTest.pas',0,1,108,26,115,0,0
-File_2=SourceModule,'C:\home\dante\test\DanteClassesTest.pas',0,1,1,1,1,0,0
-File_3=SourceModule,'C:\home\dante\test\DanteExternalTest.pas',0,1,154,13,169,0,0
-File_4=SourceModule,'C:\home\dante\src\DanteMain.pas',0,1,92,1,105,0,0
-File_5=SourceModule,'C:\home\dante\src\lib\ConsoleLogMgr.pas',0,1,30,21,45,0,0
-File_6=SourceModule,'C:\home\dante\src\lib\WildPaths.pas',0,1,241,1,256,0,0
-File_7=SourceModule,'C:\home\dante\src\DanteClasses.pas',0,1,381,28,387,0,0
-File_8=SourceModule,'c:\lib\pascal\jcl\source\JclStrings.pas',0,1,265,14,280,0,0
-File_9=SourceModule,'C:\home\dante\src\lib\ZipStreams.pas',0,1,169,64,177,0,0
+File_0=SourceModule,'C:\home\want\lib\paszlib\ZLIB.PAS',0,1,9,1,38,0,0
+File_1=SourceModule,'C:\home\want\src\WantRunner.pas',0,1,1,1,1,0,0
+File_2=SourceModule,'C:\home\want\src\WantClasses.pas',0,1,1,1,1,0,0
+File_3=SourceModule,'C:\home\want\src\WantBase.pas',0,1,108,6,124,0,0
+File_4=SourceModule,'C:\home\want\src\tasks\ZipTasks.pas',0,1,1,1,1,0,0
+File_5=SourceModule,'C:\home\want\src\tasks\DelphiTasks.pas',0,1,1,1,1,0,0
+File_6=SourceModule,'C:\home\want\src\tasks\DUnitTasks.pas',0,1,1,1,1,0,0
+File_7=SourceModule,'C:\home\want\src\tasks\EchoTasks.pas',0,1,1,1,1,0,0
+File_8=SourceModule,'C:\home\want\src\tasks\EditTasks.pas',0,1,1,1,10,0,0
+File_9=SourceModule,'C:\home\want\src\tasks\ExecTasks.pas',0,1,1,1,1,0,0
 
 [Modules]
-Module0=C:\home\want\test\WantAcceptTestLib.dpr
+Module0=C:\home\want\test\ExternalTests.pas
 Count=1
 EditWindowCount=1
 
-[C:\home\want\test\WantAcceptTestLib.dpr]
+[C:\home\want\test\ExternalTests.pas]
 ModuleType=SourceModule
 FormState=0
 FormOnTop=0
 
-[C:\dvl\bor\d4\Bin\ProjectGroup1.bpg]
+[C:\home\want\test\WantAcceptTestLib.dpr]
+FormState=0
+FormOnTop=0
+
+[c:\dvl\bor\d4\ProjectGroup1.bpg]
 FormState=0
 FormOnTop=0
 
@@ -83,19 +87,19 @@ Visible=1
 State=0
 Left=274
 Top=129
-Width=544
-Height=376
+Width=740
+Height=620
 MaxLeft=-1
 MaxTop=-1
-ClientWidth=536
-ClientHeight=349
+ClientWidth=732
+ClientHeight=593
 LeftPanelSize=0
 LeftPanelClients=CodeExplorer@EditWindow0
 LeftPanelData=00000400010000000C000000436F64654578706C6F7265720000000000000000000000000000000000FFFFFFFF
 RightPanelSize=0
-BottomPanelSize=0
+BottomPanelSize=118
 BottomPanelClients=MessageView@EditWindow0
-BottomPanelData=00000400010000000B0000004D657373616765566965770000000000000000000000000000000000FFFFFFFF
+BottomPanelData=000004000000000000000000000000000000000000000000000100000000000000000B0000004D65737361676556696577FFFFFFFF
 ViewCount=1
 CurrentView=0
 View0=0
@@ -118,25 +122,25 @@ Dockable=1
 
 [MessageView@EditWindow0]
 Create=1
-Visible=0
+Visible=1
 State=0
-Left=-80
-Top=-376
-Width=443
-Height=52
+Left=11
+Top=0
+Width=721
+Height=118
 MaxLeft=-1
 MaxTop=-1
-ClientWidth=443
-ClientHeight=52
-TBDockHeight=52
+ClientWidth=721
+ClientHeight=118
+TBDockHeight=118
 LRDockWidth=443
 Dockable=1
 
 [View0]
-Module=C:\home\want\test\WantAcceptTestLib.dpr
+Module=C:\home\want\test\ExternalTests.pas
 CursorX=1
-CursorY=34
-TopLine=34
+CursorY=1
+TopLine=1
 LeftCol=1
 
 [DockHosts]

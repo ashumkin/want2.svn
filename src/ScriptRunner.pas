@@ -1,38 +1,13 @@
+(*******************************************************************
+*  WANT - A build management tool.                                 *
+*  Copyright (c) 2001 Juancarlo Añez, Caracas, Venezuela.          *
+*  All rights reserved.                                            *
+*                                                                  *
+*******************************************************************)
+
 { $Id$ }
-{
---------------------------------------------------------------------------------
-Copyright (c) 2001, Dante Authors -- See authors.txt for complete list
-All rights reserved.
 
-Redistribution and use in source and binary forms, with or without modification,
-are permitted provided that the following conditions are met:
-
-1. Redistributions of source code must retain the above copyright notice, this
-list of conditions and the following disclaimer.
-
-2. Redistributions in binary form must reproduce the above copyright notice,
-this list of conditions and the following disclaimer in the documentation and/or
-other materials provided with the distribution.
-
-3. The name Dante, the names of the authors in authors.txt and the names of
-other contributors to this software may not be used to endorse or promote
-products derived from this software without specific prior written permission.
-
-THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS ``AS IS''
-AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDERS OR CONTRIBUTORS BE LIABLE
-FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
-DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
-SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
-CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR
-TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
-THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
---------------------------------------------------------------------------------
-Original Author: Juancarlo Añez
-Contributors   :
-}
-unit DanteMain;
+unit WantRunner;
 
 interface
 
@@ -50,18 +25,16 @@ uses
   ConsoleLogMgr,
   WildPaths,
 
-  DanteBase,
-  DanteClasses,
+  WantBase,
+  WantClasses,
   ScriptParser,
 
   StandardElements,
   StandardTasks,
-  CustomTasks,
-
-  ScriptFrm;
+  CustomTasks;
 
 type
-  TDante = class(TProject)
+  TWant = class(TProject)
   public
     procedure DoBuild( ABuildFileName: TPath;
                        Targets:    TStringArray;
@@ -75,11 +48,10 @@ type
     procedure CreateLogManager;
   end;
 
-  TConsoleDante = class(TDante)
+  TConsoleWant = class(TWant)
   protected
     FBuildFile   :string;
     FTargets     :TStringArray;
-    FDoEdit      :boolean;
 
     procedure ParseCommandLine;              virtual;
     function  ParseOption(Switch :string) :boolean;  virtual;
@@ -100,9 +72,9 @@ implementation
 
 
 
-{ TDante }
+{ TWant }
 
-procedure TDante.DoBuild( ABuildFileName: TPath;
+procedure TWant.DoBuild( ABuildFileName: TPath;
                           Targets:    TStringArray;
                           Level:      TLogLevel = vlNormal);
 var
@@ -134,7 +106,7 @@ begin
     begin
       if e is ETaskException then
         Log('BUILD FAILED','', vlErrors)
-      else if e is EDanteException then
+      else if e is EWantException then
         Log('BUILD FAILED',e.Message, vlErrors)
       else
         Log('BUILD FAILED', E.ClassName + ': ' + E.Message, vlErrors);
@@ -144,17 +116,17 @@ begin
 end;
 
 
-procedure TDante.CreateLogManager;
+procedure TWant.CreateLogManager;
 begin
   LogManager := TConsoleLogManager.Create;
 end;
 
-procedure TDante.DoBuild(ABuildFileName: TPath; Level: TLogLevel);
+procedure TWant.DoBuild(ABuildFileName: TPath; Level: TLogLevel);
 begin
   DoBuild(ABuildFileName, nil, Level);
 end;
 
-procedure TDante.DoBuild(ABuildFileName: TPath; Target: string; Level: TLogLevel);
+procedure TWant.DoBuild(ABuildFileName: TPath; Target: string; Level: TLogLevel);
 var
   T :TStringArray;
 begin
@@ -163,34 +135,27 @@ begin
   DoBuild(ABuildFileName, T, Level);
 end;
 
-{ TConsoleDante }
+{ TConsoleWant }
 
-constructor TConsoleDante.Create(Owner: TScriptElement);
+constructor TConsoleWant.Create(Owner: TScriptElement);
 begin
   inherited Create(Owner);
   CreateLogManager;
 end;
 
-destructor TConsoleDante.Destroy;
+destructor TConsoleWant.Destroy;
 begin
   FreeAndNil(FLogManager);
   inherited Destroy;
 end;
 
-procedure TConsoleDante.Execute;
+procedure TConsoleWant.Execute;
 begin
   ParseCommandLine;
-  if not FDoEdit then
-    DoBuild(FBuildFile, FTargets, FVerbosity)
-  else
-  begin
-    Application.Initialize;
-    Application.CreateForm(TScriptForm, ScriptForm);
-    Application.Run;
-  end;
+  DoBuild(FBuildFile, FTargets, FVerbosity)
 end;
 
-function TConsoleDante.ParseOption(Switch: string):boolean;
+function TConsoleWant.ParseOption(Switch: string):boolean;
 var
   PropName:  string;
   PropValue: string;
@@ -209,8 +174,6 @@ begin
     Verbosity := vlQuiet
   else if Switch = '-color'then
     UseColor := True
-  else if Switch = '-edit' then
-    FDoEdit := True
   else if StrLeft(Switch, 2) = '-D' then
   begin
     Delete(Switch, 1, 2);
@@ -230,7 +193,7 @@ begin
     Result := False;
 end;
 
-procedure TConsoleDante.ParseCommandLine;
+procedure TConsoleWant.ParseCommandLine;
 var
   p:         Integer;
   Param:     string;
@@ -248,7 +211,7 @@ begin
       else if (StrLeft(Param, 1) = '-') then
       begin
         if not ParseOption(Param) then
-          DanteError('Unknown commandline option: ' + Param);
+          WantError('Unknown commandline option: ' + Param);
       end
       else
       begin
@@ -266,12 +229,12 @@ begin
   end;
 end;
 
-function TConsoleDante.GetUseColor: boolean;
+function TConsoleWant.GetUseColor: boolean;
 begin
   Result := TConsoleLogManager(LogManager).UseColor;
 end;
 
-procedure TConsoleDante.SetUseColor(Value: boolean);
+procedure TConsoleWant.SetUseColor(Value: boolean);
 begin
   TConsoleLogManager(LogManager).UseColor := Value;
 end;

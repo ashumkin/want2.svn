@@ -11,10 +11,10 @@ uses
   MiniDom,
 
   WildPaths,
-  DanteClasses;
+  WantClasses;
 
 type
-  EDanteParseException = class(EDanteException)
+  EWantParseException = class(EWantException)
   public
     constructor Create(Msg :string; Line, Col :Integer); 
   end;
@@ -35,16 +35,16 @@ type
 
 implementation
 
-{ EDanteParseException }
+{ EWantParseException }
 
-constructor EDanteParseException.Create(Msg :string; Line, Col :Integer);
+constructor EWantParseException.Create(Msg :string; Line, Col :Integer);
 begin
   inherited Create(Format('(%d:%d): %s',[Line, Col, Msg]));
 end;
 
 class procedure TScriptParser.ParseError(Msg :string; Line, Col :Integer);
 begin
-  raise EDanteParseException.Create(Msg, Line, Col) at CallerAddr;
+  raise EWantParseException.Create(Msg, Line, Col) at CallerAddr;
 end;
 
 class function TScriptParser.XMLAttsToStrings(Node: IElement): TStrings;
@@ -84,7 +84,7 @@ begin
     try
       Elem   := Parent.SetupChild(Child.Name, Atts);
     except
-      on e :EDanteParseException do
+      on e :EWantParseException do
         raise;
       on e :Exception do
         raise; // ParseError(e, Child.Location.LineNumber, Child.Location.ColumnNumber);
@@ -106,7 +106,7 @@ begin
   try
     Elem.SetUp(Node.Name, Atts);
   except
-    on e :EDanteParseException do
+    on e :EWantParseException do
     begin
       Node := nil;
       raise;
@@ -159,7 +159,7 @@ begin
 
   BuildFile := Project.ToAbsolutePath(BuildFile);
   if not PathIsFile(BuildFile) then
-    DanteError(Format('Cannot find build file "%s"',[BuildFile]));
+    WantError(Format('Cannot find build file "%s"',[BuildFile]));
 
   Project.RootPath := SuperPath(BuildFile);
   Dom := MiniDom.ParseToDom(ToSystemPath(BuildFile));

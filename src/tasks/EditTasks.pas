@@ -1,3 +1,12 @@
+(*******************************************************************
+*  WANT - A build management tool.                                 *
+*  Copyright (c) 2001 Juancarlo Añez, Caracas, Venezuela.          *
+*  All rights reserved.                                            *
+*                                                                  *
+*******************************************************************)
+
+{ $Id$ }
+
 unit EditTasks;
 
 interface
@@ -9,7 +18,7 @@ uses
   JclSysUtils,
   JclStrings,
 
-  DanteClasses;
+  WantClasses;
 
 type
   TEditTask = class(TTask)

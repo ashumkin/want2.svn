@@ -28,7 +28,6 @@ Z=1
 ShowHints=1
 ShowWarnings=1
 UnitAliases=WinTypes=Windows;WinProcs=Windows;DbiTypes=BDE;DbiProcs=BDE;DbiErrs=BDE;
-
 [Linker]
 MapFile=0
 OutputObjs=0
@@ -39,7 +38,6 @@ MinStackSize=16384
 MaxStackSize=1048576
 ImageBase=4194304
 ExeDescription=
-
 [Directories]
 OutputDir=c:\tmp
 UnitOutputDir=..\dcu
@@ -50,11 +48,9 @@ Packages=Vcl50;Vclx50;VclSmp50;Vcldb50;vclado50;ibevnt50;Vclbde50;vcldbx50;Qrpt5
 Conditionals=USE_JEDI_JCL
 DebugSourceDirs=
 UsePackages=0
-
 [Parameters]
 RunParams=-efr -buildfile \home\want\make\build.xml
 HostApplication=
-
 [Version Info]
 IncludeVerInfo=0
 AutoIncBuild=0
@@ -69,7 +65,6 @@ Private=0
 DLL=0
 Locale=1033
 CodePage=1252
-
 [Version Info Keys]
 CompanyName=
 FileDescription=
@@ -81,7 +76,6 @@ OriginalFilename=
 ProductName=
 ProductVersion=1.0.0.0
 Comments=
-
 [Excluded Packages]
 $(DELPHI)\Bin\dcldb40.bpl=Borland Database Components
 $(DELPHI)\Bin\dclint40.bpl=Borland Resource DLL Wizard
@@ -89,20 +83,16 @@ $(DELPHI)\Bin\dcltee40.bpl=Borland TeeChart Components
 $(DELPHI)\Bin\dclqrt40.bpl=QuickReport Components
 $(DELPHI)\Bin\dclocx40.bpl=Borland Sample Imported ActiveX Controls
 $(DELPHI)\Bin\dcl31w40.bpl=Delphi 1.0 Compatibility Components
-
 [HistoryLists\hlDebugSourcePath]
 Count=2
 Item0=..\src\
 Item1=..\src
-
 [HistoryLists\hlConditionals]
 Count=1
 Item0=USE_JEDI_JCL
-
 [HistoryLists\hlUnitAliases]
 Count=1
 Item0=WinTypes=Windows;WinProcs=Windows;DbiTypes=BDE;DbiProcs=BDE;DbiErrs=BDE;
-
 [HistoryLists\hlSearchPath]
 Count=18
 Item0=$(DELPHI)\lib;.\lib;.\elements;.\tasks;.\paths;..\lib\xml;..\lib\paszlib;..\lib\paszlib\minizip;..\lib\perlre;c:\home\want\src\taks;c:\home\want\src\elements
@@ -123,17 +113,14 @@ Item14=..\src\;..\src\xml
 Item15=..\src\
 Item16=..\src
 Item17=..
-
 [HistoryLists\hlUnitOutputDirectory]
 Count=1
 Item0=..\dcu
-
 [HistoryLists\hlOutputDirectorry]
 Count=3
 Item0=c:\tmp
 Item1=c:\home\want\bin
 Item2=..\bin
-
 [HistoryLists\hlRunParameters]
 Count=30
 Item0=-efr -buildfile \home\want\make\build.xml

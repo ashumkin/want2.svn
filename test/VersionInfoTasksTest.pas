@@ -6,7 +6,7 @@ uses
   TestFramework,
   clVersionRcUnitTest,
   VersionInfoTasks,
-  DanteClasses;
+  WantClasses;
 
 type
   TTestVersioninfoTask = class(TTestRcUnit)
@@ -41,7 +41,7 @@ end;
 
 procedure TTestVersioninfoTask.TestIncVerRcTask;
 begin
-  FIncVerRcTask.RcFileName := FIncVerRcTask.ToDantePath(FTestRcName);
+  FIncVerRcTask.RcFileName := FIncVerRcTask.ToWantPath(FTestRcName);
   FIncVerRcTask.Increment  := True;
   FIncVerRcTask.Init;
   FIncVerRcTask.Execute;

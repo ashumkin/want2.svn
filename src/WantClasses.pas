@@ -1,38 +1,13 @@
+(*******************************************************************
+*  WANT - A build management tool.                                 *
+*  Copyright (c) 2001 Juancarlo Añez, Caracas, Venezuela.          *
+*  All rights reserved.                                            *
+*                                                                  *
+*******************************************************************)
+
 { $Id$ }
-{
---------------------------------------------------------------------------------
-Copyright (c) 2001, Dante Authors -- See authors.txt for complete list
-All rights reserved.
 
-Redistribution and use in source and binary forms, with or without modification,
-are permitted provided that the following conditions are met:
-
-1. Redistributions of source code must retain the above copyright notice, this
-list of conditions and the following disclaimer.
-
-2. Redistributions in binary form must reproduce the above copyright notice,
-this list of conditions and the following disclaimer in the documentation and/or
-other materials provided with the distribution.
-
-3. The name Dante, the names of the authors in authors.txt and the names of
-other contributors to this software may not be used to endorse or promote
-products derived from this software without specific prior written permission.
-
-THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS ``AS IS''
-AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDERS OR CONTRIBUTORS BE LIABLE
-FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
-DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
-SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
-CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR
-TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
-THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
---------------------------------------------------------------------------------
-Original Author: Juancarlo Añez
-Contributors   : 
-}
-unit DanteClasses;
+unit WantClasses;
 
 interface
 uses
@@ -55,7 +30,6 @@ uses
 {$M+} { TURN ON RTTI (RunTime Type Information) }
 
 const
-  DanteBuildFileName = 'dante.xml';
   AntBuildFileName   = 'build.xml';
 
   SupportedPropertyTypes = [
@@ -87,9 +61,9 @@ type
   TTask       = class;
   TTaskClass  = class of TTask;
 
-  EDanteException   = class(Exception);
-  EDanteError       = class(EDanteException);
-  ETargetException  = class(EDanteException);
+  EWantException   = class(Exception);
+  EWantError       = class(EWantException);
+  ETargetException  = class(EWantException);
 
 
   ENoDefaultTargetError     = class(ETargetException);
@@ -97,7 +71,7 @@ type
   ECircularTargetDependency = class(ETargetException);
 
 
-  ETaskException    = class(EDanteException);
+  ETaskException    = class(EWantException);
   ETaskError       = class(ETaskException);
   ETaskFailure     = class(ETaskException);
 
@@ -181,7 +155,7 @@ type
     // use this function in Tasks to let the user specify relative
     // directories that work consistently
     function  ToSystemPath(const Path: TPath; const Base: TPath = ''):string;
-    function  ToDantePath(Path: TSystemPath): TPath;
+    function  ToWantPath(Path: TSystemPath): TPath;
     function  ToAbsolutePath(const Path: TPath): TPath; virtual;
     function  ToRelativePath(const Path: TPath; const Base: TPath = ''): TPath; virtual;
     procedure AboutToScratchPath(const Path: TPath);
@@ -345,7 +319,7 @@ procedure RegisterElements(AppliesTo : TScriptElementClass; ElementClasses:array
 function  TextToArray(const Text: string; const Delimiter :string = ','): TStringArray;
 
 procedure RaiseLastSystemError(Msg: string = '');
-procedure DanteError(Msg: string = '');
+procedure WantError(Msg: string = '');
 procedure TaskError(Msg: string = '');
 procedure TaskFailure(Msg: string = '');
 
@@ -510,9 +484,9 @@ asm
 @@Finish:
 end;
 
-procedure DanteError(Msg: string = '');
+procedure WantError(Msg: string = '');
 begin
-   raise EDanteError.Create(Msg + '!' ) at CallerAddr;
+   raise EWantError.Create(Msg + '!' ) at CallerAddr;
 end;
 
 procedure TaskError(Msg: string);
@@ -651,14 +625,14 @@ begin
   Log(vlDebug, 'SetUp %s', [Name]);
 
   if Name <> Self.TagName then
-    DanteError(Format('XML tag of class <%s> is <%s> but found <%s>',
+    WantError(Format('XML tag of class <%s> is <%s> but found <%s>',
                       [ClassName, TagName, Name]
                       ));
 
   for i := 0 to Atts.Count-1 do
   begin
      if not Self.SetAttribute(Atts.Names[i], Atts.Values[Atts.Names[i]]) then
-       DanteError(Format('Unknown attribute <%s>.%s', [TagName, Atts.Names[i]]));
+       WantError(Format('Unknown attribute <%s>.%s', [TagName, Atts.Names[i]]));
   end;
 end;
 
@@ -712,7 +686,7 @@ begin
     if ElemClass <> nil then
       Result := ElemClass.Create(Self)
     else
-      DanteError(Format('Unknown element <%s><%s>', [TagName, ChildName]));
+      WantError(Format('Unknown element <%s><%s>', [TagName, ChildName]));
   end;
 end;
 
@@ -795,7 +769,7 @@ begin
 end;
 
 
-function TScriptElement.ToDantePath(Path: TSystemPath): TPath;
+function TScriptElement.ToWantPath(Path: TSystemPath): TPath;
 begin
   Result := WildPaths.ToPath(Path, BasePath);
 end;
@@ -808,7 +782,7 @@ end;
 
 procedure TScriptElement.AttributeRequiredError(AttName: string);
 begin
-  DanteError(Format('"%s" attribute is required', [AttName]));
+  WantError(Format('"%s" attribute is required', [AttName]));
 end;
 
 procedure TScriptElement.RequireAttribute(Name: string);
@@ -974,7 +948,7 @@ begin
       begin
         if (Name = 'TPath')
         and not WildPaths.IsSystemIndependentPath(Value) then
-          DanteError(Format('expected system-independent path but got: "%s"', [Value]) );
+          WantError(Format('expected system-independent path but got: "%s"', [Value]) );
         SetStrProp(Self, PropInfo, Value);
       end
       else if Kind in [tkInteger] then
@@ -1054,7 +1028,7 @@ begin
     end;
   end;
   if Result = nil then
-    DanteError(Format('element id="%s" not found', [Id]));
+    WantError(Format('element id="%s" not found', [Id]));
 end;
 
 function TProject.GetTargetByName(Name: string): TTarget;
@@ -1071,7 +1045,7 @@ begin
     end;
   end;
   if Result = nil then
-    DanteError(Format('Target "%s" not found',[Name]));
+    WantError(Format('Target "%s" not found',[Name]));
 end;
 
 procedure TProject.BuildSchedule(TargetName: string; Sched: TList);
@@ -1269,8 +1243,6 @@ end;
 function TProject.FindBuildFile(SearchUp: boolean): TPath;
 begin
   Result := FindBuildFile(DefaultBuildFileName, SearchUp);
-  if not PathIsFile(Result) then
-     Result := FindBuildFile(DanteBuildFileName, SearchUp);
   if not PathIsFile(Result) then
      Result := FindBuildFile(AntBuildFileName, SearchUp);
   if not PathIsFile(Result) then

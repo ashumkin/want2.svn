@@ -1,29 +1,89 @@
-#define JclResources_RsCreateFileMapping 65408
-#define JclResources_RsCreateFileMappingView 65409
-#define JclResources_RsFailedToObtainSize 65410
-#define JclResources_RsPeCantOpen 65411
-#define JclResources_RsPeNotPE 65412
-#define JclResources_RsPeNotResDir 65413
-#define JclResources_RsPeSectionNotFound 65414
-#define ComConst_SOleError 65415
-#define ComConst_SNoMethod 65416
-#define ComConst_SVarNotObject 65417
-#define Consts_SListCountError 65424
-#define Consts_SSortedListError 65425
-#define Consts_SDuplicateString 65426
-#define Consts_SLineTooLong 65427
-#define Consts_SInvalidPropertyValue 65428
-#define Consts_SNoCanvasHandle 65429
-#define Consts_SParseError 65430
-#define Consts_SInvalidString 65431
-#define Consts_SIniFileWriteError 65432
-#define Consts_SInvalidRegType 65433
-#define Consts_SRegCreateFailed 65434
-#define Consts_SRegSetDataFailed 65435
-#define Consts_SRegGetDataFailed 65436
-#define JclResources_RsWin32Prefix 65437
-#define JclResources_RsCannotCreateDir 65438
-#define JclResources_RsFileUtilsNoVersionInfo 65439
+#define JclResources_RsPeNotPE 65344
+#define JclResources_RsPeNotResDir 65345
+#define JclResources_RsPeSectionNotFound 65346
+#define ComConst_SOleError 65347
+#define ComConst_SNoMethod 65348
+#define ComConst_SVarNotObject 65349
+#define Consts_SInvalidRegType 65360
+#define Consts_SRegCreateFailed 65361
+#define Consts_SRegSetDataFailed 65362
+#define Consts_SRegGetDataFailed 65363
+#define Consts_SDuplicateMenus 65364
+#define Consts_SDockedCtlNeedsName 65365
+#define Consts_SDockTreeRemoveError 65366
+#define Consts_SDockZoneNotFound 65367
+#define Consts_SDockZoneHasNoCtl 65368
+#define JclResources_RsWin32Prefix 65369
+#define JclResources_RsCannotCreateDir 65370
+#define JclResources_RsFileUtilsNoVersionInfo 65371
+#define JclResources_RsCreateFileMapping 65372
+#define JclResources_RsCreateFileMappingView 65373
+#define JclResources_RsFailedToObtainSize 65374
+#define JclResources_RsPeCantOpen 65375
+#define Consts_SmkcPgUp 65376
+#define Consts_SmkcPgDn 65377
+#define Consts_SmkcEnd 65378
+#define Consts_SmkcHome 65379
+#define Consts_SmkcLeft 65380
+#define Consts_SmkcUp 65381
+#define Consts_SmkcRight 65382
+#define Consts_SmkcDown 65383
+#define Consts_SmkcIns 65384
+#define Consts_SmkcDel 65385
+#define Consts_SmkcShift 65386
+#define Consts_SmkcCtrl 65387
+#define Consts_SmkcAlt 65388
+#define Consts_SIconToClipboard 65389
+#define Consts_SIniFileWriteError 65390
+#define Consts_SBitsIndexError 65391
+#define Consts_SVisibleChanged 65392
+#define Consts_SCannotShowModal 65393
+#define Consts_SMenuIndexError 65394
+#define Consts_SMenuReinserted 65395
+#define Consts_SMenuNotFound 65396
+#define Consts_SGroupIndexTooLow 65397
+#define Consts_SNoMDIForm 65398
+#define Consts_SControlParentSetToSelf 65399
+#define Consts_SCannotDragForm 65400
+#define Consts_SParseError 65401
+#define Consts_SInvalidString 65402
+#define Consts_SmkcBkSp 65403
+#define Consts_SmkcTab 65404
+#define Consts_SmkcEsc 65405
+#define Consts_SmkcEnter 65406
+#define Consts_SmkcSpace 65407
+#define Consts_SInvalidBitmap 65408
+#define Consts_SInvalidIcon 65409
+#define Consts_SChangeIconSize 65410
+#define Consts_SUnknownClipboardFormat 65411
+#define Consts_SOutOfResources 65412
+#define Consts_SNoCanvasHandle 65413
+#define Consts_SInvalidImageSize 65414
+#define Consts_SInvalidImageList 65415
+#define Consts_SImageIndexError 65416
+#define Consts_SImageReadFail 65417
+#define Consts_SImageWriteFail 65418
+#define Consts_SWindowDCError 65419
+#define Consts_SWindowClass 65420
+#define Consts_SCannotFocus 65421
+#define Consts_SParentRequired 65422
+#define Consts_SMDIChildNotVisible 65423
+#define Consts_SResNotFound 65424
+#define Consts_SListIndexError 65425
+#define Consts_SListCapacityError 65426
+#define Consts_SListCountError 65427
+#define Consts_SSortedListError 65428
+#define Consts_SDuplicateString 65429
+#define Consts_SDuplicateName 65430
+#define Consts_SInvalidName 65431
+#define Consts_SDuplicateClass 65432
+#define Consts_SLineTooLong 65433
+#define Consts_SInvalidPropertyValue 65434
+#define Consts_SInvalidPropertyPath 65435
+#define Consts_SUnknownProperty 65436
+#define Consts_SReadOnlyProperty 65437
+#define Consts_SPropertyException 65438
+#define Consts_SAncestorNotFound 65439
 #define SysConst_SLongDayNameSun 65440
 #define SysConst_SLongDayNameMon 65441
 #define SysConst_SLongDayNameTue 65442
@@ -38,8 +98,8 @@
 #define Consts_SWriteError 65451
 #define Consts_SMemoryStreamError 65452
 #define Consts_SCantWriteResourceStreamError 65453
-#define Consts_SListIndexError 65454
-#define Consts_SListCapacityError 65455
+#define Consts_SClassNotFound 65454
+#define Consts_SInvalidImage 65455
 #define SysConst_SLongMonthNameApr 65456
 #define SysConst_SLongMonthNameMay 65457
 #define SysConst_SLongMonthNameJun 65458
@@ -122,32 +182,92 @@
 #define SysConst_SInvalidInput 65535
 STRINGTABLE
 BEGIN
-	JclResources_RsCreateFileMapping,	"Failed to create FileMapping"
-	JclResources_RsCreateFileMappingView,	"Failed to create FileMappingView"
-	JclResources_RsFailedToObtainSize,	"Failed to obtain size of file"
-	JclResources_RsPeCantOpen,	"Cannot open file \"%s\""
 	JclResources_RsPeNotPE,	"This is not a PE format"
 	JclResources_RsPeNotResDir,	"Not a resource directory"
 	JclResources_RsPeSectionNotFound,	"Section \"%s\" not found"
 	ComConst_SOleError,	"OLE error %.8x"
 	ComConst_SNoMethod,	"Method '%s' not supported by automation object"
 	ComConst_SVarNotObject,	"Variant does not reference an automation object"
-	Consts_SListCountError,	"List count out of bounds (%d)"
-	Consts_SSortedListError,	"Operation not allowed on sorted string list"
-	Consts_SDuplicateString,	"String list does not allow duplicates"
-	Consts_SLineTooLong,	"Line too long"
-	Consts_SInvalidPropertyValue,	"Invalid property value"
-	Consts_SNoCanvasHandle,	"Canvas does not allow drawing"
-	Consts_SParseError,	"%s on line %d"
-	Consts_SInvalidString,	"Invalid string constant"
-	Consts_SIniFileWriteError,	"Unable to write to %s"
 	Consts_SInvalidRegType,	"Invalid data type for '%s'"
 	Consts_SRegCreateFailed,	"Failed to create key %s"
 	Consts_SRegSetDataFailed,	"Failed to set data for '%s'"
 	Consts_SRegGetDataFailed,	"Failed to get data for '%s'"
+	Consts_SDuplicateMenus,	"Menu '%s' is already being used by another form"
+	Consts_SDockedCtlNeedsName,	"Docked control must have a name"
+	Consts_SDockTreeRemoveError,	"Error removing control from dock tree"
+	Consts_SDockZoneNotFound,	" - Dock zone not found"
+	Consts_SDockZoneHasNoCtl,	" - Dock zone has no control"
 	JclResources_RsWin32Prefix,	"Win32: %s (%u)"
 	JclResources_RsCannotCreateDir,	"Unable to create directory"
 	JclResources_RsFileUtilsNoVersionInfo,	"File contains no version information"
+	JclResources_RsCreateFileMapping,	"Failed to create FileMapping"
+	JclResources_RsCreateFileMappingView,	"Failed to create FileMappingView"
+	JclResources_RsFailedToObtainSize,	"Failed to obtain size of file"
+	JclResources_RsPeCantOpen,	"Cannot open file \"%s\""
+	Consts_SmkcPgUp,	"PgUp"
+	Consts_SmkcPgDn,	"PgDn"
+	Consts_SmkcEnd,	"End"
+	Consts_SmkcHome,	"Home"
+	Consts_SmkcLeft,	"Left"
+	Consts_SmkcUp,	"Up"
+	Consts_SmkcRight,	"Right"
+	Consts_SmkcDown,	"Down"
+	Consts_SmkcIns,	"Ins"
+	Consts_SmkcDel,	"Del"
+	Consts_SmkcShift,	"Shift+"
+	Consts_SmkcCtrl,	"Ctrl+"
+	Consts_SmkcAlt,	"Alt+"
+	Consts_SIconToClipboard,	"Clipboard does not support Icons"
+	Consts_SIniFileWriteError,	"Unable to write to %s"
+	Consts_SBitsIndexError,	"Bits index out of range"
+	Consts_SVisibleChanged,	"Cannot change Visible in OnShow or OnHide"
+	Consts_SCannotShowModal,	"Cannot make a visible window modal"
+	Consts_SMenuIndexError,	"Menu index out of range"
+	Consts_SMenuReinserted,	"Menu inserted twice"
+	Consts_SMenuNotFound,	"Sub-menu is not in menu"
+	Consts_SGroupIndexTooLow,	"GroupIndex cannot be less than a previous menu item's GroupIndex"
+	Consts_SNoMDIForm,	"Cannot create form. No MDI forms are currently active"
+	Consts_SControlParentSetToSelf,	"A control cannot have itself as its parent"
+	Consts_SCannotDragForm,	"Cannot drag a form"
+	Consts_SParseError,	"%s on line %d"
+	Consts_SInvalidString,	"Invalid string constant"
+	Consts_SmkcBkSp,	"BkSp"
+	Consts_SmkcTab,	"Tab"
+	Consts_SmkcEsc,	"Esc"
+	Consts_SmkcEnter,	"Enter"
+	Consts_SmkcSpace,	"Space"
+	Consts_SInvalidBitmap,	"Bitmap image is not valid"
+	Consts_SInvalidIcon,	"Icon image is not valid"
+	Consts_SChangeIconSize,	"Cannot change the size of an icon"
+	Consts_SUnknownClipboardFormat,	"Unsupported clipboard format"
+	Consts_SOutOfResources,	"Out of system resources"
+	Consts_SNoCanvasHandle,	"Canvas does not allow drawing"
+	Consts_SInvalidImageSize,	"Invalid image size"
+	Consts_SInvalidImageList,	"Invalid ImageList"
+	Consts_SImageIndexError,	"Invalid ImageList Index"
+	Consts_SImageReadFail,	"Failed to read ImageList data from stream"
+	Consts_SImageWriteFail,	"Failed to write ImageList data to stream"
+	Consts_SWindowDCError,	"Error creating window device context"
+	Consts_SWindowClass,	"Error creating window class"
+	Consts_SCannotFocus,	"Cannot focus a disabled or invisible window"
+	Consts_SParentRequired,	"Control '%s' has no parent window"
+	Consts_SMDIChildNotVisible,	"Cannot hide an MDI Child Form"
+	Consts_SResNotFound,	"Resource %s not found"
+	Consts_SListIndexError,	"List index out of bounds (%d)"
+	Consts_SListCapacityError,	"List capacity out of bounds (%d)"
+	Consts_SListCountError,	"List count out of bounds (%d)"
+	Consts_SSortedListError,	"Operation not allowed on sorted string list"
+	Consts_SDuplicateString,	"String list does not allow duplicates"
+	Consts_SDuplicateName,	"A component named %s already exists"
+	Consts_SInvalidName,	"''%s'' is not a valid component name"
+	Consts_SDuplicateClass,	"A class named %s already exists"
+	Consts_SLineTooLong,	"Line too long"
+	Consts_SInvalidPropertyValue,	"Invalid property value"
+	Consts_SInvalidPropertyPath,	"Invalid property path"
+	Consts_SUnknownProperty,	"Property does not exist"
+	Consts_SReadOnlyProperty,	"Property is read-only"
+	Consts_SPropertyException,	"Error reading %s%s%s: %s"
+	Consts_SAncestorNotFound,	"Ancestor for '%s' not found"
 	SysConst_SLongDayNameSun,	"Sunday"
 	SysConst_SLongDayNameMon,	"Monday"
 	SysConst_SLongDayNameTue,	"Tuesday"
@@ -162,8 +282,8 @@ BEGIN
 	Consts_SWriteError,	"Stream write error"
 	Consts_SMemoryStreamError,	"Out of memory while expanding memory stream"
 	Consts_SCantWriteResourceStreamError,	"Can't write to a read-only resource stream"
-	Consts_SListIndexError,	"List index out of bounds (%d)"
-	Consts_SListCapacityError,	"List capacity out of bounds (%d)"
+	Consts_SClassNotFound,	"Class %s not found"
+	Consts_SInvalidImage,	"Invalid stream format"
 	SysConst_SLongMonthNameApr,	"April"
 	SysConst_SLongMonthNameMay,	"May"
 	SysConst_SLongMonthNameJun,	"June"

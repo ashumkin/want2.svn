@@ -1,7 +1,7 @@
 { $Id$ }
 {
 --------------------------------------------------------------------------------
-Copyright (c) 2001, Dante Authors -- See authors.txt for complete list
+Copyright (c) 2001, Want Authors -- See authors.txt for complete list
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification,
@@ -14,7 +14,7 @@ list of conditions and the following disclaimer.
 this list of conditions and the following disclaimer in the documentation and/or
 other materials provided with the distribution.
 
-3. The name Dante, the names of the authors in authors.txt and the names of
+3. The name Want, the names of the authors in authors.txt and the names of
 other contributors to this software may not be used to endorse or promote
 products derived from this software without specific prior written permission.
 
@@ -44,11 +44,7 @@ uses
   OwnedTrees in 'lib\OwnedTrees.pas',
   WildPaths in 'lib\WildPaths.pas',
   ConsoleLogMgr in 'lib\ConsoleLogMgr.pas',
-  DanteMain in 'DanteMain.pas',
-  DanteClasses in 'DanteClasses.pas',
-  DanteBase in 'DanteBase.pas',
   ZipTasks in 'tasks\ZipTasks.pas',
-  DanteTasks in 'tasks\DanteTasks.pas',
   DelphiTasks in 'tasks\DelphiTasks.pas',
   EchoTasks in 'tasks\EchoTasks.pas',
   ExecTasks in 'tasks\ExecTasks.pas',
@@ -66,7 +62,11 @@ uses
   crt32 in 'lib\CRT32.pas',
   LogMgr in 'lib\LogMgr.pas',
   ScriptParser in 'lib\ScriptParser.pas',
-  ScriptFrm in 'forms\ScriptFrm.pas' {ScriptForm};
+  ScriptFrm in 'forms\ScriptFrm.pas' {ScriptForm},
+  WantRunner in 'WantRunner.pas',
+  WantBase in 'WantBase.pas',
+  WantClasses in 'WantClasses.pas',
+  WantTasks in 'tasks\WantTasks.pas';
 
 {$R wantver.res}
 
@@ -75,14 +75,14 @@ const
 
 procedure Run;
 var
-  ADante :TConsoleDante;
+  AWant :TConsoleWant;
 begin
   try
-    ADante := TConsoleDante.Create;
+    AWant := TConsoleWant.Create;
     try
-      ADante.Execute;
+      AWant.Execute;
     finally
-      FreeAndNil(ADante);
+      FreeAndNil(AWant);
     end;
   except
     Halt(1);
@@ -93,13 +93,13 @@ begin
   if FindCmdLineSwitch('?', SwitchChars, true) or
      FindCmdLineSwitch('h', SwitchChars, true) then
   begin
-    WriteLn(DanteHeader);
+    WriteLn(WantHeader);
     Usage;
   end
   else if FindCmdLineSwitch('L', SwitchChars, false) then
   begin
     // need to add More functionality ... going to add it in clUtilConsole
-    WriteLn(DanteHeader);
+    WriteLn(WantHeader);
     WriteLn(License);
   end
   else

@@ -35,33 +35,33 @@ var
   Path: string;
   Base: string;
 begin
-  Base := '/SF-dante/dante/src';
+  Base := '/SomeRoot/subdir/src';
   Path := '/dev/Borland/Delphi5/bin/dcc32.exe';
   CheckEquals('../../..' + Path, WildPaths.ToRelativePath(Path, Base),
     'ToRelativePath - Path not in Base');
 
-  Base := '/SF-dante/dante/src';
-  Path := '/SF-dante/dante/src/tasks';
+  Base := '/SomeRoot/subdir/src';
+  Path := '/SomeRoot/subdir/src/tasks';
   CheckEquals('./tasks', WildPaths.ToRelativePath(Path, Base),
     'ToRelativePath - Path subdir');
 
-  Base := '/SF-dante/dante/src';
-  Path := '/SF-dante/dante/src';
+  Base := '/SomeRoot/subdir/src';
+  Path := '/SomeRoot/subdir/src';
   CheckEquals('.', WildPaths.ToRelativePath(Path, Base),
     'ToRelativePath - Path = Base');
 
-  Base := '/dante/src';
-  Path := '/SF-dante/dante/src';
+  Base := '/subdir/src';
+  Path := '/SomeRoot/subdir/src';
   CheckEquals('../..' + Path, WildPaths.ToRelativePath(Path, Base),
     'ToRelativePath - Path not in Base');
 
-  Base := '/SF-dante/dante/src';
-  Path := '/SF-dante';
+  Base := '/SomeRoot/subdir/src';
+  Path := '/SomeRoot';
   CheckEquals('../../', WildPaths.ToRelativePath(Path, Base),
     'ToRelativePath - Path parent of Base');
 
   Path := '/d:/dev/Borland/Delphi5/bin/dcc32.exe';
-  Base := '/S:/SF-dante/dante/src';
+  Base := '/S:/SomeRoot/subdir/src';
   CheckEquals(Path, WildPaths.ToRelativePath(Path, Base),
     'ToRelativePath with different drive absolute');
 
@@ -74,14 +74,14 @@ begin
      a path represent the same thing, of which there's no guarantee, and this
      could deceive code using this method.
 
-     However, this assumptive behavior could be useful as in the first test 
-     below. If I know that the up (..) placeholders are equivalent (represent 
-     the same absolute), then I could use ToRelativePath successfully to get 
-     ./testA/AStuff. Otherwise, I have to go the extra step of replacing .. 
-     before calling ToRelativePath. However, some cases are more obviously 
-     arbitrary than others. If the following was implemented, there'd have to be 
-     some way of forcing the user to state what's common ... but that's probably 
-     as much or more work than simply forcing them to use Absolute paths. 
+     However, this assumptive behavior could be useful as in the first test
+     below. If I know that the up (..) placeholders are equivalent (represent
+     the same absolute), then I could use ToRelativePath successfully to get
+     ./testA/AStuff. Otherwise, I have to go the extra step of replacing ..
+     before calling ToRelativePath. However, some cases are more obviously
+     arbitrary than others. If the following was implemented, there'd have to be
+     some way of forcing the user to state what's common ... but that's probably
+     as much or more work than simply forcing them to use Absolute paths.
      -- Chrismo
 
   Base := '../sample/test';
