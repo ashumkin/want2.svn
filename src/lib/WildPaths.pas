@@ -914,10 +914,10 @@ begin
       FileAttr := FileAttr and (not faReadOnly);
       SysUtils.FileSetAttr(SysPath, FileAttr);
     end;
-    SysUtils.DeleteFile(ToSystemPath(Path))
+    SysUtils.DeleteFile(SysPath)
   end
   else
-    SysUtils.RemoveDir(ToSystemPath(Path));
+    SysUtils.RemoveDir(SysPath);
 end;
 
 procedure DeleteFiles(const Pattern: TPath; const BasePath: TPath; DeleteReadOnly :boolean);
