@@ -36,8 +36,10 @@ type
     procedure AddError(error: TTestFailure); virtual;
     procedure AddFailure(failure: TTestFailure); virtual;
     function  ShouldRunTest(test :ITest) :boolean;  virtual;
+    procedure StartSuite(suite: ITest);
     procedure StartTest(test: ITest); virtual;
     procedure EndTest(test: ITest); virtual;
+    procedure EndSuite(suite: ITest);
     procedure TestingStarts; virtual;
     procedure TestingEnds(testResult: TTestResult); virtual;
     procedure Status(test :ITest; const Msg :string); virtual;
@@ -167,6 +169,16 @@ end;
 procedure TDUnitTask.Status(test: ITest; const Msg: string);
 begin
   Log(vlVerbose, Format('%s: %s', [test.Name, Msg]));
+end;
+
+procedure TDUnitTask.StartSuite(suite: ITest);
+begin
+
+end;
+
+procedure TDUnitTask.EndSuite(suite: ITest);
+begin
+
 end;
 
 initialization
