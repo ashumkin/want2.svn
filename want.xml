@@ -18,10 +18,10 @@ See http://www.suigeneris.org/want/ for details.
   <property name="old.version"    value="?{release.ini:releases:current}" />
   <regexp   property="old.build"  text="${old.version}" pattern="^.*\.([0-9]+)$" subst ="\1" />
   
-  <property name="build" value="={1 + ${old.build}}" />
+  <property name="build" value="={1 + ${old.build}}" if="%{want_master}" />
+  <property name="build" value="=${old.build}"   unless="%{want_master}" />
   
-  <regexp property="version" text="${old.version}" pattern="\.[0-9]*$" subst=".={1 + ${old.build}}" />
-  <regexp property="build"  text="${version}" pattern="^.*\.([0-9]+)$" subst ="\1" />
+  <regexp property="version" text="${old.version}" pattern="\.[0-9]*$" subst=".${build}" />
   <regexp property="comma.version" pattern="\." subst="," text="${version}" />
 
   <property name="etc"       value="${basedir}/etc" />
