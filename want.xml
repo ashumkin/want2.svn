@@ -125,8 +125,10 @@ See http://www.suigeneris.org/want/ for details.
       <resourcepath refid="resources" />
     </dcc>
   </target>
+
   <target name="compile" depends="compile-want,compile-dof2want">
   </target>
+
   <target name="compile-dof2want"  depends="prepare,versioninfo,resources,build">
     <dcc basedir="dof2want" source="dof2want.dpr">
       <exeoutput path="${bin}" />

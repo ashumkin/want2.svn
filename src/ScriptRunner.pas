@@ -279,6 +279,7 @@ begin
 
   LastDir := CurrentDir;
   try
+    Target.Configure(false);
     ChangeDir(Target.BasePath);
 
     PathList := WildPaths.Wild(Target.ForEach);

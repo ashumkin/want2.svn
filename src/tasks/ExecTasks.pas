@@ -51,12 +51,14 @@ type
   TArgElement = class(TScriptElement)
   protected
     FVAlue :string;
-    FPath  :IPath;
+
+    function Getpath :TPath;
+    procedure SetPath(Path :TPath);
   public
     procedure Init; override;
   published
-    property value :string read FValue write FValue;
-    property path  :IPath  read FPath  write FPath;
+    property value :string read FValue  write FValue;
+    property path  :TPath  read GetPath write SetPath;
   end;
 
   TCustomExecTask = class(TTask)
@@ -164,7 +166,7 @@ implementation
 procedure TExecTask.Execute;
 begin
   Log(PathFile(Executable));
-  Log(vlDebug, 'executable=' + Executable);
+  Log(vlDebug, 'executable=' + ToPath(Executable));
   Log(vlDebug, 'arguments='  + BuildArguments);
   inherited Execute;
 end;
@@ -210,8 +212,15 @@ var
 begin
   Result := '';
   { Arguments.CommaText screws with the contents. See unit test }
-  for i := 0 to ArgumentList.Count - 1 do
-    Result := Result + ' ' +ArgumentList[i];
+  for i := 0 to FArguments.Count-1 do
+  begin
+    Result := Result + ' ' + FArguments[i];
+  end;
+  for i := 0 to ChildCount-1 do
+  begin
+    if Children[i] is TArgElement then
+      Result := Result + ' ' + TArgElement(Children[i]).Value;
+  end;
   Result := Trim(Result);
 end;
 
@@ -413,17 +422,20 @@ end;
 
 { TArgElement }
 
+function TArgElement.Getpath: TPath;
+begin
+   Result := Value;
+end;
+
+procedure TArgElement.SetPath(Path: TPath);
+begin
+   FValue := ToSystemPath(ToRelativePath(Path));
+end;
+
 procedure TArgElement.Init;
 begin
   inherited Init;
-  if value = '' then
-  begin
-    if GetAttribute('path') = '' then
-      RequireAttribute('value');
-    RequireAttribute('path');
-    value := ToSystemPath(path.asString);
-  end;
-  (Owner as TCustomExecTask).FArguments.Add(Value);
+  RequireAttribute('path|value');
 end;
 
 initialization

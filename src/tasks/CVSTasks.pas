@@ -1052,7 +1052,7 @@ begin
     ArgumentList.Add(AddOption('-d', s, True));
     Log(vlVerbose, 'date' + s);
   end;
-  if FDir = '' then FDir := FBasedir;
+  if FDir = '' then FDir := Basedir;
   inherited BuildArgumentsSpecific;
 end;
 

@@ -46,11 +46,15 @@ type
     FSection: string;
     FOverwrite :boolean;
     procedure ProcessFile;
+
+    function GetPath :TPath;
+    procedure SetPath(Path :TPath);
   public
     procedure Init;    override;
   published
     property name: string read FName  write FName;
     property value: string read FValue write FValue;
+    property path:  TPath  read GetPath write SetPath;
     property _file: TPath read FFileName  write FFileName;
     property section: string read FSection write FSection;
     property overwrite :boolean read FOverwrite write FOverwrite;
@@ -59,6 +63,16 @@ type
 implementation
 
 { TPropertyElement }
+
+function TPropertyElement.GetPath: TPath;
+begin
+  Result := Value;
+end;
+
+procedure TPropertyElement.SetPath(Path: TPath);
+begin
+  FValue := ToPath(Path);
+end;
 
 procedure TPropertyElement.Init;
 begin

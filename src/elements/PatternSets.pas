@@ -139,6 +139,7 @@ implementation
 
 procedure TIncludeElement.SetValue(Value: string);
 begin
+  Log(vlDebug, 'include name="%s"', [Value]);
  (Owner as TPatternSet).Include(Value);
 end;
 
@@ -146,6 +147,7 @@ end;
 
 procedure TExcludeElement.SetValue(Value: string);
 begin
+  Log(vlDebug, 'exclude name="%s"', [Value]);
  (Owner as TPatternSet).Exclude(Value);
 end;
 
@@ -156,6 +158,7 @@ begin
   inherited Create(Owner);
   FIncludes := TStringList.Create;
   FExcludes := TStringList.Create;
+
   FSorted := true;
 end;
 
@@ -178,13 +181,14 @@ end;
 
 procedure TPatternSet.Include(Pattern: TPath);
 begin
-  Assert(Pattern <> '');
-  FIncludes.Add(Pattern);
+  if (Pattern <> '') and (FIncludes.IndexOf(Pattern) < 0) then
+    FIncludes.Add(Pattern);
 end;
 
 procedure TPatternSet.Exclude(Pattern: TPath);
 begin
-  FExcludes.Add(Pattern);
+  if (Pattern <> '') and (FExcludes.IndexOf(Pattern) < 0) then
+    FExcludes.Add(Pattern);
 end;
 
 procedure TPatternSet.DoInclude(Files: TStrings; Pattern: TPath; Base: string; IncAtt, ExcAtt: TFileAttributes);
@@ -254,6 +258,7 @@ end;
 
 procedure TPatternSet.SetRefId(Id: string);
 begin
+  Log(vlDebug, 'patternset refid="%s"', [Id]);
   AddPatternSet(Project.FindChild(Id, TPatternSet) as TPatternSet);
 end;
 
@@ -264,8 +269,9 @@ begin
   Files := TStringList.Create;
   try
     Files.Sorted := FSorted;
+    Files.Duplicates := dupIgnore;
 
-    Log(vlDebug, 'fileset basedir="%s"', [basedir]);
+    Log(vlDebug, 'fileset basepath="%s"', [basepath]);
     GetPaths(Files);
 
     Result := StringsToPaths(Files);

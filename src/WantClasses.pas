@@ -18,7 +18,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA *
  ****************************************************************************)
 {
-    @brief 
+    @brief
 
     @author Juanco Añez
 }
@@ -138,7 +138,6 @@ type
 
   TScriptElement = class(TTree)
   protected
-    FBaseDir: TPath;       // where paths for this object are based
     FLine   : Integer;
     FColumn : Integer;
 
@@ -152,6 +151,7 @@ type
 
     FIf     :string;
     FUnless :string;
+    FBaseDir:string;
 
     class function SynthesizeTagName(Suffix :string): string; virtual;
 
@@ -191,7 +191,7 @@ type
     function  Enabled :boolean; virtual;
     procedure SetUp(Name :string; Atts :TStrings); virtual;
     function  SetupChild(ChildName :string; Atts :TStrings):TScriptElement; virtual;
-    procedure Configure; virtual;
+    procedure Configure(recurse :boolean = true); virtual;
 
     procedure SetProperty(Name, Value: string; overwrite :boolean = false); virtual;
     function  PropertyDefined(Name: string): boolean;    virtual;
@@ -213,7 +213,7 @@ type
     function  HasDelphiProperty(Name :string):boolean;
 
     // use this to get the fully qualified base path
-    function  BasePath: TPath; virtual;
+    function  GetBasePath: TPath; virtual;
     // use this function in Tasks to let the user specify relative
     // directories that work consistently
     function  ToSystemPath(const Path: TPath; const Base: TPath = ''):string; virtual;
@@ -230,6 +230,7 @@ type
 
     property id     :    string   read FId         write SetId;
     property basedir:    TPath    read GetBaseDir  write SetBaseDir;
+    property basepath:   TPath    read GetBasePath;
     property Properties: TStrings read FProperties write SetProperties;
     property Attributes: TStrings read FAttributes;
     property Name:       string   read FName       write FName stored True;
@@ -268,9 +269,6 @@ type
 
     function  GetTarget(Index: Integer):TTarget;
 
-    procedure SetBaseDir(const Value: TPath); override;
-    function  GetBaseDir: TPath;              override;
-
     procedure SetRootPath(const Path :TPath);
 
     procedure BuildSchedule(TargetName: string; Seen, Sched: TList);
@@ -280,14 +278,13 @@ type
     constructor Create(Owner: TScriptElement = nil); override;
     destructor  Destroy; override;
 
-    procedure SetInitialBaseDir(Path: TPath);
-
     class function TagName: string; override;
 
     function  FindChild(Id: string; ChildClass: TClass = nil): TScriptElement;
 
     // use this to get the fully qualified base path
-    function  BasePath: TPath; override;
+    function  GetBasePath: TPath; override;
+    procedure SetBaseDir(const Value: TPath); override;
     // use this function in Tasks to let the user specify relative
     // directories that work consistently
 
@@ -604,11 +601,12 @@ begin
   // do nothing
 end;
 
-procedure TScriptElement.Configure;
+procedure TScriptElement.Configure(recurse :boolean);
 var
   a       :Integer;
   i       :Integer;
   LastDir :TPath;
+  Value   :string;
 begin
   LastDir := CurrentDir;
   try
@@ -616,14 +614,16 @@ begin
       with Attributes do
       begin
         for a := 0 to Count-1 do
-          if not SetDelphiProperty(Names[a], Evaluate(Values[Names[a]])) then
+        begin
+          Value := Evaluate(Values[Names[a]]);
+          Log(vlDebug, '>>>>> set attribute %s.%s="%s"', [TagName, Names[a], Value]);
+          if not SetDelphiProperty(Names[a], Value) then
              raise Exception.CreateFmt('%s not a property of this element', [Names[a]]);
+        end;
       end;
 
       ChangeDir(BasePath, false);
       self.Init;
-      if (Parent <> nil) and (Parent.ClassType <> TTarget) then
-        Self.Execute;
     except
       on e :Exception do
          WantError(Format('(%d:%d) could not configure <%s>: %s',
@@ -631,8 +631,11 @@ begin
                           ));
     end;
 
-    for i := 0 to ChildCount-1 do
-      Children[i].Configure;
+    if recurse then
+    begin
+      for i := 0 to ChildCount-1 do
+        Children[i].Configure;
+    end;
   finally
     ChangeDir(LastDir, False);
   end;
@@ -746,11 +749,11 @@ begin
   end;
 end;
 
-function TScriptElement.BasePath: TPath;
+function TScriptElement.GetBasePath: TPath;
 begin
-  Result := BaseDir;
+  Result := FBaseDir;
   if Owner <> nil then
-    Result := PathConcat((Owner as TScriptElement).BasePath, Result);
+    Result := PathConcat(Owner.BasePath, Result);
 end;
 
 function TScriptElement.ToAbsolutePath(const Path: TPath): TPath;
@@ -871,7 +874,6 @@ end;
 procedure TScriptElement.SetBaseDir(const Value: TPath);
 begin
   FBaseDir := Value;
-  SetProperty('basedir', BasePath);
 end;
 
 procedure TScriptElement.SetID(Value: string);
@@ -893,8 +895,15 @@ begin
     WantError('property name missing');
   if Value = '' then
     Value := #0;
-  if overwrite or not PropertyDefined(Name) then
-    Properties.Values[Name] := Value;
+  if not PropertyDefined(Name) then
+    Properties.Values[Name] := Value
+  else if overwrite then
+  begin
+     if Properties.IndexOfName(Name) >= 0 then
+        Properties.Values[Name] := Value
+     else if Owner <> nil then
+        Owner.SetProperty(Name, Value, true);
+  end;
 end;
 
 function TScriptElement.PropertyDefined(Name: string): boolean;
@@ -909,7 +918,7 @@ begin
   if Name = '' then
     Result := ''
   else if Properties.IndexOfName(Name) >= 0 then
-    Result := TrimRight(Evaluate(Properties.Values[Name]))
+    Result := TrimRight(Properties.Values[Name])
   else if Owner <> nil then
     Result := Owner.PropertyValue(Name)
   else
@@ -1097,8 +1106,10 @@ begin
     begin
       if Kind in [tkString, tkLString, tkWString] then
       begin
+        (*!!!
         if (Name = 'TPath') then
            Value := ToRelativePath(Value);
+        *)
         SetStrProp(Self, PropInfo, Value);
       end
       else if Kind in [tkInteger] then
@@ -1255,21 +1266,16 @@ begin
   Result := 'project';
 end;
 
-function TProject.BasePath: TPath;
+function TProject.GetBasePath: TPath;
 begin
-  Result := PathConcat(RootPath, inherited BasePath);
+  Result := PathConcat(RootPath, FBaseDir);
 end;
-
 procedure TProject.SetBaseDir(const Value: TPath);
 begin
-  inherited SetBaseDir(Value);
-  SetProperty('basedir', PathConcat(RootPath, Value));
+  inherited;
+  SetProperty('basedir', BasePath, true);
 end;
 
-function TProject.GetBaseDir: TPath;
-begin
-  Result := FBaseDir;
-end;
 
 procedure TProject.SetRootPath(const Path: TPath);
 begin
@@ -1279,12 +1285,6 @@ begin
     FRootPath := Path;
     FRootPathSet := True;
   end;
-end;
-
-procedure TProject.SetInitialBaseDir(Path: TPath);
-begin
-  SetBaseDir(Path);
-  Properties.Values['basedir'] := PathConcat(RootPath, Path);
 end;
 
 procedure TTarget.InsertNotification(Child: TTree);

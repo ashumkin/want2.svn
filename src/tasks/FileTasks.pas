@@ -18,7 +18,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA *
  ****************************************************************************)
 {
-    @brief 
+    @brief
 
     @author Juancarlo Añez
 }
@@ -152,7 +152,6 @@ end;
 procedure TFileSetTask.Init;
 begin
   inherited;
-  AddDefaultPatterns;
 end;
 
 function TFileSetTask.CreateInclude: TIncludeElement;
@@ -217,6 +216,7 @@ var
   f: Integer;
 begin
   inherited Execute;
+  AddDefaultPatterns;
   for f := Low(FFileSets) to High(FFileSets) do
   begin
     if FFileSets[f] <> nil then
@@ -317,6 +317,7 @@ var
 begin
   inherited DoFileSet(Fileset);
 
+  Log(vlDebug, 'fileset basepath=%s', [Fileset.BasePath]);
   Paths := Fileset.Paths;
 
   if Paths = nil then

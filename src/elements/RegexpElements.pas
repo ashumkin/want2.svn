@@ -44,6 +44,7 @@ type
     FToLower   :boolean;
 
     function Substitute(Pattern, Subst, Text :string) :string;
+    procedure Perform;
   public
     procedure Init; override;
     procedure Execute; override;
@@ -67,11 +68,17 @@ begin
   inherited Init;
   RequireAttribute('property');
   RequireAttribute('pattern');
+  Perform;
 end;
 
 procedure TRegexpTask.Execute;
 begin
   inherited;
+  Perform;
+end;
+
+procedure TRegexpTask.Perform;
+begin
   if not HasAttribute('subst') then
     Owner.SetProperty(_property, Substitute('.*('+pattern+').*', '\1', _text), overwrite)
   else
