@@ -38,7 +38,9 @@ uses
   TestFramework,
   DanteMainTest,
   DanteClassesTest,
-  DanteTestUtil in 'DanteTestUtil.pas';
+  DanteTestUtil in 'DanteTestUtil.pas',
+  DelphiTasks in '..\src\tasks\DelphiTasks.pas',
+  ExecTasks in '..\src\tasks\ExecTasks.pas';
 
 {$R *.RES}
 

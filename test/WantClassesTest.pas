@@ -38,7 +38,18 @@ unit DanteClassesTest;
 interface
 
 uses
-  DanteClasses, SysUtils, Classes, TestFramework, JclSysInfo, DanteTestUtil;
+  DanteClasses,
+  ExecTasks,
+  DelphiTasks,
+
+  TestFramework,
+
+  JclFileUtils,
+  JclShell,
+
+  SysUtils,
+  Classes;
+
 
 type
   TProjectBaseCase = class(TTestCase)
@@ -50,12 +61,39 @@ type
   published
   end;
 
+  TTestDirCase = class(TProjectBaseCase)
+  protected
+    FTestDir: string;
+
+    function MakeSampleTextFile: string;
+  public
+    procedure Setup; override;
+    procedure TearDown; override;
+  end;
+
   TSaveProjectTests = class(TProjectBaseCase)
     procedure BuildTestProject;
   published
     procedure TestInMemoryConstruction;
     procedure TestParse;
     procedure TestSaveLoad;
+  end;
+
+  TBuildTests = class(TProjectBaseCase)
+  protected
+    procedure BuildProject;
+    procedure SetUp; override;
+  published
+    procedure TestSchedule;
+    procedure TestBuild;
+  end;
+
+  TDelphiCompileTests = class(TProjectBaseCase)
+  protected
+    procedure BuildProject;
+    procedure SetUp; override;
+  published
+    procedure TestCompile;
   end;
 
   TDummyTask1 = class(TTask)
@@ -87,12 +125,38 @@ implementation
 
 procedure TProjectBaseCase.SetUp;
 begin
-  FProject := TProject.Create(nil);
+  FProject := TProject.Create;
 end;
 
 procedure TProjectBaseCase.TearDown;
 begin
   FProject.Free;
+end;
+
+{ TTestDirCase }
+
+function TTestDirCase.MakeSampleTextFile: string;
+var
+  F: TextFile;
+begin
+  Result := FTestDir + '\sample.txt';
+  AssignFile(F, Result);
+  Rewrite(F);
+  WriteLn(F, 'this is a sample file');
+  CloseFile(F); 
+end;
+
+procedure TTestDirCase.Setup;
+begin
+  inherited;
+  FTestDir := ExtractFilePath(ParamStr(0)) + 'test';
+  JclFileUtils.ForceDirectories(FTestDir);
+end;
+
+procedure TTestDirCase.TearDown;
+begin
+  JclShell.SHDeleteFolder(0, FTestDir, [doSilent]);
+  inherited;
 end;
 
 { TSaveProjectTests }
@@ -152,7 +216,7 @@ var
 begin
   BuildTestProject;
   FProject.Save('build1.dfm');
-  P := TProject.Create(nil);
+  P := TProject.Create;
   try
     P.Load('build1.dfm');
     CheckEquals(FProject.AsString, P.AsString);
@@ -170,7 +234,7 @@ end;
 procedure TTestExecTask.Setup;
 begin
   inherited;
-  FExecTask := TExecTask.Create(nil);
+  FExecTask := TShellExecTask.Create(FProject.AddTarget('test_exec_task'));
 end;
 
 procedure TTestExecTask.TearDown;
@@ -186,11 +250,7 @@ var
 begin
   CurrentFileName := MakeSampleTextFile;
   NewFileName := ExtractFilePath(CurrentFileName) + 'new.txt';
-  if IsWinNT then
-    FExecTask.Executable := 'cmd.exe'
-  else
-    FExecTask.Executable := 'command.com';
-  FExecTask.Arguments.Add('/c copy');
+  FExecTask.Arguments.Add('copy');
   FExecTask.Arguments.Add(CurrentFileName);
   FExecTask.Arguments.Add(NewFileName);
   FExecTask.Execute;
@@ -203,9 +263,129 @@ procedure TDummyTask1.Execute;
 begin
 end;
 
+{ TBuildTests }
+
+procedure TBuildTests.BuildProject;
+var
+  T: TTarget;
+  fname: string;
+begin
+  with FProject do
+  begin
+    Name := 'my_project';
+    T := AddTarget('prepare');
+    TDummyTask1.Create(T);
+
+    T := AddTarget('compile');
+    T.Depends.Add('prepare');
+    TDummyTask2.Create(T);
+    TDummyTask3.Create(T);
+
+    T := AddTarget('copy');
+    T.Depends.Add('compile');
+    with TShellExecTask.Create(T) do
+    begin
+      Executable := 'copy';
+      fname := ExtractFilePath(ParamStr(0)) + 'test\sample.txt';
+      Arguments.Add(fname);
+      fname := ExtractFilePath(fname) + 'new.txt';
+      Arguments.Add(fname);
+    end;
+  end;
+end;
+
+
+procedure TBuildTests.SetUp;
+begin
+  inherited SetUp;
+  BuildProject;
+end;
+
+procedure TBuildTests.TestSchedule;
+var
+  S: TTargetArray;
+begin
+  S := FProject.Schedule('copy');
+  CheckEquals(3, Length(S));
+  CheckEquals('prepare', S[0].Name);
+  CheckEquals('compile', S[1].Name);
+  CheckEquals('copy',    S[2].Name);
+end;
+
+procedure TBuildTests.TestBuild;
+var
+  OldFileName,
+  NewFileName: string;
+begin
+ with FProject.Names['copy'].Tasks[0] as TExecTask do
+ begin
+   OldFileName := Arguments[0];
+   NewFileName := Arguments[1];
+ end;
+
+ try
+   CreateDir(ExtractFileDir(OldFileName));
+   FileClose(FileCreate(OldFileName));
+
+   Check(not FileExists(NewFileName), 'file not copied');
+
+   FProject.Build('copy');
+
+   Check(FileExists(NewFileName), 'file not copied');
+ finally
+   DeleteFile(OldFileName);
+   DeleteFile(NewFileName);
+   RemoveDir(ExtractFileDir(OldFileName));
+ end;
+end;
+
+{ TDelphiCompileTests }
+
+procedure TDelphiCompileTests.BuildProject;
+var
+  T :TTarget;
+  RootDir :string;
+begin
+  with FProject do
+  begin
+    Name := 'delphi_compile';
+    T := AddTarget('compile');
+    with TDelphiCompileTask.Create(T) do
+    begin
+      RootDir := ExtractFilePath(ParamStr(0));
+      Arguments.Add(RootDir + '..\src\dante.dpr');
+      Arguments.Add('/B');
+      Arguments.Add('/Q');
+      Arguments.Add('/E..\bin');
+      Arguments.Add('/N..\dcu');
+    end;
+  end;
+end;
+
+procedure TDelphiCompileTests.SetUp;
+begin
+  inherited SetUp;
+  BuildProject;
+end;
+
+procedure TDelphiCompileTests.TestCompile;
+const
+  exe = 'dante.exe';
+begin
+  if FileExists(exe) then
+    DeleteFile(exe);
+  FProject.Build('compile');
+  Check(FileExists(exe), 'dante exe not found');
+end;
+
 initialization
   RegisterClasses([TDummyTask1, TDummyTask2, TDummyTask3]);
-  RegisterTest('Unit Tests', TSaveProjectTests);
-  RegisterTest('Unit Tests', TTestExecTask);
+
+  RegisterTests('Unit Tests', [
+             TSaveProjectTests.Suite,
+             TTestExecTask.Suite,
+             TBuildTests.Suite,
+             TDelphiCompileTests.Suite
+           ]);
 end.
 
