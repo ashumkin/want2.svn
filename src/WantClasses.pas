@@ -325,6 +325,7 @@ type
 
   TCustomAttributeElement = class(TScriptElement)
   protected
+    FValueName   :string;
     FStrValue    :string;
     FAttribName  :string;
 
@@ -341,8 +342,15 @@ type
   TAttributeElement = class(TCustomAttributeElement)
   protected
     FValue :string;
+
+    function  GetPath :TPath;
+    procedure SetPath(Value :TPath);
+
+  public
+    function  SetAttribute(Name, Value :string) :boolean; override;
   published
-    property value :string read FValue write FValue;
+    property value :string read FValue  write FValue;
+    property path  :TPath  read GetPath write SetPath;
   end;
 
 
@@ -1335,6 +1343,7 @@ constructor TCustomAttributeElement.Create(Owner: TScriptElement);
 begin
   inherited Create(Owner);
   FAttribName := TagName;
+  FValueName := 'value';
 end;
 
 procedure TCustomAttributeElement.Init;
@@ -1355,7 +1364,7 @@ end;
 
 function TCustomAttributeElement.ValueName: string;
 begin
-  Result := 'value';
+  Result := FValueName;
 end;
 
 function TCustomAttributeElement.SetAttribute(Name, Value: string) :boolean;
@@ -1368,6 +1377,25 @@ begin
   end;
 end;
 
+
+{ TAttributeElement }
+
+function TAttributeElement.GetPath: TPath;
+begin
+  Result := ToPath(Value);
+end;
+
+function TAttributeElement.SetAttribute(Name, Value: string): boolean;
+begin
+  if Name = 'path' then
+    FVAlueName := Name;
+  Result := inherited SetAttribute(Name, Value);
+end;
+
+procedure TAttributeElement.SetPath(Value: TPath);
+begin
+  FValue := Value;
+end;
 
 initialization
   __ElementRegistry := nil;
