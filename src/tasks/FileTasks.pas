@@ -198,7 +198,7 @@ end;
 
 procedure TFileSetTask.DoFileset(Fileset: TFileSet);
 begin
-  FileSet.basedir := self.BasePath;
+
 end;
 
 procedure TFileSetTask.Execute;

@@ -100,7 +100,7 @@ Conditionals=USE_JEDI_JCL;DUNIT_DLL
 DebugSourceDirs=
 UsePackages=0
 [Parameters]
-RunParams=test -buildfile ..\..\want.xml -n
+RunParams=clean -buildfile c:\home\tranus\setup\want.xml
 HostApplication=
 Launcher=
 UseLauncher=0
@@ -148,9 +148,9 @@ Count=1
 Item0=WinTypes=Windows;WinProcs=Windows;DbiTypes=BDE;DbiProcs=BDE;DbiErrs=BDE;
 [HistoryLists\hlSearchPath]
 Count=8
-Item0=..\src\;..\src\lib;..\src\elements;..\src\tasks;..\src\win32;..\src\jal\src;..\src\jal\lib\paszlib;..\lib\jcl-1.12\source;..\lib\perlre-1.1;..\lib\dunit-7.0.3\src
-Item1=..\src\;..\src\tasks;..\src\elements;..\src\lib;..\src\jal\src;..\src\jal\lib\paszlib;..\src\win32;..\lib\jcl-1.12\source;..\lib\perlre-1.1;..\lib\dunit-7.0.3\src
-Item2=..\src\;..\src\tasks;..\src\elements;..\src\lib;..\src\jal\src;..\src\jal\lib\paszlib;..\src\win32;..\test;..\lib\jcl-1.12\source;..\lib\perlre-1.1;..\lib\dunit-7.0.3\src
+Item0=..\src\;..\src\tasks;..\src\elements;..\src\lib;..\src\jal\src;..\src\jal\lib\paszlib;..\src\win32;..\test;..\lib\jcl-1.12\source;..\lib\perlre-1.1;..\lib\dunit-7.0.3\src
+Item1=..\src\;..\src\lib;..\src\elements;..\src\tasks;..\src\win32;..\src\jal\src;..\src\jal\lib\paszlib;..\lib\jcl-1.12\source;..\lib\perlre-1.1;..\lib\dunit-7.0.3\src
+Item2=..\src\;..\src\tasks;..\src\elements;..\src\lib;..\src\jal\src;..\src\jal\lib\paszlib;..\src\win32;..\lib\jcl-1.12\source;..\lib\perlre-1.1;..\lib\dunit-7.0.3\src
 Item3=..\src\;..\src\tasks;..\src\elements;..\src\lib;..\src\jal\src;..\src\jal\lib\paszlib;..\src\win32;..\lib\jcl-1.12\jcl\source;..\lib\perlre-1.1\perlre;..\lib\dunit-7.0.3\src
 Item4=..\src\;..\src\tasks;..\src\elements;..\src\lib;..\src\jal\src;..\src\jal\lib\paszlib;..\src\win32;..\lib\jcl-1.12\jcl\source;..\lib\perlre-1.1\perlre
 Item5=..\src\;..\src\tasks;..\src\elements;..\src\lib;..\src\jal\src;..\src\jal\lib\paszlib;..\src\win32;..\test;..\lib\jcl-1.12\jcl\source;..\lib\perlre-1.1\perlre;..\lib\dunit-7.0.3\src
