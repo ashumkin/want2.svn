@@ -272,7 +272,8 @@ type
 
     function  AddTarget(Name: string): TTarget;
     function  TargetCount:  Integer;
-    function  Schedule(Target: string): TTargetArray;
+    function  Schedule(Target :string): TTargetArray; overload;
+    function  Schedule(const Targets: TStringDynArray): TTargetArray; overload;
 
     function  GetTargetByName(Name: string):TTarget;
 
@@ -1293,8 +1294,12 @@ begin
   Sched.Add(Target);
 end;
 
+function  TProject.Schedule(Target :string): TTargetArray;
+begin
+  Schedule(StringArray(Target));
+end;
 
-function TProject.Schedule(Target: string): TTargetArray;
+function TProject.Schedule(const Targets: TStringDynArray): TTargetArray;
 var
   Sched,
   Seen   : TList;
@@ -1303,7 +1308,10 @@ begin
   Sched := TList.Create;
   Seen  := TList.Create;
   try
-    BuildSchedule(Target, Seen, Sched);
+    for i := 0 to High(Targets) do
+    begin
+      BuildSchedule(Targets[i], Seen, Sched);
+    end;
     SetLength(Result, Sched.Count);
     Log(vlDebug, 'schedule:');
     for i := 0 to Sched.Count-1 do

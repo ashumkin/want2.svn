@@ -33,7 +33,7 @@ type
       FCollapseAttributes  :boolean;
       FPrefix              :string;
       FKeepRoot            :boolean;
-      // FValidate            :boolean;
+      FValidate            :boolean;
 
       procedure ParseError(AMsg: string; ALine: integer=0; ACol: Integer=0);
       function  GeneratePropertyName(AParentTagPath: string;

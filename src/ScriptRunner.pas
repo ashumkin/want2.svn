@@ -167,20 +167,16 @@ begin
   Build(BuildFile, T, Level);
 end;
 
-procedure TScriptRunner.BuildProject(Project: TProject; Targets: TStringArray);
-var
-  t       :Integer;
+
+procedure TScriptRunner.BuildProject(Project: TProject; Target: string);
 begin
-  if Length(Targets) = 0 then
-    BuildProject(Project)
+  if Trim(Target) <> '' then
+    BuildProject(Project, StringArray(Target))
   else
-  begin
-    for t := Low(Targets) to High(Targets) do
-      BuildProject(Project, Targets[t]);
-  end;
+    BuildProject(Project, nil);
 end;
 
-procedure TScriptRunner.BuildProject(Project :TProject; Target: string);
+procedure TScriptRunner.BuildProject(Project: TProject; Targets: TStringArray);
 var
   i:       Integer;
   Sched:   TTargetArray;
@@ -198,14 +194,14 @@ begin
       Log(vlDebug, Format('basepath="%s"',  [Project.BasePath]));
 
       Project.Configure;
-      if Target = '' then
+
+      if Length(Targets) = 0 then
       begin
         if Project._Default <> '' then
-          Target := Project._Default
+          Targets := StringArray(Project._Default)
         else
           raise ENoDefaultTargetError.Create('No default target');
       end;
-
     except
       on e :Exception do
       begin
@@ -219,7 +215,7 @@ begin
     end;
 
     try
-      Sched := Project.Schedule(Target);
+      Sched := Project.Schedule(Targets);
 
       if Length(Sched) = 0 then
         Listener.Log(vlWarnings, 'Nothing to build')
@@ -387,9 +383,6 @@ begin
   if not PathIsFile(Result) then
      Result := DefaultBuildFileName;
 end;
-
-
-
 
 end.
 

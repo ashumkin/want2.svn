@@ -277,7 +277,6 @@ var
   Buffer: Pointer;
   SaveFileMode: integer;
 begin
-  Assert(FileExists(FileName));
   SaveFileMode := FileMode;
   try
     FileMode := fmOpenRead;
