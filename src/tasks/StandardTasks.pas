@@ -16,6 +16,7 @@ uses
   DelphiTasks,
   FileTasks,
   ZipTasks,
+  GZipTasks,
   WantTasks,
   DUnitTasks,
   EditTasks,

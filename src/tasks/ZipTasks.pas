@@ -13,11 +13,11 @@ interface
 uses
   SysUtils,
 
-  JclSysUtils,
-  
+  JalUtils,
+  JalZipStreams,
+
   WildPaths,
   PatternSets,
-  ZipStreams,
   WantClasses,
   FileTasks;
 
