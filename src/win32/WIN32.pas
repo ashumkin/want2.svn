@@ -7,22 +7,23 @@
 
 { $Id$ }
 
-library WantAcceptTestLib;
+unit WIN32;
 
+interface
 uses
-  TestFramework,
+  Windows,
+  SysUtils;
 
-  {$IFDEF WIN32}
-  Win32Implementations in '..\src\win32\Win32Implementations.pas',
-  {$ENDIF}
+const
+  rcs_id :string = '#(@)$Id$';
 
-  RunnerTests,
-  VssTasksTest,
-  ExternalTests in 'ExternalTests.pas';
+procedure RaiseLastSystemError(Msg :string = '');
 
-{$R *.RES}
+implementation
 
-exports
-  RegisteredTests index 1 name 'Test';
+procedure RaiseLastSystemError(Msg :string = '');
+begin
+  raise Exception.Create(SysErrorMessage(GetLastError) + Msg)
+end;
+
 end.
-

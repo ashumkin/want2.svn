@@ -7,22 +7,17 @@
 
 { $Id$ }
 
-library WantAcceptTestLib;
+unit Win32Implementations;
 
+interface
 uses
-  TestFramework,
+  WIN32,
+  Win32ChildProcesses,
+  ConsoleListener;
 
-  {$IFDEF WIN32}
-  Win32Implementations in '..\src\win32\Win32Implementations.pas',
-  {$ENDIF}
+const
+  rcs_id :string = '#(@)$Id$';
 
-  RunnerTests,
-  VssTasksTest,
-  ExternalTests in 'ExternalTests.pas';
+implementation
 
-{$R *.RES}
-
-exports
-  RegisteredTests index 1 name 'Test';
 end.
-

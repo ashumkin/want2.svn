@@ -68,8 +68,6 @@ resourcestring
   F_DuplicateWantClass       = 'Duplicate Want tag <%s> in class <%s>';
 
 
-procedure RaiseLastSystemError(Msg :string = '');
-
 function ConvertToBoolean(const aValue: String): Boolean;
 
 function  Copyright: string;
@@ -82,11 +80,6 @@ implementation
 
 uses
   Windows;
-
-procedure RaiseLastSystemError(Msg :string = '');
-begin
-  raise Exception.Create(SysErrorMessage(GetLastError) + Msg)
-end;
 
 function ConvertToBoolean(const aValue: String): Boolean;
 var

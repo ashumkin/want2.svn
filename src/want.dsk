@@ -113,31 +113,30 @@ LRDockWidth=366
 Dockable=1
 
 [Closed Files]
-File_0=SourceModule,'C:\home\want\lib\perlre\UPerlRE.pas',0,1,76,1,76,0,0
-File_1=SourceModule,'C:\home\want\src\WantClasses.pas',0,1,1478,1,1491,0,0
-File_2=SourceModule,'C:\home\want\src\tasks\EditTasks.pas',0,1,617,27,634,0,0
-File_3=SourceModule,'C:\home\want\src\lib\ConsoleListener.pas',0,1,72,1,95,0,0
-File_4=SourceModule,'c:\lib\pascal\jcl\source\JclStrings.pas',0,1,3028,1,3053,0,0
-File_5=SourceModule,'C:\home\want\src\lib\ScriptParser.pas',0,1,149,1,160,0,0
-File_6=SourceModule,'c:\dvl\bor\d4\source\rtl\Sys\SysUtils.pas',0,1,6233,1,6262,0,0
+File_0=SourceModule,'C:\home\want\src\elements\RegexpElements.pas',0,1,46,1,59,0,0
+File_1=SourceModule,'C:\home\want\src\WantBase.pas',0,1,71,1,84,0,0
+File_2=SourceModule,'C:\home\want\src\lib\CRT32.pas',0,1,304,17,317,0,0
+File_3=SourceModule,'C:\home\want\src\tasks\DelphiTasks.pas',0,1,264,48,277,0,0
+File_4=SourceModule,'C:\home\want\src\lib\XPerlRE.pas',0,1,104,1,117,0,0
+File_5=SourceModule,'C:\home\want\lib\perlre\UPerlRE.pas',0,1,76,1,76,0,0
+File_6=SourceModule,'C:\home\want\src\WantClasses.pas',0,1,1478,1,1491,0,0
+File_7=SourceModule,'C:\home\want\src\tasks\EditTasks.pas',0,1,617,27,634,0,0
+File_8=SourceModule,'C:\home\want\src\lib\ConsoleListener.pas',0,1,72,1,95,0,0
 
 [Modules]
 Module0=C:\home\want\src\ScriptRunner.pas
-Module1=C:\home\want\src\WantBase.pas
-Module2=C:\home\want\src\want.dpr
-Module3=C:\home\want\src\lib\CRT32.pas
-Module4=C:\home\want\src\tasks\DelphiTasks.pas
-Module5=C:\home\want\src\elements\RegexpElements.pas
-Module6=C:\home\want\src\lib\XPerlRE.pas
-Count=7
+Module1=C:\home\want\src\want.dpr
+Module2=C:\home\want\src\win32\Win32Implementations.pas
+Module3=C:\home\want\src\lib\ChildProcesses.pas
+Module4=C:\home\want\src\tasks\ExecTasks.pas
+Module5=C:\home\want\src\win32\WIN32.pas
+Module6=C:\home\want\test\WantAcceptTestLib.dpr
+Module7=C:\home\want\test\WantTestLib.dpr
+Module8=C:\home\want\src\win32\Win32ChildProcesses.pas
+Count=9
 EditWindowCount=1
 
 [C:\home\want\src\ScriptRunner.pas]
-ModuleType=SourceModule
-FormState=0
-FormOnTop=0
-
-[C:\home\want\src\WantBase.pas]
 ModuleType=SourceModule
 FormState=0
 FormOnTop=0
@@ -147,27 +146,42 @@ ModuleType=SourceModule
 FormState=0
 FormOnTop=0
 
-[C:\home\want\src\lib\CRT32.pas]
+[C:\home\want\src\win32\Win32Implementations.pas]
 ModuleType=SourceModule
 FormState=0
 FormOnTop=0
 
-[C:\home\want\src\tasks\DelphiTasks.pas]
+[C:\home\want\src\lib\ChildProcesses.pas]
 ModuleType=SourceModule
 FormState=0
 FormOnTop=0
 
-[C:\home\want\src\elements\RegexpElements.pas]
+[C:\home\want\src\tasks\ExecTasks.pas]
 ModuleType=SourceModule
 FormState=0
 FormOnTop=0
 
-[C:\home\want\src\lib\XPerlRE.pas]
+[C:\home\want\src\win32\WIN32.pas]
 ModuleType=SourceModule
 FormState=0
 FormOnTop=0
 
-[c:\dvl\bor\d4\ProjectGroup1.bpg]
+[C:\home\want\test\WantAcceptTestLib.dpr]
+ModuleType=SourceModule
+FormState=0
+FormOnTop=0
+
+[C:\home\want\test\WantTestLib.dpr]
+ModuleType=SourceModule
+FormState=0
+FormOnTop=0
+
+[C:\home\want\src\win32\Win32ChildProcesses.pas]
+ModuleType=SourceModule
+FormState=0
+FormOnTop=0
+
+[C:\home\want\src\want.bpg]
 FormState=0
 FormOnTop=0
 
@@ -192,8 +206,8 @@ RightPanelSize=0
 BottomPanelSize=169
 BottomPanelClients=MessageView@EditWindow0,LocalVarsWindow
 BottomPanelData=00000400010000000B0000004D65737361676556696577A900000000000000014A030000000000000100000000A90000000F0000004C6F63616C5661727357696E646F77FFFFFFFF
-ViewCount=7
-CurrentView=2
+ViewCount=9
+CurrentView=1
 View0=0
 View1=1
 View2=2
@@ -201,6 +215,8 @@ View3=3
 View4=4
 View5=5
 View6=6
+View7=7
+View8=8
 
 [CodeExplorer@EditWindow0]
 Create=1
@@ -236,51 +252,65 @@ Dockable=1
 
 [View0]
 Module=C:\home\want\src\want.dpr
-CursorX=47
-CursorY=69
-TopLine=56
+CursorX=22
+CursorY=21
+TopLine=14
 LeftCol=1
 
 [View1]
-Module=C:\home\want\src\WantBase.pas
-CursorX=1
-CursorY=51
-TopLine=51
-LeftCol=1
-
-[View2]
 Module=C:\home\want\src\ScriptRunner.pas
 CursorX=1
 CursorY=213
-TopLine=195
+TopLine=200
+LeftCol=1
+
+[View2]
+Module=C:\home\want\src\tasks\ExecTasks.pas
+CursorX=1
+CursorY=10
+TopLine=1
 LeftCol=1
 
 [View3]
-Module=C:\home\want\src\lib\XPerlRE.pas
+Module=C:\home\want\src\lib\ChildProcesses.pas
 CursorX=1
-CursorY=117
-TopLine=104
+CursorY=9
+TopLine=1
 LeftCol=1
 
 [View4]
-Module=C:\home\want\src\elements\RegexpElements.pas
-CursorX=1
-CursorY=59
-TopLine=42
+Module=C:\home\want\src\win32\Win32ChildProcesses.pas
+CursorX=18
+CursorY=16
+TopLine=1
 LeftCol=1
 
 [View5]
-Module=C:\home\want\src\tasks\DelphiTasks.pas
-CursorX=48
-CursorY=277
-TopLine=264
+Module=C:\home\want\src\win32\Win32Implementations.pas
+CursorX=19
+CursorY=16
+TopLine=1
 LeftCol=1
 
 [View6]
-Module=C:\home\want\src\lib\CRT32.pas
-CursorX=17
-CursorY=317
-TopLine=304
+Module=C:\home\want\test\WantTestLib.dpr
+CursorX=1
+CursorY=18
+TopLine=1
+LeftCol=1
+
+[View7]
+Module=C:\home\want\test\WantAcceptTestLib.dpr
+CursorX=19
+CursorY=14
+TopLine=1
+LeftCol=1
+
+[View8]
+Module=C:\home\want\src\win32\WIN32.pas
+CursorX=1
+CursorY=10
+TopLine=1
 LeftCol=1
 
 [DockHosts]
@@ -295,10 +325,9 @@ Watch3='Matches[i]',256,0,18,1
 Watch4='FIncludes[i]',256,0,18,1
 
 [Breakpoints]
-Count=3
-Breakpoint0='C:\home\want\src\want.dpr',86,'',0,1
-Breakpoint1='C:\home\want\src\elements\RegexpElements.pas',59,'',0,1
-Breakpoint2='C:\home\want\src\ScriptRunner.pas',213,'',0,1
+Count=2
+Breakpoint0='C:\home\want\src\want.dpr',69,'',0,1
+Breakpoint1='C:\home\want\src\ScriptRunner.pas',213,'',0,1
 
 [AddressBreakpoints]
 Count=0
