@@ -54,7 +54,7 @@ type
   published
     property name: string read FName  write FName;
     property value: string read FValue write FValue;
-    property path:  TPath  read GetPath write SetPath;
+    property path:  TPath    read GetPath write SetPath;
     property _file: TPath read FFileName  write FFileName;
     property section: string read FSection write FSection;
     property overwrite :boolean read FOverwrite write FOverwrite;
