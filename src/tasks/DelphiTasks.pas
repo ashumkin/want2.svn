@@ -225,10 +225,18 @@ begin
 end;
 
 function TDelphiCompileTask.BuildArguments: string;
+var
+  Sources :TPaths;
+  s       :Integer;
 begin
   Result := inherited BuildArguments;
 
-  Result := Result + ' ' + ToSystemPath(source);
+  Sources := WildPaths.Wild(Source, BasePath);
+  if Length(Sources) = 0 then
+    TaskFailure('nothing to compile');
+
+  for s := Low(Sources) to High(Sources) do
+    Result := Result + ' ' + ToSystemPath(Sources[s]);
 
   if exes <> '' then
     Result := Result + ' -E' + ToSystemPath(exes);
