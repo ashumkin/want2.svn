@@ -30,7 +30,7 @@ TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
 THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 --------------------------------------------------------------------------------
 Original author: Juancarlo Añez
-Contributors   :
+Contributors  :  Chris Morris
 }
 unit WildPaths;
 {:
@@ -66,9 +66,9 @@ const
   WildChars        = '?*';
 
   {$IFDEF LINUX}
-  SystemPathDelimiter :string = '/';
+  SystemPathDelimiter: string = '/';
   {$ELSE}
-  SystemPathDelimiter :string = '\';
+  SystemPathDelimiter: string = '\';
   {$ENDIF}
 
 type
@@ -96,105 +96,105 @@ type
 const
   AnyFileAttribute = [ReadOnly..Archive];
 
-function  IsSystemIndependentPath(const Path :TPath) :boolean;
-procedure AssertIsSystemIndependentPath(const Path :TPath);
+function  IsSystemIndependentPath(const Path: TPath): boolean;
+procedure AssertIsSystemIndependentPath(const Path: TPath);
 
-function IsWindowsPath(const Path :TPath):boolean;
-function PathDrive(const Path :TPath) :TPath;
+function IsWindowsPath(const Path: TPath):boolean;
+function PathDrive(const Path: TPath): TPath;
 
-function PathConcat(const Path1, Path2 :TPath) :TPath;
+function PathConcat(const Path1, Path2: TPath): TPath;
 
-function ToSystemPath(const Path :TPath; const BasePath :TPath = ''):TSystemPath;
-function ToPath(SystemPath :TSystemPath;  const BasePath :TPath = ''):TPath;
+function ToSystemPath(const Path: TPath; const BasePath: TPath = ''):TSystemPath;
+function ToPath(SystemPath: TSystemPath;  const BasePath: TPath = ''):TPath;
 
-function ToSystemPaths(const Paths :TPaths; const BasePath :TPath = '') :TSystemPaths;
-function ToPaths(OSPaths :TSystemPaths; const BasePath :TPath = '') :TPaths;
+function ToSystemPaths(const Paths: TPaths; const BasePath: TPath = ''): TSystemPaths;
+function ToPaths(OSPaths: TSystemPaths; const BasePath: TPath = ''): TPaths;
 
 
 
-function StringsToPaths(S :TStrings):TPaths;
-function SplitPath(const Path :TPath) :TPaths;
+function StringsToPaths(S: TStrings):TPaths;
+function SplitPath(const Path: TPath): TPaths;
 
-function  MovePath(const Path :TPath; const FromBase :TPath; const ToBase :TPath = '') :TPath;
-function  MovePaths(const Paths :TPaths; const FromBase :TPath; const ToBase :TPath = '') :TPaths;
-function  ToRelativePath(const Path, BasePath :TPath):TPath;
-function  ToRelativePaths(const Paths :TPaths; const BasePath :TPath):TPaths;
-function  PathIsAbsolute(const Path :TPath) :boolean;
-procedure ForceRelativePath(var Path, BasePath :TPath);
+function  MovePath(const Path: TPath; const FromBase: TPath; const ToBase: TPath = ''): TPath;
+function  MovePaths(const Paths: TPaths; const FromBase: TPath; const ToBase: TPath = ''): TPaths;
+function  ToRelativePath(const Path, BasePath: TPath):TPath;
+function  ToRelativePaths(const Paths: TPaths; const BasePath: TPath):TPaths;
+function  PathIsAbsolute(const Path: TPath): boolean;
+procedure ForceRelativePath(var Path, BasePath: TPath);
 
 // use JCL for this
 function FindPaths(const Path: TPath; const BasePath: TPath = '';
-                   IncludeAttr :Integer = faAnyFile;
-                   ExcludeAttr :Integer = 0): TPaths;
+                   IncludeAttr: Integer = faAnyFile;
+                   ExcludeAttr: Integer = 0): TPaths;
 function FindFiles(const Path: TPath; const BasePath: TPath = ''): TPaths;
 function FindDirs(const  Path: TPath; const BasePath: TPath  = ''): TPaths;
 
-function  Wild(const Pattern :TPath; const BasePath :TPath = ''):TPaths; overload;
-procedure Wild(Files :TStrings; const Pattern :TPath; const BasePath :TPath = ''); overload;
+function  Wild(const Pattern: TPath; const BasePath: TPath = ''):TPaths; overload;
+procedure Wild(Files: TStrings; const Pattern: TPath; const BasePath: TPath = ''); overload;
 
 
-function IsMatch(const Path, Pattern :TPath):boolean; overload;
-function IsMatch(const Paths :TPaths; const Patterns :TPatterns; p :Integer = 0; s :Integer = 0):boolean; overload;
+function IsMatch(const Path, Pattern: TPath):boolean; overload;
+function IsMatch(const Paths: TPaths; const Patterns: TPatterns; p: Integer = 0; s: Integer = 0):boolean; overload;
 
-function  PathExists(const Path :TPath):boolean;
-function  IsDir(const Path :TPath):boolean;
-function  IsFile(const Path :TPath):boolean;
-function  SuperPath(const Path :TPath) :TPath;
+function  PathExists(const Path: TPath):boolean;
+function  IsDir(const Path: TPath):boolean;
+function  IsFile(const Path: TPath):boolean;
+function  SuperPath(const Path: TPath): TPath;
 
 
 // file operations
 
-procedure MakeDir(const Path :TPath);
-procedure ChangeDir(const Path :TPath);
-function  CurrentDir :TPath;
+procedure MakeDir(const Path: TPath);
+procedure ChangeDir(const Path: TPath);
+function  CurrentDir: TPath;
 
-procedure CopyFile(const Src, Dst :TPath);
-procedure CopyFiles(const Sources, Dests :TPaths);  overload;
-procedure CopyFiles(const Files :TPaths; FromPath, ToPath :TPath);  overload;
-procedure CopyFiles(const Pattern :TPattern; const FromPath, ToPath :TPath); overload;
+procedure CopyFile(const Src, Dst: TPath);
+procedure CopyFiles(const Sources, Dests: TPaths);  overload;
+procedure CopyFiles(const Files: TPaths; FromPath, ToPath: TPath);  overload;
+procedure CopyFiles(const Pattern: TPattern; const FromPath, ToPath: TPath); overload;
 
-procedure MoveFile(const Src, Dst :TPath);
-procedure MoveFiles(const Sources, Dests :TPaths);  overload;
-procedure MoveFiles(const Files :TPaths; const FromPath, ToPath :TPath);  overload;
-procedure MoveFiles(const Pattern :TPattern; const FromPath, ToPath :TPath); overload;
+procedure MoveFile(const Src, Dst: TPath);
+procedure MoveFiles(const Sources, Dests: TPaths);  overload;
+procedure MoveFiles(const Files: TPaths; const FromPath, ToPath: TPath);  overload;
+procedure MoveFiles(const Pattern: TPattern; const FromPath, ToPath: TPath); overload;
 
-procedure DeleteFile(const Path :TPath);
-procedure DeleteFiles(const Files :TPaths);  overload;
-procedure DeleteFiles(const Pattern :TPath; const BasePath :TPath= '');  overload;
+procedure DeleteFile(const Path: TPath);
+procedure DeleteFiles(const Files: TPaths);  overload;
+procedure DeleteFiles(const Pattern: TPath; const BasePath: TPath= '');  overload;
 
-procedure TouchFile(const Path :TPath; When :TDateTime = 0); overload;
-procedure TouchFile(const Path :TPath; When :string); overload;
+procedure TouchFile(const Path: TPath; When: TDateTime = 0); overload;
+procedure TouchFile(const Path: TPath; When: string); overload;
 
-function  FileAttributes(const Path :TPath):TFileAttributes;
-procedure SetFileAttributes(const Path :TPath; const Attr :TFileAttributes);
+function  FileAttributes(const Path: TPath):TFileAttributes;
+procedure SetFileAttributes(const Path: TPath; const Attr: TFileAttributes);
 
-function  FileTime(const Path :TPath) :TDateTime;
+function  FileTime(const Path: TPath): TDateTime;
 
-function  SystemFileAttributes(const Path :TPath) :Byte;
-function  SystemFileTime(const Path :TPath) :Longint;
+function  SystemFileAttributes(const Path: TPath): Byte;
+function  SystemFileTime(const Path: TPath): Longint;
 
-function  TimeToSystemFileTime(const Time :TDateTime):Integer;
-function  FileAttributesToSystemAttributes(const Attr :TFileAttributes):Byte;
+function  TimeToSystemFileTime(const Time: TDateTime):Integer;
+function  FileAttributesToSystemAttributes(const Attr: TFileAttributes):Byte;
 
 
 implementation
 
 
-procedure Wild(Files :TStrings; const Patterns :TPatterns; const BasePath: TPath = ''; Index :Integer = 0);
+procedure Wild(Files: TStrings; const Patterns: TPatterns; const BasePath: TPath = ''; Index: Integer = 0);
   overload; forward;
 
 
-function IsSystemIndependentPath(const Path :TPath) :boolean;
+function IsSystemIndependentPath(const Path: TPath): boolean;
 begin
   Result := ( Pos(SystemPathDelimiter, Path) = 0 );
 end;
 
-function IsWindowsPath(const Path :TPath):boolean;
+function IsWindowsPath(const Path: TPath):boolean;
 begin
   Result := (Length(Path) >= 3) and (Path[1] = '/') and (Path[3] = ':');
 end;
 
-function PathDrive(const Path :TPath) :TPath;
+function PathDrive(const Path: TPath): TPath;
 begin
   if IsWindowsPath(Path) then
     Result := Copy(Path, 2, 1)
@@ -202,7 +202,7 @@ begin
     Result := '';
 end;
 
-procedure AssertIsSystemIndependentPath(const Path :TPath);
+procedure AssertIsSystemIndependentPath(const Path: TPath);
 begin
   if Pos(SystemPathDelimiter, Path) <> 0 then
     raise EPathException.Create( Format( '"%s" looks like a system path. Expected a system independent one.',
@@ -210,12 +210,12 @@ begin
                             );
 end;
 
-function PathConcat(const Path1, Path2 :TPath) :TPath;
+function PathConcat(const Path1, Path2: TPath): TPath;
 var
-  Parts :TPaths;
-  i     :Integer;
-  P1    :TPath;
-  P2    :TPath;
+  Parts: TPaths;
+  i    : Integer;
+  P1   : TPath;
+  P2   : TPath;
 begin
   AssertIsSystemIndependentPath(Path1);
   AssertIsSystemIndependentPath(Path2);
@@ -246,7 +246,7 @@ begin
   end;
 end;
 
-function ToPath(SystemPath: TSystemPath; const BasePath :TPath): TPath;
+function ToPath(SystemPath: TSystemPath; const BasePath: TPath): TPath;
 begin
   if Pos(InvalidPathChars, SystemPath) <> 0 then
     raise EPathException.Create('invalid path chars in ' + SystemPath)
@@ -270,7 +270,7 @@ begin
   end;
 end;
 
-function ToSystemPath(const Path :TPath; const BasePath :TPath): string;
+function ToSystemPath(const Path: TPath; const BasePath: TPath): string;
 begin
    AssertIsSystemIndependentPath(Path);
    //!!!AssertIsSystemIndependentPath(BasePath);
@@ -283,18 +283,18 @@ begin
    Result := StringReplace(Result, '/', SystemPathDelimiter, [rfReplaceAll]);
 end;
 
-function ToSystemPaths(const Paths :TPaths; const BasePath :TPath = '') :TSystemPaths;
+function ToSystemPaths(const Paths: TPaths; const BasePath: TPath = ''): TSystemPaths;
 var
-  i :Integer;
+  i: Integer;
 begin
   SetLength(Result, Length(Paths));
   for i := 0 to High(Result) do
     Result[i] := ToSystemPath(Paths[i], BasePath);
 end;
 
-function ToPaths(OSPaths :TSystemPaths; const BasePath :TPath = '') :TPaths;
+function ToPaths(OSPaths: TSystemPaths; const BasePath: TPath = ''): TPaths;
 var
-  i :Integer;
+  i: Integer;
 begin
   SetLength(Result, Length(OSPaths));
   for i := 0 to High(Result) do
@@ -302,13 +302,13 @@ begin
 end;
 
 
-function FindPaths( const Path: TPath; const BasePath :TPath;
-                    IncludeAttr :Integer;
-                    ExcludeAttr :Integer):TPaths;
+function FindPaths( const Path: TPath; const BasePath: TPath;
+                    IncludeAttr: Integer;
+                    ExcludeAttr: Integer):TPaths;
 var
-  S :TStringList;
-  Search :TSearchRec;
-  SearchResult :Integer;
+  S: TStringList;
+  Search: TSearchRec;
+  SearchResult: Integer;
 begin
   AssertIsSystemIndependentPath(Path);
 
@@ -348,7 +348,7 @@ end;
 
 function SplitPath(const Path: TPath): TPaths;
 var
-  S :TStrings;
+  S: TStrings;
 begin
   AssertIsSystemIndependentPath(Path);
 
@@ -365,14 +365,14 @@ end;
 
 function StringsToPaths(S: TStrings): TPaths;
 var
-  i :Integer;
+  i: Integer;
 begin
   SetLength(Result, S.Count);
   for i := 0 to S.Count-1 do
     Result[i] := S[i];
 end;
 
-function MovePath(const Path :TPath; const FromBase :TPath; const ToBase :TPath) :TPath;
+function MovePath(const Path: TPath; const FromBase: TPath; const ToBase: TPath): TPath;
 begin
   AssertIsSystemIndependentPath(Path);
   //!!!AssertIsSystemIndependentPath(FromBase);
@@ -387,19 +387,19 @@ begin
 end;
 
 
-function MovePaths(const Paths :TPaths; const FromBase :TPath; const ToBase :TPath) :TPaths;
+function MovePaths(const Paths: TPaths; const FromBase: TPath; const ToBase: TPath): TPaths;
 var
-  i :Integer;
+  i: Integer;
 begin
    SetLength(Result, Length(Paths));
    for i := Low(Paths) to High(Paths) do
      Result[i] := MovePath(Paths[i], FromBase, ToBase);
 end;
 
-function  ToRelativePath(const Path, BasePath :TPath):TPath;
+function  ToRelativePath(const Path, BasePath: TPath):TPath;
 var
-  P, B   :TPaths;
-  i, j :Integer;
+  P, B  : TPaths;
+  i, j: Integer;
 begin
   AssertIsSystemIndependentPath(Path);
   AssertIsSystemIndependentPath(BasePath);
@@ -445,12 +445,12 @@ begin
     Result := '.';
 end;
 
-function  ToRelativePaths(const Paths :TPaths; const BasePath :TPath):TPaths;
+function  ToRelativePaths(const Paths: TPaths; const BasePath: TPath):TPaths;
 begin
   Result := MovePaths(Paths, BasePath, '');
 end;
 
-function  PathIsAbsolute(const Path :TPath) :boolean;
+function  PathIsAbsolute(const Path: TPath): boolean;
 begin
   AssertIsSystemIndependentPath(Path);
 
@@ -458,9 +458,9 @@ begin
              or (Length(Path) >= 3) and (Path[2] = ':') and (Path[3] = '/');
 end;
 
-procedure ForceRelativePath(var Path, BasePath :TPath);
+procedure ForceRelativePath(var Path, BasePath: TPath);
 var
-  p :Integer;
+  p: Integer;
 begin
   AssertIsSystemIndependentPath(Path);
   AssertIsSystemIndependentPath(BasePath);
@@ -482,7 +482,7 @@ end;
 
 function Wild(const Pattern: TPath; const BasePath: TPath):TPaths;
 var
-  Files :TStringList;
+  Files: TStringList;
 begin
   AssertIsSystemIndependentPath(Pattern);
   AssertIsSystemIndependentPath(BasePath);
@@ -497,7 +497,7 @@ begin
   end;
 end;
 
-procedure Wild(Files :TStrings; const Pattern :TPath; const BasePath :TPath = '');
+procedure Wild(Files: TStrings; const Pattern: TPath; const BasePath: TPath = '');
 begin
   AssertIsSystemIndependentPath(Pattern);
   AssertIsSystemIndependentPath(BasePath);
@@ -509,11 +509,11 @@ begin
     Wild(Files, SplitPath(Pattern), BasePath);
 end;
 
-procedure Wild(Files :TStrings; const Patterns: TPatterns; const BasePath: TPath; Index: Integer);
+procedure Wild(Files: TStrings; const Patterns: TPatterns; const BasePath: TPath; Index: Integer);
 var
-  i       :Integer;
-  Matches :TPaths;
-  NewBase :TPath;
+  i      : Integer;
+  Matches: TPaths;
+  NewBase: TPath;
 begin
   AssertIsSystemIndependentPath(BasePath);
 
@@ -556,7 +556,7 @@ begin
   end;
 end;
 
-function Matches(A, B :TPath; i :Integer = 1; j :Integer = 1):boolean;
+function Matches(A, B: TPath; i: Integer = 1; j: Integer = 1):boolean;
 begin
   while (i <= Length(A))
   and   (j <= Length(B))
@@ -581,7 +581,7 @@ begin
     Result := False;
 end;
 
-function IsMatch(const Paths :TPaths; const Patterns :TPatterns; p :Integer = 0; s :Integer = 0):boolean;
+function IsMatch(const Paths: TPaths; const Patterns: TPatterns; p: Integer = 0; s: Integer = 0):boolean;
 
 begin
   while (p <= High(Paths))
@@ -604,7 +604,7 @@ begin
     Result := False;
 end;
 
-function IsMatch(const Path, Pattern :TPath):boolean;
+function IsMatch(const Path, Pattern: TPath):boolean;
 begin
   AssertIsSystemIndependentPath(Path);
   AssertIsSystemIndependentPath(Pattern);
@@ -612,30 +612,30 @@ begin
   Result := IsMatch(SplitPath(Path), SplitPath(Pattern));
 end;
 
-function  PathExists(const Path :TPath):boolean;
+function  PathExists(const Path: TPath):boolean;
 begin
   AssertIsSystemIndependentPath(Path);
 
   Result := Length(FindPaths(Path)) >= 1;
 end;
 
-function  IsDir(const Path :TPath):boolean;
+function  IsDir(const Path: TPath):boolean;
 begin
   AssertIsSystemIndependentPath(Path);
 
   Result := Length(FindDirs(Path)) = 1;
 end;
 
-function  IsFile(const Path :TPath):boolean;
+function  IsFile(const Path: TPath):boolean;
 begin
    AssertIsSystemIndependentPath(Path);
 
   Result := Length(FindFiles(Path)) = 1;
 end;
 
-function  SuperPath(const Path :TPath) :TPath;
+function  SuperPath(const Path: TPath): TPath;
 var
-  p    :Integer;
+  p   : Integer;
 begin
   AssertIsSystemIndependentPath(Path);
 
@@ -659,7 +659,7 @@ end;
 // file operations
 
 
-procedure MakeDir(const Path :TPath);
+procedure MakeDir(const Path: TPath);
 begin
   if (Length(Path) > 0)
   and (Path[Length(Path)] <> ':')  // Oops! Windows specific!
@@ -670,19 +670,19 @@ begin
   end;
 end;
 
-procedure ChangeDir(const Path :TPath);
+procedure ChangeDir(const Path: TPath);
 begin
   if Path <> '' then
     SetCurrentDir(ToSystemPath(Path));
 end;
 
-function  CurrentDir :TPath;
+function  CurrentDir: TPath;
 begin
   Result := ToPath(SysUtils.GetCurrentDir);
 end;
 
 
-procedure CopyFile(const Src, Dst :TPath);
+procedure CopyFile(const Src, Dst: TPath);
 begin
    MakeDir(SuperPath(Dst));
    if IsDir(Src) then
@@ -694,19 +694,19 @@ begin
        raise EFileOpException.Create(SysErrorMessage(GetLastError));
 end;
 
-procedure CopyFiles(const Pattern :TPattern; const FromPath, ToPath :TPath);
+procedure CopyFiles(const Pattern: TPattern; const FromPath, ToPath: TPath);
 begin
   CopyFiles(Wild(Pattern, FromPath), FromPath, ToPath);
 end;
 
-procedure CopyFiles(const Files :TPaths; FromPath, ToPath :TPath);
+procedure CopyFiles(const Files: TPaths; FromPath, ToPath: TPath);
 begin
   CopyFiles(Files, MovePaths(Files, FromPath, ToPath));
 end;
 
-procedure CopyFiles(const Sources, Dests :TPaths);
+procedure CopyFiles(const Sources, Dests: TPaths);
 var
-  f   :Integer;
+  f  : Integer;
 begin
   for f := Max(Low(Sources), Low(Dests)) to Min(High(Sources), High(Dests)) do
   begin
@@ -714,25 +714,28 @@ begin
   end;
 end;
 
-procedure MoveFile(const Src, Dst :TPath);
+procedure MoveFile(const Src, Dst: TPath);
 begin
    MakeDir(SuperPath(Dst));
-   writeln('move ',ToSystemPath(Src), '->', ToSystemPath(Dst));
+   if not Windows.MoveFile(PChar(ToSystemPath(Src)),
+                           PChar(ToSystemPath(Dst))) then
+     raise EFileOpException.Create(SysErrorMessage(GetLastError));
+   //writeln('move ',ToSystemPath(Src), '->', ToSystemPath(Dst));
 end;
 
-procedure MoveFiles(const Pattern :TPattern; const FromPath, ToPath :TPath);
+procedure MoveFiles(const Pattern: TPattern; const FromPath, ToPath: TPath);
 begin
   MoveFiles(Wild(Pattern, FromPath), FromPath, ToPath);
 end;
 
-procedure MoveFiles(const Files :TPaths; const FromPath, ToPath :TPath);
+procedure MoveFiles(const Files: TPaths; const FromPath, ToPath: TPath);
 begin
   MoveFiles(Files, MovePaths(Files, FromPath, ToPath));
 end;
 
-procedure MoveFiles(const Sources, Dests :TPaths);
+procedure MoveFiles(const Sources, Dests: TPaths);
 var
-  f   :Integer;
+  f  : Integer;
 begin
   for f := Max(Low(Sources), Low(Dests)) to Min(High(Sources), High(Dests)) do
   begin
@@ -740,7 +743,7 @@ begin
   end;
 end;
 
-procedure DeleteFile(const Path :TPath);
+procedure DeleteFile(const Path: TPath);
 begin
   if not IsDir(Path) then
     SysUtils.DeleteFile(ToSystemPath(Path))
@@ -748,14 +751,14 @@ begin
     SysUtils.RemoveDir(ToSystemPath(Path));
 end;
 
-procedure DeleteFiles(const Pattern :TPath; const BasePath :TPath);
+procedure DeleteFiles(const Pattern: TPath; const BasePath: TPath);
 begin
   DeleteFiles(Wild(Pattern, BasePath));
 end;
 
-procedure DeleteFiles(const Files :TPaths);
+procedure DeleteFiles(const Files: TPaths);
 var
-  f :Integer;
+  f: Integer;
 begin
   for f := Low(Files) to High(Files) do
     if not IsDir(Files[f]) then
@@ -765,16 +768,16 @@ begin
       DeleteFile(Files[f]);
 end;
 
-procedure TouchFile(const Path :TPath; When :string);
+procedure TouchFile(const Path: TPath; When: string);
 begin
   //!!! StrToDateTime changes with locale and platform!!
   TouchFile(Path, StrToDateTime(When));
 end;
 
 
-procedure TouchFile(const Path :TPath; When :TDateTime);
+procedure TouchFile(const Path: TPath; When: TDateTime);
 var
-  Handle :Integer;
+  Handle: Integer;
 begin
    if When = 0 then
      When := Now;
@@ -791,19 +794,19 @@ begin
    end;
 end;
 
-function FileAttributes(const Path :TPath):TFileAttributes;
+function FileAttributes(const Path: TPath):TFileAttributes;
 begin
   Result := TFileAttributes(SystemFileAttributes(Path));
 end;
 
-procedure SetFileAttributes(const Path :TPath; const Attr :TFileAttributes);
+procedure SetFileAttributes(const Path: TPath; const Attr: TFileAttributes);
 begin
   SysUtils.FileSetAttr(ToSystemPath(Path), FileAttributesToSystemAttributes(Attr));
 end;
 
-function  FileTime(const Path :TPath) :TDateTime;
+function  FileTime(const Path: TPath): TDateTime;
 var
-  SystemTime :Longint;
+  SystemTime: Longint;
 begin
   SystemTime := SystemFileTime(Path);
   if SystemTime <= 0 then
@@ -812,24 +815,24 @@ begin
     Result := FileDateToDateTime(SystemTime);
 end;
 
-function  SystemFileAttributes(const Path :TPath) :Byte;
+function  SystemFileAttributes(const Path: TPath): Byte;
 begin
   Result := Byte(SysUtils.FileGetAttr(ToSystemPath(Path)));
 end;
 
-function  SystemFileTime(const Path :TPath)     :Longint;
+function  SystemFileTime(const Path: TPath)    : Longint;
 begin
   Result := SysUtils.FileAge(ToSystemPath(Path));
   if Result < 0 then
     Result := 0;
 end;
 
-function  TimeToSystemFileTime(const Time :TDateTime):Integer;
+function  TimeToSystemFileTime(const Time: TDateTime):Integer;
 begin
   Result := DateTimeToFileDate(Time);
 end;
 
-function  FileAttributesToSystemAttributes(const Attr :TFileAttributes):Byte;
+function  FileAttributesToSystemAttributes(const Attr: TFileAttributes):Byte;
 begin
   Result := Byte(Attr);
 end;
