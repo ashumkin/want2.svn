@@ -1,16 +1,19 @@
 2002-02-21 14:35  juanco
 
-	* ChangeLog, release.ini, doc/index.html, src/want.dsk,
-	test/WantAcceptTestLib.drc, test/WantTestLib.drc: ready for new
-	release
+	* ChangeLog, release.ini (tags: v_0_1_10), doc/index.html (tags:
+	v_0_1_10), src/want.dsk (tags: v_0_1_10),
+	test/WantAcceptTestLib.drc (tags: v_0_1_10), test/WantTestLib.drc
+	(tags: v_0_1_10), ChangeLog (tags: v_0_1_10): ready for new release
 
 2002-02-16 21:23  juanco
 
-	* make/bootstrap.bat: minor changes to make bootstrapping work
+	* make/bootstrap.bat (tags: v_0_1_10): minor changes to make
+	bootstrapping work
 
 2002-02-14 18:14  juanco
 
-	* want.xml: add want task for retreiving cvs tarball with wget
+	* want.xml (tags: v_0_1_10): add want task for retreiving cvs
+	tarball with wget
 
 2002-02-13 13:23  juanca
 
@@ -27,9 +30,10 @@
 
 2002-02-13 02:52  juanco
 
-	* ChangeLog, release.ini, doc/index.html, src/want.cfg,
-	src/want.dof, src/want.dsk, src/tasks/DelphiTasks.pas: removed
-	minor prublems when using delphi 6
+	* ChangeLog, release.ini, doc/index.html, src/want.cfg (tags:
+	v_0_1_10), src/want.dof (tags: v_0_1_10), src/want.dsk,
+	src/tasks/DelphiTasks.pas (tags: v_0_1_10): removed minor prublems
+	when using delphi 6
 
 2002-02-13 01:56  juanca
 
@@ -53,13 +57,13 @@
 
 2002-02-06 14:47  juanco
 
-	* src/tasks/: DelphiTasks.pas, ZipTasks.pas: simplified <delphi>
-	task using TAttributeElement features
+	* src/tasks/: DelphiTasks.pas, ZipTasks.pas (tags: v_0_1_10):
+	simplified <delphi> task using TAttributeElement features
 
 2002-02-06 14:45  juanco
 
-	* src/WantClasses.pas: made element-as-attribute support path= in
-	addition to value=
+	* src/WantClasses.pas (tags: v_0_1_10): made element-as-attribute
+	support path= in addition to value=
 
 2002-02-02 19:23  juanca
 
@@ -68,20 +72,20 @@
 
 2002-01-29 21:54  juanco
 
-	* want.xml, doc/index.html, doc/index.template.html,
-	doc/index.html: move dist directory to under doc directory to aid
-	with web site management
+	* want.xml, doc/index.html, doc/index.template.html (tags:
+	v_0_1_10), doc/index.html: move dist directory to under doc
+	directory to aid with web site management
 
 2002-01-29 15:29  juanco
 
 	* ChangeLog, release.ini, doc/index.html, make/bootstrap.bat,
-	test/WantAcceptTestLib.drc, doc/dist/want-0.1.115.zip: release
-	0.1.115
+	test/WantAcceptTestLib.drc, doc/dist/want-0.1.115.zip (tags:
+	v_0_1_10): release 0.1.115
 
 2002-01-29 14:54  juanco
 
-	* CVSROOT/cvswrappers: Added cvswrappers to catch known extensions
-	for binary files and check them in as -kb.
+	* CVSROOT/cvswrappers (tags: v_0_1_10): Added cvswrappers to catch
+	known extensions for binary files and check them in as -kb.
 
 2002-01-29 14:41  juanco
 
@@ -89,7 +93,7 @@
 
 2002-01-29 02:03  juanco
 
-	* .cvsignore: ignore build dirs
+	* .cvsignore (tags: v_0_1_10): ignore build dirs
 
 2002-01-28 17:19  juanco
 
@@ -98,20 +102,22 @@
 
 2002-01-25 18:17  juanco
 
-	* etc/bku.btm: CVS repository moved to remore server: do not
-	attempt backup
+	* etc/bku.btm (tags: v_0_1_10): CVS repository moved to remore
+	server: do not attempt backup
 
 2002-01-25 17:06  juanco
 
 	* doc/index.html, src/want.cfg, src/want.dof, src/want.dsk,
-	src/tasks/DelphiTasks.pas, src/win32/WIN32.pas,
+	src/tasks/DelphiTasks.pas, src/win32/WIN32.pas (tags: v_0_1_10),
 	test/WantAcceptTestLib.drc: removed writeable const related errors
 
 2002-01-08 18:12  root
 
-	* CVSROOT/: checkoutlist, commitinfo, config, cvswrappers,
-	editinfo, loginfo, modules, notify, rcsinfo, taginfo, verifymsg:
-	initial checkin
+	* CVSROOT/: checkoutlist (tags: v_0_1_10), commitinfo (tags:
+	v_0_1_10), config (tags: v_0_1_10), cvswrappers, editinfo (tags:
+	v_0_1_10), loginfo (tags: v_0_1_10), modules (tags: v_0_1_10),
+	notify (tags: v_0_1_10), rcsinfo (tags: v_0_1_10), taginfo (tags:
+	v_0_1_10), verifymsg (tags: v_0_1_10): initial checkin
 
 2002-01-08 16:50  juanca
 
@@ -121,21 +127,22 @@
 2002-01-07 23:32  juanca
 
 	* release.ini, want.xml, doc/index.html, make/bootstrap.bat,
-	src/WantClasses.pas, src/want.dof, src/want.dpr, src/want.dsk,
-	src/lib/WildPaths.pas, src/tasks/ExecTasks.pas (utags: v_0_1_109):
-	fixed more problems with directories with spaces
+	src/WantClasses.pas, src/want.dof, src/want.dpr (tags: v_0_1_10),
+	src/want.dsk, src/lib/WildPaths.pas (tags: v_0_1_10),
+	src/tasks/ExecTasks.pas (tags: v_0_1_10) (utags: v_0_1_109): fixed
+	more problems with directories with spaces
 
 2002-01-07 14:49  juanca
 
-	* README.TXT (tags: v_0_1_109), release.ini, test/WantTestLib.drc
-	(tags: v_0_1_109): added basic README.TXT
+	* README.TXT (tags: v_0_1_10, v_0_1_109), release.ini,
+	test/WantTestLib.drc (tags: v_0_1_109): added basic README.TXT
 
 2002-01-07 14:43  juanca
 
 	* src/WantClasses.pas, src/want.dof, src/want.dsk,
-	src/elements/Properties.pas (tags: v_0_1_109),
-	test/WantTestLib.drc, test/WantTestLib.dsk (tags: v_0_1_109): make
-	properties be undefined if empty
+	src/elements/Properties.pas (tags: v_0_1_10, v_0_1_109),
+	test/WantTestLib.drc, test/WantTestLib.dsk (tags: v_0_1_10,
+	v_0_1_109): make properties be undefined if empty
 
 2002-01-07 14:12  juanca
 
@@ -161,15 +168,16 @@
 2002-01-05 23:57  juanca
 
 	* release.ini, doc/index.html, src/want.dsk, test/WantTestLib.dsk,
-	test/WantTests.dof (tags: v_0_1_109), test/WantTests.dpr (tags:
-	v_0_1_109), lib/jal/release.ini, lib/jal/src/JALCollections.pas,
-	lib/jal/src/JALXMLParser.pas: repaired memory leaks
+	test/WantTests.dof (tags: v_0_1_10, v_0_1_109), test/WantTests.dpr
+	(tags: v_0_1_10, v_0_1_109), lib/jal/release.ini,
+	lib/jal/src/JALCollections.pas, lib/jal/src/JALXMLParser.pas:
+	repaired memory leaks
 
 2002-01-05 15:47  juanca
 
 	* release.ini, doc/index.html, src/tasks/ExecTasks.pas,
-	test/ExecTasksTest.pas (tags: v_0_1_109): removed redundant double
-	quotes in <exec> tasks
+	test/ExecTasksTest.pas (tags: v_0_1_10, v_0_1_109): removed
+	redundant double quotes in <exec> tasks
 
 2002-01-04 16:11  juanca
 
@@ -182,7 +190,7 @@
 2002-01-04 14:33  juanca
 
 	* release.ini, doc/index.html, src/elements/.cvsignore (tags:
-	v_0_1_109): routine
+	v_0_1_10, v_0_1_109): routine
 
 2001-12-21 15:43  juanca
 
@@ -196,7 +204,7 @@
 
 2001-12-19 23:17  juanca
 
-	* doc/style.css (tags: v_0_1_109): fortmatting of images
+	* doc/style.css (tags: v_0_1_10, v_0_1_109): fortmatting of images
 
 2001-12-19 23:07  juanca
 
@@ -233,34 +241,38 @@
 
 2001-12-17 22:10  juanca
 
-	* src/tasks/DUnitTasks.pas (tags: v_0_1_109),
-	src/tasks/DelphiTasks.pas, src/tasks/EchoTasks.pas (tags:
-	v_0_1_109), src/tasks/EditTasks.pas (tags: v_0_1_109),
-	src/tasks/ExecTasks.pas, src/tasks/FileTasks.pas (tags: v_0_1_109),
-	src/tasks/ZipTasks.pas (tags: v_0_1_109), test/WildPathsTest.pas
-	(tags: v_0_1_109), test/ExecTasksTest.pas, test/ExternalTests.pas
-	(tags: v_0_1_109), test/FileSetTests.pas (tags: v_0_1_109),
-	test/FileTasksTest.pas (tags: v_0_1_109), test/RunnerTests.pas
-	(tags: v_0_1_109), test/WantAcceptTestLib.cfg (tags: v_0_1_109),
-	test/WantAcceptTestLib.dof (tags: v_0_1_109), test/WantTestLib.cfg
-	(tags: v_0_1_109), test/WantTestLib.dof (tags: v_0_1_109),
-	test/WantTestLib.dpr (tags: v_0_1_109), test/data/inifile/want.xml
-	(tags: v_0_1_109): upgraded <dunit> task to latest version of
-	DUnit, with status messages
+	* src/tasks/DUnitTasks.pas (tags: v_0_1_10, v_0_1_109),
+	src/tasks/DelphiTasks.pas, src/tasks/EchoTasks.pas (tags: v_0_1_10,
+	v_0_1_109), src/tasks/EditTasks.pas (tags: v_0_1_10, v_0_1_109),
+	src/tasks/ExecTasks.pas, src/tasks/FileTasks.pas (tags: v_0_1_10,
+	v_0_1_109), src/tasks/ZipTasks.pas (tags: v_0_1_109),
+	test/WildPathsTest.pas (tags: v_0_1_10, v_0_1_109),
+	test/ExecTasksTest.pas, test/ExternalTests.pas (tags: v_0_1_10,
+	v_0_1_109), test/FileSetTests.pas (tags: v_0_1_10, v_0_1_109),
+	test/FileTasksTest.pas (tags: v_0_1_10, v_0_1_109),
+	test/RunnerTests.pas (tags: v_0_1_10, v_0_1_109),
+	test/WantAcceptTestLib.cfg (tags: v_0_1_10, v_0_1_109),
+	test/WantAcceptTestLib.dof (tags: v_0_1_10, v_0_1_109),
+	test/WantTestLib.cfg (tags: v_0_1_10, v_0_1_109),
+	test/WantTestLib.dof (tags: v_0_1_10, v_0_1_109),
+	test/WantTestLib.dpr (tags: v_0_1_10, v_0_1_109),
+	test/data/inifile/want.xml (tags: v_0_1_10, v_0_1_109): upgraded
+	<dunit> task to latest version of DUnit, with status messages
 
 2001-12-17 22:08  juanca
 
-	* src/: elements/PatternSets.pas (tags: v_0_1_109),
+	* src/: elements/PatternSets.pas (tags: v_0_1_10, v_0_1_109),
 	lib/WildPaths.pas: debugged WildPaths.IsMatch so CVS/** matches
 	xxx/CVS
 
 2001-12-17 22:07  juanca
 
-	* src/: ScriptRunner.pas (tags: v_0_1_109), WantClasses.pas,
-	lib/ScriptParser.pas (tags: v_0_1_109), win32/ConsoleListener.pas
-	(tags: v_0_1_109), win32/ConsoleScriptRunner.pas (tags: v_0_1_109),
-	win32/Win32ChildProcesses.pas (tags: v_0_1_109): debugged logging
-	of errors
+	* src/: ScriptRunner.pas (tags: v_0_1_10, v_0_1_109),
+	WantClasses.pas, lib/ScriptParser.pas (tags: v_0_1_10, v_0_1_109),
+	win32/ConsoleListener.pas (tags: v_0_1_10, v_0_1_109),
+	win32/ConsoleScriptRunner.pas (tags: v_0_1_10, v_0_1_109),
+	win32/Win32ChildProcesses.pas (tags: v_0_1_10, v_0_1_109): debugged
+	logging of errors
 
 2001-12-17 22:04  juanca
 
@@ -301,8 +313,8 @@
 
 2001-12-03 16:30  juanca
 
-	* src/elements/RegexpElements.pas (tags: v_0_1_109): make verbose
-	be less verbose for <regexp>
+	* src/elements/RegexpElements.pas (tags: v_0_1_10, v_0_1_109): make
+	verbose be less verbose for <regexp>
 
 2001-12-03 16:29  juanca
 
@@ -337,14 +349,14 @@
 2001-11-27 18:32  juanca
 
 	* release.ini, doc/index.html, test/WantAcceptTestLib.drc,
-	release.ini, doc/index.html, src/.cvsignore (tags: v_0_1_109),
-	src/want.cfg, src/want.dof, src/want.dsk, lib/jal/test/.cvsignore:
-	routine
+	release.ini, doc/index.html, src/.cvsignore (tags: v_0_1_10,
+	v_0_1_109), src/want.cfg, src/want.dof, src/want.dsk,
+	lib/jal/test/.cvsignore: routine
 
 2001-11-27 18:32  juanca
 
-	* private/juanco/todo_juanco.html (tags: v_0_1_109, v_0_1_31): new
-	todo items for juanco
+	* private/juanco/todo_juanco.html (tags: v_0_1_10, v_0_1_109,
+	v_0_1_31): new todo items for juanco
 
 2001-11-27 18:29  juanca
 
@@ -385,8 +397,8 @@
 
 2001-11-27 18:11  juanca
 
-	* lib/jcl-1.11.zip (tags: v_0_1_109, v_0_1_31): upgraded to JCL
-	1.11
+	* lib/jcl-1.11.zip (tags: v_0_1_10, v_0_1_109, v_0_1_31): upgraded
+	to JCL 1.11
 
 2001-11-27 15:16  juanca
 
@@ -426,8 +438,8 @@
 	* want.xml, doc/index.html, src/ScriptRunner.pas,
 	src/WantClasses.pas, src/want.cfg, src/want.dof, src/want.dpr,
 	src/want.dsk, src/wantver.rc, src/elements/Attributes.pas (tags:
-	v_0_1_109, v_0_1_31), src/lib/ScriptParser.pas (tags: v_0_1_31),
-	src/lib/WildPaths.pas (tags: v_0_1_31),
+	v_0_1_10, v_0_1_109, v_0_1_31), src/lib/ScriptParser.pas (tags:
+	v_0_1_31), src/lib/WildPaths.pas (tags: v_0_1_31),
 	src/win32/ConsoleListener.pas (tags: v_0_1_31): Now all task
 	attributes can be specified as nested xml elements.
 	
@@ -445,9 +457,9 @@
 2001-11-16 16:52  juanca
 
 	* src/tasks/: EchoTasks.pas (tags: v_0_1_31), ExecTasks.pas,
-	FileTasks.pas (tags: v_0_1_31), IniFileTasks.pas (tags: v_0_1_109,
-	v_0_1_31), WantTasks.pas (tags: v_0_1_109, v_0_1_31): buglets in
-	<echo> task
+	FileTasks.pas (tags: v_0_1_31), IniFileTasks.pas (tags: v_0_1_10,
+	v_0_1_109, v_0_1_31), WantTasks.pas (tags: v_0_1_10, v_0_1_109,
+	v_0_1_31): buglets in <echo> task
 
 2001-11-16 16:52  juanca
 
@@ -497,10 +509,10 @@
 
 2001-11-13 17:23  juanca
 
-	* doc/index.html, src/BuildListeners.pas (tags: v_0_1_109,
-	v_0_1_31), src/ScriptRunner.pas, src/WantClasses.pas, src/want.dof,
-	src/want.dsk, src/win32/ConsoleListener.pas: refactor BuildListener
-	to avoid duplicate error reporting
+	* doc/index.html, src/BuildListeners.pas (tags: v_0_1_10,
+	v_0_1_109, v_0_1_31), src/ScriptRunner.pas, src/WantClasses.pas,
+	src/want.dof, src/want.dsk, src/win32/ConsoleListener.pas: refactor
+	BuildListener to avoid duplicate error reporting
 
 2001-11-13 16:54  juanca
 
@@ -525,8 +537,8 @@
 
 	* test/data/file/gziptasks/simple/: build.xml, final/afile.txt,
 	final/afile2.txt, final/afile2.txt.gz, setup/afile.txt,
-	setup/afile2.txt, setup/afile2.txt.gz (utags: v_0_1_109, v_0_1_31,
-	v_0_1_4): added external tests for <gzip> task
+	setup/afile2.txt, setup/afile2.txt.gz (utags: v_0_1_10, v_0_1_109,
+	v_0_1_31, v_0_1_4): added external tests for <gzip> task
 
 2001-10-26 16:03  juanca
 
@@ -546,9 +558,10 @@
 
 2001-10-26 16:02  juanca
 
-	* src/tasks/: GZipTasks.pas (tags: v_0_1_109), StandardTasks.pas
-	(tags: v_0_1_109), ZipTasks.pas (utags: v_0_1_31, v_0_1_4): added
-	<gzip> task. Moved ZipStreams to JAL library
+	* src/tasks/: GZipTasks.pas (tags: v_0_1_10, v_0_1_109),
+	StandardTasks.pas (tags: v_0_1_10, v_0_1_109), ZipTasks.pas (utags:
+	v_0_1_31, v_0_1_4): added <gzip> task. Moved ZipStreams to JAL
+	library
 
 2001-10-26 16:01  juanca
 
@@ -619,10 +632,10 @@
 	* test/: ExternalTests.pas, RunnerTests.pas (tags: v_0_1_31,
 	v_0_1_4), WantAcceptTestLib.cfg (tags: v_0_1_31, v_0_1_4),
 	WantAcceptTestLib.dof (tags: v_0_1_31, v_0_1_4),
-	WantAcceptTestLib.dpr (tags: v_0_1_109, v_0_1_31, v_0_1_4),
-	WantTestLib.cfg (tags: v_0_1_31, v_0_1_4), WantTestLib.dof (tags:
-	v_0_1_31, v_0_1_4): fixed minor problems with test cases and latest
-	versionof want
+	WantAcceptTestLib.dpr (tags: v_0_1_10, v_0_1_109, v_0_1_31,
+	v_0_1_4), WantTestLib.cfg (tags: v_0_1_31, v_0_1_4),
+	WantTestLib.dof (tags: v_0_1_31, v_0_1_4): fixed minor problems
+	with test cases and latest versionof want
 
 2001-10-23 20:01  juanca
 
@@ -802,72 +815,75 @@
 
 2001-06-28 18:50  juanca
 
-	* doc/: history.html (tags: v_0_1_109, v_0_1_31, v_0_1_4, v_0_1_3),
-	index.html (utags: v_0_1_0_base): Added basic formatting to web
-	page
+	* doc/: history.html (tags: v_0_1_10, v_0_1_109, v_0_1_31, v_0_1_4,
+	v_0_1_3), index.html (utags: v_0_1_0_base): Added basic formatting
+	to web page
 
 2001-06-28 18:42  juanca
 
-	* index.html, doc/task_writers_guide.html (tags: v_0_1_109,
-	v_0_1_31, v_0_1_4, v_0_1_3, v_0_1_0_base), doc/elements/tstamp.html
-	(tags: v_0_1_109, v_0_1_31, v_0_1_4, v_0_1_3, v_0_1_0_base),
-	private/juanco/URITests.dpr (tags: v_0_1_109, v_0_1_31, v_0_1_4,
-	v_0_1_3, v_0_1_0_base), private/juanco/notes_juanco.html (tags:
+	* index.html, doc/task_writers_guide.html (tags: v_0_1_10,
 	v_0_1_109, v_0_1_31, v_0_1_4, v_0_1_3, v_0_1_0_base),
+	doc/elements/tstamp.html (tags: v_0_1_10, v_0_1_109, v_0_1_31,
+	v_0_1_4, v_0_1_3, v_0_1_0_base), private/juanco/URITests.dpr (tags:
+	v_0_1_10, v_0_1_109, v_0_1_31, v_0_1_4, v_0_1_3, v_0_1_0_base),
+	private/juanco/notes_juanco.html (tags: v_0_1_10, v_0_1_109,
+	v_0_1_31, v_0_1_4, v_0_1_3, v_0_1_0_base),
 	private/juanco/todo_juanco.html (tags: v_0_1_4, v_0_1_3,
-	v_0_1_0_base), private/juanco/uris_juanco.html (tags: v_0_1_109,
-	v_0_1_31, v_0_1_4, v_0_1_3, v_0_1_0_base), src/want.dsk (tags:
-	v_0_1_0_base), src/lib/.cvsignore (tags: v_0_1_109, v_0_1_31,
-	v_0_1_4, v_0_1_3, v_0_1_0_base), test/ExternalTests.pas (tags:
-	v_0_1_3, v_0_1_0_base), test/WantAcceptTestLib.drc (tags:
-	v_0_1_0_base), test/WantTestLib.dsk (tags: v_0_1_31, v_0_1_4,
-	v_0_1_3, v_0_1_0_base), test/WantTests.dof (tags: v_0_1_31,
-	v_0_1_4, v_0_1_3, v_0_1_0_base), test/data/edit/readwrite/build.xml
-	(tags: v_0_1_109, v_0_1_31, v_0_1_4, v_0_1_3, v_0_1_0_base),
-	test/data/edit/readwrite/final/added_dot.txt (tags: v_0_1_109,
+	v_0_1_0_base), private/juanco/uris_juanco.html (tags: v_0_1_10,
+	v_0_1_109, v_0_1_31, v_0_1_4, v_0_1_3, v_0_1_0_base), src/want.dsk
+	(tags: v_0_1_0_base), src/lib/.cvsignore (tags: v_0_1_10,
+	v_0_1_109, v_0_1_31, v_0_1_4, v_0_1_3, v_0_1_0_base),
+	test/ExternalTests.pas (tags: v_0_1_3, v_0_1_0_base),
+	test/WantAcceptTestLib.drc (tags: v_0_1_0_base),
+	test/WantTestLib.dsk (tags: v_0_1_31, v_0_1_4, v_0_1_3,
+	v_0_1_0_base), test/WantTests.dof (tags: v_0_1_31, v_0_1_4,
+	v_0_1_3, v_0_1_0_base), test/data/edit/readwrite/build.xml (tags:
+	v_0_1_10, v_0_1_109, v_0_1_31, v_0_1_4, v_0_1_3, v_0_1_0_base),
+	test/data/edit/readwrite/final/added_dot.txt (tags: v_0_1_10,
+	v_0_1_109, v_0_1_31, v_0_1_4, v_0_1_3, v_0_1_0_base),
+	test/data/edit/readwrite/final/added_end.txt (tags: v_0_1_10,
+	v_0_1_109, v_0_1_31, v_0_1_4, v_0_1_3, v_0_1_0_base),
+	test/data/edit/readwrite/final/added_zero.txt (tags: v_0_1_10,
+	v_0_1_109, v_0_1_31, v_0_1_4, v_0_1_3, v_0_1_0_base),
+	test/data/edit/readwrite/final/c.txt (tags: v_0_1_10, v_0_1_109,
 	v_0_1_31, v_0_1_4, v_0_1_3, v_0_1_0_base),
-	test/data/edit/readwrite/final/added_end.txt (tags: v_0_1_109,
+	test/data/edit/readwrite/final/c1.txt (tags: v_0_1_10, v_0_1_109,
 	v_0_1_31, v_0_1_4, v_0_1_3, v_0_1_0_base),
-	test/data/edit/readwrite/final/added_zero.txt (tags: v_0_1_109,
+	test/data/edit/readwrite/final/c2.txt (tags: v_0_1_10, v_0_1_109,
 	v_0_1_31, v_0_1_4, v_0_1_3, v_0_1_0_base),
-	test/data/edit/readwrite/final/c.txt (tags: v_0_1_109, v_0_1_31,
-	v_0_1_4, v_0_1_3, v_0_1_0_base),
-	test/data/edit/readwrite/final/c1.txt (tags: v_0_1_109, v_0_1_31,
-	v_0_1_4, v_0_1_3, v_0_1_0_base),
-	test/data/edit/readwrite/final/c2.txt (tags: v_0_1_109, v_0_1_31,
-	v_0_1_4, v_0_1_3, v_0_1_0_base),
-	test/data/edit/readwrite/final/c_all.txt (tags: v_0_1_109,
+	test/data/edit/readwrite/final/c_all.txt (tags: v_0_1_10,
+	v_0_1_109, v_0_1_31, v_0_1_4, v_0_1_3, v_0_1_0_base),
+	test/data/edit/readwrite/final/file.txt (tags: v_0_1_10, v_0_1_109,
 	v_0_1_31, v_0_1_4, v_0_1_3, v_0_1_0_base),
-	test/data/edit/readwrite/final/file.txt (tags: v_0_1_109, v_0_1_31,
-	v_0_1_4, v_0_1_3, v_0_1_0_base),
-	test/data/edit/readwrite/final/full.txt (tags: v_0_1_109, v_0_1_31,
-	v_0_1_4, v_0_1_3, v_0_1_0_base),
-	test/data/edit/readwrite/final/full2.txt (tags: v_0_1_109,
+	test/data/edit/readwrite/final/full.txt (tags: v_0_1_10, v_0_1_109,
 	v_0_1_31, v_0_1_4, v_0_1_3, v_0_1_0_base),
-	test/data/edit/readwrite/final/inserted_dot.txt (tags: v_0_1_109,
-	v_0_1_31, v_0_1_4, v_0_1_3, v_0_1_0_base),
-	test/data/edit/readwrite/final/inserted_end.txt (tags: v_0_1_109,
-	v_0_1_31, v_0_1_4, v_0_1_3, v_0_1_0_base),
+	test/data/edit/readwrite/final/full2.txt (tags: v_0_1_10,
+	v_0_1_109, v_0_1_31, v_0_1_4, v_0_1_3, v_0_1_0_base),
+	test/data/edit/readwrite/final/inserted_dot.txt (tags: v_0_1_10,
+	v_0_1_109, v_0_1_31, v_0_1_4, v_0_1_3, v_0_1_0_base),
+	test/data/edit/readwrite/final/inserted_end.txt (tags: v_0_1_10,
+	v_0_1_109, v_0_1_31, v_0_1_4, v_0_1_3, v_0_1_0_base),
 	test/data/edit/readwrite/final/jcl.txt,
 	test/data/edit/readwrite/final/jcl1.txt,
 	test/data/edit/readwrite/final/jcl2.txt,
 	test/data/edit/readwrite/final/jcl_all.txt,
-	test/data/edit/readwrite/final/nextthree.txt (tags: v_0_1_109,
+	test/data/edit/readwrite/final/nextthree.txt (tags: v_0_1_10,
+	v_0_1_109, v_0_1_31, v_0_1_4, v_0_1_3, v_0_1_0_base),
+	test/data/edit/readwrite/final/threefirst.txt (tags: v_0_1_10,
+	v_0_1_109, v_0_1_31, v_0_1_4, v_0_1_3, v_0_1_0_base),
+	test/data/edit/readwrite/setup/file.txt (tags: v_0_1_10, v_0_1_109,
 	v_0_1_31, v_0_1_4, v_0_1_3, v_0_1_0_base),
-	test/data/edit/readwrite/final/threefirst.txt (tags: v_0_1_109,
+	test/data/file/copyrecursive/build.xml (tags: v_0_1_10, v_0_1_109,
 	v_0_1_31, v_0_1_4, v_0_1_3, v_0_1_0_base),
-	test/data/edit/readwrite/setup/file.txt (tags: v_0_1_109, v_0_1_31,
-	v_0_1_4, v_0_1_3, v_0_1_0_base),
-	test/data/file/copyrecursive/build.xml (tags: v_0_1_109, v_0_1_31,
-	v_0_1_4, v_0_1_3, v_0_1_0_base), test/data/file/move/all/build.xml
-	(tags: v_0_1_109, v_0_1_31, v_0_1_4, v_0_1_3, v_0_1_0_base),
-	test/data/file/move/recursive/build.xml (tags: v_0_1_109, v_0_1_31,
-	v_0_1_4, v_0_1_3, v_0_1_0_base),
-	test/data/file/move/single/build.xml (tags: v_0_1_109, v_0_1_31,
-	v_0_1_4, v_0_1_3, v_0_1_0_base),
-	test/data/file/ziptasks/simple_unzip/build.xml (tags: v_0_1_109,
-	v_0_1_31, v_0_1_4, v_0_1_3, v_0_1_0_base): Removed last vestiges of
-	dante
+	test/data/file/move/all/build.xml (tags: v_0_1_10, v_0_1_109,
+	v_0_1_31, v_0_1_4, v_0_1_3, v_0_1_0_base),
+	test/data/file/move/recursive/build.xml (tags: v_0_1_10, v_0_1_109,
+	v_0_1_31, v_0_1_4, v_0_1_3, v_0_1_0_base),
+	test/data/file/move/single/build.xml (tags: v_0_1_10, v_0_1_109,
+	v_0_1_31, v_0_1_4, v_0_1_3, v_0_1_0_base),
+	test/data/file/ziptasks/simple_unzip/build.xml (tags: v_0_1_10,
+	v_0_1_109, v_0_1_31, v_0_1_4, v_0_1_3, v_0_1_0_base): Removed last
+	vestiges of dante
 
 2001-06-28 17:46  juanca
 
@@ -876,8 +892,8 @@
 2001-06-28 17:43  juanca
 
 	* lib/: paszlib-1.0-dante-1.zip, paszlib-1.0-want-1.zip (tags:
-	v_0_1_109, v_0_1_31, v_0_1_4, v_0_1_3, v_0_1_0_base): Updated
-	paszlib .zip
+	v_0_1_10, v_0_1_109, v_0_1_31, v_0_1_4, v_0_1_3, v_0_1_0_base):
+	Updated paszlib .zip
 
 2001-06-28 17:42  juanca
 
@@ -1034,8 +1050,8 @@
 
 	* src/BuildListeners.pas (tags: v_0_1_4, v_0_1_3, v_0_1_0_base),
 	src/ScriptRunner.pas, src/want.dof, src/want.dsk,
-	src/lib/ChildProcesses.pas (tags: v_0_1_109, v_0_1_31, v_0_1_4,
-	v_0_1_3, v_0_1_0_base), src/tasks/DelphiTasks.pas,
+	src/lib/ChildProcesses.pas (tags: v_0_1_10, v_0_1_109, v_0_1_31,
+	v_0_1_4, v_0_1_3, v_0_1_0_base), src/tasks/DelphiTasks.pas,
 	src/tasks/EchoTasks.pas, src/tasks/ExecTasks.pas,
 	src/tasks/FileTasks.pas, src/win32/ConsoleListener.pas (tags:
 	v_0_1_0_base), test/WantAcceptTestLib.cfg,
@@ -1125,13 +1141,14 @@
 	* src/want.dpr, src/want.dsk, src/tasks/EchoTasks.pas,
 	src/tasks/IniFileTasks.pas (tags: v_0_1_4, v_0_1_3, v_0_1_0_base),
 	src/tasks/StandardTasks.pas (tags: v_0_1_3, v_0_1_0_base),
-	test/WantTestLib.drc, test/data/echo/want.xml (tags: v_0_1_109,
-	v_0_1_31, v_0_1_4, v_0_1_3, v_0_1_0_base),
-	test/data/echo/final/final.txt (tags: v_0_1_109, v_0_1_31, v_0_1_4,
-	v_0_1_3, v_0_1_0_base), test/data/echo/final/template.txt (tags:
+	test/WantTestLib.drc, test/data/echo/want.xml (tags: v_0_1_10,
 	v_0_1_109, v_0_1_31, v_0_1_4, v_0_1_3, v_0_1_0_base),
-	test/data/echo/setup/template.txt (tags: v_0_1_109, v_0_1_31,
-	v_0_1_4, v_0_1_3, v_0_1_0_base): Added an "input"
+	test/data/echo/final/final.txt (tags: v_0_1_10, v_0_1_109,
+	v_0_1_31, v_0_1_4, v_0_1_3, v_0_1_0_base),
+	test/data/echo/final/template.txt (tags: v_0_1_10, v_0_1_109,
+	v_0_1_31, v_0_1_4, v_0_1_3, v_0_1_0_base),
+	test/data/echo/setup/template.txt (tags: v_0_1_10, v_0_1_109,
+	v_0_1_31, v_0_1_4, v_0_1_3, v_0_1_0_base): Added an "input"
 	attribute/property to the <echo> tast so it can be used to evaluate
 	property instances in external templates:
 	
@@ -1148,11 +1165,12 @@
 
 2001-05-15 15:40  juanca
 
-	* test/data/inifile/: want.xml, final/test.ini (tags: v_0_1_109,
-	v_0_1_31, v_0_1_4, v_0_1_3, v_0_1_0_base), final/test2.ini (tags:
+	* test/data/inifile/: want.xml, final/test.ini (tags: v_0_1_10,
 	v_0_1_109, v_0_1_31, v_0_1_4, v_0_1_3, v_0_1_0_base),
-	setup/test.ini (tags: v_0_1_109, v_0_1_31, v_0_1_4, v_0_1_3,
-	v_0_1_0_base): Added <ini> and <inifile> tests
+	final/test2.ini (tags: v_0_1_10, v_0_1_109, v_0_1_31, v_0_1_4,
+	v_0_1_3, v_0_1_0_base), setup/test.ini (tags: v_0_1_10, v_0_1_109,
+	v_0_1_31, v_0_1_4, v_0_1_3, v_0_1_0_base): Added <ini> and
+	<inifile> tests
 
 2001-05-14 19:15  juanca
 
@@ -1162,8 +1180,8 @@
 
 2001-05-11 19:51  juanca
 
-	* src/ScriptRunner.pas, src/WantResources.pas (tags: v_0_1_109,
-	v_0_1_31, v_0_1_4, v_0_1_3, v_0_1_0_base), src/want.dof,
+	* src/ScriptRunner.pas, src/WantResources.pas (tags: v_0_1_10,
+	v_0_1_109, v_0_1_31, v_0_1_4, v_0_1_3, v_0_1_0_base), src/want.dof,
 	src/want.dsk, src/win32/ConsoleScriptRunner.pas,
 	test/WantTestLib.drc: BUG: Failure to find build file was not being
 	logged to console.
@@ -1174,12 +1192,12 @@
 2001-05-11 19:37  juanca
 
 	* src/BuildListeners.pas, src/ScriptRunner.pas,
-	src/WantClasses.pas, src/WantUtils.pas (tags: v_0_1_109, v_0_1_31,
-	v_0_1_4, v_0_1_3, v_0_1_0_base), src/want.dpr, src/want.dsk,
-	src/elements/PatternSets.pas, src/lib/WildPaths.pas,
+	src/WantClasses.pas, src/WantUtils.pas (tags: v_0_1_10, v_0_1_109,
+	v_0_1_31, v_0_1_4, v_0_1_3, v_0_1_0_base), src/want.dpr,
+	src/want.dsk, src/elements/PatternSets.pas, src/lib/WildPaths.pas,
 	src/tasks/EchoTasks.pas, lib/jal/src/JALOwnedTrees.pas,
-	src/tasks/ExecTasks.pas, src/tasks/LoggerTask.pas (tags: v_0_1_109,
-	v_0_1_31, v_0_1_4, v_0_1_3, v_0_1_0_base),
+	src/tasks/ExecTasks.pas, src/tasks/LoggerTask.pas (tags: v_0_1_10,
+	v_0_1_109, v_0_1_31, v_0_1_4, v_0_1_3, v_0_1_0_base),
 	src/win32/ConsoleListener.pas, src/win32/ConsoleScriptRunner.pas:
 	Removed direct dependencies of WantClasses and WildPaths on JCL.
 
@@ -1189,19 +1207,19 @@
 	src/want.dof, src/want.dsk, src/tasks/DUnitTasks.pas,
 	src/tasks/DelphiTasks.pas, src/win32/ConsoleListener.pas,
 	src/win32/ConsoleScriptRunner.pas, test/DelphiTasksTest.pas (tags:
-	v_0_1_109, v_0_1_31, v_0_1_4, v_0_1_3, v_0_1_0_base),
+	v_0_1_10, v_0_1_109, v_0_1_31, v_0_1_4, v_0_1_3, v_0_1_0_base),
 	test/ExternalTests.pas, test/RunnerTests.pas (tags: v_0_1_3,
 	v_0_1_0_base), test/WantAcceptTestLib.dpr, test/WantClassesTest.pas
-	(tags: v_0_1_109, v_0_1_31, v_0_1_4, v_0_1_3, v_0_1_0_base),
-	test/WantTestLib.cfg, test/WantTestLib.dof, test/WantTestLib.drc,
-	test/WantTests.dof, test/WantTests.dpr (tags: v_0_1_31, v_0_1_4,
-	v_0_1_3, v_0_1_0_base): Updated tests and want.xml after
-	refactoring of script running logic.
+	(tags: v_0_1_10, v_0_1_109, v_0_1_31, v_0_1_4, v_0_1_3,
+	v_0_1_0_base), test/WantTestLib.cfg, test/WantTestLib.dof,
+	test/WantTestLib.drc, test/WantTests.dof, test/WantTests.dpr (tags:
+	v_0_1_31, v_0_1_4, v_0_1_3, v_0_1_0_base): Updated tests and
+	want.xml after refactoring of script running logic.
 
 2001-05-11 17:18  juanca
 
-	* private/juanco/refactorings.html (tags: v_0_1_109, v_0_1_31,
-	v_0_1_4, v_0_1_3, v_0_1_0_base), src/BuildListeners.pas,
+	* private/juanco/refactorings.html (tags: v_0_1_10, v_0_1_109,
+	v_0_1_31, v_0_1_4, v_0_1_3, v_0_1_0_base), src/BuildListeners.pas,
 	src/ScriptRunner.pas, src/WantClasses.pas, src/want.dof,
 	src/want.dpr, src/want.dsk, src/lib/ScriptParser.pas,
 	src/tasks/DelphiTasks.pas, src/tasks/ExecTasks.pas,
@@ -1209,8 +1227,8 @@
 	src/win32/ConsoleListener.pas, src/win32/ConsoleScriptRunner.pas,
 	test/DelphiTasksTest.pas, test/ExecTasksTest.pas (tags: v_0_1_31,
 	v_0_1_4, v_0_1_3, v_0_1_0_base), test/ExternalTests.pas,
-	test/RegexpElementsTest.pas (tags: v_0_1_109, v_0_1_31, v_0_1_4,
-	v_0_1_3, v_0_1_0_base), test/RunnerTests.pas,
+	test/RegexpElementsTest.pas (tags: v_0_1_10, v_0_1_109, v_0_1_31,
+	v_0_1_4, v_0_1_3, v_0_1_0_base), test/RunnerTests.pas,
 	test/WantAcceptTestLib.dpr, test/WantAcceptTestLib.drc,
 	test/WantClassesTest.pas, test/WantTestLib.drc: Moved build logic
 	out of WantClasses and itno ScriptRunner
@@ -1234,13 +1252,13 @@
 2001-05-11 13:09  juanca
 
 	* private/juanco/refactorings.html, src/WantResources.pas,
-	src/want.bpg (tags: v_0_1_109, v_0_1_31, v_0_1_4, v_0_1_3,
-	v_0_1_0_base), src/want.dof, src/want.dpr, src/want.dsk,
+	src/want.bpg (tags: v_0_1_10, v_0_1_109, v_0_1_31, v_0_1_4,
+	v_0_1_3, v_0_1_0_base), src/want.dof, src/want.dpr, src/want.dsk,
 	src/lib/ChildProcesses.pas, src/tasks/ExecTasks.pas,
 	src/win32/WIN32.pas (tags: v_0_1_0_base),
 	src/win32/Win32ChildProcesses.pas (tags: v_0_1_31, v_0_1_4,
 	v_0_1_3, v_0_1_0_base), src/win32/Win32Implementations.pas (tags:
-	v_0_1_109, v_0_1_31, v_0_1_4, v_0_1_3, v_0_1_0_base),
+	v_0_1_10, v_0_1_109, v_0_1_31, v_0_1_4, v_0_1_3, v_0_1_0_base),
 	test/WantAcceptTestLib.cfg, test/WantAcceptTestLib.dof,
 	test/WantAcceptTestLib.dpr, test/WantTestLib.cfg,
 	test/WantTestLib.dof, test/WantTestLib.dpr, test/WantTestLib.drc:
@@ -1256,12 +1274,12 @@
 
 2001-05-10 19:41  juanca
 
-	* want.xml, private/juanco/.cvsignore (tags: v_0_1_109, v_0_1_31,
-	v_0_1_4, v_0_1_3, v_0_1_0_base), src/ScriptRunner.pas,
+	* want.xml, private/juanco/.cvsignore (tags: v_0_1_10, v_0_1_109,
+	v_0_1_31, v_0_1_4, v_0_1_3, v_0_1_0_base), src/ScriptRunner.pas,
 	src/WantResources.pas, src/want.dof, src/want.dsk, src/wantver.rc,
-	src/wantver.template.rc (tags: v_0_1_109, v_0_1_31, v_0_1_4,
-	v_0_1_3, v_0_1_0_base), test/WantTestLib.drc: Fixed copyright
-	notices.
+	src/wantver.template.rc (tags: v_0_1_10, v_0_1_109, v_0_1_31,
+	v_0_1_4, v_0_1_3, v_0_1_0_base), test/WantTestLib.drc: Fixed
+	copyright notices.
 	
 	Make program respond to -v -version and --version options with
 	copyright information.
@@ -1278,9 +1296,9 @@
 2001-05-10 19:03  juanca
 
 	* doc/: .cvsignore, COPYING.html, COPYING.txt, copyright.txt,
-	license.txt (utags: v_0_1_109, v_0_1_3, v_0_1_31, v_0_1_4,
-	v_0_1_0_base): Added GNU General Public License. Updated license
-	and copyright files with info about all copyright holders.
+	license.txt (utags: v_0_1_10, v_0_1_109, v_0_1_3, v_0_1_31,
+	v_0_1_4, v_0_1_0_base): Added GNU General Public License. Updated
+	license and copyright files with info about all copyright holders.
 
 2001-05-10 19:00  juanca
 
@@ -1295,8 +1313,8 @@
 
 2001-05-10 18:59  juanca
 
-	* src/license.rc (tags: v_0_1_109, v_0_1_31, v_0_1_4, v_0_1_3,
-	v_0_1_0_base): Added COPYRIGHT resource to license.rc.
+	* src/license.rc (tags: v_0_1_10, v_0_1_109, v_0_1_31, v_0_1_4,
+	v_0_1_3, v_0_1_0_base): Added COPYRIGHT resource to license.rc.
 
 2001-05-10 18:58  juanca
 
@@ -1316,9 +1334,10 @@
 2001-05-10 18:57  juanca
 
 	* test/WantAcceptTestLib.cfg, test/WantAcceptTestLib.dof,
-	test/WantAcceptTestLib.dsk (tags: v_0_1_109, v_0_1_31, v_0_1_4,
-	v_0_1_3, v_0_1_0_base), test/WantTestLib.cfg, test/WantTestLib.dof,
-	test/WantTestLib.dsk, src/want.dof, src/want.dsk: routine
+	test/WantAcceptTestLib.dsk (tags: v_0_1_10, v_0_1_109, v_0_1_31,
+	v_0_1_4, v_0_1_3, v_0_1_0_base), test/WantTestLib.cfg,
+	test/WantTestLib.dof, test/WantTestLib.dsk, src/want.dof,
+	src/want.dsk: routine
 
 2001-05-10 18:57  juanca
 
@@ -1332,9 +1351,9 @@
 
 2001-05-10 18:51  juanca
 
-	* src/lib/XPerlRE.pas, lib/perlre-1.1.zip (utags: v_0_1_109,
-	v_0_1_3, v_0_1_31, v_0_1_4, v_0_1_0_base): Use 1.1 version of
-	PerlRE.
+	* src/lib/XPerlRE.pas, lib/perlre-1.1.zip (utags: v_0_1_10,
+	v_0_1_109, v_0_1_3, v_0_1_31, v_0_1_4, v_0_1_0_base): Use 1.1
+	version of PerlRE.
 	
 	Fixed parameter order bug in XPerlRE.pas
 
@@ -1347,10 +1366,10 @@
 	* src/: ScriptRunner.pas, WantClasses.pas, WantResources.pas,
 	want.cfg, want.dof, want.dpr, want.dsk,
 	elements/RegexpElements.pas, lib/WildPaths.pas, lib/XPerlRE.pas,
-	win32/CRT32.pas (tags: v_0_1_109, v_0_1_31, v_0_1_4, v_0_1_3,
-	v_0_1_0_base), win32/ConsoleListener.pas, tasks/DelphiTasks.pas,
-	tasks/EditTasks.pas, tasks/ExecTasks.pas: Improved logic and
-	formatting of log and error messages
+	win32/CRT32.pas (tags: v_0_1_10, v_0_1_109, v_0_1_31, v_0_1_4,
+	v_0_1_3, v_0_1_0_base), win32/ConsoleListener.pas,
+	tasks/DelphiTasks.pas, tasks/EditTasks.pas, tasks/ExecTasks.pas:
+	Improved logic and formatting of log and error messages
 
 2001-05-10 14:57  juanca
 
@@ -1374,11 +1393,11 @@
 
 2001-05-10 14:39  juanca
 
-	* src/win32/: ConsoleListener.pas, Resources.pas (tags: v_0_1_109,
-	v_0_1_31, v_0_1_4, v_0_1_3, v_0_1_0_base), VersionInfoResources.pas
-	(tags: v_0_1_109, v_0_1_31, v_0_1_4, v_0_1_3, v_0_1_0_base): Added
-	initial implementation of .res resource/versioninfo parsing and
-	generation.
+	* src/win32/: ConsoleListener.pas, Resources.pas (tags: v_0_1_10,
+	v_0_1_109, v_0_1_31, v_0_1_4, v_0_1_3, v_0_1_0_base),
+	VersionInfoResources.pas (tags: v_0_1_10, v_0_1_109, v_0_1_31,
+	v_0_1_4, v_0_1_3, v_0_1_0_base): Added initial implementation of
+	.res resource/versioninfo parsing and generation.
 
 2001-05-10 14:36  juanca
 
@@ -1437,13 +1456,13 @@
 
 2001-05-08 01:25  juanca
 
-	* doc/: dunit_want.xml (tags: v_0_1_109, v_0_1_31, v_0_1_4,
-	v_0_1_3, v_0_1_0_base), index.html, want_want.xml (tags: v_0_1_109,
-	v_0_1_31, v_0_1_4, v_0_1_3, v_0_1_0_base), images/failure.png
-	(tags: v_0_1_109, v_0_1_31, v_0_1_4, v_0_1_3, v_0_1_0_base),
-	images/success.png (tags: v_0_1_109, v_0_1_31, v_0_1_4, v_0_1_3,
-	v_0_1_0_base): Factored out Want/Dante history into its own
-	history.html page.
+	* doc/: dunit_want.xml (tags: v_0_1_10, v_0_1_109, v_0_1_31,
+	v_0_1_4, v_0_1_3, v_0_1_0_base), index.html, want_want.xml (tags:
+	v_0_1_10, v_0_1_109, v_0_1_31, v_0_1_4, v_0_1_3, v_0_1_0_base),
+	images/failure.png (tags: v_0_1_10, v_0_1_109, v_0_1_31, v_0_1_4,
+	v_0_1_3, v_0_1_0_base), images/success.png (tags: v_0_1_10,
+	v_0_1_109, v_0_1_31, v_0_1_4, v_0_1_3, v_0_1_0_base): Factored out
+	Want/Dante history into its own history.html page.
 	
 	Added introductory notes and screenshots ti Want page.
 
@@ -1539,30 +1558,31 @@
 	src/elements/PatternSets.pas, src/elements/Properties.pas (tags:
 	v_0_1_31, v_0_1_4, v_0_1_3, v_0_1_0_base),
 	src/elements/RegexpElements.pas, src/elements/StandardElements.pas
-	(tags: v_0_1_109, v_0_1_31, v_0_1_4, v_0_1_3, v_0_1_0_base),
-	src/elements/TimeElements.pas (tags: v_0_1_109, v_0_1_31, v_0_1_4,
-	v_0_1_3, v_0_1_0_base), src/lib/ScriptParser.pas,
-	src/tasks/CustomTasks.pas (tags: v_0_1_109, v_0_1_31, v_0_1_4,
-	v_0_1_3, v_0_1_0_base), src/tasks/DUnitTasks.pas,
-	src/tasks/DelphiTasks.pas, src/tasks/EchoTasks.pas,
-	src/tasks/EditTasks.pas, src/tasks/ExecTasks.pas,
-	lib/jal/src/JALOwnedTrees.pas, src/tasks/FileTasks.pas,
-	src/tasks/LoggerTask.pas, src/tasks/StandardTasks.pas,
-	src/tasks/VersionInfoTasks.pas, src/tasks/WantStandardTasks.pas
-	(tags: v_0_1_109, v_0_1_31, v_0_1_4, v_0_1_3, v_0_1_0_base),
-	src/tasks/WantTasks.pas, src/tasks/ZipTasks.pas,
-	src/tasks/vsstasks.pas, test/DelphiCompileTest.pas (tags:
+	(tags: v_0_1_10, v_0_1_109, v_0_1_31, v_0_1_4, v_0_1_3,
+	v_0_1_0_base), src/elements/TimeElements.pas (tags: v_0_1_10,
 	v_0_1_109, v_0_1_31, v_0_1_4, v_0_1_3, v_0_1_0_base),
-	test/DelphiTasksTest.pas, test/ExecTasksTest.pas,
-	test/ExternalTests.pas, test/FileSetTests.pas (tags: v_0_1_31,
-	v_0_1_4, v_0_1_3, v_0_1_0_base), test/FileTasksTest.pas (tags:
-	v_0_1_31, v_0_1_4, v_0_1_3, v_0_1_0_base),
-	test/RegexpElementsTest.pas, test/RunnerTests.pas,
-	test/VersionInfoTasksTest.pas, test/VssTasksTest.pas,
-	test/WantAcceptTestLib.dof, test/WantAcceptTestLib.dpr,
-	test/WantAcceptTestLib.drc, test/WantAcceptTestLib.dsk,
-	test/WantClassesTest.pas, test/WantTests.dof, test/WantTests.dpr,
-	test/WildPathsTest.pas: Updated copyright notices.
+	src/lib/ScriptParser.pas, src/tasks/CustomTasks.pas (tags:
+	v_0_1_10, v_0_1_109, v_0_1_31, v_0_1_4, v_0_1_3, v_0_1_0_base),
+	src/tasks/DUnitTasks.pas, src/tasks/DelphiTasks.pas,
+	src/tasks/EchoTasks.pas, src/tasks/EditTasks.pas,
+	src/tasks/ExecTasks.pas, lib/jal/src/JALOwnedTrees.pas,
+	src/tasks/FileTasks.pas, src/tasks/LoggerTask.pas,
+	src/tasks/StandardTasks.pas, src/tasks/VersionInfoTasks.pas,
+	src/tasks/WantStandardTasks.pas (tags: v_0_1_10, v_0_1_109,
+	v_0_1_31, v_0_1_4, v_0_1_3, v_0_1_0_base), src/tasks/WantTasks.pas,
+	src/tasks/ZipTasks.pas, src/tasks/vsstasks.pas,
+	test/DelphiCompileTest.pas (tags: v_0_1_10, v_0_1_109, v_0_1_31,
+	v_0_1_4, v_0_1_3, v_0_1_0_base), test/DelphiTasksTest.pas,
+	test/ExecTasksTest.pas, test/ExternalTests.pas,
+	test/FileSetTests.pas (tags: v_0_1_31, v_0_1_4, v_0_1_3,
+	v_0_1_0_base), test/FileTasksTest.pas (tags: v_0_1_31, v_0_1_4,
+	v_0_1_3, v_0_1_0_base), test/RegexpElementsTest.pas,
+	test/RunnerTests.pas, test/VersionInfoTasksTest.pas,
+	test/VssTasksTest.pas, test/WantAcceptTestLib.dof,
+	test/WantAcceptTestLib.dpr, test/WantAcceptTestLib.drc,
+	test/WantAcceptTestLib.dsk, test/WantClassesTest.pas,
+	test/WantTests.dof, test/WantTests.dpr, test/WildPathsTest.pas:
+	Updated copyright notices.
 
 2001-05-02 16:58  juanca
 
@@ -1582,11 +1602,12 @@
 
 	* test/: WantAcceptTestLib.cfg, WantAcceptTestLib.dof,
 	WantAcceptTestLib.dpr, WantAcceptTestLib.drc,
-	WantAcceptTestLib.dsk, WantAcceptTestLib.res (tags: v_0_1_109,
-	v_0_1_31, v_0_1_4, v_0_1_3, v_0_1_0_base), WantTestLib.cfg,
-	WantTestLib.dof, WantTestLib.dpr, WantTestLib.drc, WantTestLib.dsk,
-	WantTestLib.res (tags: v_0_1_109, v_0_1_31, v_0_1_4, v_0_1_3,
-	v_0_1_0_base): Added test dlls to be used with the dunit task
+	WantAcceptTestLib.dsk, WantAcceptTestLib.res (tags: v_0_1_10,
+	v_0_1_109, v_0_1_31, v_0_1_4, v_0_1_3, v_0_1_0_base),
+	WantTestLib.cfg, WantTestLib.dof, WantTestLib.dpr, WantTestLib.drc,
+	WantTestLib.dsk, WantTestLib.res (tags: v_0_1_10, v_0_1_109,
+	v_0_1_31, v_0_1_4, v_0_1_3, v_0_1_0_base): Added test dlls to be
+	used with the dunit task
 
 2001-05-02 16:51  juanca
 
@@ -1602,9 +1623,9 @@
 
 2001-05-02 16:49  juanca
 
-	* src/forms/: ScriptFrm.dfm, ScriptFrm.pas (utags: v_0_1_109,
-	v_0_1_3, v_0_1_31, v_0_1_4, v_0_1_0_base): Added initial version of
-	GUI.
+	* src/forms/: ScriptFrm.dfm, ScriptFrm.pas (utags: v_0_1_10,
+	v_0_1_109, v_0_1_3, v_0_1_31, v_0_1_4, v_0_1_0_base): Added initial
+	version of GUI.
 
 2001-05-02 16:48  juanca
 
@@ -1706,7 +1727,7 @@
 2001-04-29 16:51  juanco
 
 	* test/data/parsing/conditionals/: final/should_1.txt,
-	final/should_2.txt, final/should_3.txt, build.xml (utags:
+	final/should_2.txt, final/should_3.txt, build.xml (utags: v_0_1_10,
 	v_0_1_109, v_0_1_3, v_0_1_31, v_0_1_4, v_0_1_0_base): Added
 	external test for build script conditionals.
 
@@ -1965,11 +1986,11 @@
 	src/lib/zipStreams.pas, src/tasks/ZipTasks.pas, test/DanteTest.dof,
 	test/ExternalTests.pas,
 	test/data/file/ziptasks/simple_unzip/build.xml,
-	test/data/file/ziptasks/simple_unzip/final.zip (tags: v_0_1_109,
-	v_0_1_31, v_0_1_4, v_0_1_3, v_0_1_0_base),
-	test/data/file/ziptasks/simple_unzip/setup.zip (tags: v_0_1_109,
-	v_0_1_31, v_0_1_4, v_0_1_3, v_0_1_0_base): Added <unzip> task, and
-	simple external test.
+	test/data/file/ziptasks/simple_unzip/final.zip (tags: v_0_1_10,
+	v_0_1_109, v_0_1_31, v_0_1_4, v_0_1_3, v_0_1_0_base),
+	test/data/file/ziptasks/simple_unzip/setup.zip (tags: v_0_1_10,
+	v_0_1_109, v_0_1_31, v_0_1_4, v_0_1_3, v_0_1_0_base): Added <unzip>
+	task, and simple external test.
 
 2001-04-24 01:24  juanco
 
@@ -2024,8 +2045,9 @@
 2001-04-23 20:57  chrismo
 
 	* test/data/file/move/: overwrite/build.xml,
-	overwrite_readonly/build.xml (utags: v_0_1_109, v_0_1_3, v_0_1_31,
-	v_0_1_4, v_0_1_0_base): Removal of old external test data locations
+	overwrite_readonly/build.xml (utags: v_0_1_10, v_0_1_109, v_0_1_3,
+	v_0_1_31, v_0_1_4, v_0_1_0_base): Removal of old external test data
+	locations
 
 2001-04-23 20:49  chrismo
 
@@ -2058,21 +2080,23 @@
 2001-04-23 20:08  chrismo
 
 	* test/data/file/move/: all/build.xml, all/final.zip (tags:
-	v_0_1_109, v_0_1_31, v_0_1_4, v_0_1_3, v_0_1_0_base), all/setup.zip
-	(tags: v_0_1_109, v_0_1_31, v_0_1_4, v_0_1_3, v_0_1_0_base),
-	overwrite/build.xml, overwrite/final.zip (tags: v_0_1_109,
-	v_0_1_31, v_0_1_4, v_0_1_3, v_0_1_0_base), overwrite/setup.zip
-	(tags: v_0_1_109, v_0_1_31, v_0_1_4, v_0_1_3, v_0_1_0_base),
+	v_0_1_10, v_0_1_109, v_0_1_31, v_0_1_4, v_0_1_3, v_0_1_0_base),
+	all/setup.zip (tags: v_0_1_10, v_0_1_109, v_0_1_31, v_0_1_4,
+	v_0_1_3, v_0_1_0_base), overwrite/build.xml, overwrite/final.zip
+	(tags: v_0_1_10, v_0_1_109, v_0_1_31, v_0_1_4, v_0_1_3,
+	v_0_1_0_base), overwrite/setup.zip (tags: v_0_1_10, v_0_1_109,
+	v_0_1_31, v_0_1_4, v_0_1_3, v_0_1_0_base),
 	overwrite_readonly/build.xml, overwrite_readonly/final.zip (tags:
+	v_0_1_10, v_0_1_109, v_0_1_31, v_0_1_4, v_0_1_3, v_0_1_0_base),
+	overwrite_readonly/setup.zip (tags: v_0_1_10, v_0_1_109, v_0_1_31,
+	v_0_1_4, v_0_1_3, v_0_1_0_base), recursive/build.xml,
+	recursive/final.zip (tags: v_0_1_10, v_0_1_109, v_0_1_31, v_0_1_4,
+	v_0_1_3, v_0_1_0_base), recursive/setup.zip (tags: v_0_1_10,
 	v_0_1_109, v_0_1_31, v_0_1_4, v_0_1_3, v_0_1_0_base),
-	overwrite_readonly/setup.zip (tags: v_0_1_109, v_0_1_31, v_0_1_4,
-	v_0_1_3, v_0_1_0_base), recursive/build.xml, recursive/final.zip
-	(tags: v_0_1_109, v_0_1_31, v_0_1_4, v_0_1_3, v_0_1_0_base),
-	recursive/setup.zip (tags: v_0_1_109, v_0_1_31, v_0_1_4, v_0_1_3,
-	v_0_1_0_base), single/build.xml, single/final.zip (tags: v_0_1_109,
+	single/build.xml, single/final.zip (tags: v_0_1_10, v_0_1_109,
 	v_0_1_31, v_0_1_4, v_0_1_3, v_0_1_0_base), single/setup.zip (tags:
-	v_0_1_109, v_0_1_31, v_0_1_4, v_0_1_3, v_0_1_0_base): Re-organized
-	external move tests - new directory structure
+	v_0_1_10, v_0_1_109, v_0_1_31, v_0_1_4, v_0_1_3, v_0_1_0_base):
+	Re-organized external move tests - new directory structure
 
 2001-04-23 15:41  chrismo
 
@@ -2356,13 +2380,13 @@
 	data/moverecursive.xml, data/movesingle.final.zip,
 	data/movesingle.setup.zip, data/movesingle.xml,
 	data/file/copyrecursive/build.xml (tags: added_color),
-	data/file/copyrecursive/final.zip (tags: v_0_1_109, v_0_1_31,
-	v_0_1_4, v_0_1_3, v_0_1_0_base, added_color),
-	data/file/copyrecursive/setup.zip (tags: v_0_1_109, v_0_1_31,
-	v_0_1_4, v_0_1_3, v_0_1_0_base, added_color): Updated external
-	testing to support a hierarchy folder structure. Also refactored
-	out directory comparison code to clUtilFile (with added content
-	comparison text or binary).
+	data/file/copyrecursive/final.zip (tags: v_0_1_10, v_0_1_109,
+	v_0_1_31, v_0_1_4, v_0_1_3, v_0_1_0_base, added_color),
+	data/file/copyrecursive/setup.zip (tags: v_0_1_10, v_0_1_109,
+	v_0_1_31, v_0_1_4, v_0_1_3, v_0_1_0_base, added_color): Updated
+	external testing to support a hierarchy folder structure. Also
+	refactored out directory comparison code to clUtilFile (with added
+	content comparison text or binary).
 
 2001-04-12 13:19  chrismo
 
@@ -2427,9 +2451,9 @@
 
 2001-04-11 21:04  juanco
 
-	* lib/.cvsignore (tags: v_0_1_109, v_0_1_31, v_0_1_4, v_0_1_3,
-	v_0_1_0_base, added_color): cvsignore everything in the {dante}/lib
-	directory.
+	* lib/.cvsignore (tags: v_0_1_10, v_0_1_109, v_0_1_31, v_0_1_4,
+	v_0_1_3, v_0_1_0_base, added_color): cvsignore everything in the
+	{dante}/lib directory.
 
 2001-04-11 21:03  juanco
 
@@ -2612,9 +2636,9 @@
 
 2001-04-05 20:30  juanco
 
-	* tools/cvs2cl.pl (tags: v_0_1_109, v_0_1_31, v_0_1_4, v_0_1_3,
-	v_0_1_0_base, added_color): Added perl tool to generate ChangeLogs
-	to the ./tools directory
+	* tools/cvs2cl.pl (tags: v_0_1_10, v_0_1_109, v_0_1_31, v_0_1_4,
+	v_0_1_3, v_0_1_0_base, added_color): Added perl tool to generate
+	ChangeLogs to the ./tools directory
 
 2001-04-05 20:28  juanco
 
@@ -2981,10 +3005,11 @@
 2001-04-02 22:36  juanco
 
 	* private/juanco/URITests.dpr (tags: added_color),
-	private/juanco/URIs.pas (tags: v_0_1_109, v_0_1_31, v_0_1_4,
-	v_0_1_3, v_0_1_0_base, added_color), private/juanco/edit_build.xml
-	(tags: v_0_1_109, v_0_1_31, v_0_1_4, v_0_1_3, v_0_1_0_base,
-	added_color), private/juanco/notes_juanco.html (tags: added_color),
+	private/juanco/URIs.pas (tags: v_0_1_10, v_0_1_109, v_0_1_31,
+	v_0_1_4, v_0_1_3, v_0_1_0_base, added_color),
+	private/juanco/edit_build.xml (tags: v_0_1_10, v_0_1_109, v_0_1_31,
+	v_0_1_4, v_0_1_3, v_0_1_0_base, added_color),
+	private/juanco/notes_juanco.html (tags: added_color),
 	private/juanco/todo_juanco.html (tags: added_color),
 	private/juanco/uris_juanco.html (tags: added_color),
 	private/juanco/.cvsignore (tags: added_color),
@@ -3122,10 +3147,11 @@
 2001-03-28 23:53  juanco
 
 	* doc/reference/Q190351 - HOWTO Spawn Console Processes with
-	Redirected Standard Handles.htm (tags: v_0_1_109, v_0_1_31,
-	v_0_1_4, v_0_1_3, v_0_1_0_base, added_color): Added the Microsoft
-	Knowledge Base article explaining how to spawn console processes
-	with redirected standard I/O to the doc/reference directory.
+	Redirected Standard Handles.htm (tags: v_0_1_10, v_0_1_109,
+	v_0_1_31, v_0_1_4, v_0_1_3, v_0_1_0_base, added_color): Added the
+	Microsoft Knowledge Base article explaining how to spawn console
+	processes with redirected standard I/O to the doc/reference
+	directory.
 
 2001-03-28 23:52  juanco
 
@@ -3213,8 +3239,9 @@
 
 2001-03-27 02:55  juanco
 
-	* src/.cvsignore, test/.cvsignore (tags: v_0_1_109, v_0_1_31,
-	v_0_1_4, v_0_1_3, v_0_1_0_base, added_color): cvsignore .cfg files
+	* src/.cvsignore, test/.cvsignore (tags: v_0_1_10, v_0_1_109,
+	v_0_1_31, v_0_1_4, v_0_1_3, v_0_1_0_base, added_color): cvsignore
+	.cfg files
 
 2001-03-27 02:53  juanco
 
@@ -3280,9 +3307,9 @@
 
 2001-03-26 14:36  chrismo
 
-	* src/: dante.dof, tasks/.cvsignore (tags: v_0_1_109, v_0_1_31,
-	v_0_1_4, v_0_1_3, v_0_1_0_base, added_color): Added .cvsignore
-	files
+	* src/: dante.dof, tasks/.cvsignore (tags: v_0_1_10, v_0_1_109,
+	v_0_1_31, v_0_1_4, v_0_1_3, v_0_1_0_base, added_color): Added
+	.cvsignore files
 
 2001-03-26 14:35  chrismo
 

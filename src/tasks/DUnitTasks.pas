@@ -33,6 +33,7 @@ type
     procedure AddSuccess(test: ITest); virtual;
     procedure AddError(error: TTestFailure); virtual;
     procedure AddFailure(failure: TTestFailure); virtual;
+    function  ShouldRunTest(test :ITest) :boolean;  virtual;
     procedure StartTest(test: ITest); virtual;
     procedure EndTest(test: ITest); virtual;
     procedure TestingStarts; virtual;
@@ -95,6 +96,11 @@ end;
 procedure TDUnitTask.AddSuccess(test: ITest);
 begin
   Log(vlVerbose, '+ ' + test.Name);
+end;
+
+function TDUnitTask.ShouldRunTest(test: ITest): boolean;
+begin
+  Result := true;
 end;
 
 procedure TDUnitTask.StartTest(test: ITest);
