@@ -93,7 +93,6 @@ type
 
   TCustomFileSet  = class(TPatternSet)
   public
-    function  SetAttribute(Name, Value: string): boolean; override;
     procedure AddDefaultPatterns; virtual;
     property dir: TPath read GetBaseDir write SetBaseDir;
   end;
@@ -177,12 +176,16 @@ end;
 procedure TPatternSet.DoExclude(Files: TStrings; Pattern: TPath; Base: string);
 var
   Excluded: TPaths;
+  Path    : TPath;
   f       : Integer;
 begin
-  Excluded := SplitPath(Pattern);
+  Excluded := SplitPath(ToRelativePath(Pattern));
   for f := Files.Count-1 downto 0 do
-    if IsMatch(Excluded, SplitPath(Files[f])) then
+  begin
+    Path := ToRelativePath(Files[f]);
+    if IsMatch(Excluded, SplitPath(Path)) then
       Files.Delete(f);
+  end;
 end;
 
 function TPatternSet.createInclude: TIncludeElement;
@@ -318,17 +321,6 @@ begin
   Exclude('**/*.*~*');
   Exclude('**/*.bak');
   Exclude('**/dunit.ini');
-end;
-
-function TCustomFileSet.SetAttribute(Name, Value: string): boolean;
-begin
-  if Name <> 'refid' then
-    Result := inherited SetAttribute(name, Value)
-  else
-  begin
-    AddPatternSet(Project.FindChild(Value, TPatternSet) as TPatternSet);
-    Result := true;
-  end;
 end;
 
 { TCustomDirSet }

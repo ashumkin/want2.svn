@@ -57,13 +57,12 @@ type
   end;
 
   TMkDirTask = class(TFileTask)
-  protected
-    FDir: string;
   public
     procedure Init; override;
     procedure Execute;  override;
   published
-    property dir:  string read FDir write FDir;
+    // dir is an alias for basedir
+    property dir:TPath read FBaseDir write FBaseDir;
   end;
 
   TTouchTask = class(TFileTask)
@@ -79,19 +78,21 @@ type
   TDeleteTask = class(TFileSetTask)
   protected
     FDeleteReadOnly: boolean;
-    FDir : string;
-    FFile: string;
+    FFile: TPath;
 
     procedure AddDefaultPatterns; override;
 
-    procedure SetFile(Value: string);
+    procedure SetFile(Value: TPath);
 
     procedure DoFileset(Fileset: TFileSet); override;
   public
     procedure Init; override;
   published
-    property _File: string  read FFile write SetFile stored True;
-    property Dir  : string  read FDir  write FDir;
+    property basedir;
+    property _File: TPath  read FFile write SetFile stored True;
+
+    // dir is an alias for basedir
+    property dir  : TPath  read FBaseDir write FBaseDir;
 
     property DeleteReadOnly: boolean read FDeleteReadOnly write FDeleteReadOnly;
   end;
@@ -133,7 +134,6 @@ constructor TFileSetTask.Create(Owner: TScriptElement);
 begin
   inherited Create(Owner);
   DefaultExcludes := True;
-  SetLength(FFileSets, 1);
 end;
 
 function TFileSetTask.CreateInclude: TIncludeElement;
@@ -186,6 +186,7 @@ begin
 
   SetLength(FFileSets, 1 + Length(FFileSets));
   FFileSets[High(FFileSets)] := Result;
+  Result.basedir := self.basedir;
 end;
 
 procedure TFileSetTask.DoFileset(Fileset: TFileSet);
@@ -215,8 +216,8 @@ end;
 
 function TFileSetTask.MyFileSet :TFileSet;
 begin
-  if FFileSets[0] = nil then
-    FFileSets[0] := TFileSet.Create(Self);
+  if Length(FFileSets) = 0 then
+    CreateFileSet;
   Result := FFileSets[0];
 end;
 
@@ -269,17 +270,21 @@ procedure TDeleteTask.AddDefaultPatterns;
 var
   RelDir: TPath;
 begin
-  //inherited AddDefaultPatterns;
-
-  if dir <> '' then
+  if (dir <> '')
+  and PathIsDir(dir)
+  and (Length(FFileSets) = 0)
+  then
   begin
+    // then they wanto to delete the whole directory
     RelDir := ToRelativePath(dir);
     with MyFileSet do
     begin
       Include(RelDir);
       Include(PathConcat(RelDir, '**'));
     end;
-  end;
+  end
+  else
+    inherited AddDefaultPatterns;
 end;
 
 procedure TDeleteTask.DoFileset(Fileset: TFileSet);
@@ -306,6 +311,7 @@ begin
       path := Paths[p];
       Log(vlVerbose, 'del ' + ToSystemPath(path));
       AboutToScratchPath(path);
+      (*
       WildPaths.DeleteFile(path, FDeleteReadOnly);
       if PathExists(path) then
       begin
@@ -313,11 +319,12 @@ begin
         msg := Format('Could not delete %s', [  ToSystemPath(path) ]);
         TaskFailure( msg );
       end;
+      *)
     end;
   end;
 end;
 
-procedure TDeleteTask.SetFile(Value: string);
+procedure TDeleteTask.SetFile(Value: TPath);
 begin
   FFile := Value;
   MyFileSet.Include(Value);
