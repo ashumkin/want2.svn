@@ -1296,7 +1296,7 @@ end;
 
 function  TProject.Schedule(Target :string): TTargetArray;
 begin
-  Schedule(StringArray(Target));
+  Result:=Schedule(StringArray(Target));
 end;
 
 function TProject.Schedule(const Targets: TStringDynArray): TTargetArray;
