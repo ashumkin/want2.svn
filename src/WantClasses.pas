@@ -118,7 +118,8 @@ type
     FBaseDir: string;      // wher paths for this object are based
     FId     : string;      // element Id
 
-    FAttributes :TStringList;
+    FProperties:  TStrings;
+    FAttributes:  TStrings;
 
 
     function  GetBaseDir: string;          virtual;
@@ -166,8 +167,11 @@ type
     function  EnvironmentValue(Name: string): string;    virtual;
     function  ExpandMacros(Value: string): string;       virtual;
 
+    procedure SetProperties(Value: TStrings);
+
     function  SetAttribute(Name, Value: string): boolean; virtual;
     function  GetAttribute(Name :string) : string;        virtual;
+    procedure SetAttributes(Value :TStrings);
 
     function  GetDelphiProperty(Name :string) :Variant;
     function  SetDelphiProperty(Name, Value :string) :boolean;
@@ -187,8 +191,10 @@ type
     property  Owner :  TDanteElement read GetOwner;
     property  Tag stored False;
 
-    property  id     : string  read FId        write SetId;
-    property  basedir: string  read GetBaseDir write SetBaseDir;
+    property id     :    string   read FId         write SetId;
+    property basedir:    string   read GetBaseDir  write SetBaseDir;
+    property Properties: TStrings read FProperties write SetProperties;
+    property Attributes: TStrings read FAttributes write SetAttributes;
   published
     function CreateProperty   : TPropertyElement; virtual;
 
@@ -203,14 +209,16 @@ type
     FVerbosity:     TVerbosityLevel;
     FRunPath:       string;
     FDescription:   string;
-    FProperties:    TStrings;
 
     FOnLog: TLogMethod;
 
     procedure Notification(AComponent: TComponent; Operation: TOperation); override;
+
     function  GetTarget(Index: Integer):TTarget;
     procedure BuildSchedule(TargetName: string; Sched: TList);
+
     procedure DoParseXML(Node: MiniDom.IElement);
+
     procedure SetBaseDir(Path: TPath);  override;
     function  GetBaseDir: TPath;        override;
 
@@ -248,13 +256,6 @@ type
 
     function  GetTargetByName(Name: string):TTarget;
 
-    procedure SetProperty(Name, Value: string);          override;
-    function  PropertyDefined(Name: string): boolean;    override;
-    function  PropertyValue(Name: string): string;       override;
-    function  EnvironmentValue(Name: string): string;    override;
-    function  ExpandMacros(Value: string): string;       override;
-
-    procedure SetProperties(Value: TStrings);
 
     function  Schedule(Target: string): TTargetArray;
     procedure Build(Targets: array of string); overload;
@@ -282,7 +283,6 @@ type
       write   FVerbosity
       stored  False
       default vlNormal;
-    property Properties:    TStrings        read FProperties     write SetProperties;
     property Description:   string          read FDescription    write FDescription;
   end;
 
@@ -466,6 +466,7 @@ end;
 constructor TDanteElement.Create(Owner: TDanteElement);
 begin
   inherited Create(Owner);
+  FProperties := TStringList.Create;
   FAttributes := TStringList.Create;
 end;
 
@@ -477,6 +478,7 @@ end;
 destructor TDanteElement.Destroy;
 begin
   FAttributes.Free;
+  FProperties.Free;
   inherited Destroy;
 end;
 
@@ -606,6 +608,11 @@ begin
     Result := GetDelphiProperty(Name);
 
   Result := ExpandMacros(Result);
+end;
+
+procedure TDanteElement.SetAttributes(Value: TStrings);
+begin
+  FAttributes.Assign(Value);
 end;
 
 function TDanteElement.ParseXMLChild(Child: IElement): boolean;
@@ -801,31 +808,6 @@ begin
   Log(Format, Args, Verbosity);
 end;
 
-function TDanteElement.PropertyDefined(Name: string): boolean;
-begin
-  Result := Project.PropertyDefined(Name);
-end;
-
-function TDanteElement.PropertyValue(Name: string): string;
-begin
-  Result := Project.PropertyValue(Name);
-end;
-
-procedure TDanteElement.SetProperty(Name, Value: string);
-begin
-  assert(Name <> '');
-  Project.SetProperty(Name, Value);
-end;
-
-function TDanteElement.ExpandMacros(Value: string): string;
-begin
-  Result := Project.ExpandMacros(Value);
-end;
-
-function TDanteElement.EnvironmentValue(Name: string): string;
-begin
-  Result := Project.EnvironmentValue(Name);
-end;
 
 function TDanteElement.ToDantePath(Path: string): string;
 begin
@@ -849,13 +831,6 @@ begin
     AttributeRequiredError(Name);
 end;
 
-function TDanteElement.CreateProperty: TPropertyElement;
-begin
-  Result := TPropertyElement.Create(Self);
-end;
-
-
-
 
 function TDanteElement.GetBaseDir: string;
 begin
@@ -870,15 +845,85 @@ begin
   FBaseDir := Value;
 end;
 
-
-
-
 procedure TDanteElement.SetID(Value: string);
 begin
   FId := Value;
 end;
 
 
+
+function TDanteElement.CreateProperty: TPropertyElement;
+begin
+  Result := TPropertyElement.Create(Self);
+end;
+
+procedure TDanteElement.SetProperties(Value: TStrings);
+begin
+  Assert(Value <> nil);
+  FProperties.Assign(Value);
+end;
+
+procedure TDanteElement.SetProperty(Name, Value: string);
+begin
+  Assert(Name <> '');
+  if not PropertyDefined(Name) then
+    Properties.Values[Name] := Value;
+end;
+
+function TDanteElement.PropertyDefined(Name: string): boolean;
+begin
+  Assert(Name <> '');
+  Result :=   (Properties.IndexOfName(Name) >= 0)
+           or (Owner <> nil) and (Owner.PropertyDefined(Name));
+end;
+
+function TDanteElement.PropertyValue(Name: string): string;
+begin
+  Assert(Name <> '');
+  if Properties.IndexOfName(Name) >= 0 then
+    Result := ExpandMacros(Properties.Values[Name])
+  else if Owner <> nil then
+    Result := Owner.PropertyValue(Name);
+end;
+
+function TDanteElement.EnvironmentValue(Name: string): string;
+begin
+  Assert(Name <> '');
+  JclSysInfo.GetEnvironmentVar(Name, Result, True);
+end;
+
+
+function TDanteElement.ExpandMacros(Value: string): string;
+type
+  TMacroExpansion = function(Name: string): string of object;
+
+  function Expand(StartPat, EndPat, Val: string; MacroExpansion:  TMacroExpansion): string;
+  var
+    MacroStart,
+    MacroEnd   : Integer;
+    SubPropName: string;
+  begin
+    Result := Val;
+    MacroStart := StrSearch(StartPat, Result);
+    while MacroStart <> 0 do
+    begin
+      MacroEnd := StrSearch(EndPat, Result, macroStart+1);
+      if MacroEnd =0  then
+        break
+      else begin
+        SubPropName := StrMid(Result, MacroStart+2, -2 + MacroEnd-MacroStart);
+        Delete(Result, MacroStart, 3 + Length(SubPropName));
+        Insert(MacroExpansion(SubPropName), Result, MacroStart);
+        MacroStart := StrSearch(StartPat, Result);
+      end;
+    end;
+  end;
+
+begin
+  Result := Value;
+  Result := Expand('%{', '}', Result, EnvironmentValue);
+  Result := Expand('${', '}', Result, PropertyValue);
+end;
 
 function TDanteElement.GetDelphiProperty(Name: string): Variant;
 var
@@ -962,13 +1007,13 @@ end;
 
 
 
+
 { TProject }
 
 constructor TProject.Create(Owner: TDanteElement);
 begin
   inherited Create(Owner);
   FTargets    := TList.Create;
-  FProperties := TStringList.Create;
   FVerbosity  := vlNormal;
   FRunPath    := ToPath(GetCurrentDir);
 end;
@@ -976,7 +1021,6 @@ end;
 destructor TProject.Destroy;
 begin
   FTargets.Free;
-  FProperties.Free;
   inherited Destroy;
 end;
 
@@ -1199,34 +1243,6 @@ begin
   end;
 end;
 
-procedure TProject.SetProperties(Value: TStrings);
-begin
-  FProperties.Assign(Value);
-end;
-
-procedure TProject.SetProperty(Name, Value: string);
-begin
-  if not PropertyDefined(Name) then
-    Properties.Values[Name] := Value;
-end;
-
-function TProject.PropertyDefined(Name: string): boolean;
-begin
-  Result :=   (Properties.IndexOf(Name) >= 0)
-           or (Properties.IndexOfName(Name) >= 0)
-end;
-
-function TProject.PropertyValue(Name: string): string;
-begin
-  Result := ExpandMacros(Properties.Values[Name]);
-end;
-
-function TProject.EnvironmentValue(Name: string): string;
-begin
-  JclSysInfo.GetEnvironmentVar(Name, Result, True);
-end;
-
-
 // XML handling
 
 procedure TProject.ParseXMLText(const XML :string);
@@ -1330,40 +1346,6 @@ procedure TProject.SetInitialBaseDir(Path: TPath);
 begin
   Properties.Values['basedir'] := PathConcat(RunPath, Path);
 end;
-
-function TProject.ExpandMacros(Value: string): string;
-type
-  TMacroExpansion = function(Name: string): string of object;
-
-  function Expand(StartPat, EndPat, Val: string; MacroExpansion:  TMacroExpansion): string;
-  var
-    MacroStart,
-    MacroEnd   : Integer;
-    SubPropName: string;
-  begin
-    Result := Val;
-    MacroStart := StrSearch(StartPat, Result);
-    while MacroStart <> 0 do
-    begin
-      MacroEnd := StrSearch(EndPat, Result, macroStart+1);
-      if MacroEnd =0  then
-        break
-      else begin
-        SubPropName := StrMid(Result, MacroStart+2, -2 + MacroEnd-MacroStart);
-        Delete(Result, MacroStart, 3 + Length(SubPropName));
-        Insert(MacroExpansion(SubPropName), Result, MacroStart);
-        MacroStart := StrSearch(StartPat, Result);
-      end;
-    end;
-  end;
-
-begin
-  Result := Value;
-  Result := Expand('%{', '}', Result, EnvironmentValue);
-  Result := Expand('${', '}', Result, PropertyValue);
-end;
-
-
 
 procedure TProject.Notification(AComponent: TComponent; Operation: TOperation);
 begin
@@ -1592,7 +1574,8 @@ begin
   RequireAttribute('name');
   RequireAttribute('value');
 
-  SetProperty(GetAttribute('name'), GetAttribute('value'));
+  Assert(Owner <> nil);
+  Owner.SetProperty(name, value);
 end;
 
 
