@@ -1,4 +1,36 @@
-{@(#)$Id$}
+{ $Id$ }
+{
+--------------------------------------------------------------------------
+Copyright (c) 2001, Juancarlo Añez, Caracas, Venezuela.
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without modification,
+are permitted provided that the following conditions are met:
+
+1. Redistributions of source code must retain the above copyright notice, this
+list of conditions and the following disclaimer.
+
+2. Redistributions in binary form must reproduce the above copyright notice,
+this list of conditions and the following disclaimer in the documentation and/or
+other materials provided with the distribution.
+
+3. The names Chris Morris, Dante and the names of contributors to this software
+may not be used to endorse or promote products derived from this software
+without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS ``AS IS''
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDERS OR CONTRIBUTORS BE LIABLE
+FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR
+TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
+THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+--------------------------------------------------------------------------------
+(based on BSD Open Source License)
+}
 unit MiniDOM;
 
 interface
@@ -20,6 +52,7 @@ type
 
   INode = interface(IObject)
   ['{C646E358-DE27-4BB5-8897-DC8F6B3E1413}']
+    function toPrefixedString(prefix :string):string;
   end;
 
   ITextNode = interface(INode)
@@ -36,12 +69,13 @@ type
     function attribute(name :string) :IAttribute;
     function attributeValue(name :string) :string;
     function add(n :INode):INode;
+    function setAttribute(Name, Value :string): IAttribute;
   end;
 
   IDocument = interface(INode)
   ['{1539F033-50A0-4F82-B8E9-E9D6B7A71291}']
 
-    function newElement(name :string; attributes :IMap)  :IElement;
+    function newElement(name :string; attributes :IMap = nil)  :IElement;
     function newTextNode(text :string) :ITextNode;
     function newAttribute(name, value :string) :IAttribute;
     function root :IElement;
@@ -57,12 +91,15 @@ type
     constructor create(name, value :string);
     function name  :string;  virtual;
     function value :string;  virtual;
+
+    function toString :string; override;
   end;
 
   TNode = class(TAbstractObject, INode)
   protected
   public
     constructor create;
+    function toPrefixedString(prefix :string):string; virtual;
   end;
 
   TTextNode = class(TNode, ITextNode)
@@ -71,6 +108,8 @@ type
   public
     constructor create(value :string);
     function text :string;
+
+    function toString :string; override;
   end;
 
   TElement = class(TNode, IElement)
@@ -79,7 +118,7 @@ type
     _children   :IList;
     _attributes :IMap;
   public
-    constructor create(name :string; attributes :IMap);
+    constructor create(name :string; attributes :IMap = nil);
     function name :string;                   virtual;
     function children :IList;                overload; virtual;
     function children(name :string) :IList;  overload; virtual;
@@ -88,7 +127,11 @@ type
     function attribute(name :string) :IAttribute;  virtual;
     function attributeValue(name :string) :string; virtual;
 
-    function add(n :INode):INode;            virtual;
+    function add(n :INode):INode;                  virtual;
+    function setAttribute(Name, Value :string): IAttribute; virtual;
+
+    function toString :string; override;
+    function toPrefixedString(prefix :string):string; override;
   end;
 
   TDocument = class(TNode, IDocument)
@@ -99,6 +142,8 @@ type
     function newAttribute(name, value :string) :IAttribute;            virtual;
     function root :IElement;                                           virtual;
     function newRoot(name :string; attributes :IMap) :IElement;       virtual;
+
+    function toString :string; override;
   end;
 
   TSAXtoDOMHandler = class(SAX.THandlerBase, IErrorHandler)
@@ -147,6 +192,11 @@ begin
   inherited create;
 end;
 
+function TNode.toPrefixedString(prefix: string): string;
+begin
+  Result := prefix + toString;
+end;
+
 { TTextNode }
 
 constructor TTextNode.create(value: string);
@@ -160,13 +210,21 @@ begin
   result := _text;
 end;
 
+function TTextNode.toString: string;
+begin
+  Result := Text;
+end;
+
 { TElement }
 
 constructor TElement.create(name :string; attributes :IMap);
 begin
   inherited create;
   self._name  := name;
-  _attributes := attributes;
+  if attributes <> nil then
+    _attributes := attributes
+  else
+    _attributes := TTreeMap.create;
   _children   := TLinkedList.Create;
 end;
 
@@ -227,6 +285,40 @@ begin
     result := '';
 end;
 
+function TElement.setAttribute(Name, Value: string): IAttribute;
+begin
+  Result := TAttribute.Create(Name, Value);
+  _attributes.put(iref(Name), Result);
+end;
+
+function TElement.toString: string;
+begin
+  Result := toPrefixedString('');
+end;
+
+function TElement.toPrefixedString(prefix: string): string;
+var
+  i :IIterator;
+begin
+  Result := prefix + '<' + name;
+  i := attributes;
+  while i.HasNext do
+    Result := Result + ' ' + (i.Next as IAttribute).toString;
+
+  if Children.Size <= 0 then
+    Result := Result + ' />'
+  else
+  begin
+    Result := Result + '>'#13#10;
+    i := Children.Iterator;
+    while i.HasNext do
+      Result := Result + (i.Next as INode).toPrefixedString(prefix + '  ');
+    Result := Result + prefix + '</' + name + '>';
+  end;
+  Result := Result + #13#10;
+end;
+
+
 { TDocument }
 
 function TDocument.newElement(name: string; attributes :IMap): IElement;
@@ -254,6 +346,11 @@ end;
 function TDocument.newAttribute(name, value: string): IAttribute;
 begin
   result := TAttribute.create(name, value);
+end;
+
+function TDocument.toString: string;
+begin
+  Result := Root.toString;
 end;
 
 { TSAXtoDOMHandler }
@@ -338,6 +435,11 @@ begin
   result := _name;
 end;
 
+function TAttribute.toString: string;
+begin
+  Result := Format('%s="%s"', [Name, Value]);
+end;
+
 function TAttribute.value: string;
 begin
   result := _value;
@@ -400,3 +502,5 @@ end;
 
 
 end.
+
+
