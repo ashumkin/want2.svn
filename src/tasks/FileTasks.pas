@@ -55,6 +55,8 @@ type
 
     procedure AddDefaultExcludes;
 
+    procedure AddCommaSeparatedIncludes(Value :string);
+    procedure AddCommaSeparatedExcludes(Value :string);
   public
     constructor Create(Owner :TDanteElement); override; 
 
@@ -164,6 +166,27 @@ begin
       Exclude('**/dunit.ini');
     end;
 end;
+
+procedure TFileSetTask.AddCommaSeparatedIncludes(Value: string);
+var
+  Paths :TStringArray;
+  p     :Integer;
+begin
+  Paths := CommaTextToArray(Value);
+  for p := Low(Paths) to High(Paths) do
+    FFileSet.Include(Paths[p]);
+end;
+
+procedure TFileSetTask.AddCommaSeparatedExcludes(Value: string);
+var
+  Paths :TStringArray;
+  p     :Integer;
+begin
+  Paths := CommaTextToArray(Value);
+  for p := Low(Paths) to High(Paths) do
+    FFileSet.Exclude(Paths[p]);
+end;
+
 
 { TMkDirTask }
 

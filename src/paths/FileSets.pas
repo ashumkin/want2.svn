@@ -84,8 +84,8 @@ type
     constructor Create(Owner :TDanteElement); override; 
     destructor  Destroy; override;
 
-    procedure Include(Pattern :TPath);
-    procedure Exclude(Pattern :TPath);
+    procedure Include(Pattern :TPath);  overload;
+    procedure Exclude(Pattern :TPath);  overload;
 
     function Paths   :TPaths;
     function SystemPaths :TPaths;

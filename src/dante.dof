@@ -28,7 +28,6 @@ Z=1
 ShowHints=1
 ShowWarnings=1
 UnitAliases=WinTypes=Windows;WinProcs=Windows;DbiTypes=BDE;DbiProcs=BDE;DbiErrs=BDE;
-
 [Linker]
 MapFile=0
 OutputObjs=0
@@ -39,22 +38,19 @@ MinStackSize=16384
 MaxStackSize=1048576
 ImageBase=4194304
 ExeDescription=
-
 [Directories]
 OutputDir=..\bin
 UnitOutputDir=..\dcu
 PackageDLLOutputDir=
 PackageDCPOutputDir=
-SearchPath=$(DELPHI)\lib;.\tasks;.\jcl\;.\xml;.\paths
+SearchPath=$(DELPHI)\lib;.\tasks;.\jcl\;.\xml;.\paths;.\zip;..\lib\paszlib;..\lib\paszlib\minizip
 Packages=Vcl50;Vclx50;VclSmp50;Vcldb50;vclado50;ibevnt50;Vclbde50;vcldbx50;Qrpt50;TeeUI50;TeeDB50;Tee50;Dss50;TeeQR50;VCLIB50;Vclmid50;vclie50;Inetdb50;Inet50;NMFast50;webmid50;dclocx50;dclaxserver50;Indy50;OE;RxCtl5;RxBDE5;RxDB5;msxml;OpenXML_D5
 Conditionals=
 DebugSourceDirs=
 UsePackages=0
-
 [Parameters]
-RunParams=-buildfile ..\make\build.xml clean dist
+RunParams=-buildfile ..\make\build.xml dist
 HostApplication=
-
 [Version Info]
 IncludeVerInfo=0
 AutoIncBuild=0
@@ -69,7 +65,6 @@ Private=0
 DLL=0
 Locale=1033
 CodePage=1252
-
 [Version Info Keys]
 CompanyName=
 FileDescription=
@@ -81,55 +76,50 @@ OriginalFilename=
 ProductName=
 ProductVersion=1.0.0.0
 Comments=
-
 [HistoryLists\hlDebugSourcePath]
 Count=2
 Item0=..\src\
 Item1=..\src
-
 [HistoryLists\hlConditionals]
 Count=1
 Item0=USE_JEDI_JCL
-
 [HistoryLists\hlUnitAliases]
 Count=1
 Item0=WinTypes=Windows;WinProcs=Windows;DbiTypes=BDE;DbiProcs=BDE;DbiErrs=BDE;
-
 [HistoryLists\hlSearchPath]
-Count=11
-Item0=$(DELPHI)\lib;.\tasks;.\jcl\;.\xml;.\paths
-Item1=.\tasks;.\jcl\;.\xml;.\paths
-Item2=.\jcl\;.\xml;.\paths
-Item3=$(DELPHI)\Lib\Debug;..\src\;..\src\xml;..\src\tasks;..\src\jcl
-Item4=.\jcl\
-Item5=..\jcl\
-Item6=..\src\;..\src\xml;..\src\tasks;..\src\jcl
-Item7=..\src\;..\src\xml
-Item8=..\src\
-Item9=..\src
-Item10=..
-
+Count=13
+Item0=$(DELPHI)\lib;.\tasks;.\jcl\;.\xml;.\paths;.\zip;..\lib\paszlib;..\lib\paszlib\minizip
+Item1=$(DELPHI)\lib;.\tasks;.\jcl\;.\xml;.\paths;..\lib\paszlib;..\lib\paszlib\minizip
+Item2=$(DELPHI)\lib;.\tasks;.\jcl\;.\xml;.\paths
+Item3=.\tasks;.\jcl\;.\xml;.\paths
+Item4=.\jcl\;.\xml;.\paths
+Item5=$(DELPHI)\Lib\Debug;..\src\;..\src\xml;..\src\tasks;..\src\jcl
+Item6=.\jcl\
+Item7=..\jcl\
+Item8=..\src\;..\src\xml;..\src\tasks;..\src\jcl
+Item9=..\src\;..\src\xml
+Item10=..\src\
+Item11=..\src
+Item12=..
 [HistoryLists\hlUnitOutputDirectory]
 Count=1
 Item0=..\dcu
-
 [HistoryLists\hlOutputDirectorry]
 Count=1
 Item0=..\bin
-
 [HistoryLists\hlRunParameters]
 Count=14
-Item0=-buildfile ..\make\build.xml clean dist
-Item1=-buildfile ..\make\build.xml clean
-Item2=-buildfile ..\make\build.xml clean dist
-Item3=-buildfile ..\make\build.xml dist
-Item4=-buildfile ..\make\build.xml dist -verbose
-Item5=-buildfile ..\make\build.xml clean dist -verbose
-Item6=-buildfile ..\make\build.xml clean dist
+Item0=-buildfile ..\make\build.xml dist
+Item1=-buildfile ..\make\build.xml clean dist
+Item2=-buildfile ..\make\build.xml clean
+Item3=-buildfile ..\make\build.xml clean dist
+Item4=-buildfile ..\make\build.xml dist
+Item5=-buildfile ..\make\build.xml dist -verbose
+Item6=-buildfile ..\make\build.xml clean dist -verbose
 Item7=-buildfile ..\make\build.xml clean dist
-Item8=-buildfile ..\make\build.xml clean dist -debug
-Item9=-buildfile ..\make\build.xml clean dist  -verbose
-Item10=-buildfile ..\make\build.xml dist clean
-Item11=-buildfile ..\make\build.xml dist
+Item8=-buildfile ..\make\build.xml clean dist
+Item9=-buildfile ..\make\build.xml clean dist -debug
+Item10=-buildfile ..\make\build.xml clean dist  -verbose
+Item11=-buildfile ..\make\build.xml dist clean
 Item12=-buildfile ..\make\build.xml
 Item13=..\make\build.xml

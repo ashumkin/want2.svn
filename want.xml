@@ -3,6 +3,8 @@
 <project name="dante"
          basedir=".."
          default="dist" >
+  
+  <property name="version" value="0.0.1-beta" />
 
   <echo message="${basedir}" />
   <echo message="The base directory is ${basedir}." />
@@ -10,11 +12,13 @@
   <property name="src"  value="${basedir}/src" />
   <property name="dist" value="${basedir}/dist" />
   <property name="res"  value="${basedir}/res" />
+  <property name="lib"  value="${basedir}/lib" />
 
   <property name="bin" value="${basedir}/bin" />
   <property name="dcu" value="${basedir}/dcu" />
 
-  <property name="jcl" value="${src}/jcl" />
+  <property name="jcl"     value="${src}/jcl" />
+  <property name="paszlib" value="${lib}/paszlib" />
 
   <echo message="The source directory is ${src}." />
   <echo message="The default command processor is %{comspec}." />
@@ -48,13 +52,18 @@
          quiet="true"
          build="true"
          optimize="true"
+			debug="false"
     >
       <unit path="${jcl}" />
       <unit path="${src}" />
       <unit path="${src}/tasks" />
       <unit path="${src}/xml" />
       <unit path="${src}/paths" />
+      <unit path="${src}/zip" />
 
+      <unit path="${paszlib}" />
+      <unit path="${paszlib}/minizip" />
+		
       <include path="${jcl}" />
       
       <resource path="${src}" />
@@ -64,12 +73,24 @@
 
   <target name="dist" depends="prepare,compile" >
     <mkdir dir="${dist}" />
-    <copy todir="${dist}" >
-      <include name="**/*.html" />
-      <include name="**/*.exe"  />
-      <exclude name="**/*Test*" />
-   </copy>
-    <exec executable=".\make\zip.exe" arguments="-m .\make\dante.zip .\dist\dante.exe" />
+	 <zip zipfile="${dist}/dante-${version}.zip" >
+	      <include name="**/*.pas" />
+	      <include name="**/*.dpr" />
+	      <include name="**/*.inc" />
+	      <include name="**/*.rc" />
+	      <include name="**/*.res" />
+	      <include name="**/*.html" />
+	      <include name="**/*.gif" />
+	      <include name="**/*.png" />
+	      <include name="**/*.jpg" />
+	      <include name="**/*.jpeg" />
+	      
+			<include name="${lib}/paszlib*.zip" />
+			<exclude name="${lib}/paszlib/**"   />
+			<include name="${lib}/jcl*.zip" />
+			<exclude name="${lib}/jcl/**"   />
+			<exclude name="${src}/jcl/**"   />
+	 </zip>
   </target>
   
 </project>

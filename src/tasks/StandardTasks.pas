@@ -39,7 +39,8 @@ interface
 uses
   ExecTasks,
   DelphiTasks,
-  FileTasks;
+  FileTasks,
+  ZipTasks;
 
 implementation
 

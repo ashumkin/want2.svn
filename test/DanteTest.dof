@@ -28,7 +28,6 @@ Z=1
 ShowHints=1
 ShowWarnings=1
 UnitAliases=WinTypes=Windows;WinProcs=Windows;DbiTypes=BDE;DbiProcs=BDE;DbiErrs=BDE;
-
 [Linker]
 MapFile=3
 OutputObjs=0
@@ -39,7 +38,6 @@ MinStackSize=16384
 MaxStackSize=1048576
 ImageBase=4194304
 ExeDescription=
-
 [Directories]
 OutputDir=..\bin
 UnitOutputDir=..\dcu
@@ -50,11 +48,9 @@ Packages=Vcl50;Vclx50;VclSmp50;Vcldb50;vclado50;ibevnt50;Vclbde50;vcldbx50;Qrpt5
 Conditionals=USE_JEDI_JCL
 DebugSourceDirs=
 UsePackages=0
-
 [Parameters]
 RunParams=
 HostApplication=
-
 [Version Info]
 IncludeVerInfo=0
 AutoIncBuild=0
@@ -69,7 +65,6 @@ Private=0
 DLL=0
 Locale=1033
 CodePage=1252
-
 [Version Info Keys]
 CompanyName=
 FileDescription=
@@ -81,20 +76,16 @@ OriginalFilename=
 ProductName=
 ProductVersion=1.0.0.0
 Comments=
-
 [HistoryLists\hlDebugSourcePath]
 Count=2
 Item0=..\src\
 Item1=..\src
-
 [HistoryLists\hlConditionals]
 Count=1
 Item0=USE_JEDI_JCL
-
 [HistoryLists\hlUnitAliases]
 Count=1
 Item0=WinTypes=Windows;WinProcs=Windows;DbiTypes=BDE;DbiProcs=BDE;DbiErrs=BDE;
-
 [HistoryLists\hlSearchPath]
 Count=11
 Item0=$(DELPHI)\Lib;..\src\;..\src\xml;..\src\tasks;..\src\jcl;..\src\paths;..\src\xml
@@ -108,11 +99,9 @@ Item7=..\src\;..\src\xml
 Item8=..\src\
 Item9=..\src
 Item10=..
-
 [HistoryLists\hlUnitOutputDirectory]
 Count=1
 Item0=..\dcu
-
 [HistoryLists\hlOutputDirectorry]
 Count=1
 Item0=..\bin
