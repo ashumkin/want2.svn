@@ -3,13 +3,13 @@
 <head>
 <meta name="generator" content="Microsoft FrontPage 4.0">
 <meta name="ProgId" content="FrontPage.Editor.Document">
-<title>Dante Notes</title>
+<title>Want Notes</title>
 <link rel="stylesheet" type="text/css" href="../../doc/style.css">
 </head>
 
 <body>
 
-<h1>Notes on Dante Development</h1>
+<h1>Notes on Want Development</h1>
 <p><i>by Juanco Añez</i></p>
 <h2>URIs</h2>
 <p>Users should be able to specify URIs most everywhere the path to a resource
@@ -17,7 +17,7 @@ is required. For example:</p>
 <pre>&lt;copy file=&quot;http://www.mywebsite.org/document.html&quot;
       tofile=&quot;${basedir}/doc/document.html&quot;
 /&gt; </pre>
-<p>Dante would assume that all URIs that don't specify a protocol have an
+<p>Want would assume that all URIs that don't specify a protocol have an
 implicit protocol of &quot;file:&quot;.&nbsp;</p>
 <h2>** AFTER-NOTE **</h2>
 <p>This scheme seems too complicated, both in implementation and in the
@@ -63,10 +63,10 @@ protocol specific filesets.</p>
 &lt;/copy&gt;</pre>
 <h2>** OLD NOTES ** </h2>
 <h3>Problem</h3>
-<p>Delphi, the system/language in which&nbsp; Dante is written, is all set up
+<p>Delphi, the system/language in which&nbsp; Want is written, is all set up
 for managing and accessing files that reside on the local disk, but it provides
 zero facilities for accessing resources elsewhere (on the Web, on FTP servers,
-etc). It would be desirable to have Dante <b>transparently</b> manage URIs and
+etc). It would be desirable to have Want <b>transparently</b> manage URIs and
 the resources they point to on behalf of task writers, so it becomes straight
 forward to implement tasks that lets users specify.</p>
 <h3>Solution</h3>

@@ -44,28 +44,28 @@
     </edit>
 
     <edit file="file.txt" >
-      <search pattern="JCL" />
+      <search pattern="Copyright" />
       <print />
-      <write from="." to="." file="jcl.txt" />
+      <write from="." to="." file="c.txt" />
     </edit>
 
     <edit file="file.txt" >
-      <goto line="32" />
-      <write from="." to="." file="jcl1.txt" />
+      <goto line="25" />
+      <write from="." to="." file="c1.txt" />
     </edit>
 
     <edit file="file.txt" >
-      <search pattern="JCL" />
+      <search pattern="Copyright" />
       <print />
-      <write from="." to="." file="jcl2.txt" />
+      <write from="." to="." file="c2.txt" />
       <search from="+1" />
       <print />
-      <write from="." to="." file="jcl2.txt" append="true" />
+      <write from="." to="." file="c2.txt" append="true" />
     </edit>
 
     <edit file="file.txt" >
-      <global pattern="JCL" >
-        <write from="." to="." file="jcl_all.txt" append="true" />
+      <global pattern="Copyright" >
+        <write from="." to="." file="c_all.txt" append="true" />
       </global>
     </edit>
   </target>

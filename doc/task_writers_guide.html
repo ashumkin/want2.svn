@@ -7,30 +7,30 @@
 <meta name="ProgId" content="FrontPage.Editor.Document">
 <meta http-equiv="Content-Language" content="en-us">
 <meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
-<title>Dante Task Writers Guide</title>
+<title>Want Task Writers Guide</title>
 <link rel="stylesheet" type="text/css" href="style.css">
 </head>
 
 <body>
 
-<h1>Dante Task Writers Guide</h1>
+<h1>Want Task Writers Guide</h1>
 <p><i>by Juanco Añez</i></p>
 <h2>Basic Steps</h2>
-<p>Dante lets you write your own customized tasks and make them available to
+<p>Want lets you write your own customized tasks and make them available to
 build scripts. In this short tutorial we'll write a basic &quot;log&quot; task
-for Dante. The complete source code for the example is included as <code>&lt;dante&gt;/src/tasks/LoggerTasks.pas</code>
-in the Dante distribution.</p>
+for Want. The complete source code for the example is included as <code>&lt;want&gt;/src/tasks/LoggerTasks.pas</code>
+in the Want distribution.</p>
 <h3>Go!</h3>
-<p>To create a new Dante task:</p>
+<p>To create a new Want task:</p>
 <ol>
-  <li>Create a new unit, and add DanteClasses and DanteBase to the uses clause.</li>
-  <li>Define a new class that descends from DanteClasses.TTask.</li>
+  <li>Create a new unit, and add WantClasses and WantBase to the uses clause.</li>
+  <li>Define a new class that descends from WantClasses.TTask.</li>
   <li>Override the Init procedure, and&nbsp; verify that attributes have valid
     values after the task has been parsed.</li>
   <li>Override the Execute procedure to define the task's actions.</li>
-  <li>Register the the class by calling DanteClasses.RegisterTask.</li>
-  <li>Include the new unit in the uses clause of <code>&lt;dante&gt;/src/tasks/CustomTasks.pas</code>
-    (Dante's standard tasks go in <code>StandardTasks.pas</code>).</li>
+  <li>Register the the class by calling WantClasses.RegisterTask.</li>
+  <li>Include the new unit in the uses clause of <code>&lt;want&gt;/src/tasks/CustomTasks.pas</code>
+    (Want's standard tasks go in <code>StandardTasks.pas</code>).</li>
 </ol>
 <p>Here's an example:</p>
 <blockquote>
@@ -38,7 +38,7 @@ in the Dante distribution.</p>
 unit LoggerTask;
 interface
 uses
-  DanteClasses;
+  WantClasses;
 
 type
   TLoggerTask = class(TTask)
@@ -79,7 +79,7 @@ end.
 </pre>
 </blockquote>
 <h3>Choosing the Task's XML tag</h3>
-<p>Dante synthesizes an XML tag for your task from its class name using these
+<p>Want synthesizes an XML tag for your task from its class name using these
 rules:</p>
 <ul>
   <li>Remove the initial 'T' from the class name, if present.</li>
@@ -87,7 +87,7 @@ rules:</p>
   <li>Convert the result to lowercase.</li>
 </ul>
 <p>The XML tag for the task in the above example would be '<b>logger</b>'.</p>
-<p>&nbsp;If you followed the above steps then, after recompiling Dante, you
+<p>&nbsp;If you followed the above steps then, after recompiling Want, you
 should be able to use the the new task in build scripts:</p>
 <blockquote>
   <pre>&lt;project name=&quot;myproject&quot; default=&quot;main&quot; &gt;
@@ -123,13 +123,13 @@ a different name:</p>
 &lt;/project&gt;</pre>
 </blockquote>
 <h3>Handling XML attributes</h3>
-<p>Dante interprets the published properties of task classes as XML element
+<p>Want interprets the published properties of task classes as XML element
 attributes, and automatically manages them using Runtime Type Information (RTTI)
 (currently, only properties of types string, integer, boolean, and enumeration
 are supported). When defining properties that will map to XML attributes, keep
 in mind that:</p>
 <ul>
-  <li>Property/attribute names are case independent in this version of Dante.</li>
+  <li>Property/attribute names are case independent in this version of Want.</li>
   <li>You can use an underscore as the first character for a property/attribute
     name if the name would otherwise collide with an Object Pascal keyword.</li>
 </ul>
@@ -171,7 +171,7 @@ end;
 </blockquote>
 <p>The <code>RequireAttribute</code> method is a handy way to verify that an
 attribute was present in the build script.</p>
-<p>Dante assigns the values of attributes to their corresponding properties as
+<p>Want assigns the values of attributes to their corresponding properties as
 the build script is parsed, and the <code>Init</code> method is called after the
 last attribute is processed.</p>
 <p>&nbsp;The following macro expansions are performed before doing the
@@ -184,13 +184,13 @@ assignment:</p>
     defined using the <code>&lt;property&gt; </code>element anywhere in a build
     script:
     <pre>   &lt;property name=&quot;aname&quot; value=&quot;avalue&quot; /&gt;</pre>
-    or passing the <code>-Dname=value</code> command line option to dante.exe.</li>
+    or passing the <code>-Dname=value</code> command line option to want.exe.</li>
 </ol>
 <p>These rules apply to properties:</p>
 <ul>
   <li>Properties are write once. Subsequent definitions of the same property are
     ignored. This allows properties defined on the command line or passed to
-    child invocations of Dante through the <code>&lt;dante&gt;</code> task to
+    child invocations of Want through the <code>&lt;want&gt;</code> task to
     override property definitions in the build script. In other words, the&nbsp;
     build script may say that:
     <pre>   &lt;property name=&quot;debug&quot; value=&quot;false&quot; /&gt;</pre>
@@ -235,13 +235,13 @@ end;
 </blockquote>
 <p>Note the following in the above code:</p>
 <ul>
-  <li>Dante scripts treat file paths in a platform independent way, so paths
+  <li>Want scripts treat file paths in a platform independent way, so paths
     obtained from a script must be translated to platform dependent ones by
     calling the <code>ToSystemPath(Path)</code> method.</li>
   <li>As a safety measure, tasks should call the <code>TTask.AboutToScratchPath(Path)</code>
     method before changing any system file. The <code>AboutToScratchPath</code>
     method verifies the location of the passed path and raises an exception if
-    the file resides outside of the Dante project's base directory.</li>
+    the file resides outside of the Want project's base directory.</li>
   <li>The Execute method starts by calling the <code>TTask.Log(Msg)</code>
     method to provide some feedback to the user.</li>
 </ul>
@@ -258,20 +258,20 @@ task would look like this:</p>
 </pre>
 <p>To define nested XML elements for a task:</p>
 <ol>
-  <li>Define a class that descends from <code>TDanteElement</code> for each kind
+  <li>Define a class that descends from <code>TWantElement</code> for each kind
     of nested element.</li>
   <li>For each kind of nested element, Define a published <code>CreateXYZ</code>
     function in the task class, where &quot;<code>XYZ</code>&quot; is the XML
     tag of the nested element (in our example, the method will be called <code>TLoggerTask.CreateInfo</code>).</li>
 </ol>
-<p>The rules that Dante uses for synthesizing an XML tag out of the names of
+<p>The rules that Want uses for synthesizing an XML tag out of the names of
 nested elements classes are like the ones used for tasks, except that the &quot;<code>Element</code>&quot;
 suffix is removed instead of the &quot;<code>Task</code>&quot; one.</p>
-<p>Instances of classes that descend from <code>TDanteElement</code> and have a
-valid owner passed to their constructor are automatically managed by Dante, so
+<p>Instances of classes that descend from <code>TWantElement</code> and have a
+valid owner passed to their constructor are automatically managed by Want, so
 you don't need to delete them (call <code>Free</code> on them). Valid owners are
 instances of <code>TTask</code> and its descendants, and instances of classes
-that descend from <code>TDanteElement</code> and have themselves a valid owner.</p>
+that descend from <code>TWantElement</code> and have themselves a valid owner.</p>
 <p>Here's the complete logger example:</p>
 <blockquote>
   <pre>
@@ -280,12 +280,12 @@ interface
 uses
   SysUtils,
   Classes,
-  DanteClasses;
+  WantClasses;
 
 type
   TLogFormat = (brief, normal, detailed);
 
- <b>TInfoElement = class(TDanteElement)
+ <b>TInfoElement = class(TWantElement)
   protected
     FCode :Integer;
     FText :string;
@@ -300,7 +300,7 @@ type
     FFormat :TLogFormat;
     FInfos  :TList;
   public
- <b>  constructor Create(owner :TDanteElement);
+ <b>  constructor Create(owner :TWantElement);
 </b>    <b>destructor Destroy; override;</b>
     class function TagName :string; override;
     procedure Execute; override;
@@ -318,7 +318,7 @@ begin
   Result := 'log';
 end;
 
-<b>constructor TLoggerTask.Create(owner :TDanteElement);
+<b>constructor TLoggerTask.Create(owner :TWantElement);
 begin
   inherited Create(Owner);
   FInfos := TList.Create;
@@ -397,7 +397,7 @@ end.
   <li>The rules for mapping attributes to properties, and elements to <code>CreateXYZ</code>
     methods, apply recursively to nested elements (nested elements can have
     attributes and other nested elements).</li>
-  <li>Dante automatically assigns any character data (CDATA) in an XML element
+  <li>Want automatically assigns any character data (CDATA) in an XML element
     to the '<b>text</b>' property of the element, if the element&nbsp; defines
     one. In the above example, the text &quot;The logger is working.&quot; is
     assigned to the <code>text</code> property of the corresponding&nbsp; <code>TInfoElement</code>
@@ -416,34 +416,6 @@ end.
 <pre>
 Copyright © 2001 Juancarlo Añez, Caracas, Venezuela.
 All rights reserved.
-<small>
-Redistribution and use in source and binary forms, with or without modification,
-are permitted provided that the following conditions are met:
-
-1. Redistributions of source code must retain the above copyright notice, this
-list of conditions and the following disclaimer.
-
-2. Redistributions in binary form must reproduce the above copyright notice,
-this list of conditions and the following disclaimer in the documentation and/or
-other materials provided with the distribution.
-
-3. The names Chris Morris, Dante and the names of contributors to this software
-may not be used to endorse or promote products derived from this software
-without specific prior written permission.
-
-THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS ``AS IS''
-AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDERS OR CONTRIBUTORS BE LIABLE
-FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
-DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
-SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
-CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR
-TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
-THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
---------------------------------------------------------------------------------
-(based on BSD Open Source License)
-</small>
 </pre>
 
 </body>

@@ -4,13 +4,13 @@
   <head>
     <meta name="generator" content="HTML Tidy, see www.w3.org">
 
-    <title>Dante Notes</title>
+    <title>Want Notes</title>
     <link rel="stylesheet" type="text/css" href=
     "../../doc/style.css">
   </head>
 
   <body>
-    <h1>Dante TODO</h1>
+    <h1>Want TODO</h1>
 
     <p><i>Juanco A&ntilde;ez</i></p>
 
@@ -20,7 +20,7 @@
       <li>Must parse all elements and store value of _all_ attributes 
       to support GUI editing.
       Conditional attributes currently make the parser skip elements.
-      <li>Make Dante capable of analyzing a task/element and
+      <li>Make Want capable of analyzing a task/element and
       outputing its XML syntax.</li>
 
       <li>Implement loadable task/element modules.</li>
@@ -34,8 +34,8 @@
 
     <ul>
       <li><b>DONE!</b> To avoid any confusion with Ant's build
-      scripts, which are named "build.xml", Dante's build scripts
-      should be named "dante.xml", "make.xml", or anything
+      scripts, which are named "build.xml", Want's build scripts
+      should be named "want.xml", "make.xml", or anything
       different.</li>
     </ul>
 
@@ -89,8 +89,8 @@
       <li><b>DONE!</b> Consider making properties local to
       elements, but inheritable to sub-elements. This would add
       flexibility, and will eliminate the fiddling with properties
-      in TDanteTask if the subproject's owner was set to the
-      TDanteTask instance. In other words, properties would have
+      in TWantTask if the subproject's owner was set to the
+      TWantTask instance. In other words, properties would have
       the expected scope.</li>
     </ul>
 
@@ -153,7 +153,7 @@
         <b>WILL NOT DO!</b>According to Ant's docs, the setting of
         attributes/properties is done <b>after</b> the file is
         parsed and all XML elements (and sub-elements) have been
-        created. In Dante, this would require an additional
+        created. In Want, this would require an additional
         examination of the MiniDOM just before a task is executed.
         Tasks (elements in general) can keep a reference to their
         MiniDOM node for this. 

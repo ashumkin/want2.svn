@@ -86,7 +86,7 @@ begin
         ATest := TExternalTest.Create;
         ATest.TestPath := SuperPath(Files[i]);
         ATest.FBuildFileName := MovePath(Files[i], ATest.TestPath, '');
-        RegisterTest('External Tests/' + ToRelativePath(ATest.TestPath, BasePath), ATest);
+        RegisterTest(PathConcat('External Tests',ToRelativePath(ATest.TestPath, BasePath)), ATest);
       end;
     end;
   except

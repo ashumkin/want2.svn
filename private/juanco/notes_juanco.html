@@ -3,16 +3,16 @@
 <head>
 <meta name="generator" content="Microsoft FrontPage 4.0">
 <meta name="ProgId" content="FrontPage.Editor.Document">
-<title>Dante Notes</title>
+<title>Want Notes</title>
 <link rel="stylesheet" type="text/css" href="../../doc/style.css">
 </head>
 
 <body>
 
-<h1>Notes on Dante Development</h1>
+<h1>Notes on Want Development</h1>
 <p><i>by Juanco Añez</i></p>
-<h2><a href="file:///C:/home/prj/dante/private/juanco/uris_juanco.html">URIs</a></h2>
-<p>Notes on how Dante could automagically handles URIs on behalf of task
+<h2><a href="uris_juanco.html">URIs</a></h2>
+<p>Notes on how Want could automagically handles URIs on behalf of task
 writers.</p>
 <h2>Test Everything that Could Possibly Break</h2>
 <p>Things that need testing:</p>
@@ -22,8 +22,8 @@ writers.</p>
     aren't traversed when building the default (or requrested) target.</li>
 </ul>
 <h2>Internationalization</h2>
-<p>Dante will probably speak only English for ever, but the platforms where
-Dante runs may be in different locales. Therefore use the locale-friendly
+<p>Want will probably speak only English for ever, but the platforms where
+Want runs may be in different locales. Therefore use the locale-friendly
 versions of Delphi functions when possible (AnsiUpperCase, AnsiCompareFileNames,
 etc.).</p>
 <h2>Parsing<br>
@@ -32,7 +32,7 @@ etc.).</p>
 TCopyTask). To acheive this, set up a task registry (a simple TStringList will
 do) that maps friendly names (XML tags) to task classes.</p>
 <blockquote>
-  Implemented! See <code>&lt;dante&gt;/src/DanteClasses.pas</code> for details.
+  Implemented! See <code>&lt;want&gt;/src/WantClasses.pas</code> for details.
 </blockquote>
 <h2>Path Syntax<br>
 (Already Implemented, but no URIs yet)</h2>
@@ -44,10 +44,10 @@ consider handhelds, celluar phones, and the miriads of devices running embedded
 applications. Most everything besides Windows, including the Internet, is on the
 forward slash camp.</p>
 <p>Kylix, the Linux version of Delphi, is also in the fwd/ camp.</p>
-<p>How Dante will deal with paths in build scripts needs to be defined.</p>
+<p>How Want will deal with paths in build scripts needs to be defined.</p>
 <h3>Proposal</h3>
-<p>For Dante users, it would be easier not to think much about path syntax.
-Therefore, let Dante should:</p>
+<p>For Want users, it would be easier not to think much about path syntax.
+Therefore, let Want should:</p>
 <ul>
   <li>Consider both &quot;/&quot; and &quot;\&quot; as file separators in a
     path.</li>
@@ -58,13 +58,13 @@ Therefore, let Dante should:</p>
     with paths.</li>
 </ul>
 <p>That solves the user problem.</p>
-<p>Internally, Dante tasks need to have a unique, canonical representation for
+<p>Internally, Want tasks need to have a unique, canonical representation for
 paths, and an API to deal with them. Most of the API should be readily
 accessible through the abstract TTask class methods.</p>
 <p>The canonical form, even if it means more work under Delphi, should probably
 be the fwd/ form, which is the one that supports most purposes (file handling,
 FTP, HTTP, WAP, XML, etc.).</p>
-<p>Canonical paths should be translated to platform dependent ones only by Dante
+<p>Canonical paths should be translated to platform dependent ones only by Want
 tasks, and only right before passing them to the relevant application or
 service.</p>
 <p>The aim should be to eventually treat all paths as URIs, as defined by
@@ -74,20 +74,20 @@ form.</p>
 <h3>Things to Consider</h3>
 <p>An URI (a path) path with no protocol (no leading <code>xyz:</code> part)
 should default to <code>file:</code></p>
-<p>What about Dante's non-task path logic, like getting hold of the nearest
+<p>What about Want's non-task path logic, like getting hold of the nearest
 build script? Should that also be subject to these considerations?</p>
 <p>Kylix already has knowledge about path/file separators. Delphi 6 will too.</p>
 <h3>Research</h3>
 <p>Find how Delphi's RTTI will treat a property of a type defined as:</p>
 <blockquote>
   <code>type<br>
-  &nbsp;&nbsp;TDantePath = string;<br>
+  &nbsp;&nbsp;TWantPath = string;<br>
   </code>
 </blockquote>
 <p><b>AFTERNOTE:</b> It seems it's irrelevalnt. It should be treated as a
 string. If not, define the property as string, and let the code handle the rest.</p>
 <h3>Solution</h3>
-<p>[[State how Dante currently deals with these issues right here]]</p>
+<p>[[State how Want currently deals with these issues right here]]</p>
 <p>Implemented up to fwd/ style paths that can be translated to System paths
 using <code>TTask.ToSystemPath(Path)</code>. The relevant units are <code>WildPaths.pas</code>
 and <code>FileOps.pas</code>.</p>
@@ -178,22 +178,22 @@ and nested elements by calling the <code>TTask</code> class method:</p>
 <pre>
 class function TTask.Ussage: string
 </pre>
-<p>and give dante.exe a commandline option to query about any task (the default
+<p>and give want.exe a commandline option to query about any task (the default
 version would just provide the list of accepted attributes and nested elements).</p>
 <h2>Loadable Task Modules</h2>
-<p>Having Dante automatically load taks from DLLs should be fairly easy, and
-would provide the advantage of not having to recompile Dante to add the tasks.</p>
-<p>To have Dante load taks from DLLs:</p>
+<p>Having Want automatically load taks from DLLs should be fairly easy, and
+would provide the advantage of not having to recompile Want to add the tasks.</p>
+<p>To have Want load taks from DLLs:</p>
 <ol>
-  <li>Compile all of Dante's core units into a .BPL.</li>
+  <li>Compile all of Want's core units into a .BPL.</li>
   <li>Compile custom tasks into a DLL compiled agains the .BPL (.DCP).</li>
   <li>Use a standard naming convention for task DLLs (i.e., prefix_task.dll
-    (Dante can easily find them using the facilities provided by WildFiles.pas).</li>
-  <li>Place task DLLs in the same directory as dante.exe, or in any of the
+    (Want can easily find them using the facilities provided by WildFiles.pas).</li>
+  <li>Place task DLLs in the same directory as want.exe, or in any of the
     directories specified in the appropiate .INI or registry entry.</li>
 </ol>
 <p>Because task units register their tasks using <code>RegisterTask</code>, task
-classes would be available to Dante immediately after loading the DLL.</p>
+classes would be available to Want immediately after loading the DLL.</p>
 <center><b>~o~</b></center>
 
 </body>

@@ -53,13 +53,7 @@ Dockable=1
 File_0=SourceModule,'C:\home\want\test\ExecTasksTest.pas',0,1,24,3,43,0,0
 File_1=SourceModule,'C:\home\want\src\tasks\ExecTasks.pas',0,1,228,13,240,0,0
 File_2=SourceModule,'C:\home\want\src\tasks\DelphiTasks.pas',0,1,339,1,351,0,0
-File_3=SourceModule,'C:\home\dante\test\FileTasksTest.pas',0,1,112,25,124,0,0
-File_4=SourceModule,'C:\home\dante\test\DanteClassesTest.pas',0,1,336,15,349,0,0
-File_5=SourceModule,'C:\home\dante\src\lib\ScriptParser.pas',0,1,21,49,33,0,0
-File_6=SourceModule,'C:\home\dante\src\lib\WildPaths.pas',0,1,244,1,256,0,0
-File_7=SourceModule,'C:\home\dante\lib\xml\MiniDom.pas',0,1,543,1,564,0,0
 File_8=SourceModule,'c:\home\dunit\src\TestFramework.pas',0,1,1194,1,1211,0,0
-File_9=SourceModule,'C:\home\dante\test\FileSetTests.pas',0,1,29,3,38,0,0
 
 [Modules]
 Module0=C:\home\want\test\WantClassesTest.pas
@@ -246,8 +240,6 @@ Watch0='Paths[p],2',256,0,18,1
 Watch1='Patterns[s],2',256,0,18,1
 
 [Breakpoints]
-Count=1
-Breakpoint0='C:\home\dante\src\DanteClasses.pas',565,'',0,1
 
 [AddressBreakpoints]
 Count=0

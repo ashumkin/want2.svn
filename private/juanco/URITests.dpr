@@ -16,15 +16,15 @@ begin
 end;
 
 begin
-  WriteURI('dante/src/dante.dpr');
-  WriteURI('/dante/src/dante.dpr');
-  WriteURI('/c:/dante/src/dante.dpr');
-  WriteURI('http:/c:/dante/src/dante.dpr');
-  WriteURI('http://localhost/c:/dante/src/dante.dpr');
-  WriteURI('http://remote.com/c:/dante/src/dante.dpr');
-  WriteURI('http://remote.com/dante.dpr');
-  WriteURI('http:/dante/src/dante.dpr');
-  WriteURI('http:dante.dpr');
+  WriteURI('want/src/want.dpr');
+  WriteURI('/want/src/want.dpr');
+  WriteURI('/c:/want/src/want.dpr');
+  WriteURI('http:/c:/want/src/want.dpr');
+  WriteURI('http://localhost/c:/want/src/want.dpr');
+  WriteURI('http://remote.com/c:/want/src/want.dpr');
+  WriteURI('http://remote.com/want.dpr');
+  WriteURI('http:/want/src/want.dpr');
+  WriteURI('http:want.dpr');
   WriteURI('http:.cvsignore');
   WriteURI('.cvsignore');
   WriteURI('/.cvsignore');
