@@ -154,8 +154,8 @@ type
     function  Log(const Format: string; const Args: array of const; Level: TLogLevel = vlNormal): string; overload;
     function  Log(Level: TLogLevel; const Format: string; const Args: array of const): string; overload;
 
-    procedure WantError(Msg: string = ''; Addr :Pointer = nil);
-    
+    procedure WantError(Msg: string = ''; Addr :Pointer = nil); virtual;
+
     procedure RequireAttribute(Name: string);
     procedure RequireAttributes(Names: array of string);
     procedure AttributeRequiredError(AttName: string);
@@ -316,6 +316,7 @@ type
   protected
     procedure TaskFailure(const Msg: string; Addr :Pointer = nil);
     procedure TaskError(Msg: string = ''; Addr :Pointer = nil);
+    procedure WantError(Msg: string = ''; Addr :Pointer = nil); override;
   public
     class function TagName: string; override;
 
@@ -579,7 +580,7 @@ begin
       Self.Init;
     except
       on e :Exception do
-         WantError(Format('(%d:%d) could not configure <%s>:'#10'%s', [Line, Column, TagName, e.Message]));
+         WantError(Format('(%d:%d) could not configure <%s>: %s', [Line, Column, TagName, e.Message]));
     end;
 
     for i := 0 to ChildCount-1 do
@@ -1060,7 +1061,6 @@ end;
 
 procedure TScriptElement.WantError(Msg: string; Addr: Pointer);
 begin
-   Log(vlErrors, Msg);
    if Addr <> nil then
      Addr := CallerAddr;
    raise EWantError.Create(Msg) at Addr
@@ -1338,6 +1338,12 @@ begin
    if Addr <> nil then
      Addr := CallerAddr;
    raise ETaskError.Create(Msg) at Addr
+end;
+
+procedure TTask.WantError(Msg: string; Addr: Pointer);
+begin
+  //Log(vlErrors, Msg);
+  inherited;
 end;
 
 { TCustomAttributeElement }

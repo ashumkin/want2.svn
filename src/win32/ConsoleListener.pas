@@ -30,7 +30,7 @@ const
     CRT32.LightGray
   );
 
-  DEFAULT_RIGTH_MARGIN = 72;
+  DEFAULT_RIGTH_MARGIN = 76;
 
 type
   TConsoleListener = class(TBasicListener)

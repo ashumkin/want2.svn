@@ -206,7 +206,19 @@ begin
       end;
 
       Project.Configure;
+    except
+      on e :Exception do
+      begin
+        Log(vlDebug, e.Message);
+        if e is ETaskException then
+          Listener.BuildFailed(Project)
+        else
+          Listener.BuildFailed(Project, e.Message);
+        raise;
+      end;
+    end;
 
+    try
       Sched := Project.Schedule(Target);
 
       if Length(Sched) = 0 then
