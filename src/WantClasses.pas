@@ -192,8 +192,8 @@ type
     function  BasePath: string; virtual;
     // use this function in Tasks to let the user specify relative
     // directories that work consistently
-    function  ToSystemPath(const Path: TPath; const Base: TPath = ''):string;
-    function  ToWantPath(Path: TSystemPath): TPath;
+    function  ToSystemPath(const Path: TPath; const Base: TPath = ''):string; virtual;
+    function  ToWantPath(Path: TSystemPath): TPath; virtual;
     function  ToAbsolutePath(const Path: TPath): TPath; virtual;
     function  ToRelativePath(const Path: TPath; const Base: TPath = ''): TPath; virtual;
     procedure AboutToScratchPath(const Path: TPath);

@@ -52,6 +52,8 @@ uses
   IniFileTasks in 'tasks\IniFileTasks.pas',
   JALExpressions in '..\lib\jal\src\JALExpressions.pas';
 
+{$APPTYPE CONSOLE}
+
 {$r wantver.res}
 {$r license.res }
 

@@ -178,6 +178,8 @@ See http://www.suigeneris.org/want/ for details.
          <include name="**/*.jpeg" />
          <include name="**/*.txt" />
          <include name="**/*.ini" />
+         <include name="**/*.bat" />
+         <include name="**/*.obj" />
 
          <include name="${test}/data/**" />
 

@@ -93,6 +93,7 @@ type
     destructor Destroy; override;
 
     procedure Execute; override;
+    function  ToSystemPath(const Path: TPath; const Base: TPath = ''):string; override;
 
   protected
     property Arguments:    string   read GetArguments write SetArguments;
@@ -382,6 +383,13 @@ begin
     warningfilter := '[Ww]arning';
     warningfilter := 'WARNING';
   end;
+end;
+
+function TCustomExecTask.ToSystemPath(const Path, Base: TPath): string;
+begin
+  Result :=inherited ToSystemPath(Path, Base);
+  if Pos(' ', Result) > 0 then
+    Result := '"' + Trim(Result) + '"';
 end;
 
 { TArgElement }
