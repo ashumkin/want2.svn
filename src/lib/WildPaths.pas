@@ -34,6 +34,10 @@ Contributors  :  Chris Morris
 }
 unit WildPaths;
 {:
+@BUG:  SplitPath is not consisten with PathConcat. The output of the first
+       can not be put back together with the second. This is a problem for
+       UNC paths.
+
 @TODO: File-by-file matching currently relies too much on the OS, so it may
        not work consistently in Windows and Linux.
 
