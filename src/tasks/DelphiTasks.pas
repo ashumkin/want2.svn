@@ -30,7 +30,7 @@ TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
 THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 --------------------------------------------------------------------------------
 Original Author: Juancarlo Añez
-Contributors   : 
+Contributors   :
 }
 unit DelphiTasks;
 
@@ -39,6 +39,7 @@ uses
   DanteClasses,
   ExecTasks,
   WildPaths,
+  PatternSets,
 
   Collections,
   MiniDom,
@@ -63,26 +64,31 @@ type
   EDelphiNotFoundError   = class(EDelphiTaskError);
   ECompilerNotFoundError = class(EDelphiTaskError);
 
-  TPathElement = class(TDanteElement)
+  TPathSet = class(TCustomDirSet)
   protected
-    FPath: string;
-
-    procedure SetPath(Value: string); virtual; abstract;
+    procedure SetPath(Value: string); virtual;
+  public
+    constructor Create(Owner :TDanteElement); override;
   published
     property Path: string write SetPath;
   end;
 
-  TUnitElement = class(TPathElement)
-    procedure SetPath(Value: string); override;
+  TUnitElement     = class(TPathSet);
+  TResourceElement = class(TPathSet);
+  TIncludeElement  = class(TPathSet);
+
+  TDefineElement = class(TDanteElement)
+  protected
+    FValue :string;
+
+  public
+    procedure Init; override;
+
+  published
+    property Name;
+    property Value :string read FValue write FValue;
   end;
 
-  TResourceElement = class(TPathElement)
-    procedure SetPath(Value: string); override;
-  end;
-
-  TIncludeElement = class(TPathElement)
-    procedure SetPath(Value: string); override;
-  end;
 
   TCustomDelphiTask = class(TCustomExecTask)
   protected
@@ -114,9 +120,11 @@ type
     FConsole        : boolean;
     FUseLibraryPath : boolean;
 
-    FUnitPaths      : TStrings;
-    FResourcePaths  : TStrings;
-    FIncludePaths   : TStrings;
+    FUnitPaths      : TUnitElement;
+    FResourcePaths  : TResourceElement;
+    FIncludePaths   : TIncludeElement;
+
+    FDefines        : TStrings;
 
     function BuildExecutable: string; override;
     function BuildArguments: string; override;
@@ -138,15 +146,14 @@ type
     procedure AddUnitPath(Path: TPath);
     procedure AddResourcePath(Path: TPath);
     procedure AddIncludePath(Path: TPath);
+    procedure AddDefine(Name, Value :string);
 
   published
     property basedir; // from TTask
 
-    // published methods for creating sub Elements
-    // these methods are mapped to XML elements
-    function CreateUnit: TUnitElement;
-    function CreateResource: TResourceElement;
-    function CreateInclude: TIncludeElement;
+    function CreateUnit     :TUnitElement;
+    function CreateResource :TResourceElement;
+    function CreateInclude  :TIncludeElement;
 
     // these properties are mapped to XML attributes
     property Arguments;
@@ -261,16 +268,15 @@ begin
   SkipLines  := 1;
   quiet      := true;
 
-  FUnitPaths      := TStringList.Create;
-  FResourcePaths  := TStringList.Create;
-  FIncludePaths   := TStringList.Create;
+  FUnitPaths      := TUnitElement.Create(Self);
+  FResourcePaths  := TResourceElement.Create(Self);
+  FIncludePaths   := TIncludeElement.Create(Self);
+  FDefines        := TStringList.Create;
 end;
 
 destructor TDelphiCompileTask.Destroy;
 begin
-  FUnitPaths.Free;
-  FResourcePaths.Free;
-  FIncludePaths.Free;
+  FDefines.Free;
   inherited Destroy;
 end;
 
@@ -310,11 +316,18 @@ end;
 function TDelphiCompileTask.BuildArguments: string;
 var
   Sources: TPaths;
+  d      : Integer;
   s      : Integer;
   p      : Integer;
   PS     : TStrings;
+  Paths  : TPaths;
 begin
   Result := inherited BuildArguments;
+
+  if console then
+    Result := Result + ' -CC'
+  else
+    Result := Result + ' -CG';
 
   Sources := WildPaths.Wild(Source, BasePath);
   if Length(Sources) = 0 then
@@ -345,17 +358,13 @@ begin
   else
     Result := Result + ' -V- -$D-';
 
-  if console then
-    Result := Result + ' -CC'
-  else
-    Result := Result + ' -CG';
+  for d := 0 to FDefines.Count-1 do
+    Result := Result + ' -D' + FDefines.Names[d];
 
 
-  if FUnitPaths.Count > 0 then
-  begin
-    for p := 0 to FUnitPaths.Count-1 do
-      Result := Result + ' -U' + ToSystemPath(FUnitPaths[p]);
-  end;
+  Paths := FUnitPaths.RelativePaths;
+  for p := Low(paths) to High(Paths) do
+    Result := Result + ' -U' + ToSystemPath(Paths[p]);
 
   if useLibraryPath then
   begin
@@ -369,27 +378,13 @@ begin
     end;
   end;
 
-  if FResourcePaths.Count > 0 then
-    Result := Result + ' -R' + StringsToSystemPathList(FResourcePaths);
+  Paths := FResourcePaths.RelativePaths;
+  for p := Low(paths) to High(Paths) do
+    Result := Result + ' -R' + ToSystemPath(Paths[p]);
 
-  if FIncludePaths.Count > 0 then
-    Result := Result + ' -I' + StringsToSystemPathList(FIncludePaths);
-
-end;
-
-function TDelphiCompileTask.createUnit: TUnitElement;
-begin
-  Result := TUnitElement.Create(Self);
-end;
-
-function TDelphiCompileTask.CreateResource: TResourceElement;
-begin
-  Result := TResourceElement.Create(Self);
-end;
-
-function TDelphiCompileTask.CreateInclude: TIncludeElement;
-begin
-  Result := TIncludeElement.Create(Self);
+  Paths := FIncludePaths.RelativePaths;
+  for p := Low(paths) to High(Paths) do
+    Result := Result + ' -I' + ToSystemPath(Paths[p]);
 end;
 
 procedure TDelphiCompileTask.SetExes(Value: string);
@@ -399,17 +394,17 @@ end;
 
 procedure TDelphiCompileTask.AddUnitPath(Path: TPath);
 begin
-  FUnitPaths.Add(Path);
+  FUnitPaths.Include(Path);
 end;
 
 procedure TDelphiCompileTask.AddIncludePath(Path: TPath);
 begin
-     FIncludePaths.Add(Path);
+  FIncludePaths.Include(Path);
 end;
 
 procedure TDelphiCompileTask.AddResourcePath(Path: TPath);
 begin
-  FResourcePaths.Add(Path);
+  FResourcePaths.Include(Path);
 end;
 
 function TDelphiCompileTask.ReadLibraryPaths: string;
@@ -419,27 +414,28 @@ begin
 end;
 
 
-{ TUnitElement }
-
-procedure TUnitElement.SetPath(Value: string);
+procedure TDelphiCompileTask.AddDefine(Name, Value: string);
 begin
-  (Owner as TDelphiCompileTask).AddUnitPath(Value);
+  if Trim(Value) <> '' then
+    FDefines.Values[Name] := Value
+  else
+    FDefines.Add(Name + '=');
 end;
 
-{ TResourceElement }
-
-procedure TResourceElement.SetPath(Value: string);
+function TDelphiCompileTask.CreateUnit: TUnitelement;
 begin
-  (Owner as TDelphiCompileTask).AddResourcePath(Value);
+  Result := FUnitPaths;
 end;
 
-{ TIncludeElement }
-
-procedure TIncludeElement.SetPath(Value: string);
+function TDelphiCompileTask.CreateInclude: TIncludeElement;
 begin
-  (Owner as TDelphiCompileTask).AddIncludePath(Value);
+  Result := FIncludePaths;
 end;
 
+function TDelphiCompileTask.CreateResource: TResourceElement;
+begin
+  Result := FResourcePaths;
+end;
 
 { TResourceCompileTask }
 
@@ -489,6 +485,38 @@ begin
   Result := 'brcc';
 end;
 
+{ TDefineElement }
+
+procedure TDefineElement.Init;
+begin
+  inherited Init;
+  RequireAttribute('name');
+  (Owner as TDelphiCompileTask).AddDefine(Name, Value);
+end;
+
+{ TPathElement }
+
+procedure TPathSet.SetPath(Value: string);
+var
+  Pat :TPath;
+begin
+  Pat := StrToken(Value, ',');
+  while Pat <> '' do
+  begin
+    Include(Pat);
+    Pat := StrToken(Value, ',');
+  end;
+end;
+
+{ TPathSet }
+
+constructor TPathSet.Create(Owner: TDanteElement);
+begin
+  inherited Create(Owner);
+  AddDefaultPatterns;
+end;
+
 initialization
   RegisterTasks([TDelphiCompileTask, TResourceCompileTask]);
+  RegisterElement(TDefineElement,   TDelphiCompileTask);
 end.
