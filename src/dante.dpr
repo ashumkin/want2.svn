@@ -41,9 +41,7 @@ uses
   DanteClasses,
   StandardTasks,
   CustomTasks,
-  DanteMain,
-  DanteTasks in 'tasks\DanteTasks.pas',
-  ExecTasks in 'tasks\ExecTasks.pas';
+  DanteMain;
 
 function DanteHeader: string;
 begin
