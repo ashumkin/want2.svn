@@ -50,7 +50,7 @@ type
       property collapseattributes :boolean read FCollapseAttributes write FCollapseAttributes;
       property prefix             :string  read FPrefix             write FPrefix;
       property keeproot           :boolean read FKeepRoot           write FKeepRoot;
-      // property validate           :boolean read FValidate           write FValidate;
+      property validate           :boolean read FValidate           write FValidate;
   end;
 
 implementation
