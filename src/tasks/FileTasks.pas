@@ -311,7 +311,6 @@ begin
       path := Paths[p];
       Log(vlVerbose, 'del ' + ToSystemPath(path));
       AboutToScratchPath(path);
-      (*
       WildPaths.DeleteFile(path, FDeleteReadOnly);
       if PathExists(path) then
       begin
@@ -319,7 +318,6 @@ begin
         msg := Format('Could not delete %s', [  ToSystemPath(path) ]);
         TaskFailure( msg );
       end;
-      *)
     end;
   end;
 end;
