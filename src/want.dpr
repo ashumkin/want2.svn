@@ -47,8 +47,7 @@ uses
   ConsoleScriptRunner in 'win32\ConsoleScriptRunner.pas',
   BuildListeners in 'BuildListeners.pas',
   WantUtils in 'WantUtils.pas',
-  IniFileTasks in 'tasks\IniFileTasks.pas',
-  JALExpressions in '..\lib\jal\src\JALExpressions.pas';
+  IniFileTasks in 'tasks\IniFileTasks.pas';
 
 {$APPTYPE CONSOLE}
 
