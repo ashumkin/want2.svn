@@ -56,6 +56,7 @@ begin
   P := TProject.Create(nil);
   try
     P.Load(ABuildFileName);
+    P.Build;
   finally
     P.Free;
   end;

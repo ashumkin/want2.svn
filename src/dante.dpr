@@ -36,10 +36,14 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 program dante;
 
 uses
-  DanteMain, SysUtils, clUtilConsole;
+  SysUtils,
+  clUtilConsole,
+  ExecTasks,
+  DelphiTasks,
+  DanteMain;
 
 const
-  BuildFileName = 'build.txt';
+  BuildFileName = 'build.dfm';
 
 function DanteHeader: string;
 begin
@@ -92,13 +96,51 @@ end;
 
 const
   SwitchChars = ['-', '/'];
-var
-  ADante: TDante;
+
+function FindBuildFile(BuildFile :string):string;
 begin
-  WriteLn(DanteHeader);
-  if FindCmdLineSwitch('?', SwitchChars, true) or
-     FindCmdLineSwitch('h', SwitchChars, true) then
+  Result := ExpandFileName('.\'+ BuildFile);
+  // find the Result in the current or super directories
+  while not FileExists(Result)
+        and FileExists(ExtractFileDir(Result))
+  do begin
+    Result := ExpandFileName(ExtractFilePath(Result) + '..\' + ExtractFilename(Result));
+  end;
+  if not FileExists(Result) then
+    Result := BuildFile;
+end;
+
+
+procedure Run;
+var
+  BuildFile: string;
+  ADante:    TDante;
+begin
+  BuildFile := FindBuildFile(BuildFileName);
+  if not FileExists(BuildFile) then
   begin
+    // in the future add -find support and -buildfile support
+    WriteLn('Cannot find ' + ExtractFileName(BuildFile));
+  end
+  else
+  begin
+    ADante := TDante.Create;
+    try
+      try
+        ADante.DoBuild(BuildFile);
+        WriteLn('Build complete.');
+      except
+        on E: Exception do
+          WriteLn(E.message);
+      end;
+    finally
+      ADante.Free;
+    end;
+  end
+end;
+
+procedure Ussage;
+begin
     WriteLn('For licensing info, use the -L switch');
     WriteLn;
     WriteLn('Usage:');
@@ -108,31 +150,21 @@ begin
     WriteLn('  -h, -H, -?          Displays this help text.');
     WriteLn('  -buildfile [file]   Specifies the build file. Default is');
     WriteLn('                      build.txt (will be build.xml in future)');
+end;
+
+begin
+  WriteLn(DanteHeader);
+  if FindCmdLineSwitch('?', SwitchChars, true) or
+     FindCmdLineSwitch('h', SwitchChars, true) then
+  begin
+    Ussage;
   end
   else if FindCmdLineSwitch('L', SwitchChars, false) then
   begin
     // need to add More functionality ... going to add it in clUtilConsole
     WriteLn(License);
   end
-  else begin
-    if FileExists(BuildFileName) then
-    begin
-      ADante := TDante.Create;
-      try
-        try
-          ADante.DoBuild(BuildFileName);
-          WriteLn('Build complete.');
-        except
-          on E: Exception do
-            WriteLn(E.message);
-        end;
-      finally
-        ADante.Free;
-      end;
-    end
-    else
-      // in the future add -find support and -buildfile support
-      WriteLn('Cannot find ' + BuildFileName + '. Must be in current directory.');
-  end;
+  else
+    Run;
 end.
 

@@ -45,10 +45,12 @@ type
   TTarget     = class;
   TTask       = class;
 
-  EDanteException  = class(Exception);
-  ETargetException = class(EDanteException);
-  ETaskException   = class(EDanteException);
+  EDanteException   = class(Exception);
+  ETargetException  = class(EDanteException);
+  ETaskException    = class(EDanteException);
 
+
+  ENoDefaultTargetError     = class(ETargetException);
   ETargetNotFoundException  = class(ETargetException);
   ECircularTargetDependency = class(ETargetException);
 
@@ -81,6 +83,7 @@ type
   TProject = class(TDanteComponent)
   protected
     FTargets: TList;
+    FDefaultTarget: string;
     FBeQuiet: boolean;
 
     function  GetTarget(Index: Integer):TTarget;
@@ -102,12 +105,16 @@ type
     function GetTargetByName(name :string):TTarget;
 
     function Schedule(TargetName :string) :TTargetArray;
-    procedure Build(TargetName :string);
+    procedure Build(TargetName :string); overload;
+    procedure Build;                     overload;
 
     procedure Log(Msg :string = '');
 
     property Targets[i: Integer]: TTarget read GetTarget; default;
     property Names[TargetName :string] :TTarget read GetTargetByName;
+
+  published
+    property DefaultTarget :string read FDefaultTarget write FDefaultTarget;
     property BeQuiet: boolean read FBeQuiet write FBeQuiet;
   end;
 
@@ -138,6 +145,7 @@ type
     FTag :string;
 
     function GetTag :string; virtual;
+    procedure DoExecute;
   public
     function Target :TTarget;
 
@@ -353,24 +361,41 @@ begin
   end;
 end;
 
+procedure TProject.Log(Msg: string);
+begin
+  // bare bones implementation
+  // something smarter can be thought of later
+  writeln(Msg);
+end;
+
 procedure TProject.Build(TargetName: string);
 var
   i     :Integer;
   Sched :TTargetArray;
 begin
   Sched := Schedule(Targetname);
-  for i := Low(Sched) to High(Sched) do
-  begin
-    Sched[i].Build;
-    Log;
+  try
+    for i := Low(Sched) to High(Sched) do
+    begin
+      Sched[i].Build;
+      Log;
+    end;
+  except
+    on e :Exception do
+    begin
+      Log(Format('%s: %s', [e.ClassName, e.Message]));
+      raise;
+    end;
   end;
 end;
 
-procedure TProject.Log(Msg: string);
+procedure TProject.Build;
 begin
-  // bare bones implementation
-  // something smarter can be thought of later
-  writeln(Msg);
+  if DefaultTarget = '' then
+  begin
+    raise ENoDefaultTargetError.Create('No default target');
+  end;
+  Build(DefaultTarget);
 end;
 
 { TTarget }
@@ -381,7 +406,7 @@ var
 begin
   Log;
   for i := 0 to TaskCount-1 do
-    Tasks[i].Execute;
+    Tasks[i].DoExecute;
 end;
 
 constructor TTarget.Create(Owner: TComponent);
@@ -451,6 +476,19 @@ end;
 function TTask.Target: TTarget;
 begin
   Result := Owner as TTarget;
+end;
+
+procedure TTask.DoExecute;
+begin
+  try
+    Execute;
+  except
+    on e :Exception do
+    begin
+      Log(Format('%s: %s', [e.ClassName, e.Message]));
+      raise;
+    end;
+  end;
 end;
 
 initialization
