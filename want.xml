@@ -35,6 +35,7 @@ See http://www.suigeneris.org/want/ for details.
 
   <patternset id="sources" >
     <include  name="${lib}/**" />
+    <include  name="${src}" />
     <include  name="${src}/**" />
   </patternset>
 
@@ -59,13 +60,7 @@ See http://www.suigeneris.org/want/ for details.
     <regexp property="comma.version" 
             pattern="\.0*([1-9]*[0-9])" subst=",\1" 
             text="${version}" />
-    <edit file="${src}/wantver.template.rc" >
-      <global pattern="version" >
-         <eval />
-      </global>
-      <write file="${src}/wantver.rc" />
-      <print all="true" ifdef="debug" />
-    </edit>
+    <echo input="${src}/wantver.template.rc" file="${src}/wantver.rc" />
   </target>
 
   <target name="resources" depends="prepare,versioninfo" >
