@@ -96,9 +96,11 @@ type
 
   TDelphiCompileTask = class(TCustomDelphiTask)
   protected
-    FExesPath: string;
-    FDCUPath : string;
-    FSource  : string;
+    FExesPath: TPath;
+    FDCUPath : TPath;
+    FBPLPath : TPath;
+    FDCPPath : TPath;
+    FSource  : TPath;
 
     FQuiet          : boolean;
     FMake           : boolean;
@@ -125,8 +127,6 @@ type
 
     function ToolName :string; override;
 
-    procedure SetExes(Value: string);
-
     function ReadLibraryPaths :string;
 
   public
@@ -150,7 +150,8 @@ type
     property basedir; // from TTask
 
     function CreateUnitPath     :TUnitPathElement;
-    function CreateResourcePath :TResourcePathElement;
+
+ function CreateResourcePath :TResourcePathElement;
     function CreateIncludePath  :TIncludePathElement;
 
     // these properties are mapped to XML attributes
@@ -158,8 +159,10 @@ type
     property ArgumentList stored False;
     property SkipLines;
 
-    property exeoutput: string read FExesPath write SetExes;
-    property dcuoutput: string read FDCUPath  write FDCUPath;
+    property exeoutput: TPath read FExesPath write FExesPath;
+    property dcuoutput: TPath read FDCUPath  write FDCUPath;
+    property bploutput: TPath read FBPLPath  write FBPLPath;
+    property dcpoutput: TPath read FDCPPath  write FDCPPath;
 
     property quiet: boolean read FQuiet write FQuiet default true;
     property make:  boolean read FMake  write FMake;
@@ -175,7 +178,7 @@ type
 
     property uselibrarypath : boolean read FUseLibraryPath write FUseLibraryPath;
 
-    property source : string read FSource     write FSource;
+    property source : TPath read FSource  write FSource;
   end;
 
   TResourceCompileTask = class(TCustomDelphiTask)
@@ -197,19 +200,6 @@ type
     property _file:  string read FFile   write FFile;
     property output: string read FOutput write FOutput;
   end;
-
-  TQuietElement          = class(TBooleanAttributeElement);
-  TMakeElement           = class(TBooleanAttributeElement);
-  TBuildElement          = class(TBooleanAttributeElement);
-  TOptimizeElement       = class(TBooleanAttributeElement);
-  TDebugElement          = class(TBooleanAttributeElement);
-  TConsoleElement        = class(TBooleanAttributeElement);
-  TWarningsElement       = class(TBooleanAttributeElement);
-  TUseLibraryPathElement = class(TBooleanAttributeElement);
-  TUseCFGElement         = class(TBooleanAttributeElement);
-
-  TDCUOutputElement  = class(TPathAttributeElement);
-  TEXEOutputElement  = class(TPathAttributeElement);
 
   TOptionElement = class(TScriptElement)
   protected
@@ -335,7 +325,8 @@ begin
    end;
    *)
  end
- else if (Pos('Fatal', Line) <> 0) or  (Pos('Error', Line) <> 0) then
+ else if 
+(Pos('Fatal', Line) <> 0) or  (Pos('Error', Line) <> 0) then
    TaskFailure(Line)
  else if (Pos('Wargint', Line) <> 0) then
      Log(vlWarnings, Line)
@@ -470,6 +461,18 @@ begin
     Result := Result + PathOpt('N', dcuoutput);
   end;
 
+  if bploutput <> '' then
+  begin
+    Log(vlVerbose, 'bploutput=' + ToRelativePath(bploutput));
+    Result := Result + PathOpt('LE', bploutput);
+  end;
+
+  if dcpoutput <> '' then
+  begin
+    Log(vlVerbose, 'dcpoutput=' + ToRelativePath(dcpoutput));
+    Result := Result + PathOpt('LN', dcpoutput);
+  end;
+
   if console then
   begin
     Log(vlVerbose, 'console=true');
@@ -587,11 +590,6 @@ begin
 
   if Length(Sources) = 0 then
     TaskFailure(Format('could not find %s to compile', [PathConcat(BasePath, source)]));
-end;
-
-procedure TDelphiCompileTask.SetExes(Value: string);
-begin
-  FExesPath := Value;
 end;
 
 procedure TDelphiCompileTask.AddUnitPath(Path: TPath);
@@ -762,23 +760,6 @@ end;
 initialization
   RegisterTasks( [TDelphiCompileTask, TResourceCompileTask]);
   RegisterElements(TDelphiCompileTask, [
-                         TDefineElement,
-
-                         TQuietElement,
-                         TMakeElement,
-                         TBuildElement,
-                         TOptimizeElement,
-                         TDebugElement,
-                         TConsoleElement,
-                         TWarningsElement,
-                         TUseLibraryPathElement,
-                         TUseCFGElement,
-
-                         TDCUOutputElement,
-                         TEXEOutputElement,
-
-                         TUsePackageElement,
-
-                         TMapElement
+                         TDefineElement
                          ]);
 end.

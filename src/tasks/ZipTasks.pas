@@ -131,7 +131,7 @@ end;
 
 procedure TUnzipTask.Execute;
 var
-  ToPath :TPath;
+  ToPath, Entry :TPath;
   e :Integer;
 begin
   Log(vlVerbose);
@@ -147,7 +147,8 @@ begin
         for e := 0 to Entries.Count-1 do
         begin
           Log(vlVerbose, Entries[e]);
-          AboutToScratchPath(Entries[e]);
+          Entry := MovePath(Entries[e], ToPath);
+          AboutToScratchPath(Entry);
           ExtractFile(Entries[e], ToPath);
         end;
       end;
