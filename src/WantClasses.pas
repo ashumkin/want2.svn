@@ -47,7 +47,10 @@ uses
   JALExpressions,
 
   WildPaths,
-  WantUtils;
+  WantUtils,
+
+  DefaultInputHandler,
+  InputHandler;
 
 
 {$M+} { TURN ON RTTI (RunTime Type Information) }
@@ -176,7 +179,8 @@ type
     procedure Init;    virtual;
     procedure Execute; virtual;
 
-    function GetNoChanges :boolean; virtual;
+    function  GetNoChanges :boolean; virtual;
+    procedure EvaluateAttributes;
   public
     constructor Create(Owner: TScriptElement); reintroduce; overload; virtual;
     destructor Destroy; override;
@@ -254,6 +258,7 @@ type
 
     FListener :TBuildListener;
     FNoChanges: boolean;
+    FInputHandler:  IInputHandler;
 
     procedure InsertNotification(Child :TTree); override;
     procedure RemoveNotification(Child :TTree); override;
@@ -300,6 +305,8 @@ type
     property Listener :TBuildListener read FListener write FListener;
 
     property NoChanges :boolean read GetNoChanges write FNoChanges;
+
+    property InputHandler : IInputHandler read FInputHandler write FInputHandler;
   published
     function CreateTarget    : TTarget;
 
@@ -590,19 +597,13 @@ end;
 
 procedure TScriptElement.Configure;
 var
-  a       :Integer;
   i       :Integer;
   LastDir :TPath;
 begin
   LastDir := CurrentDir;
   try
     try
-      with Attributes do
-      begin
-        for a := 0 to Count-1 do
-          if not SetDelphiProperty(Names[a], Evaluate(Values[Names[a]])) then
-             raise Exception.CreateFmt('%s not a property of this element', [Names[a]]);
-      end;
+      EvaluateAttributes;
 
       ChangeDir(BasePath, false);
       Self.Init;
@@ -1140,8 +1141,21 @@ end;
 
 procedure TScriptElement.Execute;
 begin
+  EvaluateAttributes;
   if Description <> '' then
     Log(Description);
+end;
+
+procedure TScriptElement.EvaluateAttributes;
+var
+  a : integer;
+begin
+  with Attributes do
+  begin
+    for a := 0 to Count-1 do
+      if not SetDelphiProperty(Names[a], Evaluate(Values[Names[a]])) then
+         raise Exception.CreateFmt('%s not a property of this element', [Names[a]]);
+  end;
 end;
 
 { TProject }
@@ -1153,6 +1167,7 @@ begin
 
   FRootPath    := CurrentDir;
   FRootPathSet := False;
+  FInputHandler := TDefaultInputHandler.Create;
 end;
 
 destructor TProject.Destroy;

@@ -78,7 +78,7 @@ begin
   bSL := TStringList.Create;
   try
     try
-      bSL.LoadFromFile(FSrcFile);
+      bSL.LoadFromFile(ToSystemPath(FSrcFile));
     except
       if FFailOnError then raise;
     end;

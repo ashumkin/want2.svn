@@ -42,7 +42,8 @@ uses
   LoadFileTasks,
   TempFileTasks,
   StyleTasks,
-  XmlPropertyTasks;
+  XmlPropertyTasks,
+  InputTasks;
 
 
 implementation
