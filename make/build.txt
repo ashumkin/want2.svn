@@ -1,1 +1,1 @@
-dcc32.exe -B -Q -E".." ..\dante.dpr 
+dcc32.exe -B -Q -E"..\src" ..\src\dante.dpr
