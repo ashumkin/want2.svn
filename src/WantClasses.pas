@@ -710,7 +710,7 @@ end;
 
 function TScriptElement.ToAbsolutePath(const Path: TPath): TPath;
 begin
-  Result := PathConcat(ToAbsolutePath(BasePath), Path);
+  Result := PathConcat(WildPaths.NormalizePath(BasePath), Path);
 end;
 
 function TScriptElement.ToRelativePath(const Path: TPath; const Base: TPath): TPath;
@@ -944,6 +944,8 @@ var
   TypeInfo :PTypeInfo;
   PropInfo :PPropInfo;
   O        :TObject;
+  I        :IUnknown;
+  P        :IPath;
 begin
   Result := Null;
   TypeInfo := Self.ClassInfo;
@@ -971,9 +973,13 @@ begin
         begin
           O := Pointer(GetOrdProp(Self, PropInfo));
           if O is TStrings then
-            Result := (O as TStrings).CommaText
-          else
-            Result := False;
+            Result := (O as TStrings).CommaText;
+        end
+        else if Kind = tkInterface then
+        begin
+          I := IUnknown(GetOrdProp(Self, PropInfo));
+          if I.QueryInterface(IPath, P) = 0 then
+            Result := P;
         end
         else
         begin
@@ -990,6 +996,7 @@ var
   PropInfo: PPropInfo;
   O       : TObject;
   S       : TStrings;
+  P        :IPath;
 begin
   Result := True;
 
@@ -1039,6 +1046,12 @@ begin
         end
         else
           Result := False;
+      end
+      else if Kind = tkInterface then
+      begin
+        P := NewPath('' + Value);
+        SetOrdProp(Self, PropInfo, Longint(P));
+        P._AddRef;
       end
       else
         Result := False;

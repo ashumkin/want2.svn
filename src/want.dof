@@ -49,7 +49,7 @@ Conditionals=USE_JEDI_JCL
 DebugSourceDirs=
 UsePackages=0
 [Parameters]
-RunParams=-buildfile c:\home\tranus\want.xml
+RunParams=-buildfile c:\home\tranus\setup\want.xml
 HostApplication=
 [Version Info]
 IncludeVerInfo=0
@@ -134,11 +134,13 @@ Count=2
 Item0=c:\home\dunit\bin\dunit.exe
 Item1=c:\tmp\bin\want.exe
 [HistoryLists\hlRunParameters]
-Count=7
-Item0=-buildfile c:\home\tranus\want.xml
-Item1=WantTestLib
-Item2=WantTestLib.dtl
-Item3=-buildfile c:\home\dunit\want.xml
-Item4=-buildfile c:\home\want\want.xml internal_tests
-Item5=-buildfile c:\home\want\want.xml compile
-Item6=WantAcceptTestLib
+Count=9
+Item0=-buildfile c:\home\tranus\setup\want.xml
+Item1=-buildfile c:\home\tranus\model\want.xml
+Item2=-buildfile c:\home\tranus\want.xml
+Item3=WantTestLib
+Item4=WantTestLib.dtl
+Item5=-buildfile c:\home\dunit\want.xml
+Item6=-buildfile c:\home\want\want.xml internal_tests
+Item7=-buildfile c:\home\want\want.xml compile
+Item8=WantAcceptTestLib

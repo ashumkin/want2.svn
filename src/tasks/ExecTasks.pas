@@ -24,6 +24,8 @@ uses
   JclSysInfo,
   JclSecurity,
 
+  JalPaths,
+
   XPerlRE,
 
   WildPaths,
@@ -38,15 +40,12 @@ type
   TArgElement = class(TScriptElement)
   protected
     FVAlue :string;
+    FPath  :IPath;
   public
     procedure Init; override;
   published
     property value :string read FValue write FValue;
-  end;
-
-  TPathElement = class(TArgElement)
-  public
-    procedure Init; override;
+    property path  :IPath  read FPath  write FPath;
   end;
 
   TCustomExecTask = class(TTask)
@@ -117,8 +116,6 @@ type
     }
     property timeout:      Longint  read FTimeout     write FTimeout;
   published
-    function CreateArg  :TArgElement;
-    function CreatePath :TPathElement;
   end;
 
   TExecTask = class(TCustomExecTask)
@@ -312,16 +309,6 @@ begin
 end;
 
 
-function TCustomExecTask.CreateArg: TArgElement;
-begin
-  Result := TArgElement.Create(Self);
-end;
-
-function TCustomExecTask.CreatePath: TPathElement;
-begin
-  Result := TPathElement.Create(Self);
-end;
-
 procedure TCustomExecTask.HandleOutputLine(Line: string);
   function MatchFilters(F :TStrings) :boolean;
   var
@@ -402,20 +389,16 @@ end;
 procedure TArgElement.Init;
 begin
   inherited Init;
-  RequireAttribute('value');
+  if value = '' then
+  begin
+    RequireAttribute('path');
+    value := ToSystemPath(path.asString);
+  end;
   (Owner as TCustomExecTask).FArguments.Add(Value);
-end;
-
-{ TPathElement }
-
-procedure TPathElement.Init;
-begin
-  RequireAttribute('value');
-  value := ToSystemPath(value);
-  inherited Init;
 end;
 
 initialization
   RegisterTasks([TCustomExecTask, TExecTask, TShellTask]);
+  RegisterElements(TCustomExecTask, [TArgElement]);
 end.
 
