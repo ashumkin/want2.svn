@@ -213,8 +213,9 @@ See http://www.suigeneris.org/want/ for details.
          <include name="${bin}/*.exe" />
 
          <fileset dir="${basedir}" >
+           <exclude name="private/**" />
            <exclude name="${lib}/**" /> 
-           <include name="ChangeLog" />
+           <include name="ChangeLog.html" />
            <include name="**/*.pas" />
            <include name="**/*.dpr" />
            <include name="**/*.inc" />
@@ -237,7 +238,6 @@ See http://www.suigeneris.org/want/ for details.
          <include name="${test}/data/**" />
 
          <include name="${lib}/*.zip" />    <!-- include third party library .zips -->
-         <exclude name="${basedir}/private/**" />
     </zip>
   </target>
 
@@ -263,11 +263,12 @@ See http://www.suigeneris.org/want/ for details.
     <cvschangelog
         destfile="changelog.xml"
         start="?{release.ini:releases:last_date}"/>       
-    <style in="changelog.xml" out="changelog.html" style="changelog.xsl">
+    <style in="changelog.xml" out="ChangeLog.html" style="changelog.xsl">
       <param name="title" expression="Want ChangeLog"/>
       <param name="module" expression="want"/>
       <param name="cvsweb" expression="http://cvs.sourceforge.net/cgi-bin/viewcvs.cgi/"/>
     </style>
+    <delete file="changelog.xml"/>    
   </target>
 
   <target name="tag">
