@@ -54,6 +54,7 @@ uses
   SysUtils,
   Classes;
 
+
 const
   InvalidPathChars = ''; //';:,';
   WildChars        = '?*';
@@ -121,7 +122,7 @@ var
 begin
    Parts := nil;
    if (Length(P1) = 0)
-   or (P1 = '.')
+   //or (P1 = '.')
    or PathIsAbsolute(P2) then
      Result := P2
    else if Length(P2) = 0 then
@@ -169,7 +170,7 @@ end;
 
 function ToSystemPath(Path: TPath; BasePath :string): string;
 begin
-   Result := PathConcat(BasePath, Path);
+   Result := MovePath(Path, '', BasePath);
    if (Length(Result) >= 1) and (Result[Length(Result)] = '/') then
      Delete(Result,Length(Result), 1);
    Result := StringReplace(Result, '/', SystemPathDelimiter, [rfReplaceAll]);
@@ -262,7 +263,7 @@ end;
 
 function MovePath(Path :TPath; FromBase :TPath; ToBase :TPath) :TPath;
 begin
-   if Pos(FromBase, Path) = 1 then
+   if Pos(FromBase+'/', Path) = 1 then
      Result := PathConcat(ToBase, Copy(Path, 2+Length(FromBase), Length(Path)))
    else if PathIsAbsolute(Path) then
      Result :=  Path
@@ -281,11 +282,45 @@ begin
 end;
 
 function  ToRelativePath(Path, BasePath :TPath):TPath;
+var
+  P, B   :TPaths;
+  i, j :Integer;
 begin
-  if not PathIsAbsolute(Path) then
+  P := nil;
+  B := nil;
+  if not PathIsAbsolute(Path)
+  or not PathIsAbsolute(BasePath) then
     Result := Path
   else
-    Result := MovePath(Path, BasePath, '');
+  begin
+    Result := '';
+    P := SplitPath(Path);
+    B := SplitPath(BasePath);
+    i := 0;
+    j := 0;
+    while (i <= High(P))
+    and   (j <= High(B))
+    and   (P[i] = B[j])
+    do begin
+      Inc(i);
+      Inc(j);
+    end;
+
+    if j > High(B) then
+      Result := '.'
+    else
+      while  j <= High(B) do
+      begin
+        Result := Result + '../';
+        Inc(j);
+      end;
+    while i <= High(P) do
+    begin
+      Result := PathConcat(Result, P[i]);
+      Inc(i);
+    end;
+  end;
+
   if Result = '' then
     Result := '.';
 end;
