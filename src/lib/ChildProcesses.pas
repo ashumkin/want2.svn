@@ -82,11 +82,9 @@ begin
     begin
       Inc(p);
       c := FLine[p];
-      if c in [#10,#13] then
+      if c = #10 then
       begin
         Result := Copy(FLine, 1, p-1);
-        if (c = #13) and (p < Length(FLine)) and (FLine[p+1] = #10) then
-          Inc(p);
         Delete(FLine, 1, p);
         Exit;
       end;

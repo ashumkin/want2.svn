@@ -12,6 +12,7 @@ unit BuildListeners;
 interface
 uses
   Classes,
+  JclStrings,
   WantClasses;
 
 const
@@ -94,9 +95,11 @@ begin
     Lines := TStringList.Create;
     try
       Msg := Msg + ' ';
-      Lines.Text := Msg;
+      JclStrings.StrToStrings(Msg, '#10', Lines);
       for i := 0 to Lines.Count-1 do
+      begin
         LogLine(Lines[i], Level);
+      end;
     finally
       Lines.Free;
     end;

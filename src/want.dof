@@ -39,8 +39,8 @@ MaxStackSize=1048576
 ImageBase=4194304
 ExeDescription=
 [Directories]
-OutputDir=c:\tmp
-UnitOutputDir=c:\tmp
+OutputDir=c:\tmp\bin
+UnitOutputDir=c:\tmp\dcu
 PackageDLLOutputDir=
 PackageDCPOutputDir=
 SearchPath=$(DELPHI)\lib;.\lib;.\elements;.\tasks;.\paths;..\lib\xml;..\lib\paszlib;..\lib\paszlib\minizip;..\lib\perlre;c:\home\want\src\taks;c:\home\want\src\elements;..\bin
@@ -126,6 +126,5 @@ Item1=..\bin
 Count=1
 Item0=c:\home\dunit\bin\dunit.exe
 [HistoryLists\hlRunParameters]
-Count=2
-Item0=-buildfile c:\home\lasalle\src\want.xml sx
-Item1=WantAcceptTestLib
+Count=1
+Item0=WantAcceptTestLib
