@@ -73,9 +73,9 @@ type
     property Path: string write SetPath;
   end;
 
-  TUnitElement     = class(TPathSet);
-  TResourceElement = class(TPathSet);
-  TIncludeElement  = class(TPathSet);
+  TUnitPathElement     = class(TPathSet);
+  TResourcePathElement = class(TPathSet);
+  TIncludePathElement  = class(TPathSet);
 
   TDefineElement = class(TDanteElement)
   protected
@@ -120,9 +120,9 @@ type
     FConsole        : boolean;
     FUseLibraryPath : boolean;
 
-    FUnitPaths      : TUnitElement;
-    FResourcePaths  : TResourceElement;
-    FIncludePaths   : TIncludeElement;
+    FUnitPaths      : TUnitPathElement;
+    FResourcePaths  : TResourcePathElement;
+    FIncludePaths   : TIncludePathElement;
 
     FDefines        : TStrings;
 
@@ -151,20 +151,20 @@ type
   published
     property basedir; // from TTask
 
-    function CreateUnit     :TUnitElement;
-    function CreateResource :TResourceElement;
-    function CreateInclude  :TIncludeElement;
+    function CreateUnitPath     :TUnitPathElement;
+    function CreateResourcePath :TResourcePathElement;
+    function CreateIncludePath  :TIncludePathElement;
 
     // these properties are mapped to XML attributes
     property Arguments;
     property ArgumentList stored False;
     property SkipLines;
 
-    property exes:    string read FExesPath write SetExes;
-    property dcus:    string read FDCUPath  write FDCUPath;
+    property exeoutput: string read FExesPath write SetExes;
+    property dcuoutput: string read FDCUPath  write FDCUPath;
 
     property quiet: boolean read FQuiet write FQuiet default true;
-    property make: boolean read FMake write FMake;
+    property make:  boolean read FMake  write FMake;
     property build: boolean read FBuild write FBuild;
 
     property optimize: boolean read FOptimize write FOptimize;
@@ -268,9 +268,9 @@ begin
   SkipLines  := 1;
   quiet      := true;
 
-  FUnitPaths      := TUnitElement.Create(Self);
-  FResourcePaths  := TResourceElement.Create(Self);
-  FIncludePaths   := TIncludeElement.Create(Self);
+  FUnitPaths      := TUnitPathElement.Create(Self);
+  FResourcePaths  := TResourcePathElement.Create(Self);
+  FIncludePaths   := TIncludePathElement.Create(Self);
   FDefines        := TStringList.Create;
 end;
 
@@ -336,10 +336,10 @@ begin
   for s := Low(Sources) to High(Sources) do
     Result := Result + ' ' + ToSystemPath(Sources[s]);
 
-  if exes <> '' then
-    Result := Result + ' -E' + ToSystemPath(exes);
-  if dcus <> '' then
-    Result := Result + ' -N' + ToSystemPath(dcus);
+  if exeoutput <> '' then
+    Result := Result + ' -E' + ToSystemPath(exeoutput);
+  if dcuoutput <> '' then
+    Result := Result + ' -N' + ToSystemPath(dcuoutput);
   if quiet then
     Result := Result + ' -Q';
 
@@ -422,17 +422,17 @@ begin
     FDefines.Add(Name + '=');
 end;
 
-function TDelphiCompileTask.CreateUnit: TUnitelement;
+function TDelphiCompileTask.CreateUnitPath: TUnitPathElement;
 begin
   Result := FUnitPaths;
 end;
 
-function TDelphiCompileTask.CreateInclude: TIncludeElement;
+function TDelphiCompileTask.CreateIncludePath: TIncludePathElement;
 begin
   Result := FIncludePaths;
 end;
 
-function TDelphiCompileTask.CreateResource: TResourceElement;
+function TDelphiCompileTask.CreateResourcePath: TResourcePathElement;
 begin
   Result := FResourcePaths;
 end;
@@ -517,6 +517,6 @@ begin
 end;
 
 initialization
-  RegisterTasks([TDelphiCompileTask, TResourceCompileTask]);
-  RegisterElement(TDefineElement,   TDelphiCompileTask);
+  RegisterTasks( [TDelphiCompileTask, TResourceCompileTask]);
+  RegisterElement(TDelphiCompileTask, TDefineElement);
 end.

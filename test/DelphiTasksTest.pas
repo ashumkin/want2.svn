@@ -71,11 +71,11 @@ begin
     begin
       basedir := 'src';
       source  := 'dante.dpr';
-      exes    := '/bin/test';
-      dcus    := '/tmp';
+      exeoutput := '/bin/test';
+      dcuoutput := '/tmp';
       build   := true;
       quiet   := true;
-      uselibrarypath := true;
+      uselibrarypath := false;
 
       AddUnitPath('lib');
       AddUnitPath('tasks');
@@ -105,8 +105,8 @@ procedure TDelphiCompileTests.TestCompile;
 var
   exe:  string;
 begin
-  MakeDir(FDelphiTask.exes);
-  exe := PathConcat(FDelphiTask.exes, 'dante.exe');
+  MakeDir(FDelphiTask.exeoutput);
+  exe := PathConcat(FDelphiTask.exeoutput, 'dante.exe');
   if PathIsFile(exe) then
     DeleteFile(exe);
   FProject.Build('compile');

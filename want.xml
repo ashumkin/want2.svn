@@ -91,22 +91,16 @@ See http://dante.sourceforge.net for details
 
     <dcc basedir="${src}"
          source="dante.dpr"
-         exes="${basedir}"
-         dcus="${dcu}"
+         exeoutput="${basedir}"
+         dcuoutput="${dcu}"
          quiet="true"
          build="true"
          optimize="true"
          debug="false"
     >
-      <unit>
-        <patternset refid="sources" />
-      </unit>
-      <include>
-        <patternset refid="sources" />
-      </include>
-      <resource>
-        <patternset refid="resources" />
-      </resource>
+      <unitpath     refid="sources"   />
+      <includepath  refid="sources"   />
+      <resourcepath refid="resources" />
     </dcc>
   </target>
 
@@ -117,8 +111,8 @@ See http://dante.sourceforge.net for details
     <property name="test.app" value="DanteTest" />
     <dcc basedir="${test}"
          source="${test.app}.dpr"
-         exes="${bin}"
-         dcus="${dcu}"
+         exeoutput="${bin}"
+         dcuoutput="${dcu}"
          quiet="true"
          build="true"
          optimize="false"
@@ -127,16 +121,11 @@ See http://dante.sourceforge.net for details
          uselibrarypath="false"
     >
       <define name="USE_TEXT_RUNNER" />
-      <unit>
-        <patternset refid="sources" />
+      <unitpath     refid="sources" >
         <include name="${test}/**" />
-      </unit>
-      <include>
-        <patternset refid="sources" />
-      </include>
-      <resource>
-        <patternset refid="resources" />
-      </resource>
+      </unitpath>
+      <includepath  refid="sources"   />
+      <resourcepath refid="resources" />
     </dcc>
     <exec executable="${bin}/${test.app}.exe" />
  </target>
@@ -146,8 +135,8 @@ See http://dante.sourceforge.net for details
     <property name="test.app" value="DanteAcceptTest" />
     <dcc basedir="${test}"
          source="${test.app}.dpr"
-         exes="${bin}"
-         dcus="${dcu}"
+         exeoutput="${bin}"
+         dcuoutput="${dcu}"
          quiet="true"
          build="true"
          optimize="false"
@@ -156,17 +145,12 @@ See http://dante.sourceforge.net for details
          uselibrarypath="false"
   >
       <define name="USE_TEXT_RUNNER" />
-      <define name="NO_RUN_VSS_TESTS" />
-      <unit>
-        <patternset refid="sources" />
+      <define name="NO_RUN_VSS_TESTS" unless="include.vss" />
+      <unitpath     refid="sources" >
         <include name="${test}/**" />
-      </unit>
-      <include>
-        <patternset refid="sources" />
-      </include>
-      <resource>
-        <patternset refid="resources" />
-      </resource>
+      </unitpath>
+      <includepath  refid="sources"   />
+      <resourcepath refid="resources" />
     </dcc>
     <exec executable="${bin}/${test.app}.exe" />
  </target>
