@@ -137,8 +137,8 @@ type
 
     function  GetChildrenTyped(AClass: TDanteElementClass = nil):  TDanteElementArray;
 
-    procedure Log(Msg: string = ''; Level: TLogLevel = vlNormal);           overload; virtual;
-    procedure Log(Level: TLogLevel; Msg: string = ''); overload;
+    procedure Log(Msg: string = ''; Level: TLogLevel = vlNormal); overload; virtual;
+    procedure Log(Level: TLogLevel; Msg: string = '');            overload;
 
     function  Log(const Format: string; const Args: array of const; Level: TLogLevel = vlNormal): string; overload;
     function  Log(Level: TLogLevel; const Format: string; const Args: array of const): string; overload;
@@ -595,7 +595,9 @@ begin
     end
     else if 0 = child.QueryInterface(ITextNode, text)  then
     begin
-      if not SetAttribute('text', trim(text.text)) then
+      if not SetAttribute('text', GetAttribute('text') + text.text )
+      and (Trim(GetAttribute('text')) <> '')
+      then
         ParseError(Format('Element <%s> does not accept text', [TagName]), Child.LineNo);
     end;
   end;

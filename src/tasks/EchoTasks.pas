@@ -30,18 +30,20 @@ TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
 THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 --------------------------------------------------------------------------------
 Original Author: Juancarlo Añez
-Contributors   : 
+Contributors   :
 }
 unit EchoTasks;
 
 interface
 uses
-  DanteClasses,
-  WildPaths,
-  PatternSets,
-
   SysUtils,
-  Classes;
+  Classes,
+  Math,
+
+  JclStrings,
+
+  DanteClasses,
+  WildPaths;
 
 type
   TEchoTask = class(TTask)
@@ -53,6 +55,8 @@ type
 
   public
     procedure Execute; override;
+
+    function FormatText :string;
   published
     property _message :string  read FMessage write FMessage;
     property _text    :string  read FText    write FText;
@@ -81,13 +85,59 @@ begin
     else
       System.Rewrite(EchoFile);
     try
-      Writeln( EchoFile, _message + _text);
+      Writeln( EchoFile, _message + FormatText);
     finally
       System.Close(EchoFile);
     end;
   end;
 end;
 
+
+function TEchoTask.FormatText: string;
+var
+  S    :TStrings;
+  Lead :Integer;
+  i    :Integer;
+  p    :Integer;
+begin
+  S := TStringList.Create;
+  try
+    S.Text := _text;
+    Lead := MaxInt;
+
+    while (S.Count > 0) and (S[0] = '') do
+      S.Delete(0);
+
+    // find first non blank column
+    for i := 0 to S.Count-1 do
+    begin
+      if Length(Trim(S[i])) = 0 then
+        continue;
+      Lead := Min(Lead, Length(S[i]));
+      for p := 1 to Lead do
+      begin
+        if not (S[i][p] in [' ',#9]) then
+        begin
+          Lead := p;
+          break;
+        end;
+      end;
+      if Lead <= 0 then
+        break;
+    end;
+
+    if Lead > 0 then
+    begin
+      // remove leading spaces
+      for i := 0 to S.Count-1 do
+        S[i] := Copy(S[i], Lead, Length(S[i]));
+    end;
+
+    Result := S.Text;
+  finally
+    S.Free;
+  end;
+end;
 
 initialization
  RegisterTask(TEchoTask);

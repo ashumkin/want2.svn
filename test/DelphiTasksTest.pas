@@ -70,8 +70,6 @@ begin
     with FDelphiTask do
     begin
       basedir := 'src';
-      Log(ToSystemPath(basedir));
-      Log(CurrentDir);
       source  := 'dante.dpr';
       exes    := '/bin/test';
       dcus    := '/tmp';
