@@ -447,7 +447,7 @@ begin
                       [ClassName, XMLTag, NOde.Name]
                       ), Node.LineNo);
 
-  i := Node.Attributes;
+  i := Node.Attributes.Iterator;
   while i.HasNext do
   begin
     with i.Next as IAttribute do
@@ -528,7 +528,16 @@ var
 begin
   Result := true;
   if Child.Name = 'property' then
+  begin
+    {@TODO !!! Make property be an element of TDanteElement (procedure CreateProperty etc.): }
+    if Child.attribute('name') = nil then
+      ParseError('"name" attribute required', Child.LineNo)
+    else if Child.attribute('value') = nil then
+      ParseError('"value" attribute required', Child.LineNo)
+    else if Child.Attributes.Size <> 2 then
+      ParseError('only "name" and "value" attributes supported', Child.LineNo);
     SetProperty(Child.attributeValue('name'), Child.attributeValue('value'))
+  end
   else if Child.Name = 'echo' then
     Log('echo', ExpandMacros(Child.attributeValue('message')))
   else
@@ -714,7 +723,9 @@ end;
 
 function TDanteElement.ToSystemPath(Path: string): string;
 begin
-  Result := WildPaths.ToSystemPath(Path, BasePath);
+  Result := ToAbsolutePath(Path);
+  Result := ToRelativePath(Result);
+  Result := WildPaths.ToSystemPath(Result);
 end;
 
 { TProject }
