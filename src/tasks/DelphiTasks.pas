@@ -474,7 +474,6 @@ destructor TDelphiCompileTask.Destroy;
 begin
   FreeAndNil(FDefines);
   FreeAndNil(FPackages);
-  FreeAndNil(FWarnings);
   inherited Destroy;
 end;
 
