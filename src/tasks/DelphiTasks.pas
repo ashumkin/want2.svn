@@ -47,6 +47,7 @@ uses
   JclMiscel,
   JclSysInfo,
   JclRegistry,
+  JclStrings,
 
   Windows,
   SysUtils,
@@ -310,6 +311,8 @@ function TDelphiCompileTask.BuildArguments: string;
 var
   Sources: TPaths;
   s      : Integer;
+  p      : Integer;
+  PS     : TStrings;
 begin
   Result := inherited BuildArguments;
 
@@ -349,16 +352,29 @@ begin
 
 
   if FUnitPaths.Count > 0 then
-    Result := Result + ' -U' + StringsToSystemPathList(FUnitPaths);
+  begin
+    for p := 0 to FUnitPaths.Count-1 do
+      Result := Result + ' -U' + ToSystemPath(FUnitPaths[p]);
+  end;
+
+  if useLibraryPath then
+  begin
+    PS := TStringList.Create;
+    try
+      StrToStrings(ReadLibraryPaths, ';', PS);
+      for p := 0 to PS.Count-1 do
+        Result := Result + ' -U' + PS[p];
+    finally
+      PS.Free;
+    end;
+  end;
 
   if FResourcePaths.Count > 0 then
     Result := Result + ' -R' + StringsToSystemPathList(FResourcePaths);
 
   if FIncludePaths.Count > 0 then
-    Result := Result + ' -R' + StringsToSystemPathList(FIncludePaths);
+    Result := Result + ' -I' + StringsToSystemPathList(FIncludePaths);
 
-  if useLibraryPath then
-    Result := Result + ' -U' + ReadLibraryPaths;
 end;
 
 function TDelphiCompileTask.createUnit: TUnitElement;
