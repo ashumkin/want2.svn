@@ -148,6 +148,7 @@ type
   public
     procedure Execute; override;
     procedure Validate; override;
+    class function XMLTag: string; override;
   published
     property rcfilename: string read FRcFileName write FRcFileName;
   end;
@@ -343,6 +344,8 @@ procedure TIncVerRcTask.Execute;
 var
   FclVerRc: TclVersionRc;
 begin
+  FRcFileName := ToSystemPath(FRcFileName);
+  Log('Incrementing build in ' + FRcFileName);
   FclVerRc := TclVersionRc.Create(FRcFileName);
   try
     FclVerRc.IncBuild;
@@ -355,6 +358,11 @@ end;
 procedure TIncVerRcTask.Validate;
 begin
   RequireAttribute('rcfilename', FRcFileName);
+end;
+
+class function TIncVerRcTask.XMLTag: string;
+begin
+  Result := 'incverrc';
 end;
 
 initialization
