@@ -1,29 +1,26 @@
-#define JclResources_RsCreateFileMapping 65408
-#define JclResources_RsCreateFileMappingView 65409
-#define JclResources_RsFailedToObtainSize 65410
-#define JclResources_RsPeCantOpen 65411
-#define JclResources_RsPeNotPE 65412
-#define JclResources_RsPeNotResDir 65413
-#define JclResources_RsPeSectionNotFound 65414
-#define ComConst_SOleError 65415
-#define ComConst_SNoMethod 65416
-#define ComConst_SVarNotObject 65417
+#define JclResources_RsPeCantOpen 65408
+#define JclResources_RsPeNotPE 65409
+#define JclResources_RsPeNotResDir 65410
+#define JclResources_RsPeSectionNotFound 65411
+#define ComConst_SOleError 65412
+#define ComConst_SNoMethod 65413
+#define ComConst_SVarNotObject 65414
 #define Consts_SListCountError 65424
 #define Consts_SSortedListError 65425
 #define Consts_SDuplicateString 65426
-#define Consts_SLineTooLong 65427
-#define Consts_SInvalidPropertyValue 65428
-#define Consts_SNoCanvasHandle 65429
-#define Consts_SParseError 65430
-#define Consts_SInvalidString 65431
-#define Consts_SIniFileWriteError 65432
-#define Consts_SInvalidRegType 65433
-#define Consts_SRegCreateFailed 65434
-#define Consts_SRegSetDataFailed 65435
-#define Consts_SRegGetDataFailed 65436
-#define JclResources_RsWin32Prefix 65437
-#define JclResources_RsCannotCreateDir 65438
-#define JclResources_RsFileUtilsNoVersionInfo 65439
+#define Consts_SInvalidPropertyValue 65427
+#define Consts_SNoCanvasHandle 65428
+#define Consts_SIniFileWriteError 65429
+#define Consts_SInvalidRegType 65430
+#define Consts_SRegCreateFailed 65431
+#define Consts_SRegSetDataFailed 65432
+#define Consts_SRegGetDataFailed 65433
+#define JclResources_RsWin32Prefix 65434
+#define JclResources_RsCannotCreateDir 65435
+#define JclResources_RsFileUtilsNoVersionInfo 65436
+#define JclResources_RsCreateFileMapping 65437
+#define JclResources_RsCreateFileMappingView 65438
+#define JclResources_RsFailedToObtainSize 65439
 #define SysConst_SLongDayNameSun 65440
 #define SysConst_SLongDayNameMon 65441
 #define SysConst_SLongDayNameTue 65442
@@ -122,9 +119,6 @@
 #define SysConst_SInvalidInput 65535
 STRINGTABLE
 BEGIN
-	JclResources_RsCreateFileMapping,	"Failed to create FileMapping"
-	JclResources_RsCreateFileMappingView,	"Failed to create FileMappingView"
-	JclResources_RsFailedToObtainSize,	"Failed to obtain size of file"
 	JclResources_RsPeCantOpen,	"Cannot open file \"%s\""
 	JclResources_RsPeNotPE,	"This is not a PE format"
 	JclResources_RsPeNotResDir,	"Not a resource directory"
@@ -135,11 +129,8 @@ BEGIN
 	Consts_SListCountError,	"List count out of bounds (%d)"
 	Consts_SSortedListError,	"Operation not allowed on sorted string list"
 	Consts_SDuplicateString,	"String list does not allow duplicates"
-	Consts_SLineTooLong,	"Line too long"
 	Consts_SInvalidPropertyValue,	"Invalid property value"
 	Consts_SNoCanvasHandle,	"Canvas does not allow drawing"
-	Consts_SParseError,	"%s on line %d"
-	Consts_SInvalidString,	"Invalid string constant"
 	Consts_SIniFileWriteError,	"Unable to write to %s"
 	Consts_SInvalidRegType,	"Invalid data type for '%s'"
 	Consts_SRegCreateFailed,	"Failed to create key %s"
@@ -148,6 +139,9 @@ BEGIN
 	JclResources_RsWin32Prefix,	"Win32: %s (%u)"
 	JclResources_RsCannotCreateDir,	"Unable to create directory"
 	JclResources_RsFileUtilsNoVersionInfo,	"File contains no version information"
+	JclResources_RsCreateFileMapping,	"Failed to create FileMapping"
+	JclResources_RsCreateFileMappingView,	"Failed to create FileMappingView"
+	JclResources_RsFailedToObtainSize,	"Failed to obtain size of file"
 	SysConst_SLongDayNameSun,	"Sunday"
 	SysConst_SLongDayNameMon,	"Monday"
 	SysConst_SLongDayNameTue,	"Tuesday"
