@@ -185,24 +185,27 @@ See http://www.suigeneris.org/want/ for details.
 
          <include name="${bin}/want.exe" />
 
-         <include name="ChangeLog" />
-         <include name="**/*.pas" />
-         <include name="**/*.dpr" />
-         <include name="**/*.inc" />
-         <include name="**/*.rc" />
-         <include name="**/*.res" />
-         <include name="**/*.html" />
-         <include name="**/*.htm" />
-         <include name="**/*.css" />
-         <include name="**/*.xml" />
-         <include name="**/*.gif" />
-         <include name="**/*.png" />
-         <include name="**/*.jpg" />
-         <include name="**/*.jpeg" />
-         <include name="**/*.txt" />
-         <include name="**/*.ini" />
-         <include name="**/*.bat" />
-         <include name="**/*.obj" />
+         <fileset dir="${basedir}" >
+           <exclude name="${lib}/**" /> 
+           <include name="ChangeLog" />
+           <include name="**/*.pas" />
+           <include name="**/*.dpr" />
+           <include name="**/*.inc" />
+           <include name="**/*.rc" />
+           <include name="**/*.res" />
+           <include name="**/*.html" />
+           <include name="**/*.htm" />
+           <include name="**/*.css" />
+           <include name="**/*.xml" />
+           <include name="**/*.gif" />
+           <include name="**/*.png" />
+           <include name="**/*.jpg" />
+           <include name="**/*.jpeg" />
+           <include name="**/*.txt" />
+           <include name="**/*.ini" />
+           <include name="**/*.bat" />
+           <include name="**/*.obj" />
+         </fileset>
 
          <include name="${test}/data/**" />
 
