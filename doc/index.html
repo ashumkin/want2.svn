@@ -23,11 +23,21 @@
       developers, includimg me, were complaining about the
       unreliability of the Make build tool on all platforms. We've just
       had some problems building <a href="../dunit">DUnit</a> with
-      Make. We discussed how a build tool should be like, and we all
-      liked <a href="http://jakarta.apache.org/ant/index.html">Ant</a>,
-      the tool used in the Apache-Jakarta project, except that it was
-      too Java specific for a Delphi programmer. We decided to create
-      our own tool and name it Dante.
+      Make. </p>
+      <p>We discussed long about how a build tool should be like, and 
+      several of
+      us tough that it should be like 
+      <a href="http://jakarta.apache.org/ant/index.html">Ant</a>,
+      the tool used in the 
+      <a href="http://jakarta.apache.org">Apache-Jakarta </a>
+      project. The problem with Ant 
+      itself was that we thought it was too Java-centered to be useful
+      in a Delphi project. 
+      </p>
+      <p>A group of us decided to create
+      our own tool, and thus end our sufferings with Make. 
+      After a short discussion, we decided that its name 
+      would be Dante, and we went on to work.
     </p>
     <h3>
       Start
@@ -43,56 +53,71 @@
       Week One
     </h3>
     <p>
-      Within a week I had incorporated my SAX/XML library and Dante was
-      able to read build.xml scripts, much like the ones used by <a
+      Within a week I had incorporated my SAX/XML (soon to be published here) 
+      library and Dante was
+      able to read scripts in XML, much like the ones used by <a
       href="http://jakarta.apache.org/ant/index.html">Ant</a>. That
       week Chris and I wrote Excec and Dcc (Delphi compile) tasks for
-      Dante, and Dante became able to build itself.
+      Dante, and Dante became able to build itself. Chris wrote a Versioninfo
+      task for Dante that would automatically increment the version number
+      upon each build.
     </p>
     <h3>
       Week Two
     </h3>
     <p>
-      By the end of week two I had incorporated a file path library
-      that could handle Ant-like wildcards. The library let me
+      By the end of week two I had developed a file path library
+      that could handle Ant-like wildcards in a (hopefully) platform
+      independent way. The library let me
       implement Copy, Move, Delete, and Touch tasks that worked very
-      much like Ant's. I added third party libraries for handling .ZIP
-      files and was able to implement the Zip task.
+      much like Ant's. I added 
+      <a href="http://www.tu-chemnitz.de/~nomssi/paszlib.html">Nomssi Nzali's port</a>
+      of 
+      <a href="http://www.info-zip.org/pub/infozip/zlib/">ZLib 1.1.2</a>
+      to the mix,
+      and implemented the Zip task with it.
     </p>
     <h3>
       Week Three
     </h3>
     <p>
-      By week three Chris had incorporated an thorough set of unit and
+      By week three Chris had incorporated a thorough set of unit and
       external tests using the <a href="../dunit/">DUnit</a> testing
-      framework, and the few bugs were jumping out the door.
+      framework, and the few bugs present were jumping out the door. Chris's 
+      design enabled us to create external tests without writing a single
+      line of code.
     </p>
     <p>
-      That week Mike Taylor started working on refactorings that would
+      That week Mike Taylor (mtaylor) started providing feedback
+      on refactorings 
+      that would
       make the source code more efficient and clearer.
     </p>
     <p>
       By the end of the week Dante was able to build DUnit using a
-      fairly complex build script.
+      fairly complex build script (see below).
     </p>
     <h3>
       Dante
     </h3>
     <p>
-      A copy of the <a href="dunit_build.xml">build.xml</a>. script
-      used to build DUnit distributions with Dante can be found <a
+      A copy of the <a href="dunit_build.xml">build.xml</a> script
+      used to build 
+      <a href="../dunit">DUnit</a>
+      distributions with Dante can be found <a
       href="dunit_build.xml">here</a>.
     </p>
     <p>
-      You can also visit <a href="http://dante.sourceforge.net">Dante's
-      Home Page</a> and <a href=
-      "http://sourceforge.net/projects/dante">Dante's Project Page</a>
+      You can also visit the <a href="http://dante.sourceforge.net">Dante's
+      Home Page</a> (under construction) and 
+      the <a href=
+      "http://sourceforge.net/projects/dante">Dante Project's Page</a>
       at <a href="http://sourceforge.net">Source Forge</a>.
     </p>
     <hr>
     <!--#include file="../software/navbar.html" -->
-    <!-- \$Id$ -->
     <!--#include file="../copyright.html" -->
+    <pre>$Id$</pre>
   </body>
 </html>
 
