@@ -255,7 +255,7 @@ begin
     if (Child.ExitCode <> 0) and FailOnError then
     begin
       Log(vlVerbose, 'Exit code not zero');
-      raise ETaskFailure.Create('failed');
+      TaskFailure('failed');
     end;
   finally
     Child.Free;
@@ -338,11 +338,9 @@ end;
 
 function TChildProcess.ExitCode: Cardinal;
 begin
-  if WaitForSingleObject(hChild, INFINITE) = WAIT_OBJECT_0 then
-  begin
-    if not GetExitCodeProcess(hChild, Result) then
-      RaiseLastSystemError
-  end;
+  if (WaitForSingleObject(hChild, INFINITE) <> WAIT_OBJECT_0) 
+  or not GetExitCodeProcess(hChild, Result) then
+      RaiseLastSystemError;
 end;
 
 function TChildProcess.Launch(const CmdLine: string; hInput, hOutput, hError: THandle): THandle;
@@ -355,7 +353,7 @@ begin
   FillChar(StartupInfo, SizeOf(StartupInfo), #0);
   StartupInfo.cb := SizeOf(StartupInfo);
   StartupInfo.dwFlags := STARTF_USESTDHANDLES or STARTF_USESHOWWINDOW;
-  StartupInfo.wShowWindow := SW_HIDE;
+  StartupInfo.wShowWindow := SW_SHOW;
 
   StartupInfo.hStdInput   := hInput;
   StartupInfo.hStdOutput  := hOutput;
