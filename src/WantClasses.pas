@@ -924,9 +924,9 @@ begin
     begin
       if Kind in [tkString, tkLString, tkWString] then
       begin
-        if (Name = 'TPath')
-        and not WildPaths.IsSystemIndependentPath(Value) then
-          WantError(Format('expected system-independent path but got: "%s"', [Value]) );
+        if (Name = 'TPath') then
+          if not WildPaths.IsSystemIndependentPath(Value) then
+            Value := WildPaths.ToPath(Value);
         SetStrProp(Self, PropInfo, Value);
       end
       else if Kind in [tkInteger] then

@@ -12,9 +12,9 @@ library WantAcceptTestLib;
 uses
   TestFramework,
   Win32Implementations in '..\src\win32\Win32Implementations.pas',
-  RunnerTests,
   ExternalTests in 'ExternalTests.pas',
-  ConsoleScriptRunner in '..\src\win32\ConsoleScriptRunner.pas';
+  ConsoleScriptRunner in '..\src\win32\ConsoleScriptRunner.pas',
+  RunnerTests in 'RunnerTests.pas';
 
 {$R *.RES}
 

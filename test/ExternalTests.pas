@@ -27,6 +27,7 @@ uses
   WildPaths,
   WantClasses,
   ScriptRunner,
+  ConsoleScriptRunner,
   ZipStreams,
 
   TestFramework;
@@ -210,10 +211,10 @@ procedure TExternalTest.DoTest;
 var
   Runner: TScriptRunner;
 begin
-  {$IFNDEF USE_TEXT_RUNNER}
+  {$IFDEF USE_TEXT_RUNNER}
   Runner := TScriptRunner.Create;
   {$ELSE}
-  Runner := TConsoleScriptRunner.Create;
+  Runner := TConsoleScriptRunner.Create;   
   {$ENDIF}
   try
     Runner.Build(PathConcat(SetupPath, BuildFileName), vlVerbose);

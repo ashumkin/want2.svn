@@ -37,7 +37,6 @@ uses
   TextTestRunner,
   TestFramework,
   RunnerTests,
-  VssTasksTest,
   WantClassesTest in 'WantClassesTest.pas',
   FileSetTests in 'FileSetTests.pas',
   ExecTasksTest in 'ExecTasksTest.pas',

@@ -72,15 +72,19 @@ end;
 
 procedure TDUnitTask.AddError(error: TTestFailure);
 begin
-  Log(vlErrors,  '! "%s" at %s', [error.ThrownExceptionMessage, error.LocationInfo]);
+  Log(vlErrors,  '! %s: "%s" at %s', [ error.FailedTest.Name,
+                                       error.ThrownExceptionMessage,
+                                       PointerToLocationInfo(error.ThrownExceptionAddress)
+                                       ]);
 end;
 
 procedure TDUnitTask.AddFailure(failure: TTestFailure);
 begin
-  Log(vlWarnings, '- "%s" at %s', [ failure.ThrownExceptionMessage,
-                                    PointerToLocationInfo(failure.ThrownExceptionAddress)
-                                    //PointerToAddressInfo(failure.ThrownExceptionAddress)
-                                    ]);
+  Log(vlWarnings, '- %s: "%s" at %s', [ failure.FailedTest.Name,
+                                        failure.ThrownExceptionMessage,
+                                        PointerToLocationInfo(failure.ThrownExceptionAddress)
+                                        //PointerToAddressInfo(failure.ThrownExceptionAddress)
+                                        ]);
 end;
 
 procedure TDUnitTask.AddSuccess(test: ITest);

@@ -49,14 +49,15 @@ begin
     begin
       basedir := 'src';
       source  := 'Want.dpr';
-      exeoutput := '/bin/test';
-      dcuoutput := '/tmp';
+      exeoutput := ToPath(Evaluate('%{temp}/want.test'));
+      dcuoutput := ToPath(Evaluate('%{temp}/want.test'));
       build   := true;
       quiet   := true;
       uselibrarypath := false;
 
       AddUnitPath('../lib/**');
       AddUnitPath('../src/**');
+      AddResourcePath('../bin');
     end;
   end;
 end;

@@ -27,15 +27,8 @@ uses
 type
   TScriptRunner = class
   protected
-    FBuildFile   :string;
-    FTargets     :TStringArray;
     FListener    :TBuildListener;
     FListenerCreated :boolean;
-
-    procedure ParseCommandLine(Project :TProject);  virtual;
-
-    function  ParseArgument(Project :TProject; var N :Integer; Argument:string) :boolean;  virtual;
-    function  ParseOption(  Project :TProject; var N :Integer; Switch :string) :boolean;   virtual;
 
     procedure DoCreateListener;  virtual;
     procedure CreateListener;    virtual;
@@ -56,8 +49,6 @@ type
     procedure Build(BuildFile: TPath; Targets :TStringArray; Level :TLogLevel = vlNormal); overload;
     procedure Build(BuildFile: TPath; Target  :string;       Level :TLogLevel = vlNormal); overload;
     procedure Build(BuildFile: TPath; Level   :TLogLevel = vlNormal); overload;
-
-    procedure Execute;    virtual;
 
     procedure Log(Level: TLogLevel; Msg: string);
 
@@ -152,23 +143,6 @@ begin
   SetLength(T, 1);
   T[0] := Target;
   Build(BuildFile, T, Level);
-end;
-
-procedure TScriptRunner.Execute;
-var
-  Project :TProject;
-begin
-  Project := TProject.Create;
-  try
-    Project.Listener := Listener;
-    ParseCommandLine(Project);
-    if FBuildFile = '' then
-      FBuildFile := FindBuildFile(True);
-    LoadProject(Project, FBuildFile);
-    BuildProject(Project, FTargets);
-  finally
-    FreeAndNil(Project);
-  end;
 end;
 
 procedure TScriptRunner.BuildProject(Project: TProject; Targets: TStringArray);
@@ -371,56 +345,6 @@ begin
      Result := FindBuildFile(AntBuildFileName, SearchUp);
   if not PathIsFile(Result) then
      Result := DefaultBuildFileName;
-end;
-
-
-
-procedure TScriptRunner.ParseCommandLine(Project :TProject);
-var
-  p:         Integer;
-  Param:     string;
-begin
-  try
-    p := 1;
-    while p <= ParamCount do
-    begin
-      Param := ParamStr(p);
-      if Param[1] in ['-','/'] then
-      begin
-        if not ParseOption(Project, p, Copy(Param, 2, Length(Param))) then
-          WantError('Unknown commandline option: ' + Param);
-      end
-      else if not ParseArgument(Project, p, Param) then
-          WantError('Don''t know what to do with argument : ' + Param);
-      Inc(p);
-    end;
-  except
-    on e :Exception do
-    begin
-      Listener.Log(vlErrors, e.Message);
-      raise;
-    end;
-  end;
-end;
-
-
-function TScriptRunner.ParseArgument(Project :TProject; var N: Integer; Argument: string): boolean;
-begin
-  SetLength(FTargets, 1+Length(FTargets));
-  FTargets[High(FTargets)] := Argument;
-  Result := True;
-end;
-
-function TScriptRunner.ParseOption(Project :TProject; var N : Integer;  Switch: string): boolean;
-begin
-  Result := True;
-  if Switch = 'buildfile' then
-  begin
-    Inc(N);
-    FBuildFile := ToPath(ParamStr(N));
-  end
-  else
-    Result := False;
 end;
 
 

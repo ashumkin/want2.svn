@@ -17,6 +17,7 @@ uses
   WildPaths,
   WantClasses,
   ScriptRunner,
+  ConsoleScriptRunner,
   WantClassesTest,
   StandardElements,
   StandardTasks;

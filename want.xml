@@ -106,8 +106,8 @@ See http://www.suigeneris.org/want/ for details.
       <debug     value="true" />
       <console   value="true" />
 
-      <define name="USE_TEXT_RUNNER" />
-      <define name="USE_JEDI_JCL" />
+      <define name="USE_TEXT_RUNNER" unless="debug" />
+
       <unitpath     refid="sources" >
         <include name="${test}/**" />
         <exclude  name="${test}/data" />
@@ -129,8 +129,7 @@ See http://www.suigeneris.org/want/ for details.
       <debug     value="true" />
       <console   value="true" />
 
-      <define name="USE_TEXT_RUNNER" />
-      <define name="NO_RUN_VSS_TESTS" unless="include.vss" />
+      <define name="USE_TEXT_RUNNER" unless="debug" />
 
       <unitpath     refid="sources" >
         <include name="${test}/**" />

@@ -18,6 +18,7 @@ uses
 
   CRT32,
 
+  WildPaths,
   WantClasses,
   WantResources,
   ConsoleListener,
@@ -29,13 +30,20 @@ const
 type
   TConsoleScriptRunner = class(TScriptRunner)
   protected
-    function  ParseOption(  Project :TProject; var N :Integer; Switch :string)  :boolean;  override;
+    FBuildFile   :string;
+    FTargets     :TStringArray;
+
+    procedure ParseCommandLine(Project :TProject);  virtual;
+    function  ParseArgument(Project :TProject; var N :Integer; Argument:string) :boolean;  virtual;
+    function  ParseOption(  Project :TProject; var N :Integer; Switch :string)  :boolean;  virtual;
 
     function  GetUseColor :boolean;
     procedure SetUseColor(Value :boolean);
   public
     procedure CreateListener; override;
     property  UseColor :Boolean read GetUseColor write SetUseColor;
+
+    procedure Execute;    virtual;
   end;
 
 implementation
@@ -88,6 +96,60 @@ begin
 end;
 
 
+procedure TConsoleScriptRunner.Execute;
+var
+  Project :TProject;
+begin
+  Project := TProject.Create;
+  try
+    Project.Listener := Listener;
+    ParseCommandLine(Project);
+    if FBuildFile = '' then
+      FBuildFile := FindBuildFile(True);
+    LoadProject(Project, FBuildFile);
+    BuildProject(Project, FTargets);
+  finally
+    FreeAndNil(Project);
+  end;
+end;
+
+
+procedure TConsoleScriptRunner.ParseCommandLine(Project: TProject);
+var
+  p:         Integer;
+  Param:     string;
+begin
+  try
+    p := 1;
+    while p <= ParamCount do
+    begin
+      Param := ParamStr(p);
+      if Param[1] in ['-','/'] then
+      begin
+        if not ParseOption(Project, p, Copy(Param, 2, Length(Param))) then
+          WantError('Unknown commandline option: ' + Param);
+      end
+      else if not ParseArgument(Project, p, Param) then
+          WantError('Don''t know what to do with argument : ' + Param);
+      Inc(p);
+    end;
+  except
+    on e :Exception do
+    begin
+      Listener.Log(vlErrors, e.Message);
+      raise;
+    end;
+  end;
+end;
+
+
+function TConsoleScriptRunner.ParseArgument(Project: TProject; var N: Integer; Argument: string): boolean;
+begin
+  SetLength(FTargets, 1+Length(FTargets));
+  FTargets[High(FTargets)] := Argument;
+  Result := True;
+end;
+
 function TConsoleScriptRunner.ParseOption(Project :TProject; var N :Integer; Switch: string):boolean;
 var
   PropName:  string;
@@ -114,6 +176,11 @@ begin
   begin
     More(License);
     Halt(3);
+  end
+  else if Switch = 'buildfile' then
+  begin
+    Inc(N);
+    FBuildFile := ToPath(ParamStr(N));
   end
   else if Switch = 'verbose' then
     Listener.Level := vlVerbose
@@ -142,7 +209,7 @@ begin
     Project.SetProperty(PropName, PropValue);
   end
   else
-    Result := inherited ParseOption(Project, N, Switch);
+    Result := False;
 end;
 
 end.

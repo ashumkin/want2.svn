@@ -113,35 +113,24 @@ LRDockWidth=366
 Dockable=1
 
 [Closed Files]
-File_0=SourceModule,'C:\home\want\src\win32\ConsoleListener.pas',0,1,109,11,123,0,0
-File_1=SourceModule,'C:\home\want\src\win32\ConsoleScriptRunner.pas',0,1,1,1,1,0,0
-File_2=SourceModule,'C:\home\want\src\lib\ScriptParser.pas',0,1,148,1,158,0,0
-File_3=SourceModule,'C:\home\want\test\WantClassesTest.pas',0,1,396,1,413,0,0
-File_4=SourceModule,'C:\home\want\test\RegexpElementsTest.pas',0,1,34,14,43,0,0
-File_5=SourceModule,'C:\home\want\test\ExecTasksTest.pas',0,1,126,21,141,0,0
-File_6=SourceModule,'C:\home\want\test\DelphiTasksTest.pas',0,1,1,41,23,0,0
-File_7=SourceModule,'C:\home\want\src\ConsoleScriptRunner.pas',0,1,10,6,18,0,0
-File_8=SourceModule,'C:\home\want\src\WantClasses.pas',0,1,1062,8,1075,0,0
+File_0=SourceModule,'C:\home\want\test\FileTasksTest.pas',0,1,105,1,108,0,0
+File_1=SourceModule,'C:\home\want\test\ExternalTests.pas',0,1,22,23,30,0,0
+File_2=SourceModule,'C:\home\want\test\RunnerTests.pas',0,1,1,23,20,0,0
+File_3=SourceModule,'C:\home\want\src\tasks\ExecTasks.pas',0,1,1,1,1,0,0
+File_4=SourceModule,'c:\home\dunit\src\TestFramework.pas',0,1,1671,1,1686,0,0
+File_5=SourceModule,'C:\home\want\src\win32\Win32ChildProcesses.pas',0,1,99,21,117,0,0
+File_6=SourceModule,'C:\home\want\src\tasks\FileTasks.pas',0,1,36,9,57,0,0
+File_7=SourceModule,'C:\home\want\test\ExecTasksTest.pas',0,1,154,22,183,0,0
 
 [Modules]
-Module0=C:\home\want\test\ExternalTests.pas
-Module1=C:\home\want\test\RunnerTests.pas
-Module2=C:\home\want\src\BuildListeners.pas
-Module3=C:\home\want\src\ScriptRunner.pas
+Module0=C:\home\want\src\win32\ConsoleScriptRunner.pas
+Module1=C:\home\want\src\ScriptRunner.pas
+Module2=C:\home\want\src\lib\WildPaths.pas
+Module3=C:\home\want\src\want.dpr
 Count=4
 EditWindowCount=1
 
-[C:\home\want\test\ExternalTests.pas]
-ModuleType=SourceModule
-FormState=0
-FormOnTop=0
-
-[C:\home\want\test\RunnerTests.pas]
-ModuleType=SourceModule
-FormState=0
-FormOnTop=0
-
-[C:\home\want\src\BuildListeners.pas]
+[C:\home\want\src\win32\ConsoleScriptRunner.pas]
 ModuleType=SourceModule
 FormState=0
 FormOnTop=0
@@ -151,11 +140,17 @@ ModuleType=SourceModule
 FormState=0
 FormOnTop=0
 
-[C:\home\want\src\want.dpr]
+[C:\home\want\src\lib\WildPaths.pas]
+ModuleType=SourceModule
 FormState=0
 FormOnTop=0
 
-[C:\home\want\test\WantTestLib.dpr]
+[C:\home\want\src\want.dpr]
+ModuleType=SourceModule
+FormState=0
+FormOnTop=0
+
+[C:\home\want\test\WantAcceptTestLib.dpr]
 FormState=0
 FormOnTop=0
 
@@ -163,7 +158,7 @@ FormOnTop=0
 FormState=0
 FormOnTop=0
 
-[C:\home\want\test\WantAcceptTestLib.dpr]
+[C:\home\want\test\WantTestLib.dpr]
 FormState=0
 FormOnTop=0
 
@@ -191,7 +186,7 @@ BottomPanelSize=169
 BottomPanelClients=MessageView@EditWindow0,LocalVarsWindow
 BottomPanelData=00000400010000000B0000004D65737361676556696577A9000000000000000100040000000000000100000000A90000000F0000004C6F63616C5661727357696E646F77FFFFFFFF
 ViewCount=4
-CurrentView=3
+CurrentView=2
 View0=0
 View1=1
 View2=2
@@ -230,31 +225,31 @@ LRDockWidth=443
 Dockable=1
 
 [View0]
-Module=C:\home\want\src\ScriptRunner.pas
+Module=C:\home\want\src\lib\WildPaths.pas
 CursorX=1
-CursorY=1
-TopLine=1
+CursorY=337
+TopLine=322
 LeftCol=1
 
 [View1]
-Module=C:\home\want\src\BuildListeners.pas
+Module=C:\home\want\src\ScriptRunner.pas
 CursorX=1
-CursorY=92
-TopLine=77
+CursorY=30
+TopLine=28
 LeftCol=1
 
 [View2]
-Module=C:\home\want\test\RunnerTests.pas
+Module=C:\home\want\src\win32\ConsoleScriptRunner.pas
 CursorX=1
-CursorY=94
-TopLine=70
+CursorY=103
+TopLine=99
 LeftCol=1
 
 [View3]
-Module=C:\home\want\test\ExternalTests.pas
+Module=C:\home\want\src\want.dpr
 CursorX=1
-CursorY=206
-TopLine=191
+CursorY=55
+TopLine=55
 LeftCol=1
 
 [DockHosts]
@@ -269,9 +264,8 @@ Watch3='Matches[i]',256,0,18,1
 Watch4='FIncludes[i]',256,0,18,1
 
 [Breakpoints]
-Count=2
-Breakpoint0='C:\home\want\src\want.dpr',66,'',0,1
-Breakpoint1='C:\home\want\src\win32\ConsoleScriptRunner.pas',119,'',0,1
+Count=1
+Breakpoint0='C:\home\want\src\tasks\ExecTasks.pas',213,'',0,1
 
 [AddressBreakpoints]
 Count=0

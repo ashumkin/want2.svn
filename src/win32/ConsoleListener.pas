@@ -109,33 +109,27 @@ end;
 procedure TConsoleListener.LogMessage(Prefix, Msg :string; Level: TLogLevel);
 begin
   LogPrefix(Prefix, Level);
-  if IsConsole then
-  begin
-    if UseColor then CRT32.TextColor(MsgColorMap[Level]);
-    try
-      Write(Msg);
+  if UseColor then CRT32.TextColor(MsgColorMap[Level]);
+  try
+    Write(Msg);
+    ClrEOL;
+    WriteLn;
+  finally
+    if UseColor then begin
+      CRT32.Restore;
       ClrEOL;
-      WriteLn;
-    finally
-      if UseColor then begin
-        CRT32.Restore;
-        ClrEOL;
-      end;
     end;
   end;
 end;
 
 procedure TConsoleListener.LogPrefix(Prefix :string; Level: TLogLevel);
 begin
-  if IsConsole then
-  begin
-    if UseColor then CRT32.TextColor(PrefixColorMap[Level]);
-    try
-      Write(Prefix);
-      ClrEOL;
-    finally
-      if UseColor then CRT32.Restore;
-    end;
+  if UseColor then CRT32.TextColor(PrefixColorMap[Level]);
+  try
+    Write(Prefix);
+    ClrEOL;
+  finally
+    if UseColor then CRT32.Restore;
   end;
 end;
 

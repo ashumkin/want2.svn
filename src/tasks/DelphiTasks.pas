@@ -61,7 +61,7 @@ type
 
     FVersionFound :string;
 
-    procedure Log(Level: TLogLevel = vlNormal; Msg: string = ''); overload; override;
+    procedure HandleOutputLine(Line :string); override;
 
     function RootForVersion(version: string): string;
     function FindDelphiVersion(ver :string) :string;
@@ -259,24 +259,29 @@ begin
   Result := Format('%s\%s', [DelphiRegRoot, version]);
 end;
 
-procedure TCustomDelphiTask.Log( Level: TLogLevel; Msg: string);
+
+procedure TCustomDelphiTask.HandleOutputLine(Line: string);
 begin
  //if not XPerlre.regex.Match('^(.*\([0-9]+\)) *([A-Z][a-z]+:.*$)', Msg) then
- if (Pos(':', Msg) = 0)
- or not XPerlre.regex.Match('^(.*)(\([0-9]+\)) *([HWEF][a-z]+:.*)$', Msg) then
-   inherited Log(Level, Msg)
+ if (Pos(':', Line) = 0)
+ or not XPerlre.regex.Match('^(.*)(\([0-9]+\)) *([HWEF][a-z]+:.*)$', Line) then
+   inherited HandleOutputLine(Line)
  else
  begin
-   if (Pos('Fatal', Msg) <> 0) or  (Pos('Error', Msg) <> 0) then
-     Level := vlErrors
+   with regex do
+     Line := ToRelativePath(ToPath(SubExp[1].Text)) + ' ' + SubExp[2].Text + #13 + SubExp[3].Text;
+   if (Pos('Fatal', Line) <> 0) or  (Pos('Error', Line) <> 0) then
+     TaskFailure(Line)
    else
-     Level := vlWarnings;
+     Log(vlWarnings, Line);
 
+    (*
    with regex do
    begin
      inherited Log(Level, ToRelativePath(ToPath(SubExp[1].Text)) + ' ' + SubExp[2].Text);
      inherited Log(Level, regex.SubExp[3].Text);
    end;
+   *)
  end;
 end;
 

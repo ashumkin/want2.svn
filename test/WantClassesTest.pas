@@ -146,7 +146,11 @@ procedure TProjectBaseCase.RunProject(target: string);
 var
   Runner :TScriptRunner;
 begin
+  {$IFDEF USE_TEXT_RUNNER}
+  Runner := TScriptRunner.Create;
+  {$ELSE}
   Runner := TConsoleScriptRunner.Create;
+  {$ENDIF}
   try
     Runner.BuildProject(FProject, target);
   finally
@@ -438,15 +442,9 @@ const
   +#10'</project>'
   +'';
 begin
-  try
-    TScriptParser.ParseText(FProject, build_xml);
-    RunProject;
-    fail('expected exception about invalid path')
-  except
-    on e :EWantParseException do
-    begin
-    end;
-  end;
+  TScriptParser.ParseText(FProject, build_xml);
+  RunProject;
+  CheckEquals('/c:/awindows/path', (FProject.Targets[0].Tasks[0] as TWithPathTask).path);
 end;
 
 
