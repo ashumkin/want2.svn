@@ -84,11 +84,11 @@ begin
      this fails -- should it? I'm not up on DOM/SAX reqs                 }
     '  <property name="test" value="sample" />'                        + CR +
     '  <target name="main">'                                           + CR +
-    '    <shell executable="mkdir ' + FNewDir + '" />'                 + CR +
+    '    <shell executable="mkdir" arguments="' + FNewDir + '" />'     + CR +
     '    <mkdir dir="' + ToPath(FCopyDir) + '" />'                     + CR +
-    '    <shell executable="copy '
+    '    <shell executable="copy" arguments="'
              + FBuildFileName + ' ' + FCopyOfFileName + '" />'         + CR +
-    '    <shell executable="copy '
+    '    <shell executable="copy" arguments="'
              + FBuildFileName + ' ' + FNewCopyOfFileName + '" />'      + CR +
     '    <copy todir="' + ToPath(FCopyDir) + '">'                      + CR +
     '      <fileset dir="' + ToPath(FNewDir) + '">'                    + CR +
@@ -121,9 +121,17 @@ begin
 end;
 
 procedure TTestDanteMain.TestDanteMain;
+var
+  CurDir: string;
 begin
+  CurDir := GetCurrentDir;
   MakeTestBuildFile;
   FDante.DoBuild(FBuildFileName);
+
+  { leaving CurrentDir is important for other tests depend on it, because
+    TProject.FRootDir defaults to CurrentDir. }
+  CheckEquals(CurDir, GetCurrentDir, 'current dir not left intact');
+
   Check(FileExists(FCopyOfFileName), 'copy doesn''t exist');
   Check(not DirectoryExists(FNewDir), 'directory exists');
   Check(FileExists(FCopyDir + '\copyofbuild.xml'), 'copy doesn''t exist');
