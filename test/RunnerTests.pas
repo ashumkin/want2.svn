@@ -40,7 +40,8 @@ uses
   WildPaths,
   DanteMain,
   DanteTestUtil,
-  DanteClassesTest;
+  DanteClassesTest,
+  StandardTasks;
 
 type
   TTestDanteMain = class(TTestDirCase)
@@ -51,6 +52,7 @@ type
     FDante: TDante;
     FNewCopyOfFileName: string;
     FNewDir: string;
+    FCopyDir: string;
   protected
     procedure MakeTestBuildFile;
   public
@@ -83,10 +85,16 @@ begin
     '  <property name="test" value="sample" />'                        + CR +
     '  <target name="main">'                                           + CR +
     '    <shell executable="mkdir ' + FNewDir + '" />'                 + CR +
+    '    <mkdir dir="' + ToPath(FCopyDir) + '" />'                     + CR +
     '    <shell executable="copy '
              + FBuildFileName + ' ' + FCopyOfFileName + '" />'         + CR +
     '    <shell executable="copy '
              + FBuildFileName + ' ' + FNewCopyOfFileName + '" />'      + CR +
+    '    <copy todir="' + ToPath(FCopyDir) + '">'                      + CR +
+    '      <fileset dir="' + ToPath(FNewDir) + '">'                    + CR +
+    '        <include name="**/*.*" />'                                + CR +
+    '      </fileset>'                                                 + CR +
+    '    </copy>'                                                      + CR +
     '    <delete dir="' + ToPath(FNewDir) + '" />'                     + CR +
     '  </target>'                                                      + CR +
     '</project>'                                                       + CR;
@@ -103,6 +111,7 @@ begin
   FCopyOfFileName := FTestDir + '\copyofbuild.xml';
   FNewDir := FTestDir + '\new';
   FNewCopyOfFileName := FNewDir + '\copyofbuild.xml';
+  FCopyDir := FTestDir + '\copy';
 end;
 
 procedure TTestDanteMain.TearDown;
@@ -117,6 +126,7 @@ begin
   FDante.DoBuild(FBuildFileName);
   Check(FileExists(FCopyOfFileName), 'copy doesn''t exist');
   Check(not DirectoryExists(FNewDir), 'directory exists');
+  Check(FileExists(FCopyDir + '\copyofbuild.xml'), 'copy doesn''t exist');
 end;
 
 initialization
