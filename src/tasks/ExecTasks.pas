@@ -34,6 +34,7 @@ unit ExecTasks;
 
 interface
 uses
+  WildPaths,
   DanteClasses,
 
   JclBase,
@@ -286,7 +287,7 @@ end;
 
 function TChildProcess.EOF: boolean;
 begin
-  Result := (hOutputRead = 0);
+  Result := (hOutputRead = 0) and (FLine = '');
 end;
 
 function TChildProcess.ExitCode: Cardinal;
