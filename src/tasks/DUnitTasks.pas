@@ -58,7 +58,10 @@ function TDUnitTask.QueryInterface(const IID: TGUID; out Obj): HResult;
 const
   E_NOINTERFACE = $80004002;
 begin
-  if GetInterface(IID, Obj) then Result := 0 else Result := E_NOINTERFACE;
+  if GetInterface(IID, Obj) then
+    Result := 0
+  else
+    Result := HResult(E_NOINTERFACE);
 end;
 
 function TDUnitTask._AddRef: Integer;
