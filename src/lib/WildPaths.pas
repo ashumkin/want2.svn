@@ -730,6 +730,7 @@ var
   i      : Integer;
   Matches: TPaths;
   NewBase: TPath;
+  NewFile: string;
 begin
   BasePath := ToPath(BasePath);
   Matches := nil;
@@ -753,7 +754,13 @@ begin
   begin // add files (works for '**' too)
     Matches := FindPaths(Patterns[Index], NewBase, IncludeAttr, ExcludeAttr);
     for i := Low(Matches) to High(Matches) do
-      Files.Add(PathConcat(NewBase, Matches[i]))
+    begin
+      NewFile := PathConcat(NewBase, Matches[i]);
+      if Files.IndexOf(NewFile) < 0 then
+      begin
+        Files.Add(NewFile);
+      end;
+    end;
   end;
   // handle wildcards
   if Patterns[Index] = '**' then
