@@ -129,8 +129,11 @@ function SplitPath(Path: TPath): TPaths;
 
 function  MovePath(const Path: TPath; const FromBase: TPath; const ToBase: TPath = ''): TPath;
 function  MovePaths(const Paths: TPaths; const FromBase: TPath; const ToBase: TPath = ''): TPaths;
+
 function  ToRelativePath(const Path, BasePath: TPath):TPath;
 function  ToRelativePaths(const Paths: TPaths; const BasePath: TPath):TPaths; overload;
+function  ToRelativePaths(Paths: TStrings; const BasePath: TPath):TPaths; overload;
+
 function  PathIsAbsolute(const Path: TPath): boolean;
 procedure ForceRelativePath(var Path, BasePath: TPath);
 
@@ -178,8 +181,8 @@ procedure MoveFiles(const Files: TPaths; const FromPath, ToPath: TPath);  overlo
 procedure MoveFiles(const Pattern: TPattern; const FromPath, ToPath: TPath); overload;
 
 procedure DeleteFile(const Path: TPath; DeleteReadOnly: boolean = false);
-procedure DeleteFiles(const Files: TPaths);  overload;
-procedure DeleteFiles(const Pattern: TPath; const BasePath: TPath= '');  overload;
+procedure DeleteFiles(const Files: TPaths; DeleteReadOnly: boolean = false);  overload;
+procedure DeleteFiles(const Pattern: TPath; const BasePath: TPath= ''; DeleteReadOnly: boolean = false);  overload;
 
 procedure TouchFile(const Path: TPath; When: TDateTime = 0); overload;
 procedure TouchFile(const Path: TPath; When: string); overload;
@@ -494,9 +497,7 @@ begin
 
   P := nil;
   B := nil;
-  if not PathIsAbsolute(Path)
-  or not PathIsAbsolute(BasePath)
-  or (PathDrive(Path) <> PathDrive(BasePath))
+  if (PathDrive(Path) <> PathDrive(BasePath))
   then
     Result := Path
   else
@@ -515,7 +516,7 @@ begin
     end;
 
     if j > High(B) then
-      Result := '.'
+      Result := ''
     else
       while  j <= High(B) do
       begin
@@ -536,6 +537,14 @@ end;
 function  ToRelativePaths(const Paths: TPaths; const BasePath: TPath):TPaths;
 begin
   Result := MovePaths(Paths, BasePath, '');
+end;
+
+function  ToRelativePaths(Paths: TStrings; const BasePath: TPath):TPaths;
+var
+  i :Integer;
+begin
+  for i := 0 to Paths.Count-1 do
+    Paths[i] := ToRelativePath(Paths[i], BasePath);
 end;
 
 function  PathIsAbsolute(const Path: TPath): boolean;
@@ -839,11 +848,8 @@ begin
                             MOVEFILE_REPLACE_EXISTING or
                             MOVEFILE_WRITE_THROUGH)  -- Chrismo *)
 
-  { will not overwrite existing files }
-  if not Windows.MoveFile(PChar(ToSystemPath(Src)), PChar(ToSystemPath(Dst)))
-  then
-    raise EFileOpException.Create('Error moving ' + ToSystemPath(Src) + ': ' +
-      SysErrorMessage(GetLastError));
+  WildPaths.CopyFile(Src, Dst);
+  WildPaths.DeleteFile(Src);
 end;
 
 procedure MoveFiles(const Pattern: TPattern; const FromPath, ToPath: TPath);
@@ -887,21 +893,21 @@ begin
     SysUtils.RemoveDir(ToSystemPath(Path));
 end;
 
-procedure DeleteFiles(const Pattern: TPath; const BasePath: TPath);
+procedure DeleteFiles(const Pattern: TPath; const BasePath: TPath; DeleteReadOnly :boolean);
 begin
-  DeleteFiles(Wild(Pattern, BasePath));
+  DeleteFiles(Wild(Pattern, BasePath), DeleteReadOnly);
 end;
 
-procedure DeleteFiles(const Files: TPaths);
+procedure DeleteFiles(const Files: TPaths; DeleteReadOnly: boolean = false);
 var
   f: Integer;
 begin
   for f := Low(Files) to High(Files) do
     if not PathIsDir(Files[f]) then
-      DeleteFile(Files[f]);
+      DeleteFile(Files[f], DeleteReadOnly);
   for f := Low(Files) to High(Files) do
     if PathIsDir(Files[f]) then
-      DeleteFile(Files[f]);
+      DeleteFile(Files[f], DeleteReadOnly);
 end;
 
 procedure TouchFile(const Path: TPath; When: string);

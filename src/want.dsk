@@ -91,14 +91,25 @@ File_6=SourceModule,'c:\lib\pascal\jcl\source\JclFileUtils.pas',0,1,1188,1,1192,
 File_7=SourceModule,'C:\home\want\src\tasks\EditTasks.pas',0,1,239,1,261,0,0
 
 [Modules]
-Module0=C:\home\want\src\tasks\DUnitTasks.pas
-Module1=c:\home\dunit\src\TestFramework.pas
-Module2=C:\home\want\src\elements\Attributes.pas
-Module3=C:\home\want\src\WantClasses.pas
-Module4=C:\home\want\src\tasks\DelphiTasks.pas
-Module5=C:\home\want\src\want.dpr
-Count=6
+Module0=C:\home\want\src\want.dpr
+Module1=C:\home\want\src\tasks\StandardTasks.pas
+Module2=C:\home\want\src\tasks\DUnitTasks.pas
+Module3=c:\home\dunit\src\TestFramework.pas
+Module4=C:\home\want\src\elements\Attributes.pas
+Module5=C:\home\want\src\WantClasses.pas
+Module6=C:\home\want\src\tasks\DelphiTasks.pas
+Count=7
 EditWindowCount=1
+
+[C:\home\want\src\want.dpr]
+ModuleType=SourceModule
+FormState=0
+FormOnTop=0
+
+[C:\home\want\src\tasks\StandardTasks.pas]
+ModuleType=SourceModule
+FormState=0
+FormOnTop=0
 
 [C:\home\want\src\tasks\DUnitTasks.pas]
 ModuleType=SourceModule
@@ -121,11 +132,6 @@ FormState=0
 FormOnTop=0
 
 [C:\home\want\src\tasks\DelphiTasks.pas]
-ModuleType=SourceModule
-FormState=0
-FormOnTop=0
-
-[C:\home\want\src\want.dpr]
 ModuleType=SourceModule
 FormState=0
 FormOnTop=0
@@ -155,14 +161,15 @@ RightPanelSize=0
 BottomPanelSize=0
 BottomPanelClients=MessageView@EditWindow0
 BottomPanelData=00000400010000000B0000004D657373616765566965770000000000000000000000000000000000FFFFFFFF
-ViewCount=6
-CurrentView=2
+ViewCount=7
+CurrentView=5
 View0=0
 View1=1
 View2=2
 View3=3
 View4=4
 View5=5
+View6=6
 
 [CodeExplorer@EditWindow0]
 Create=1
@@ -218,20 +225,27 @@ TopLine=66
 LeftCol=1
 
 [View3]
+Module=C:\home\want\src\tasks\StandardTasks.pas
+CursorX=1
+CursorY=20
+TopLine=1
+LeftCol=1
+
+[View4]
 Module=c:\home\dunit\src\TestFramework.pas
 CursorX=14
 CursorY=1221
 TopLine=1208
 LeftCol=1
 
-[View4]
+[View5]
 Module=C:\home\want\src\want.dpr
-CursorX=54
-CursorY=67
-TopLine=63
+CursorX=1
+CursorY=54
+TopLine=23
 LeftCol=1
 
-[View5]
+[View6]
 Module=C:\home\want\src\tasks\DelphiTasks.pas
 CursorX=1
 CursorY=449
@@ -251,7 +265,7 @@ Watch4='FIncludes[i]',256,0,18,1
 
 [Breakpoints]
 Count=2
-Breakpoint0='C:\home\want\src\want.dpr',88,'',0,1
+Breakpoint0='C:\home\want\src\want.dpr',87,'',0,1
 Breakpoint1='c:\home\dunit\src\TestFramework.pas',1213,'',0,1
 
 [AddressBreakpoints]

@@ -51,7 +51,6 @@ uses
   FileTasks in 'tasks\FileTasks.pas',
   LoggerTask in 'tasks\LoggerTask.pas',
   StandardTasks in 'tasks\StandardTasks.pas',
-  VersionInfoTasks in 'tasks\VersionInfoTasks.pas',
   VssTasks in 'tasks\VssTasks.pas',
   CustomTasks in 'tasks\CustomTasks.pas',
   TimeElements in 'elements\TimeElements.pas',

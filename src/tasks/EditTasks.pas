@@ -260,7 +260,7 @@ begin
     begin
        Log(vlVerbose, '%s', [Files[f]]);
        Buffer.Clear;
-       Buffer.LoadFromFile(Files[f]);
+       Buffer.LoadFromFile(ToSystemPath(Files[f]));
        Perform
     end;
   end;
@@ -454,7 +454,7 @@ begin
      for f := High(Files) downto Low(Files) do
      begin
        Log(vlVerbose, '%s %d %s', [TagName, pos, Files[f]]);
-       S.LoadFromFile(Files[f]);
+       S.LoadFromFile(ToSystemPath(Files[f]));
        if pos >= Buffer.Count then
          Buffer.AddStrings(S)
        else

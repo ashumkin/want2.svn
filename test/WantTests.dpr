@@ -43,9 +43,9 @@ uses
   ExecTasksTest in 'ExecTasksTest.pas',
   FileTasksTest in 'FileTasksTest.pas',
   DelphiTasksTest in 'DelphiTasksTest.pas',
-  VersionInfoTasksTest in 'VersionInfoTasksTest.pas',
   WildPathsTest in 'WildPathsTest.pas',
-  RegexpElementsTest in 'RegexpElementsTest.pas';
+  RegexpElementsTest in 'RegexpElementsTest.pas',
+  ExternalTests in 'ExternalTests.pas';
 
 {$R *.RES}
 

@@ -50,21 +50,23 @@ LRDockWidth=421
 Dockable=1
 
 [Closed Files]
-File_0=SourceModule,'C:\home\want\lib\paszlib\ZLIB.PAS',0,1,9,1,38,0,0
-File_1=SourceModule,'C:\home\want\src\WantRunner.pas',0,1,1,1,1,0,0
-File_2=SourceModule,'C:\home\want\src\WantClasses.pas',0,1,1,1,1,0,0
-File_3=SourceModule,'C:\home\want\src\WantBase.pas',0,1,108,6,124,0,0
-File_4=SourceModule,'C:\home\want\src\tasks\ZipTasks.pas',0,1,1,1,1,0,0
-File_5=SourceModule,'C:\home\want\src\tasks\DelphiTasks.pas',0,1,1,1,1,0,0
-File_6=SourceModule,'C:\home\want\src\tasks\DUnitTasks.pas',0,1,1,1,1,0,0
-File_7=SourceModule,'C:\home\want\src\tasks\EchoTasks.pas',0,1,1,1,1,0,0
-File_8=SourceModule,'C:\home\want\src\tasks\EditTasks.pas',0,1,1,1,10,0,0
-File_9=SourceModule,'C:\home\want\src\tasks\ExecTasks.pas',0,1,1,1,1,0,0
+File_0=SourceModule,'c:\lib\pascal\jcl\source\JclFileUtils.pas',0,1,1754,26,1773,0,0
+File_1=SourceModule,'c:\lib\pascal\jcl\source\JclSysUtils.pas',0,1,1,1,1,0,0
+File_2=SourceModule,'C:\home\want\lib\paszlib\ZLIB.PAS',0,1,9,1,38,0,0
+File_3=SourceModule,'C:\home\want\src\WantRunner.pas',0,1,1,1,1,0,0
+File_4=SourceModule,'C:\home\want\src\WantClasses.pas',0,1,1,1,1,0,0
+File_5=SourceModule,'C:\home\want\src\WantBase.pas',0,1,108,6,124,0,0
+File_6=SourceModule,'C:\home\want\src\tasks\ZipTasks.pas',0,1,1,1,1,0,0
+File_7=SourceModule,'C:\home\want\src\tasks\DelphiTasks.pas',0,1,1,1,1,0,0
+File_8=SourceModule,'C:\home\want\src\tasks\DUnitTasks.pas',0,1,1,1,1,0,0
+File_9=SourceModule,'C:\home\want\src\tasks\EchoTasks.pas',0,1,1,1,1,0,0
 
 [Modules]
 Module0=C:\home\want\test\ExternalTests.pas
 Module1=C:\home\want\test\RunnerTests.pas
-Count=2
+Module2=C:\home\want\src\lib\WildPaths.pas
+Module3=C:\home\want\src\lib\clUtilFile.pas
+Count=4
 EditWindowCount=1
 
 [C:\home\want\test\ExternalTests.pas]
@@ -73,6 +75,16 @@ FormState=0
 FormOnTop=0
 
 [C:\home\want\test\RunnerTests.pas]
+ModuleType=SourceModule
+FormState=0
+FormOnTop=0
+
+[C:\home\want\src\lib\WildPaths.pas]
+ModuleType=SourceModule
+FormState=0
+FormOnTop=0
+
+[C:\home\want\src\lib\clUtilFile.pas]
 ModuleType=SourceModule
 FormState=0
 FormOnTop=0
@@ -93,12 +105,12 @@ Visible=1
 State=0
 Left=132
 Top=63
-Width=740
-Height=620
+Width=899
+Height=688
 MaxLeft=-1
 MaxTop=-1
-ClientWidth=732
-ClientHeight=593
+ClientWidth=891
+ClientHeight=661
 LeftPanelSize=0
 LeftPanelClients=CodeExplorer@EditWindow0
 LeftPanelData=00000400010000000C000000436F64654578706C6F7265720000000000000000000000000000000000FFFFFFFF
@@ -106,10 +118,12 @@ RightPanelSize=0
 BottomPanelSize=0
 BottomPanelClients=MessageView@EditWindow0
 BottomPanelData=00000400010000000B0000004D657373616765566965770000000000000000000000000000000000FFFFFFFF
-ViewCount=2
+ViewCount=4
 CurrentView=0
 View0=0
 View1=1
+View2=2
+View3=3
 
 [CodeExplorer@EditWindow0]
 Create=1
@@ -133,11 +147,11 @@ Visible=0
 State=0
 Left=11
 Top=0
-Width=721
+Width=880
 Height=118
 MaxLeft=-1
 MaxTop=-1
-ClientWidth=721
+ClientWidth=880
 ClientHeight=118
 TBDockHeight=118
 LRDockWidth=443
@@ -145,12 +159,26 @@ Dockable=1
 
 [View0]
 Module=C:\home\want\test\ExternalTests.pas
-CursorX=11
-CursorY=166
-TopLine=140
+CursorX=1
+CursorY=1
+TopLine=1
 LeftCol=1
 
 [View1]
+Module=C:\home\want\src\lib\WildPaths.pas
+CursorX=17
+CursorY=169
+TopLine=145
+LeftCol=1
+
+[View2]
+Module=C:\home\want\src\lib\clUtilFile.pas
+CursorX=1
+CursorY=275
+TopLine=241
+LeftCol=1
+
+[View3]
 Module=C:\home\want\test\RunnerTests.pas
 CursorX=27
 CursorY=89

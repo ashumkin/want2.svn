@@ -12,30 +12,48 @@ unit ExternalTests;
 interface
 
 uses
-  TestFramework,
-  clUtilFile,
-  ZipStreams;
+  Windows,
+  SysUtils,
+  Classes,
+  Math,
+
+  Dialogs,
+
+  JclSysUtils,
+  JclFileUtils,
+  JclMiscel,
+  JclShell,
+
+  WildPaths,
+  WantClasses,
+  ScriptRunner,
+  ZipStreams,
+
+  TestFramework;
+
 
 type
   TExternalTest = class(TTestCase)
   private
-    FRootTestDataDir: string;
-    FRootTestExeDir: string;
-    FTestExeFinalDir: string;
-    FTestExeSetupDir: string;
-    FTestPath: string;
+    FTestPath: TPath;
+    FRootPath: TPath;
+
     procedure SetTestName;
-    procedure SetTestPath(const Value: string);
+    procedure SetTestPath(const Value: TPath);
   protected
     function BuildFileName: string;
+    class function CompareFiles(AFileName, BFileName: string): boolean;
     procedure CompareActualToFinal;
     procedure DeleteSubFolders;
     function FinalFileName: string;
     function SetupFileName: string;
-    procedure Unzip(ZipFileName: string; Directory: string);
+    procedure Unzip(ZipFileName, Directory: TPath);
     procedure UnzipFinal;
     procedure UnzipSetup;
     procedure VerifyFinal;
+
+    function SetupPath :TPath;
+    function FinalPath :TPath;
   public
     constructor Create; reintroduce; overload;
     procedure Setup; override;
@@ -43,52 +61,32 @@ type
   published
     procedure DoTest;
 
-    property TestPath: string read FTestPath write SetTestPath;
+    property TestPath: TPath read FTestPath write SetTestPath;
   end;
 
 implementation
 
-uses
-  JclFileUtils,
-  Classes,
-  Math,
-  Windows,
-  SysUtils,
-  ScriptRunner,
-  JclMiscel,
-  JclShell,
-  WildPaths,
-  WantClasses;
 
 procedure LoadTests;
 var
-  Files: TStringList;
+  Files: TPaths;
   i: Integer;
   ATest: TExternalTest;
   BasePath: string;
-  SuitePath: string;
 begin
-  BasePath := '../test/data';
-  Files := TStringList.Create;
+  Files := nil;
   try
-    WildPaths.Wild(Files, '**/*.xml', BasePath);
-    for i := 0 to Files.Count - 1 do
+    BasePath := PathConcat(CurrentDir, '../test/data');
+    Files := WildPaths.Wild('**/*.xml', BasePath);
+    for i := 0 to High(Files) do
     begin
-      { TODO: it'd be nice in GUITestRunner to have the test name be the
-        last directory in the test path. Right now it's always 'build' and
-        adds an unecessary child node in the test tree. Original design
-        had unique test name in TESTNAME.xml. Now it's a unique folder
-        with a build.xml file in it. }
       ATest := TExternalTest.Create;
-      ATest.TestPath := ExtractFilePath(ToSystemPath(Files[i]));
-
-      // need to chop off last entry in path for suite path. Last entry test
-      // will make its name.
-      SuitePath := SuperPath(ToPath(ATest.TestPath));
-      RegisterTest('Acceptance Suite.External Tests.' + SuitePath, ATest);
+      ATest.TestPath := SuperPath(Files[i]);
+      RegisterTest('External Tests/' + ToRelativePath(ATest.TestPath, BasePath), ATest);
     end;
-  finally
-    Files.Free;
+  except
+    on e :Exception do
+      ShowMessage('Error loading external tests: ' + e. Message);
   end;
 end;
 
@@ -99,38 +97,94 @@ begin
   Result := 'build.xml';
 end;
 
+function TExternalTest.SetupPath: TPath;
+begin
+  Result := PathConcat(FRootPath, 'setup');
+end;
+
+function TExternalTest.FinalPath: TPath;
+begin
+  Result := PathConcat(FRootPath, 'final');
+end;
+
 procedure TExternalTest.CompareActualToFinal;
 var
-  ADirComp: TclDirectoryCompare;
-  p       : Integer;
+  SetupFiles :TStrings;
+  FinalFiles :TStrings;
+  SF,
+  FF         :TPath;
+  p :Integer;
 begin
-  ADirComp := TclDirectoryCompare.Create(FTestExeSetupDir, FTestExeFinalDir);
+  SetupFiles := TStringList.Create;
+  FinalFiles := TStringList.Create;
   try
-     with ADirComp do
+     Wild(SetupFiles, '**', SetupPath);
+     Wild(FinalFiles, '**', FinalPath);
+
+     ToRelativePaths(SetupFiles, SetupPath);
+     ToRelativePaths(FinalFiles, FinalPath);
+
+     for p := 0 to SetupFiles.Count-1 do
+       if Pos('CVS\', SetupFiles[p]) = 0 then
+         Check(FinalFiles.IndexOf(SetupFiles[p]) >= 0, Format('%s in setup but not in final', [SetupFiles[p]]));
+
+     for p := 0 to FinalFiles.Count-1 do
+       if Pos('CVS\', FinalFiles[p]) = 0 then
+         Check(SetupFiles.IndexOf(FinalFiles[p]) >= 0, Format('%s in final but not in setup', [FinalFiles[p]]));
+
+     for p := 0 to Min(SetupFiles.Count, FinalFiles.Count)-1 do
      begin
-       GetRelativeFiles;
-
-       for p := 0 to AFiles.Count-1 do
-         if Pos('CVS\', AFiles[p]) = 0 then
-           Check(BFiles.IndexOf(AFiles[p]) >= 0, Format('%s in setup but not in final', [AFiles[p]]));
-
-       for p := 0 to BFiles.Count-1 do
-         if Pos('CVS\', BFiles[p]) = 0 then
-           Check(AFiles.IndexOf(BFiles[p]) >= 0, Format('%s in final but not in setup', [BFiles[p]]));
-
-       GetFiles;
-       for p := 0 to Min(AFiles.Count, BFiles.Count)-1 do
+       if Pos('CVS', SetupFiles[p]) = 0 then
        begin
-         if Pos('CVS\', AFiles[p]) = 0 then
-         begin
-           CheckEquals(IsDirectory(AFiles[p]), IsDirectory(BFiles[p]), Format('%s files not both directories', [ExtractFileName(AFiles[p])]));;
-           if not IsDirectory(Afiles[p]) then
-             Check(TclFileCompare.CompareFiles(AFiles[p], BFiles[p]), Format('%s files are different', [ExtractFileName(AFiles[p])]));;
-           end;
-       end;
+         SF := PathConcat(SetupPath, SetupFiles[p]);
+         FF := PathConcat(FinalPath, FinalFiles[p]);
+
+         CheckEquals(   IsDirectory(SF),
+                        IsDirectory(FF),
+                        Format('%s files not both directories', [SetupFiles[p]]));;
+
+         if not PathIsDir(SF) then
+           Check(CompareFiles(SF, FF), Format('%s files are different', [SetupFiles[p]]));;
+         end;
      end;
   finally
-    ADirComp.Free;
+    SetupFiles.Free;
+    FinalFiles.Free;
+  end;
+end;
+
+class function TExternalTest.CompareFiles(AFileName, BFileName: string): boolean;
+var
+  A: TFileStream;
+  B: TFileStream;
+  ARead: Integer;
+  BRead: Integer;
+  ABuf: array[1..2048] of Char;
+  BBuf: array[1..2048] of Char;
+begin
+  { read-only, required for read-only files, and all we need here anyway }
+  FileMode := 0;
+  A := TFileStream.Create(ToSystemPath(AFileName), fmOpenRead);
+  try
+    B := TFileStream.Create(ToSystemPath(BFileName), fmOpenRead);
+    try
+      repeat
+        FillChar(ABuf, SizeOf(ABuf), #0);
+        FillChar(BBuf, SizeOf(BBuf), #0);
+
+        ARead := A.Read(ABuf, SizeOf(ABuf));
+        BRead := B.Read(BBuf, SizeOf(BBuf));
+
+        if ARead = BRead then
+          Result := (ABuf = BBuf)
+        else
+          Result := False;
+      until (not Result) or (ARead <> SizeOf(ABuf));
+    finally
+      FreeAndNil(B);
+    end;
+  finally
+    FreeAndNil(A);
   end;
 end;
 
@@ -138,18 +192,18 @@ constructor TExternalTest.Create;
 begin
   Create('DoTest');
 
-  FRootTestDataDir := '..\test\data\';
-  FRootTestExeDir := ExtractFilePath(ParamStr(0)) + 'test\';
-  FTestExeSetupDir := FRootTestExeDir + 'setup\';
-  FTestExeFinalDir := FRootTestExeDir + 'final\';
+  FRootPath := PathConcat(ToPath(ExtractFilePath(ParamStr(0))) ,'test');
 end;
 
 procedure TExternalTest.DeleteSubFolders;
 begin
   ChDir(ExtractFilePath(ParamStr(0)));
   { make sure we haven't got off on the root dir or something heinous }
-  if DirectoryExists(FRootTestExeDir + 'setup') then
-    JclFileUtils.DelTree(FRootTestExeDir);
+  if  PathIsDir(SetupPath)
+  and  PathIsDir(FinalPath)
+  and  PathIsFile(PathConcat(SetupPath, BuildFileName))
+  then
+    DeleteFiles('**', FRootPath);
 end;
 
 procedure TExternalTest.DoTest;
@@ -161,7 +215,7 @@ begin
      Runner.CreateLogManager;
   {$ENDIF}
   try
-    Runner.DoBuild(FTestExeSetupDir + BuildFileName, vlVerbose);
+    Runner.DoBuild(PathConcat(SetupPath, BuildFileName), vlVerbose);
   finally
     Runner.Free;
   end;
@@ -174,17 +228,13 @@ begin
 end;
 
 procedure TExternalTest.SetTestName;
-var
-  Paths: TPaths;
 begin
-  { FTestPath is now used in the Suite hierarchy. See LoadTests }
-  Paths := SplitPath(ToPath(FTestPath));
-  FTestName := Paths[High(Paths)];
+  FTestName := ToRelativePath(FTestPath, SuperPath(FTestPath));
 end;
 
-procedure TExternalTest.SetTestPath(const Value: string);
+procedure TExternalTest.SetTestPath(const Value: TPath);
 begin
-  FTestPath := StringReplace(Value, FRootTestDataDir, '', []);
+  FTestPath := Value;
   SetTestName;
 end;
 
@@ -205,30 +255,30 @@ begin
   inherited;
 end;
 
-procedure TExternalTest.Unzip(ZipFileName, Directory: string);
+procedure TExternalTest.Unzip(ZipFileName, Directory: TPath);
 
-  procedure DoCopy(FileName: string);
+  procedure DoCopy(FileName: TPath);
   begin
-    if not Windows.CopyFile(
-      PChar(FRootTestDataDir + FTestPath + FileName),
-      PChar(Directory + FileName), false) then
-      RaiseLastWin32Error;
+    CopyFiles(FileName, FTestPath, Directory);
   end;
 var
-  ZipLocation  :string;
-  DirLocation  :string;
+  ZipLocation  :TPath;
+  DirLocation  :TPath;
 begin
-  ChDir(ExtractFilePath(ParamStr(0)));
-  JclFileUtils.ForceDirectories(Directory);
+  ChangeDir(FRootPath);
+
+  MakeDir(Directory);
+
   DoCopy(BuildFileName);
-  ZipLocation := FRootTestDataDir + FTestPath + ZipFileName;
-  if FileExists(ZipLocation) then
-    ZipStreams.ExtractAll(ToPath(ZipLocation), ToPath(Directory))
+
+  ZipLocation := PathConcat(FTestPath, ZipFileName);
+  if PathIsFile(ZipLocation) then
+    ZipStreams.ExtractAll(ZipLocation, Directory)
   else
   begin
     DirLocation := ChangeFileExt(ZipLocation, '');
-    if DirectoryExists(DirLocation) then
-      CopyFiles('**', ToPath(DirLocation), ToPath(Directory))
+    if PathIsDir(DirLocation) then
+      CopyFiles('**', DirLocation, Directory)
     else
       Fail('Could not find ' + ZipLocation);
   end;
@@ -236,12 +286,12 @@ end;
 
 procedure TExternalTest.UnzipFinal;
 begin
-  Unzip(FinalFileName, FTestExeFinalDir);
+  Unzip(FinalFileName, FinalPath);
 end;
 
 procedure TExternalTest.UnzipSetup;
 begin
-  Unzip(SetupFileName, FTestExeSetupDir)
+  Unzip(SetupFileName, SetupPath)
 end;
 
 procedure TExternalTest.VerifyFinal;
