@@ -967,7 +967,7 @@ begin
   FileName := ToAbsolutePath(Expre);
 
   if not PathExists(FileName) or (Section = '') or (Key = '') then
-    Result := ''
+    Result := Def
   else
     with TIniFile.Create(ToSystemPath(FileName)) do
     try
