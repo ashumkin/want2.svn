@@ -103,7 +103,7 @@ See http://www.suigeneris.org/want/ for details.
       <debug     value="true" />
       <console   value="true" />
 
-      <longstrings value="true" />
+      <hugestrings value="true" />
 
       <define name="USE_JEDI_JCL" />
       <define name="DUNIT_DLL" />

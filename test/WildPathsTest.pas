@@ -60,7 +60,7 @@ begin
 
   Base := '/SomeRoot/subdir/src';
   Path := '/SomeRoot';
-  CheckEquals('../../', WildPaths.ToRelativePath(Path, Base),
+  CheckEquals('../..', WildPaths.ToRelativePath(Path, Base),
     'ToRelativePath - Path parent of Base');
 
   Path := '/d:/dev/Borland/Delphi5/bin/dcc32.exe';

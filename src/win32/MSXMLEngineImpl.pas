@@ -2,10 +2,19 @@ unit MSXMLEngineImpl;
 
 interface
 
-uses SysUtils, Classes, StyleTasks,ComObj,Activex;
+uses
+  SysUtils,
+  Classes,
+  ComObj,
+  Activex;
 
 type
-  TMSXMLEngineImpl = class(TInterfacedObject, IStyleTaskXSLEngine)
+  IXSLEngine = interface(IUnknown)
+    procedure transform(_in, _out, style: string;
+      Params, OutputProperties: array of string);
+  end;
+
+  TMSXMLEngineImpl = class(TInterfacedObject, IXSLEngine)
     constructor Create;
     destructor Destroy; override;
     procedure transform(_in, _out, style: string;
@@ -15,12 +24,26 @@ type
     function LoadXMLDocument(fileName: string): Variant;
     function LoadXSLTemplate(fileName: string): Variant;
   end;
+
   TMSXMLTemplateCacheItem = class(TObject)
     Template : IDispatch;
     constructor create(t : IDispatch);
   end;
 
+function XSLEngine :IXSLEngine;
+
 implementation
+
+var
+  __XSLEngine: IXSLEngine = nil;
+
+function XSLEngine :IXSLEngine;
+begin
+  if __XSLEngine = nil then
+    __XSLEngine := TMSXMLEngineImpl.Create;
+  Result := __XSLEngine;
+end;
+
 { TDelphiCompileTests }
 
 
@@ -98,8 +121,6 @@ begin
 end;
 
 initialization
-  XSLEngine:=TMSXMLEngineImpl.create;
-  TProcedure(InitProc);
 finalization
-  XSLEngine:=nil;
+  __XSLEngine := nil;
 end.

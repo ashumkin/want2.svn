@@ -20,14 +20,10 @@ uses
   WantUtils,
   WantClasses,
   PatternSets,
-  WildPaths;
+  WildPaths,
+  MSXMLEngineImpl;
 
 type
-  IStyleTaskXSLEngine = interface(IUnknown)
-    procedure transform(_in, _out, style: string;
-      Params, OutputProperties: array of string);
-  end;
-
   TParamElement          = class;
   TOutputPropertyElement = class;
 
@@ -69,6 +65,7 @@ type
     property Name: string read FName write FName;
     property expression: string read FExpression write FExpression;
   end;
+
   TOutputPropertyElement = class(TScriptElement)
   protected
     FName: string;
@@ -77,8 +74,7 @@ type
     property Name: string read FName write FName;
     property Value: string read FValue write FValue;
   end;
-var
-  XSLEngine: IStyleTaskXSLEngine;
+
 
 implementation
 
@@ -165,8 +161,6 @@ begin
   if (not Fsinglefile) then
     RequireAttribute('destdir');
   RequireAttribute('style');
-  if not Assigned(XSLEngine) then
-    WantError('XSL Engine not initialized correctly');
 end;
 
 initialization

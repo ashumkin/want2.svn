@@ -209,7 +209,6 @@ begin
   begin
     if FFileSets[f] <> nil then
     begin
-      FFileSets[f].basedir := PathConcat(BasePath, FDir);
       if PathIsDir(FFileSets[f].BasePath) then
       begin
         ChangeDir(FFileSets[f].BasePath);
@@ -275,6 +274,9 @@ end;
 { TDeleteTask }
 
 procedure TDeleteTask.AddDefaultPatterns;
+var
+  i    :Integer;
+  base :string;
 begin
   if (dir <> '') and (Length(FFileSets) = 0) then
   begin
@@ -285,6 +287,12 @@ begin
   else
   begin
     inherited AddDefaultPatterns;
+    if FDir <> '' then
+    begin
+      base := PathConcat(BasePath, FDir);
+      for i := 0 to High(FFileSets) do
+        FFileSets[i].basedir := base;
+    end;
   end;
 end;
 
@@ -319,7 +327,6 @@ begin
         WildPaths.DeleteFile(path, FDeleteReadOnly);
         if PathExists(path) then
         begin
-          paths := nil;
           msg := Format('Could not delete %s', [  ToSystemPath(path) ]);
           TaskFailure( msg );
         end;

@@ -25,6 +25,7 @@ uses
   CVSTasks,
   LoadFileTasks,
   TempFileTasks,
+  StyleTasks,
   XmlPropertyTasks;
 
 
