@@ -40,7 +40,8 @@ uses
   ExecTasksTest in 'ExecTasksTest.pas',
   FileTasksTest in 'FileTasksTest.pas',
   DelphiTasksTest in 'DelphiTasksTest.pas',
-  VersionInfoTasksTest in 'VersionInfoTasksTest.pas';
+  VersionInfoTasksTest in 'VersionInfoTasksTest.pas',
+  WildPathsTest in 'WildPathsTest.pas';
 
 {$R *.RES}
 
