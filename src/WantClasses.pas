@@ -55,8 +55,6 @@ uses
 {$M+} { TURN ON RTTI (RunTime Type Information) }
 
 const
-  BuildFileName = 'build.xml';
-
   SupportedPropertyTypes = [
      tkInteger,
      tkEnumeration,
@@ -236,12 +234,10 @@ type
     procedure SetInitialBaseDir(Path: TPath);
 
     class function TagName: string; override;
-    function FindBuildFile(BuildFile: TPath = ''):string;
-
 
     function  ToXML(Dom: IDocument):  IElement; override;
     procedure ParseXMLText(const XML: string);
-    procedure LoadXML(const SystemPath: TSystemPath = ''; FindFile: boolean = true);
+    procedure LoadXML(const SystemPath: TSystemPath = '');
 
     function  FindChild(Id: string; ChildClass: TClass = nil): TDanteElement;
 
@@ -1217,15 +1213,13 @@ begin
   end;
 end;
 
-procedure TProject.LoadXML(const SystemPath: string; FindFile: boolean);
+procedure TProject.LoadXML(const SystemPath: string);
 var
   Dom:       IDocument;
   BuildFile: TPath;
   LastDir:   TPath;
 begin
   BuildFile := ToPath(SystemPath);
-  if FindFile then
-    BuildFile := FindBuildFile(BuildFile);
   try
     if not FRootPathSet then
       RootPath := SuperPath(ToAbsolutePath(BuildFile));
@@ -1326,33 +1320,6 @@ begin
   if Child is TTask then
       FTasks.Remove(Child)
 end;
-
-function TProject.FindBuildFile(BuildFile: TPath): string;
-var
-  Dir: string;
-begin
-  if BuildFile = '' then
-    BuildFile := BuildFileName;
-
-  Result := ToAbsolutePath(BuildFile);
-  Dir    := SuperPath(Result);
-
-  while not PathIsFile(Result) do
-  begin
-    if PathIsDir(SuperPath(Dir)) then
-    begin
-      Dir := SuperPath(Dir);
-      Result := PathConcat(Dir, BuildFile)
-    end
-    else
-      break;
-  end;
-
-  if not PathIsFile(Result) then
-    DanteError(Format('cannot find build file "%s" in "%s": ',[BuildFile, BaseDir]));
-end;
-
-
 
 { TTarget }
 

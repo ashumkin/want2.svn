@@ -95,8 +95,6 @@ begin
   FSubProject := TProject.Create(Self);
   FSubProject.RootPath := ToAbsolutePath(Project.RootPath);
   FSubProject.OnLog := Self.Log;
-
-  buildfile := DanteClasses.BuildFileName;
 end;
 
 destructor TDanteTask.Destroy;
@@ -123,7 +121,7 @@ begin
                      ]);
 
 
-  FSubProject.LoadXML(buildfile, false);
+  FSubProject.LoadXML(buildfile);
   FSubProject.Build(_target);
 end;
 

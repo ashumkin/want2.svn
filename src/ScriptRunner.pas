@@ -42,13 +42,16 @@ uses
 
   JclMiscel,
   JclStrings,
+  JclFileUtils,
 
   DanteClasses,
   StandardElements,
   StandardTasks,
   CustomTasks;
 
-
+const
+  DanteBuildFileName = 'dante.xml';
+  AntBuildFileName   = 'build.xml';
 
 type
   TDante = class(TObject)
@@ -56,7 +59,11 @@ type
     function RunConsole(CmdLine: string): boolean;
 
     procedure SetCommandLineProperties(Project :TProject);
+
   public
+    class function FindBuildFile(BuildFile: string):string; overload;
+    class function FindBuildFile :string; overload;
+
     procedure DoBuild( ABuildFileName: string;
                        Verbosity: TVerbosityLevel = vlNormal); overload;
     procedure DoBuild( ABuildFileName: string;
@@ -64,7 +71,18 @@ type
                        Verbosity:      TVerbosityLevel = vlNormal); overload;
   end;
 
+function DefaultBuildFileName: string;
+
 implementation
+
+function DefaultBuildFileName: string;
+var
+  AppName :string;
+begin
+  AppName := ExtractFileName(GetModulePath(hInstance));
+  Result  := ChangeFileExt(LowerCase(AppName),'.xml');
+end;
+
 
 { TDante }
 
@@ -79,6 +97,14 @@ begin
   try
     Project.Verbosity := Verbosity;
     SetCommandLineProperties(Project);
+
+    // only search for build file if name not specified
+    if ABuildFileName = '' then
+       ABuildFileName := FindBuildFile;
+
+    if not FileExists(ABuildFileName) then
+      DanteError(Format('Cannot find build file "%s"',[DefaultBuildFileName]));
+
     Project.LoadXML(ABuildFileName);
     if Targets = '' then
       Project.Build
@@ -98,6 +124,43 @@ end;
 procedure TDante.DoBuild(ABuildFileName: string; Verbosity: TVerbosityLevel);
 begin
   DoBuild(ABuildFileName, '', Verbosity);
+end;
+
+class function TDante.FindBuildFile(BuildFile: string): string;
+var
+  Dir: string;
+begin
+  Result := SysUtils.ExpandFileName(BuildFile);
+  Dir    := SysUtils.ExtractFileDir(Result);
+
+  while not FileExists(Result)
+  and (Dir <> '')
+  and (Dir <> ExtractFileDir(Dir))
+  do
+  begin
+    if DirectoryExists(Dir) then
+    begin
+      Result := ExtractFilePath(Dir)+ BuildFile;
+      Dir    := ExtractFileDir(Dir);
+    end
+    else
+      break;
+  end;
+
+  if not FileExists(Result) then
+    Result := BuildFile;
+end;
+
+
+class function TDante.FindBuildFile: string;
+begin
+  Result := FindBuildFile(DefaultBuildFileName);
+  if not FileExists(Result) then
+     Result := FindBuildFile(DanteBuildFileName);
+  if not FileExists(Result) then
+     Result := FindBuildFile(AntBuildFileName);
+  if not FileExists(Result) then
+     Result := DefaultBuildFileName;
 end;
 
 function TDante.RunConsole(CmdLine: string): boolean;
