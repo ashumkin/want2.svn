@@ -36,7 +36,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 program dante;
 
 uses
-  DanteUnit, SysUtils, clUtilConsole;
+  DanteMain, SysUtils, clUtilConsole;
 
 const
   BuildFileName = 'build.txt';
