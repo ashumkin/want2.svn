@@ -38,19 +38,17 @@ uses
   DanteClasses, ExecTasks, JclStrings;
 
 type
-  TVssGetTask = class(TShellTask)
+  TVssGetTask = class(TCustomExecTask)
   private
     FVssPath: string;
     FLogin: string;
     FLocalPath: string;
-    FFileName: string;
-  protected
-    function BuildPathFileName: string;
+    F_Label: string;
   public
     procedure Execute; override;
     procedure Validate; override;
   published
-    property FileName: string read FFileName write FFileName;
+    property _Label: string read F_Label write F_Label;
     property LocalPath: string read FLocalPath write FLocalPath;
     property Login: string read FLogin write FLogin;
     property VssPath: string read FVssPath write FVssPath;
@@ -60,34 +58,31 @@ implementation
 
 { TVssGetTask }
 
-function TVssGetTask.BuildPathFileName: string;
-  function RemoveTrailingSlash(s: string): string;
+procedure TVssGetTask.Execute;
+  function FormatVssPath(s: string): string;
   begin
-    if JclStrings.StrRight(s, 1) = '/' then
-      Result := JclStrings.StrChopRight(s, 1);
+    Result := s;
+    if JclStrings.StrRight(Result, 1) = '/' then
+      Result := JclStrings.StrChopRight(Result, 1);
+    Result := '"' + Result + '"';
   end;
 begin
-  if FFileName = '' then
-    Result := RemoveTrailingSlash(FVssPath)
-  else
-    Result := JclStrings.StrEnsureSuffix(FVssPath, '/') + FFileName;
-end;
-
-procedure TVssGetTask.Execute;
-begin
   Executable := 'ss Get';
-  ArgumentList.Add(BuildPathFileName);
+  ArgumentList.Add(FormatVssPath(FVssPath));
 
   if FLogin <> '' then
     ArgumentList.Add('-Y' + FLogin);
 
   if FLocalPath <> '' then
-  begin
     ArgumentList.Add('"-GL' + FLocalPath + '"');
 
-    { skip writable files }
-    ArgumentList.Add('-GWS');
-  end;
+  { skip writable files }
+  ArgumentList.Add('-GWS');
+
+  if F_Label <> '' then
+    ArgumentList.Add('"-VL' + F_Label + '"');
+
+  inherited Execute;
 end;
 
 procedure TVssGetTask.Validate;
