@@ -21,6 +21,7 @@
     @brief 
 
     @author Juancarlo Añez
+    @author Bob Arnson <sf@bobs.org>
 }
 
 unit JALGZipStreams;
@@ -29,6 +30,9 @@ interface
 uses
   SysUtils,
   Classes,
+  {$IFDEF VER130}
+  FileCtrl,
+  {$ENDIF VER130}
 
   JalStrings,
   JalProxyStreams,

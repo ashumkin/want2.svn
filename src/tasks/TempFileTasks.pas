@@ -21,7 +21,8 @@
     @brief Apliying XSL transformations to xml files
 
     @author Juanco Añez
-    @author Radim Novotny <radimnov@seznam.cz>   
+    @author Radim Novotny <radimnov@seznam.cz>
+    @author Bob Arnson <sf@bobs.org>
 }
 
 unit TempFileTasks;
@@ -31,6 +32,9 @@ interface
 uses
   SysUtils,
   Classes,
+	{$IFDEF VER130}
+	FileCtrl,
+	{$ENDIF VER130}
   WantClasses;
 
 type
@@ -53,6 +57,18 @@ type
 implementation
 
 { TTempFileTask }
+
+{$IFDEF VER130}
+//
+// utility functions that exist in Delphi 6 and later but not in Delphi 5
+//
+
+function IncludeTrailingPathDelimiter(const ADirName: string): string;
+begin
+	Result := IncludeTrailingBackslash(ADirName);
+end;
+{$ENDIF VER130}
+
 
 procedure TTempFileTask.Execute;
 var

@@ -22,6 +22,7 @@
 
     @author Juancarlo Añez
     @author Radim Novotny <radimnov@seznam.cz>
+    @author Bob Arnson <sf@bobs.org>
 }
 
 { Notes:
@@ -51,16 +52,26 @@
                     string (see "Date-Time values, formatting" in Delphi help)
                     (http://ant.apache.org/manual/CoreTasks/changelog.html)
 
+    DELPHI 5 COMPATIBILITY NOTE -----
+    Note that because Delphi 5 lacks a AnsiToUtf8, characters that would be
+    translated to UTF-8 will be output as-is. Anyone care to contribute a
+    Delphi 5-compatible AnsiToUtf8? --Bob Arnson
 }
 
 unit CVSTasks;
 
 interface
 
+{$IFDEF VER130}
+{$DEFINE MSWINDOWS}
+{$ENDIF VER130}
+
 uses
   SysUtils,
   Classes,
+{$IFNDEF VER130}
   DateUtils,
+{$ENDIF VER130}
 
   {$IFDEF MSWINDOWS}
   JclRegistry,
@@ -78,6 +89,10 @@ uses
   Contnrs;  {TObjectList}
 
 type
+  {$IFDEF MSWINDOWS}
+	THashedStringList = TStringList;
+  {$ENDIF}
+
   // used in CvsChangelog
   TRCSFile = class
   private
@@ -384,6 +399,22 @@ var
    182, 128, 158, 208, 162, 132, 167, 209, 149, 241, 153, 251, 237, 236, 171, 195,
    243, 233, 253, 240, 194, 250, 191, 155, 142, 137, 245, 235, 163, 242, 178, 152
    );
+
+{$IFDEF VER130}
+//
+// utility functions that exist in Delphi 6 and later but not in Delphi 5
+//
+
+function FileIsReadOnly(const AFileName: string): boolean;
+begin
+	Result := FileGetAttr(AFileName) and faReadOnly > 0;
+end;
+
+function AnsiToUtf8(const AString: string): string;
+begin
+	Result := AString;
+end;
+{$ENDIF VER130}
 
   { Local function }
 function ParseCVSDate(ADate: string): TDateTime;

@@ -21,6 +21,7 @@
     @brief 
 
     @author Juancarlo Añez
+    @author Bob Arnson <sf@bobs.org>
 }
 
 {
@@ -53,8 +54,12 @@ interface
 uses
   SysUtils,
   Math,
-  
+	{$IFDEF VER130}
+  JclMath,
+	{$ENDIF VER130}
+
   JalPorting;
+
 
 
 

@@ -47,11 +47,13 @@ uses
   JALExpressions,
 
   WildPaths,
-  WantUtils,
+  WantUtils
 
-  DefaultInputHandler,
-  InputHandler;
-
+  {$IFNDEF VER130}
+  , DefaultInputHandler,
+  InputHandler
+  {$ENDIF VER130}
+  ;
 
 {$M+} { TURN ON RTTI (RunTime Type Information) }
 
@@ -253,7 +255,9 @@ type
     FDefaultTarget: string;
     FRootPath:      TPath;  // root for all path calculations
     FRootPathSet:   boolean;
+	  {$IFNDEF VER130}
     FInputHandler:  IInputHandler;
+  	{$ENDIF VER130}
 
     FListener :TBuildListener;
     FNoChanges: boolean;
@@ -303,7 +307,9 @@ type
     property Listener :TBuildListener read FListener write FListener;
 
     property NoChanges :boolean read GetNoChanges write FNoChanges;
+	  {$IFNDEF VER130}
     property InputHandler :IInputHandler read FInputHandler write FInputHandler;
+  	{$ENDIF VER130}
   published
     function CreateTarget    : TTarget;
 
@@ -1152,7 +1158,9 @@ begin
 
   FRootPath     := CurrentDir;
   FRootPathSet  := False;
+  {$IFNDEF VER130}
   FInputHandler := TDefaultInputHandler.Create;
+  {$ENDIF VER130}
 end;
 
 destructor TProject.Destroy;

@@ -21,6 +21,7 @@
     @brief 
 
     @author Juancarlo Añez
+    @author Bob Arnson <sf@bobs.org>
 }
 
 {$LONGSTRINGS ON}
@@ -40,9 +41,23 @@ const
 type
   EChildProcessException = class(Exception);
 
+{$IFDEF VER130}
+  TPipeStream = class(TStream)
+  private
+  protected
+    FHandle: Integer;
+  public
+    constructor Create(AHandle: Integer);
+  	function Read(var Buffer; Count: Longint): Longint; override;
+    function Write(const Buffer; Count: Longint): Longint; override;
+    function Seek(Offset: Longint; Origin: Word): Longint; override;
+    property Handle: Integer read FHandle write FHandle;
+  end;
+{$ELSE}
   TPipeStream = class(THandleStream)
     function Read(var Buffer; Count: Longint): Longint; override;
   end;
+{$ENDIF VER130}
 
   TChildProcess = class
   protected
@@ -50,7 +65,7 @@ type
 
     FRedirectedInput :boolean;
     FInputStream,
-    FOutputStream :THandleStream;
+    FOutputStream :TPipeStream;
 
     function  __Read(Count :Integer = 80)   :string; virtual; abstract;
     procedure Error(Msg :string);
@@ -69,8 +84,8 @@ type
 
     property RedirectedInput :boolean read FRedirectedInput;
 
-    property Input  :THandleStream read FInputStream;
-    property Output :THandleStream read FOutputStream;
+    property Input  :TPipeStream read FInputStream;
+    property Output :TPipeStream read FOutputStream;
   end;
 
   TWin32ChildProcess = class(TChildProcess)
@@ -368,6 +383,26 @@ begin
 end;
 
 { TPipeStream }
+
+
+{$IFDEF VER130}
+constructor TPipeStream.Create(AHandle: Integer);
+begin
+	inherited Create;
+	FHandle := AHandle;
+end;
+
+function TPipeStream.Seek(Offset: Integer; Origin: Word): Longint;
+begin
+	Result := FileSeek(FHandle, Offset, Origin);
+end;
+
+function TPipeStream.Write(const Buffer; Count: Integer): Longint;
+begin
+  Result := FileWrite(FHandle, Buffer, Count);
+  if Result = -1 then Result := 0;
+end;
+{$ENDIF VER130}
 
 function TPipeStream.Read(var Buffer; Count: Integer): Longint;
 var

@@ -21,6 +21,7 @@
     @brief 
 
     @author Juancarlo Añez
+    @author Bob Arnson <sf@bobs.org>
 }
 
 unit JALFiles;
@@ -39,6 +40,17 @@ function RenameFileToBackup(const FileName :string):string;
 procedure LogToFile(const FileName :string; const Msg :string);
 
 implementation
+
+{$IFDEF VER130}
+//
+// utility functions that exist in Delphi 6 and later but not in Delphi 5
+//
+
+function FileIsReadOnly(const AFileName: string): boolean;
+begin
+  Result := FileGetAttr(AFileName) and faReadOnly > 0;
+end;
+{$ENDIF VER130}
 
 function FileIsWriteable(const FName :string):boolean;
 begin

@@ -39,6 +39,9 @@ const
     BLACK = true;
 
 type
+{$IFDEF VER130}
+  IInterface = IUnknown;
+{$ENDIF}
   CollectionException = class(Exception)
      constructor create;              overload;
      constructor create(msg :string); overload;

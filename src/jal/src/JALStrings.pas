@@ -21,6 +21,7 @@
     @brief 
 
     @author Juancarlo Añez
+    @author Bob Arnson <sf@bobs.org>
 }
 
 unit JALStrings;
@@ -33,7 +34,10 @@ uses
   {$ENDIF}
   Classes;
 
-
+{$IFDEF VER130}
+const
+	sLineBreak = #13#10;
+{$ENDIF}
 
 type
   {$IFDEF VER140}
