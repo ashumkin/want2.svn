@@ -961,7 +961,7 @@ var
   MacroStart :Integer;
 begin
   Result := Value;
-  MacroStart := StrSearch('{', Result)-1;
+  MacroStart := StrSearch('{', Result, 2)-1;
   while MacroStart > 0 do
   begin
     case Result[MacroStart] of
