@@ -58,13 +58,13 @@ uses
 type
   TDante = class(TProject)
   public
-    procedure DoBuild( const ABuildFileName: TPath;
+    procedure DoBuild( ABuildFileName: TPath;
                        Targets:    TStringArray;
                        Level:      TLogLevel = vlNormal); overload;
-    procedure DoBuild( const ABuildFileName: TPath;
+    procedure DoBuild( ABuildFileName: TPath;
                        Target:     string;
                        Level:      TLogLevel = vlNormal); overload;
-    procedure DoBuild( const ABuildFileName: TPath;
+    procedure DoBuild( ABuildFileName: TPath;
                        Level:      TLogLevel = vlNormal); overload;
 
     procedure CreateLogManager;
@@ -96,12 +96,14 @@ implementation
 
 { TDante }
 
-procedure TDante.DoBuild( const ABuildFileName: TPath;
+procedure TDante.DoBuild( ABuildFileName: TPath;
                           Targets:    TStringArray;
                           Level:      TLogLevel = vlNormal);
 var
   t:    Integer;
 begin
+  if not IsSystemIndependentPath(ABuildFileName) then
+    ABuildFileName := ToPath(ABuildFileName);
   Log('buildfile: ' + ToRelativePath(FindBuildFile(ABuildFileName, False)));
   Log(Description);
 
@@ -136,12 +138,12 @@ begin
   LogManager := TConsoleLogManager.Create;
 end;
 
-procedure TDante.DoBuild(const ABuildFileName: TPath; Level: TLogLevel);
+procedure TDante.DoBuild(ABuildFileName: TPath; Level: TLogLevel);
 begin
   DoBuild(ABuildFileName, nil, Level);
 end;
 
-procedure TDante.DoBuild(const ABuildFileName: TPath; Target: string; Level: TLogLevel);
+procedure TDante.DoBuild(ABuildFileName: TPath; Target: string; Level: TLogLevel);
 var
   T :TStringArray;
 begin
