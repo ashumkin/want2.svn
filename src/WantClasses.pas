@@ -1212,7 +1212,7 @@ var
   BuildFile: TPath;
   LastDir:   TPath;
 begin
-  BuildFile := ToPath(SystemPath);
+  BuildFile := ToAbsolutePath(ToPath(SystemPath));
   try
     if not FRootPathSet then
       RootPath := SuperPath(ToAbsolutePath(BuildFile));
@@ -1220,8 +1220,8 @@ begin
 
     LastDir := CurrentDir;
     try
-      Dom := MiniDom.ParseToDom(ToSystemPath(BuildFile));
       ChangeDir(BasePath);
+      Dom := MiniDom.ParseToDom(ToSystemPath(BuildFile));
       Self.DoParseXML(Dom.Root);
     finally
       ChangeDir(LastDir);
