@@ -107,11 +107,11 @@ ModuleType=SourceModule
 FormState=0
 FormOnTop=0
 
-[C:\home\want\src\want.dpr]
+[c:\dvl\bor\d4\ProjectGroup1.bpg]
 FormState=0
 FormOnTop=0
 
-[c:\dvl\bor\d4\ProjectGroup1.bpg]
+[C:\home\want\src\want.dpr]
 FormState=0
 FormOnTop=0
 
@@ -176,15 +176,15 @@ Dockable=1
 [View0]
 Module=C:\home\want\src\lib\WildPaths.pas
 CursorX=1
-CursorY=301
-TopLine=274
+CursorY=1
+TopLine=1
 LeftCol=1
 
 [View1]
 Module=C:\home\want\lib\jal\src\JalPaths.pas
 CursorX=1
-CursorY=174
-TopLine=158
+CursorY=28
+TopLine=1
 LeftCol=1
 
 [DockHosts]

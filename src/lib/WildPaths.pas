@@ -45,7 +45,7 @@ uses
 
 const
   WildChars        = '?*';
-  InvalidPathChars = ';,()' + WildChars {$IFDEF LINUX} + ':' {$ENDIF};
+  InvalidPathChars = ';,()' {$IFDEF LINUX} + ':' {$ENDIF};
 
   {$IFDEF LINUX}
   SystemPathDelimiter: string = '/';
