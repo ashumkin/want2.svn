@@ -281,8 +281,6 @@ end;
 
 
 procedure TScriptRunner.ExecuteTask(Task: TTask);
-var
-  LastDir: TPath;
 begin
   if not Task.Enabled then
   begin
@@ -294,15 +292,9 @@ begin
   Log(vlDebug, Format('basedir="%s"',   [Task.BaseDir]));
   Log(vlDebug, Format('basepath="%s"',  [Task.BasePath]));
 
-  LastDir := CurrentDir;
   try
-    try
-      ChangeDir(Task.BasePath);
-      Task.Execute;
-      Listener.TaskFinished(Task);
-    finally
-      ChangeDir(LastDir);
-    end;
+    Task.DoExecute;
+    Listener.TaskFinished(Task);
   except
     on e: Exception do
     begin
