@@ -6,7 +6,7 @@ REM For now, assume it's in the PATH
 
 brcc32 ..\src\dantever.rc
 
-dcc32 -B -Q -N%TEMP% -E%TEMP% ..\src\dante.dpr -U..\src;..\src\tasks;..\src\jcl;..\src\paths;..\src\xml;..\src\zip;..\lib\paszlib;..\lib\paszlib\minizip;..\src\elements;..\lib\perlre
+dcc32 -B -Q -N%TEMP% -E%TEMP% ..\src\dante.dpr -U..\src;..\src\lib;..\src\tasks;..\lib\jcl;..\lib\xml;..\lib\paszlib;..\lib\paszlib\minizip;..\src\elements;..\lib\perlre
 if ERRORLEVEL 1 goto ERROR
 %TEMP%\dante.exe
 goto END
