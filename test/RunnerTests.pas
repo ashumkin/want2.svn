@@ -69,7 +69,7 @@ begin
 
   Content :=
     'object TestProject: TProject                                       ' + CR +
-    '  DefaultTarget = ''Main''                                         ' + CR +
+    '  Default = ''Main''                                               ' + CR +
     '  object Main: TTarget                                             ' + CR +
     '    object ShellExec: TShellExecTask                               ' + CR +
     '      Executable = ''copy ' + FBuildFileName + ' ' +

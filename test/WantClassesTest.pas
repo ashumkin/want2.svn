@@ -76,6 +76,7 @@ type
   published
     procedure TestInMemoryConstruction;
     procedure TestParse;
+    procedure TestParseXML;
     procedure TestSaveLoad;
   end;
 
@@ -98,14 +99,19 @@ type
 
   TDummyTask1 = class(TTask)
   public
+    class function Tag :string; override;
     procedure Execute; override;
   end;
 
-  TDummyTask2 = class(TDummyTask1);
+  TDummyTask2 = class(TDummyTask1)
+    class function Tag :string; override;
+  end;
+
   TDummyTask3 = class(TDummyTask1)
   protected
     FAnInt: Integer;
   published
+    class function Tag :string; override;
     property AnInt: Integer read FAnInt write FAnInt;
   end;
 
@@ -162,20 +168,35 @@ end;
 { TSaveProjectTests }
 
 const
+  CR = #13#10;
+
   Expected =
-    'object my_project: TProject' + #$D#$A +
-    '  object prepare: TTarget' + #$D#$A +
-    '    object TDummyTask1_0: TDummyTask1' + #$D#$A +
-    '    end' + #$D#$A +
-    '  end' + #$D#$A +
-    '  object compile: TTarget' + #$D#$A +
-    '    object TDummyTask2_0: TDummyTask2' + #$D#$A +
-    '    end' + #$D#$A +
-    '    object TDummyTask3_0: TDummyTask3' + #$D#$A +
-    '      AnInt = 0' + #$D#$A +
-    '    end' + #$D#$A +
-    '  end' + #$D#$A +
-    'end' + #$D#$A;
+    'object my_project: TProject' + CR +
+    '  object prepare: TTarget' + CR +
+    '    object TDummyTask1_0: TDummyTask1' + CR +
+    '    end' + CR +
+    '  end' + CR +
+    '  object compile: TTarget' + CR +
+    '    object TDummyTask2_0: TDummyTask2' + CR +
+    '    end' + CR +
+    '    object TDummyTask3_0: TDummyTask3' + CR +
+    '      AnInt = 0' + CR +
+    '    end' + CR +
+    '  end' + CR +
+    'end' + CR;
+
+
+  ExpectedXML =
+    '<project description="a test project"'               + CR +
+    '         default="compile" >'                        + CR +
+    '  <target name="prepare" >'                          + CR +
+    '    <dummy1 />' + CR +
+    '  </target>'                                         + CR +
+    '  <target name="compile" depends="prepare">'         + CR +
+    '    <dummy2 />'                                      + CR +
+    '    <dummy3 anint="25" />'                           + CR +
+    '  </target>'                                         + CR +
+    '</project>'                                          + CR;
 
 
 procedure TSaveProjectTests.BuildTestProject;
@@ -208,6 +229,11 @@ procedure TSaveProjectTests.TestParse;
 begin
   FProject.Parse(Expected);
   CheckEquals(Expected, FProject.AsString);
+end;
+
+procedure TSaveProjectTests.TestParseXML;
+begin
+  FProject.ParseXMLText(ExpectedXML);
 end;
 
 procedure TSaveProjectTests.TestSaveLoad;
@@ -257,11 +283,6 @@ begin
   Check(FileExists(NewFileName), 'TExecTask copy file failed');
 end;
 
-{ TDummyTask1 }
-
-procedure TDummyTask1.Execute;
-begin
-end;
 
 { TBuildTests }
 
@@ -277,12 +298,12 @@ begin
     TDummyTask1.Create(T);
 
     T := AddTarget('compile');
-    T.Depends.Add('prepare');
+    T.Depends := 'prepare';
     TDummyTask2.Create(T);
     TDummyTask3.Create(T);
 
     T := AddTarget('copy');
-    T.Depends.Add('compile');
+    T.Depends := 'compile';
     with TShellExecTask.Create(T) do
     begin
       Executable := 'copy';
@@ -358,7 +379,7 @@ begin
       Arguments.Add('/Q');
       Arguments.Add('/E..\bin');
       Arguments.Add('/N..\dcu');
-      Arguments.Add('/U..\src;..\src\tasks;..\src\jcl');
+      Arguments.Add('/U..\src;..\src\tasks;..\src\jcl;..\src\paths;..\src\xml');
     end;
   end;
 end;
@@ -379,8 +400,32 @@ begin
   Check(FileExists(exe), 'dante exe not found');
 end;
 
+{ TDummyTask1 }
+
+procedure TDummyTask1.Execute;
+begin
+end;
+
+class function TDummyTask1.Tag: string;
+begin
+  Result := 'dummy1';
+end;
+{ TDummyTask2 }
+
+class function TDummyTask2.Tag: string;
+begin
+  Result := 'dummy2';
+end;
+
+{ TDummyTask3 }
+
+class function TDummyTask3.Tag: string;
+begin
+  Result := 'dummy3';
+end;
+
 initialization
-  RegisterClasses([TDummyTask1, TDummyTask2, TDummyTask3]);
+  RegisterTasks([TDummyTask1, TDummyTask2, TDummyTask3]);
 
   RegisterTests('Unit Tests', [
              TSaveProjectTests.Suite,

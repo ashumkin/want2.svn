@@ -137,6 +137,6 @@ begin
 end;
 
 initialization
-  RegisterClasses([TCustomExecTask, TExecTask, TShellExecTask]);
+  RegisterTasks([TCustomExecTask, TExecTask, TShellExecTask]);
 end.
 

@@ -41,13 +41,18 @@ uses
   FileOps,
   FileSets,
 
+  Collections,
+  MiniDom,
+
   SysUtils,
-  Classes;
+  Classes,
+  TypInfo;
 
 type
   TProject    = class;
   TTarget     = class;
   TTask       = class;
+  TTaskClass  = class of TTask;
 
   EDanteException   = class(Exception);
   ETargetException  = class(EDanteException);
@@ -61,6 +66,8 @@ type
 
   ETaskError       = class(ETaskException);
   ETaskFailure     = class(ETaskException);
+
+  EDanteParseException = class(EDanteException);
 
 
   TTargetArray = array of TTarget;
@@ -84,12 +91,17 @@ type
 
     procedure GetChildren(Proc: TGetChildProc; Root: TComponent); override;
     function GetChildOwner: TComponent; override;
+
   public
     constructor Create(Owner: TComponent); override;
+
+    class function Tag :string; virtual;
+    procedure ParseXML(Node :MiniDom.IElement); virtual;
 
     property Project: TProject read GetProject;
   published
     property Name;
+    // Tag is the Name to use for the task in build scripts
   end;
 
 
@@ -99,33 +111,43 @@ type
     FTargets:       TList;
     FDefaultTarget: string;
     FVerbosity:     TVerbosityLevel;
-    FBasePath:      string;
+    FBaseDir:      string;
+    FDescription:   string;
     FProperties:    TStrings;
 
     function  GetTarget(Index: Integer):TTarget;
 
     procedure BuildSchedule(TargetName :string; Sched :TList);
 
+    procedure DoParseXML(Node :MiniDom.IElement);
+
     procedure Notification(AComponent: TComponent; Operation: TOperation); override;
   public
     constructor Create(Owner: TComponent = nil);  override;
     destructor  Destroy; override;
 
+    class function Tag :string; override;
+    procedure ParseXML(Node :MiniDom.IElement); override;
+
     procedure Parse(const Image: string);
+    procedure ParseXMLText(const XML :string);
+
     procedure Load(const Path: string);
+    procedure LoadXML(const SystemPath: string);
     procedure Save(const Path: string);
 
     // use this function in Tasks to let the user specify relative
     // directories that work consistently
     function  RelativePath(SubPath :string) :string;
 
-    function AsString: string;
-    function AddTarget(Name: string = ''): TTarget;
-    function TargetCount: Integer;
+    function  AsString: string;
+    function  AddTarget(Name: string = ''): TTarget;
+    function  TargetCount: Integer;
 
-    function GetTargetByName(Name :string):TTarget;
+    function  GetTargetByName(Name :string):TTarget;
 
     procedure SetProperties(Value :TStrings);
+    procedure SetProperty(Name, Value :string);
     function  PropertyDefined(Name :string): boolean;
 
     function Schedule(TargetName :string) :TTargetArray;
@@ -136,25 +158,29 @@ type
 
     property Targets[i: Integer]: TTarget read GetTarget; default;
     property Names[TargetName :string] :TTarget read GetTargetByName;
-    property BasePath :string read FBasePath write FBasePath;
+    property BaseDir :string read FBaseDir write FBaseDir;
 
   published
-    property DefaultTarget: string          read FDefaultTarget  write FDefaultTarget;
+    property Default:       string          read FDefaultTarget  write FDefaultTarget;
     property Verbosity:     TVerbosityLevel read FVerbosity      write FVerbosity default vlNormal;
     property Properties:    TStrings        read FProperties     write SetProperties;
+    property Description:   string          read FDescription    write FDescription;
   end;
 
   TTarget = class(TDanteComponent)
   protected
-    FTasks: TList;
-    FDepends: TStrings;
+    FTasks:   TList;
+    FDepends: string;
 
-    procedure SetDepends(Value: TStrings);
     function GetTask(Index: Integer):TTask;
     procedure Notification(AComponent: TComponent; Operation: TOperation); override;
+
   public
     constructor Create(Owner: TComponent); override;
     destructor  Destroy; override;
+
+    class function Tag :string; override;
+    procedure ParseXML(Node :MiniDom.IElement); override;
 
     function TaskCount: Integer;
     procedure Build;
@@ -163,14 +189,12 @@ type
 
     property Tasks[i: Integer]: TTask read GetTask; default;
   published
-    property Depends: TStrings read FDepends write SetDepends;
+    property Depends: string read FDepends write FDepends;
   end;
 
   TTask = class(TDanteComponent)
   protected
-    FTag :string;
 
-    function GetTag :string; virtual;
     procedure DoExecute;
   public
     function Target :TTarget;
@@ -179,8 +203,6 @@ type
     procedure Log(Msg :string = ''; Verbosity :TVerbosityLevel = vlNormal);
 
   published
-    // Tag is the Name to use for the task in build scripts
-    property Tag : string read GetTag;
   end;
 
 
@@ -192,7 +214,15 @@ type
     procedure Insert(Index: Integer; const S: string); override;
   end;
 
+
+function  FindTask(Tag :string): TTaskClass;
+procedure RegisterTask(TaskClass :TTaskClass);
+procedure RegisterTasks(TaskClasses :array of TTaskClass);
+
 implementation
+
+var
+  __TaskRegistry :TStringList;
 
 { TDanteComponent }
 
@@ -236,9 +266,16 @@ begin
     Result := nil;
 end;
 
+class function TDanteComponent.Tag: string;
+begin
+  Result := copy(ClassName, 2, 255);
+  Result := LowerCase(Result);
+end;
+
+
 function TDanteComponent.NewName: string;
 var
-  i: Integer;
+  i:   Integer;
 begin
   for i := 0 to MaxInt do
   begin
@@ -246,6 +283,58 @@ begin
     if (Owner = nil) or (Owner.FindComponent(Result) = nil) then
       break;
   end;
+end;
+
+procedure TDanteComponent.ParseXML(Node: IElement);
+var
+  i        :IIterator;
+  att:     IAttribute;
+  AName    :string;
+  prop     :IElement;
+  TypeInfo :PTypeInfo;
+  PropInfo :PPropInfo;
+begin
+  if Node.Name <> Self.Tag then
+    raise EDanteParseException.Create(Format('expected <%s>', [Self.Tag]) );
+
+  TypeInfo := Self.ClassInfo;
+
+  i := Node.Attributes;
+  while i.HasNext do
+  begin
+    att := i.Next as IAttribute;
+    AName := att.Name;
+    PropInfo := GetPropInfo(TypeInfo, AName);
+    if PropInfo = nil then
+      raise EDanteParseException.Create( Format('Unknown attribute %s.%s', [Tag, AName]) )
+    else if PropInfo.SetProc <> nil then
+      // read only property (Name), do nothing
+    else
+    begin
+      try
+        with PropInfo^, PropType^^ do
+          if Kind in [tkString, tkLString, tkWString] then
+            SetStrProp(Self, PropInfo, att.Value)
+          else if Kind in [tkInteger] then
+            SetOrdProp(Self, PropInfo, StrToInt(att.Value))
+          else if Kind in [tkEnumeration] then
+            SetOrdProp(Self, PropInfo, GetEnumValue(PropType^, att.Value))
+          else
+            raise EDanteParseException.Create(Format('Cannot handle type of attribute %s.%s', [Tag, AName]) )
+      except
+        on e :Exception do
+          raise EDanteParseException.Create(Format('Error %s setting value of attribute %s.%s', [e.Message, Tag, AName]) );
+      end;
+    end;
+  end;
+
+  i := Node.Children('property').Iterator;
+  while i.HasNext do
+  begin
+    prop := i.Next as IElement;
+    Project.SetProperty(prop.attributeValue('name'), prop.attributeValue('value'));
+  end;
+
 end;
 
 { TProject }
@@ -338,11 +427,11 @@ procedure TProject.Load(const Path: string);
 var
   S: TStrings;
 begin
+  FBaseDir := ToPath(ExtractFilePath(ExpandFileName(Path)));
   S := TStringList.Create;
   try
     S.LoadFromFile(Path);
     Parse(S.Text);
-    FBasePath := ExtractFilePath(ExpandFileName(Path));
   finally
     S.Free;
   end;
@@ -373,12 +462,21 @@ procedure TProject.BuildSchedule(TargetName: string; Sched: TList);
 var
   Target : TTarget;
   i      : Integer;
+  Deps   : TStrings;
 begin
   Target := GetTargetByName(TargetName);
   if Sched.IndexOf(Target) >= 0 then
      EXIT; // done
-  for i := 0 to Target.Depends.Count-1 do
-     BuildSchedule(Target.Depends[i], Sched);
+
+  Deps := TStringList.Create;
+  try
+    Deps.CommaText := Target.Depends;
+    for i := 0 to Deps.Count-1 do
+       BuildSchedule(Deps[i], Sched);
+  finally
+    Deps.Free;
+  end;
+
   if Sched.IndexOf(Target) >= 0 then
      raise ECircularTargetDependency.Create(TargetName);
   Sched.Add(Target);
@@ -431,16 +529,16 @@ end;
 
 procedure TProject.Build;
 begin
-  if DefaultTarget = '' then
+  if Default = '' then
   begin
     raise ENoDefaultTargetError.Create('No default target');
   end;
-  Build(DefaultTarget);
+  Build(Default);
 end;
 
 function TProject.RelativePath(SubPath: string): string;
 begin
-  Result := BasePath + SubPath;
+  Result := BaseDir + SubPath;
 end;
 
 procedure TProject.SetProperties(Value: TStrings);
@@ -448,10 +546,66 @@ begin
   FProperties.Assign(Value);
 end;
 
+procedure TProject.SetProperty(Name, Value: string);
+begin
+  Properties.Values[Name] := Value;
+end;
+
 function TProject.PropertyDefined(Name: string): boolean;
 begin
   Result :=   (Properties.IndexOf(Name) >= 0)
            or (Properties.IndexOfName(Name) >= 0)
+end;
+
+
+// XML handling
+
+procedure TProject.LoadXML(const SystemPath: string);
+var
+  Dom :IDocument;
+begin
+  FBaseDir := ToPath(ExtractFilePath(ExpandFileName(SystemPath)));
+  Dom := MiniDom.ParseToDom(SystemPath);
+  Self.DoParseXML(Dom.Root);
+end;
+
+class function TProject.Tag: string;
+begin
+  Result := 'project';
+end;
+
+procedure TProject.ParseXML(Node: IElement);
+var
+  i     :IIterator;
+  child :IElement;
+begin
+  inherited ParseXML(Node);
+
+  i := Node.Children(TTarget.Tag).Iterator;
+  while i.HasNext do
+  begin
+    child := i.Next as IElement;
+    AddTarget(child.attributeValue('name')).ParseXML(child);
+  end;
+end;
+
+
+procedure TProject.DoParseXML(Node: IElement);
+begin
+  try
+    ParseXML(Node);
+  except
+    on e :Exception do
+    begin
+      Log(e.Message);
+      raise;
+    end;
+  end;
+end;
+
+procedure TProject.ParseXMLText(const XML: string);
+begin
+  DoParseXML(MiniDom.ParseTextToDOM(XML).Root);
 end;
 
 { TTarget }
@@ -469,16 +623,19 @@ constructor TTarget.Create(Owner: TComponent);
 begin
   inherited Create(Owner);
   FTasks   := TList.Create;
-  FDepends := TStringList.Create;
 end;
 
 destructor TTarget.Destroy;
 begin
-  FDepends.Free;
   FTasks.Free;
   inherited Destroy;
 end;
 
+
+class function TTarget.Tag: string;
+begin
+  Result := 'target';
+end;
 
 function TTarget.GetTask(Index: Integer): TTask;
 begin
@@ -500,29 +657,31 @@ begin
       FTasks.Add(AComponent)
 end;
 
-procedure TTarget.SetDepends(Value: TStrings);
-begin
-  FDepends.Assign(Value);
-end;
-
 function TTarget.TaskCount: Integer;
 begin
   Result := FTasks.Count;
 end;
 
 
-{ TTask }
-
-function TTask.GetTag: string;
+procedure TTarget.ParseXML(Node: IElement);
+var
+  i         :IIterator;
+  child     :IElement;
+  Task      :TTask;
 begin
-  Result := FTag;
-  if Result = '' then
+  inherited ParseXML(Node);
+
+  i := Node.Children.Iterator;
+  while i.HasNext do
   begin
-    Result := copy(ClassName, 2, 255);
-    Result := StringReplace(Result, 'Task','', [rfIgnoreCase]);
-    Result := LowerCase(Result);
+    child := i.Next as IElement;
+    Task := FindTask(child.Name).Create(Self);
+    Task.ParseXML(child);
   end;
 end;
+
+
+{ TTask }
 
 procedure TTask.Log(Msg: string; Verbosity :TVerbosityLevel);
 begin
@@ -547,7 +706,7 @@ begin
       end;
     end;
   finally
-    ChangeDir(Project.BasePath);
+    ChangeDir(Project.BaseDir);
   end;
 end;
 
@@ -573,8 +732,41 @@ begin
     inherited Insert(Index, S);
 end;
 
+function FindTask(Tag :string) :TTaskClass;
+var
+  Index :Integer;
+begin
+  Index := __TaskRegistry.IndexOf(Tag);
+  if Index < 0 then
+    raise ETaskError.Create( Format('Task class <%s> not found', [Tag]) )
+  else
+    Result := Pointer(__TaskRegistry.Objects[Index])
+end;
+
+
+procedure RegisterTask(TaskClass :TTaskClass);
+begin
+  __TaskRegistry.AddObject(TaskClass.Tag, Pointer(TaskClass));
+  if GetClass(TaskClass.ClassName) = nil then
+    RegisterClass(TaskClass);
+end;
+
+procedure RegisterTasks(TaskClasses :array of TTaskClass);
+var
+  i :Integer;
+begin
+  for i := Low(TaskClasses) to High(TaskClasses) do
+    RegisterTask(TaskClasses[i]);
+end;
+
 initialization
+  __TaskRegistry := TStringList.Create;
+  __TaskRegistry.Sorted := true;
+  __TaskRegistry.Duplicates := dupIgnore;
+
   RegisterClasses([TProject, TTarget, TTask]);
+finalization
+  __TaskRegistry.Free;
 end.
 
 
