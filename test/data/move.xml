@@ -6,7 +6,7 @@
   <target name="test" >
     <move todir="${basedir}/dirb" >
       <fileset dir="${basedir}/dira" >
-        <include name="**/sample.txt" />
+        <include name="sample.txt" />
       </fileset>
     </move>
   </target>
