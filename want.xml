@@ -71,16 +71,15 @@ See http://www.suigeneris.org/want/ for details.
   </target>
 
   <target name="clean" >
-    <!-- delete dir="${dist}" / -->
-    <delete dir="${dcu}" >
-       <include name="**" />
-       <exclude name="CVS" />
-       <exclude name=".cvsignore" />
-    </delete>
     <delete dir="${bin}" >
        <include name="**" />
-       <exclude name="CVS" />
-       <exclude name=".cvsignore" />
+       <exclude name="ide" />
+       <exclude name="ide/**" />
+    </delete>
+    <delete dir="${dcu}" >
+       <include name="**" />
+       <exclude name="ide" />
+       <exclude name="ide/**" />
     </delete>
   </target>
 
