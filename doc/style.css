@@ -17,4 +17,7 @@ span.meta {color=yellow;}
 
 table {margin-left:16; margin-top:16; margin-bottom:16; }
 
-
+img {
+  border-width:8;
+  border-color:black;
+}
