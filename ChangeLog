@@ -1,3 +1,28 @@
+2002-11-02 14:51  juanco
+
+	* want.xml: include ChangeLog in distrbutions
+
+2002-11-01 14:22  juanco
+
+	* src/: ScriptRunner.pas, WantClasses.pas, want.dof, want.dsk,
+	win32/ConsoleListener.pas: avoid duplicate error messages during
+	configuration
+
+2002-11-01 14:22  juanco
+
+	* src/tasks/LoggerTask.pas, test/data/logger/want.xml,
+	test/data/logger/final/test.log: BUG: uninitializded variable
+	exposed with empty <log> task. Added regression test case
+
+2002-10-28 04:51  juanco
+
+	* doc/: dunit_want.xml, history.html: updated Want history and
+	links
+
+2002-10-28 03:53  juanco
+
+	* ChangeLog, release.ini, doc/index.html: v 0.1.137
+
 2002-10-27 16:03  juanco
 
 	* release.ini, src/want.dof, src/want.dsk, src/lib/WildPaths.pas:
@@ -207,11 +232,6 @@
 
 	* ChangeLog, release.ini, doc/index.html: 0.1.125 release
 
-2002-06-24 15:55  juanco
-
-	* doc/dist/: want-0.1.115.zip, want-0.1.120.zip: removed old
-	distribution archives
-
 2002-06-22 04:15  juanco
 
 	* lib/jal-0.1.4.zip: new version of JAL library
@@ -242,10 +262,6 @@
 	hide grayed links (View/Options/Links).
 	
 	Make sure DXF files are drawn in light gray (silver).
-
-2002-04-05 22:35  juanco
-
-	* doc/dist/want-0.1.120.zip: routine
 
 2002-03-31 14:04  juanca
 
@@ -362,8 +378,7 @@
 2002-01-29 15:29  juanco
 
 	* ChangeLog, release.ini, doc/index.html, make/bootstrap.bat,
-	test/WantAcceptTestLib.drc, doc/dist/want-0.1.115.zip (tags:
-	v_0_1_10): release 0.1.115
+	test/WantAcceptTestLib.drc: release 0.1.115
 
 2002-01-29 14:54  juanco
 
