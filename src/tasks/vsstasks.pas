@@ -82,6 +82,8 @@ begin
   if F_Label <> '' then
     ArgumentList.Add('"-VL' + F_Label + '"');
 
+  { ignore prompts for information }  
+  ArgumentList.Add('-I-');
   inherited Execute;
 end;
 
