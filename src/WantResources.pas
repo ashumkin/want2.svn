@@ -31,14 +31,14 @@ resourcestring
              '  want [options] [target]'                                  + C_EOL +
                                                                             C_EOL +
              'Options:'                                                   + C_EOL +
-             '  -h, -H, -?          Displays this help text.'             + C_EOL +
-             '  -L                  Displays licensing information.'      + C_EOL +
-             '  -buildfile <file>   Specifies the build file. Default is want.xml' + C_EOL +
-             '  -Dname=value        Define property "name".'              + C_EOL +
-             '  -quiet              Be very quiet. '                      + C_EOL +
-             '  -verbose            Be extra verbose.'                    + C_EOL +
-             '  -debug              Print debugging information.'         + C_EOL +
-             '  -nocolor            Do not use color in console output.'  + C_EOL;
+             '  -h, -H, -?, -help      Displays this help text.'             + C_EOL +
+             '  -L                     Displays licensing information.'      + C_EOL +
+             '  -buildfile <file>      Specifies the build file. Default is want.xml' + C_EOL +
+             '  -Dname=value           Define property "name".'              + C_EOL +
+             '  -q, -quiet, -warnings  Be very quiet. '                      + C_EOL +
+             '  -verbose               Be extra verbose.'                    + C_EOL +
+             '  -debug                 Print debugging information.'         + C_EOL +
+             '  -nocolor               Do not use color in console output.'  + C_EOL;
 
 
 

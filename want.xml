@@ -126,6 +126,8 @@ See http://www.suigeneris.org/want/ for details.
       <debug     value="true" />
       <console   value="true" />
 
+      <warning name="SYMBOL_PLATFORM" value="off" />
+
       <define name="USE_TEXT_RUNNER" unless="debug" />
       <define name="DUNIT_DLL" />
 

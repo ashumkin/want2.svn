@@ -164,7 +164,9 @@ var
 begin
   Result := True;
   if (Switch = 'h')
+  or (Switch = 'H')
   or (Switch = '?')
+  or (Switch = 'help')
   then
   begin
     WriteLn(Copyright );
@@ -195,7 +197,9 @@ begin
     Listener.Level := vlDebug;
     Log(vlDebug, 'Parsing commandline');
   end
-  else if (Switch = 'quiet') or (Switch = 'q') then
+  else if (Switch = 'quiet') 
+  or (Switch = 'q') 
+  or (Switch = 'warnings') then
     Listener.Level := vlQuiet
   else if (Switch = 'n') then
     Project.NoChanges := true
