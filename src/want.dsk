@@ -81,25 +81,31 @@ LRDockWidth=336
 Dockable=1
 
 [Closed Files]
-File_0=SourceModule,'C:\home\want\src\tasks\DUnitTasks.pas',0,1,46,54,61,0,0
-File_1=SourceModule,'C:\home\want\src\tasks\ExecTasks.pas',0,1,91,22,100,0,0
-File_2=SourceModule,'C:\home\want\src\tasks\ZipTasks.pas',0,1,84,8,96,0,0
-File_3=SourceModule,'C:\home\want\src\tasks\FileTasks.pas',0,1,312,1,320,0,0
-File_4=SourceModule,'C:\home\want\src\ScriptRunner.pas',0,1,170,23,178,0,0
-File_5=SourceModule,'C:\home\want\src\tasks\DelphiTasks.pas',0,1,1,1,1,0,0
-File_6=SourceModule,'C:\home\want\src\lib\ScriptParser.pas',0,1,137,1,168,0,0
-File_7=SourceModule,'C:\home\want\src\lib\WildPaths.pas',0,1,583,6,584,0,0
-File_8=SourceModule,'c:\lib\pascal\jcl\source\JclFileUtils.pas',0,1,1188,1,1192,0,0
-File_9=SourceModule,'C:\home\want\src\tasks\EditTasks.pas',0,1,239,1,261,0,0
+File_0=SourceModule,'C:\home\want\src\tasks\ExecTasks.pas',0,1,91,22,100,0,0
+File_1=SourceModule,'C:\home\want\src\tasks\ZipTasks.pas',0,1,84,8,96,0,0
+File_2=SourceModule,'C:\home\want\src\tasks\FileTasks.pas',0,1,312,1,320,0,0
+File_3=SourceModule,'C:\home\want\src\ScriptRunner.pas',0,1,170,23,178,0,0
+File_4=SourceModule,'C:\home\want\src\lib\ScriptParser.pas',0,1,137,1,168,0,0
+File_5=SourceModule,'C:\home\want\src\lib\WildPaths.pas',0,1,583,6,584,0,0
+File_6=SourceModule,'c:\lib\pascal\jcl\source\JclFileUtils.pas',0,1,1188,1,1192,0,0
+File_7=SourceModule,'C:\home\want\src\tasks\EditTasks.pas',0,1,239,1,261,0,0
 
 [Modules]
-Module0=C:\home\want\src\want.dpr
-Module1=C:\home\want\src\elements\Attributes.pas
-Module2=C:\home\want\src\WantClasses.pas
-Count=3
+Module0=C:\home\want\src\tasks\DUnitTasks.pas
+Module1=c:\home\dunit\src\TestFramework.pas
+Module2=C:\home\want\src\elements\Attributes.pas
+Module3=C:\home\want\src\WantClasses.pas
+Module4=C:\home\want\src\tasks\DelphiTasks.pas
+Module5=C:\home\want\src\want.dpr
+Count=6
 EditWindowCount=1
 
-[C:\home\want\src\want.dpr]
+[C:\home\want\src\tasks\DUnitTasks.pas]
+ModuleType=SourceModule
+FormState=0
+FormOnTop=0
+
+[c:\home\dunit\src\TestFramework.pas]
 ModuleType=SourceModule
 FormState=0
 FormOnTop=0
@@ -110,6 +116,16 @@ FormState=0
 FormOnTop=0
 
 [C:\home\want\src\WantClasses.pas]
+ModuleType=SourceModule
+FormState=0
+FormOnTop=0
+
+[C:\home\want\src\tasks\DelphiTasks.pas]
+ModuleType=SourceModule
+FormState=0
+FormOnTop=0
+
+[C:\home\want\src\want.dpr]
 ModuleType=SourceModule
 FormState=0
 FormOnTop=0
@@ -139,11 +155,14 @@ RightPanelSize=0
 BottomPanelSize=0
 BottomPanelClients=MessageView@EditWindow0
 BottomPanelData=00000400010000000B0000004D657373616765566965770000000000000000000000000000000000FFFFFFFF
-ViewCount=3
+ViewCount=6
 CurrentView=2
 View0=0
 View1=1
 View2=2
+View3=3
+View4=4
+View5=5
 
 [CodeExplorer@EditWindow0]
 Create=1
@@ -179,23 +198,44 @@ Dockable=1
 
 [View0]
 Module=C:\home\want\src\WantClasses.pas
-CursorX=18
-CursorY=891
-TopLine=886
+CursorX=1
+CursorY=649
+TopLine=629
 LeftCol=1
 
 [View1]
 Module=C:\home\want\src\elements\Attributes.pas
-CursorX=1
-CursorY=65
+CursorX=30
+CursorY=55
 TopLine=31
 LeftCol=1
 
 [View2]
+Module=C:\home\want\src\tasks\DUnitTasks.pas
+CursorX=1
+CursorY=96
+TopLine=66
+LeftCol=1
+
+[View3]
+Module=c:\home\dunit\src\TestFramework.pas
+CursorX=14
+CursorY=1221
+TopLine=1208
+LeftCol=1
+
+[View4]
 Module=C:\home\want\src\want.dpr
 CursorX=54
 CursorY=67
 TopLine=63
+LeftCol=1
+
+[View5]
+Module=C:\home\want\src\tasks\DelphiTasks.pas
+CursorX=1
+CursorY=449
+TopLine=404
 LeftCol=1
 
 [DockHosts]
