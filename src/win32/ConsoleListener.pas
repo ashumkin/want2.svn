@@ -31,12 +31,19 @@ type
     procedure   OutputPrefix(const aPrefix: String; const aFlush: Boolean; const aLevel: TLogLevel);  override;
 
   public
+    constructor Create;
     property UseColor :boolean read FUseColor write FUseColor;
   end;
 
 implementation
 
 { TConsoleLogManager }
+
+constructor TConsoleLogManager.Create;
+begin
+  inherited Create;
+  FUseColor := True;
+end;
 
 procedure TConsoleLogManager.OutputLog(const aLine: String; const aFlush: Boolean; const aLevel: TLogLevel);
 begin

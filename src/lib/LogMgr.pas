@@ -34,28 +34,28 @@ const
   vlVeryQuiet = vlErrors;
   vlQuiet     = vlWarnings;
 
+  LogLevelText: array[TLogLevel] of String = ( 'Errors',
+                                               'Warnings',
+                                               'Normal',
+                                               'Verbose',
+                                               'Debug'       );
+
 type
   TLogMethod = procedure(Msg :string; Level :TLogLevel) of object;
   TTaggedLogMethod = procedure(Tag, Msg :string; Level :TLogLevel) of object;
 
   TLogManager = class
     private
-      FActive:           Boolean;
-      FFileOpen:         Boolean;
-      FEchoToFile:       Boolean;
       FIncludeDate:      Boolean;
       FIncludeTime:      Boolean;
       FIncludeShortName: Boolean;
-      FAlwaysFlush:      Boolean;
       FHeaderPresent:    Boolean;
+
 
       FLogLevel: TLogLevel;
 
       FRightMargin: Integer;
 
-      FLogHandle: TextFile;
-
-      FFileName:  String;
       FShortName: String;
       FLogHeader: String;
 
@@ -65,18 +65,11 @@ type
 
       procedure   BuildHeader;
 
-      procedure   OpenLogFile;
-      procedure   CloseLogFile;
-
       procedure   OutputLog(   const aLine: String; const aFlush: Boolean;   const aLevel: TLogLevel);  virtual;
       procedure   OutputPrefix(const aPrefix: String; const aFlush: Boolean; const aLevel: TLogLevel);  virtual;
 
     public
       constructor Create;
-      destructor  Destroy; override;
-
-      procedure   Start;
-      procedure   Stop;
 
       procedure   LogMsg(const aLevel: TLogLevel; const aMsg: String; const aPrefix: String); virtual;
 
@@ -84,15 +77,8 @@ type
       procedure   Log(const aLevel: TLogLevel; const aMsg: String = ''); overload;
       procedure   Log(const aPrefix: String; const aMsg: String; const aLevel: TLogLevel = vlNormal); overload; virtual;
 
-      property    Active:   Boolean read FActive;
-      property    FileOpen: Boolean read FFileOpen;
-
       property    Level:    TLogLevel read FLogLevel write FLogLevel;
 
-      property    EchoToFile:  Boolean read FEchoToFile  write FEchoToFile;
-      property    AlwaysFlush: Boolean read FAlwaysFlush write FAlwaysFlush;
-
-      property    FileName:  String read FFileName  write FFileName;
       property    ShortName: String read FShortName write FShortName;
       property    LogHeader: String read FLogHeader write FLogHeader;
 
@@ -103,12 +89,34 @@ type
       property    RightMargin: Integer read FRightMargin write FRightMargin;
   end;
 
-const
-  LogLevelText: array[TLogLevel] of String = ( 'Errors',
-                                               'Warnings',
-                                               'Normal',
-                                               'Verbose',
-                                               'Debug'       );
+  TNullLogManager = class(TLogManager);
+
+  TFileLogManager = class(TLogManager)
+  protected
+    FActive:           Boolean;
+    FFileOpen:         Boolean;
+    FAlwaysFlush:      Boolean;
+    FLogHandle: TextFile;
+    FFileName:  String;
+
+    procedure   OutputLog(   const aLine: String; const aFlush: Boolean;   const aLevel: TLogLevel);  override;
+    procedure   OutputPrefix(const aPrefix: String; const aFlush: Boolean; const aLevel: TLogLevel);  override;
+
+    procedure   OpenLogFile;
+    procedure   CloseLogFile;
+  public
+    destructor  Destroy; override;
+    procedure   Start; virtual;
+    procedure   Stop;  virtual;
+
+    procedure   LogMsg(const aLevel: TLogLevel; const aMsg: String; const aPrefix: String); override;
+
+    property    Active:   Boolean read FActive;
+    property    FileOpen: Boolean read FFileOpen;
+    property    AlwaysFlush: Boolean read FAlwaysFlush write FAlwaysFlush;
+    property    FileName:  String read FFileName  write FFileName;
+  end;
+
 
 implementation
 
@@ -122,31 +130,9 @@ uses
 constructor TLogManager.Create;
 begin
   inherited Create;
-
-  FActive           := False;
-  FFileOpen         := False;
-  FEchoToFile       := False;
-  FAlwaysFlush      := False;
-  FIncludeDate      := False;
-  FIncludeTime      := False;
-  FIncludeShortName := False;
-  FHeaderPresent    := False;
-
-  FFileName  := '';
-  FShortName := '';
-  FLogHeader := '';
-
   FLogLevel := vlNormal;
 
   FRightMargin := 78;
-end;
-
-destructor TLogManager.Destroy;
-begin
-  if Active then
-    Stop;
-
-  inherited Destroy;
 end;
 
 procedure TLogManager.BuildHeader;
@@ -179,73 +165,14 @@ begin
   BuildHeader;
 end;
 
-procedure TLogManager.OpenLogFile;
-begin
-  if FFileOpen then
-    CloseLogFile;
-
-  if Length(FileName) > 0 then
-    begin
-      AssignFile(FLogHandle, Filename);
-
-      if FileExists(Filename) then
-        Append(FLogHandle)
-      else
-        Rewrite(FLogHandle);
-
-      FFileOpen := True;
-    end;
-end;
-
-procedure TLogManager.CloseLogFile;
-begin
-  if FFileOpen then
-    CloseFile(FLogHandle);
-
-  FFileOpen := False;
-end;
-
-procedure TLogManager.Start;
-begin
-  if Active then
-    Stop;
-
-  FActive := True;
-end;
-
-procedure TLogManager.Stop;
-begin
-  CloseLogFile;
-
-  FActive := False;
-end;
-
 procedure TLogManager.OutputLog(const aLine: String; const aFlush: Boolean; const aLevel: TLogLevel);
 begin
-  if EchoToFile then
-    begin
-      if not FileOpen then
-        OpenLogFile;
-
-      WriteLn(FLogHandle, aLine);
-
-      if aFlush then
-        CloseLogFile;
-    end;
+  // do nothing
 end;
 
 procedure TLogManager.OutputPrefix(const aPrefix : String; const aFlush: Boolean; const aLevel: TLogLevel);
 begin
-  if EchoToFile then
-    begin
-      if not FileOpen then
-        OpenLogFile;
-
-      Write(FLogHandle, aPrefix);
-
-      if aFlush then
-        CloseLogFile;
-    end;
+  // do nothing
 end;
 
 procedure TLogManager.LogMsg(const aLevel: TLogLevel; const aMsg: String; const aPrefix: String);
@@ -255,7 +182,7 @@ var
   i:      Integer;
   Msg:    String;
 begin
-  if (Level >= aLevel) and Active then
+  if (Level >= aLevel) then
     begin
       Header := '';
 
@@ -289,9 +216,6 @@ begin
 
       finally
         Lines.Free;
-
-        if AlwaysFlush then
-          CloseLogFile;
       end;
     end;
 end;
@@ -311,5 +235,83 @@ begin
   LogMsg(aLevel, aMsg, aPrefix);
 end;
 
+
+{ TFileLogManager }
+
+destructor TFileLogManager.Destroy;
+begin
+  if Active then
+    Stop;
+
+  inherited Destroy;
+end;
+
+procedure TFileLogManager.OpenLogFile;
+begin
+  if FFileOpen then
+    CloseLogFile;
+
+  if Length(FileName) > 0 then
+    begin
+      AssignFile(FLogHandle, Filename);
+
+      if FileExists(Filename) then
+        Append(FLogHandle)
+      else
+        Rewrite(FLogHandle);
+
+      FFileOpen := True;
+    end;
+end;
+
+procedure TFileLogManager.CloseLogFile;
+begin
+  if FFileOpen then
+    CloseFile(FLogHandle);
+
+  FFileOpen := False;
+end;
+
+procedure TFileLogManager.OutputLog(const aLine: String; const aFlush: Boolean; const aLevel: TLogLevel);
+begin
+  if not FileOpen then
+    OpenLogFile;
+
+  WriteLn(FLogHandle, aLine);
+
+  if aFlush then
+    CloseLogFile;
+end;
+
+procedure TFileLogManager.OutputPrefix(const aPrefix: String; const aFlush: Boolean; const aLevel: TLogLevel);
+begin
+  if not FileOpen then
+    OpenLogFile;
+
+  Write(FLogHandle, aPrefix);
+
+  if aFlush then
+    CloseLogFile;
+end;
+
+procedure TFileLogManager.Start;
+begin
+  if Active then
+    Stop;
+end;
+
+procedure TFileLogManager.Stop;
+begin
+  CloseLogFile;
+  FActive := False;
+end;
+
+procedure TFileLogManager.LogMsg(const aLevel: TLogLevel; const aMsg, aPrefix: String);
+begin
+  if Active then
+   inherited LogMsg(aLevel, aMsg, aPrefix);
+  if AlwaysFlush then
+    CloseLogFile;
+end;
 
 end.
