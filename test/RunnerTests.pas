@@ -36,7 +36,7 @@ unit DanteMainTest;
 interface
 
 uses
-  TestFramework, DanteMain, DanteClassesTest, SysUtils;
+  TestFramework, DanteMain, DanteTestUtil, DanteClassesTest, SysUtils;
 
 type
   TTestDanteMain = class(TTestDirCase)
@@ -69,6 +69,7 @@ begin
 
   Content :=
     'object TestProject: TProject                                       ' + CR +
+    '  DefaultTarget = ''Main''                                         ' + CR +
     '  object Main: TTarget                                             ' + CR +
     '    object ExecNT: TExecTask                                       ' + CR +
     '      Executable = ''cmd.exe''                                     ' + CR +
