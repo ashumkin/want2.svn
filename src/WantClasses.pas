@@ -309,8 +309,8 @@ procedure RegisterElements(AppliesTo : TScriptElementClass; ElementClasses:array
 
 function  TextToArray(const Text: string; const Delimiter :string = ','): TStringArray;
 
-procedure WantError(Msg: string = '');
-procedure TaskError(Msg: string = '');
+procedure WantError(Msg: string = ''; Addr :Pointer = nil);
+procedure TaskError(Msg: string = ''; Addr :Pointer = nil);
 
 function CallerAddr: Pointer;
 
@@ -465,14 +465,20 @@ asm
 @@Finish:
 end;
 
-procedure WantError(Msg: string = '');
+procedure WantError(Msg: string; Addr :Pointer);
 begin
-   raise EWantError.Create(Msg + '!' ) at CallerAddr;
+   if Addr <> nil then
+     raise EWantError.Create(Msg) at Addr
+   else
+     raise EWantError.Create(Msg) at CallerAddr;
 end;
 
-procedure TaskError(Msg: string);
+procedure TaskError(Msg: string; Addr :Pointer);
 begin
-   raise ETaskError.Create(Msg + '!' ) at CallerAddr;;
+   if Addr <> nil then
+     raise ETaskError.Create(Msg) at Addr
+   else
+     raise ETaskError.Create(Msg) at CallerAddr;
 end;
 
 { TScriptElement }

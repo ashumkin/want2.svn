@@ -277,7 +277,10 @@ begin
     on e: Exception do
     begin
       Listener.TaskFailed(Task, e.Message);
-      raise;
+      if e is EWantException then
+        raise
+      else
+        WantError(e.Message);
     end;
   end;
 end;
