@@ -216,6 +216,7 @@ type
     FDescription:   string;
 
     FLogManager :TLogManager;
+    FOnLog      :TLogMethod;
 
     procedure InsertNotification(Child :TTree); override;
     procedure RemoveNotification(Child :TTree); override;
@@ -286,6 +287,8 @@ type
       stored  False
       default vlNormal;
     property Description:   string          read FDescription    write FDescription;
+
+    property OnLog :TLogMethod read FOnLog write FOnLog;
   end;
 
 
@@ -1126,7 +1129,9 @@ end;
 
 procedure TProject.Log(Msg: string; Level: TLogLevel);
 begin
-  if LogManager <> nil then
+  if Assigned(FOnLog) then
+    FOnLog(Msg, Level)
+  else if LogManager <> nil then
     LogManager.Log(Msg, Level);
 end;
 

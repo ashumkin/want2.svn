@@ -35,6 +35,8 @@ const
   vlQuiet     = vlWarnings;
 
 type
+  TLogMethod = procedure(Msg :string; Level :TLogLevel) of object;
+  
   TLogManager = class
     private
       FActive:           Boolean;

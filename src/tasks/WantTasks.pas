@@ -95,7 +95,7 @@ begin
   inherited Create(Owner);
   FSubProject := TProject.Create(Self);
   FSubProject.RootPath := ToAbsolutePath(Project.RootPath);
-  FSubProject.LogManager := Self.Project.LogManager;
+  FSubProject.OnLog := Self.Log;
 end;
 
 destructor TDanteTask.Destroy;
@@ -117,7 +117,7 @@ begin
     FSubProject.SetInitialBaseDir(dir);
 
   Log('building "%s" in directory "%s"', [
-                     ToRelativePath(buildfile),
+                     buildfile,
                      ToRelativePath(FSubProject.BasePath)
                      ]);
 
