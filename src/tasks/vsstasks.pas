@@ -74,7 +74,7 @@ begin
     ArgumentList.Add('-Y' + FLogin);
 
   if FLocalPath <> '' then
-    ArgumentList.Add('"-GL' + FLocalPath + '"');
+    ArgumentList.Add('"-GL' + ToSystemPath(ToAbsolutePath(ToDantePath(FLocalPath))) + '"');
 
   { skip writable files }
   ArgumentList.Add('-GWS');
@@ -92,6 +92,9 @@ begin
   inherited;
   RequireAttribute('vsspath');
 end;
+
+initialization
+  RegisterTasks([TVssGetTask]);
 
 end.
 
