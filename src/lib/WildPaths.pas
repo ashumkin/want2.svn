@@ -143,7 +143,7 @@ function  SuperPath(const Path: TPath): TPath;
 // file operations
 
 procedure MakeDir(const Path: TPath);
-procedure ChangeDir(const Path: TPath);
+function  ChangeDir(const Path: TPath; Verify :boolean = true) :boolean;
 function  CurrentDir: TPath;
 
 procedure CopyFile(const Src, Dst: TPath);
@@ -766,10 +766,13 @@ begin
   end;
 end;
 
-procedure ChangeDir(const Path: TPath);
+function ChangeDir(const Path: TPath; Verify :boolean) :boolean;
 begin
+  Result := True;
   if (Path <> '') and (Path <> CurrentDir) then
-    SetCurrentDir(ToSystemPath(Path));
+    Result := SetCurrentDir(ToSystemPath(Path));
+    if not Result and Verify then
+      raise EFileOpException.CreateFmt('Could not change to directory "%s"',[Path]);
 end;
 
 function  CurrentDir: TPath;
