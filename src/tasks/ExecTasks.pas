@@ -32,7 +32,7 @@ uses
   WantUtils,
   WantClasses,
   Attributes,
-  ChildProcesses;
+  JalProcesses;
 
 
 
@@ -290,13 +290,13 @@ begin
     while not Child.EOF
     and (LineNo < SkipLines) do
     begin
-      Child.ReadLn;
+      Child.ReadLine;
       Inc(LineNo);
     end;
 
     while not Child.EOF do
     begin
-      Line := Child.ReadLn;
+      Line := Child.ReadLine;
       //!!! Inc(LineNo); // never used
       if output <> '' then
         Writeln(OutFile, Line)

@@ -99,6 +99,7 @@ See http://www.suigeneris.org/want/ for details.
       <longstrings value="true" />
 
       <define name="USE_JEDI_JCL" />
+      <define name="DUNIT_DLL" />
 
       <unitpath     refid="sources"   />
       <includepath  refid="sources"   />
@@ -119,6 +120,7 @@ See http://www.suigeneris.org/want/ for details.
       <console   value="true" />
 
       <define name="USE_TEXT_RUNNER" unless="debug" />
+      <define name="DUNIT_DLL" />
 
       <unitpath     refid="sources" >
         <include  name="${test}/**" />
@@ -142,6 +144,7 @@ See http://www.suigeneris.org/want/ for details.
       <console   value="true" />
 
       <define name="USE_TEXT_RUNNER" unless="debug" />
+      <define name="DUNIT_DLL" />
 
       <unitpath     refid="sources" >
         <include name="${test}/**" />

@@ -611,7 +611,7 @@ begin
   end;
 
   if Length(Sources) = 0 then
-    TaskFailure(Format('could not find %s to compile', [PathConcat(BasePath, source)]));
+    TaskFailure(Format('could not find %s to compile', [ToSystemPath(PathConcat(BasePath, source))]));
 end;
 
 procedure TDelphiCompileTask.AddUnitPath(Path: TPath);

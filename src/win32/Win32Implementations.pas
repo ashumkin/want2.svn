@@ -12,7 +12,6 @@ unit Win32Implementations;
 interface
 uses
   WIN32,
-  Win32ChildProcesses,
   ConsoleListener;
 
 const

@@ -6,7 +6,9 @@
 *******************************************************************)
 
 { $Id$ }
-{$LONGSTRINGS OFF}
+
+{$LONGSTRINGS OFF} // required for tests in DLLs
+
 unit DUnitTasks;
 
 interface
@@ -38,7 +40,7 @@ type
     procedure EndTest(test: ITest); virtual;
     procedure TestingStarts; virtual;
     procedure TestingEnds(testResult: TTestResult); virtual;
-    procedure Status(test :ITest; const Msg :ShortString); virtual;
+    procedure Status(test :ITest; const Msg :string); virtual;
 
  // implement the task
   protected
@@ -162,7 +164,7 @@ begin
   end;
 end;
 
-procedure TDUnitTask.Status(test: ITest; const Msg: ShortString);
+procedure TDUnitTask.Status(test: ITest; const Msg: string);
 begin
   Log(vlVerbose, Format('%s: %s', [test.Name, Msg]));
 end;
