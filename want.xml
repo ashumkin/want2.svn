@@ -84,6 +84,8 @@ See http://www.suigeneris.org/want/ for details.
       <optimize  value="true" />
       <console   value="true" />
 
+      <define name="USE_JEDI_JCL" />
+
       <unitpath     refid="sources"   />
       <includepath  refid="sources"   />
       <resourcepath refid="resources" />
