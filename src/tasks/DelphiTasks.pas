@@ -25,14 +25,13 @@
     @author Ignacio J. Ortega
     @author Gerrit Jan Doornink
 }
-{ TODO -oGJD -cTODO : 
+{ TODO -oGJD -cTODO :
+  When usecfg is false create empty dcc32.cfg to override 
+  usage of $(DELPHI)\bin\dcc32.cfg by dcc32.exe.
   Add handling of:
-  -J: Generate an object file
-  -JP: Generate C++ object file
-  -K: Set image base address
   -TX: Target file extension
-  -V: Turbo Debugger debug information
-  -VN: Generate namespace debugging information in Giant format (used by C++Builder) }
+  -F: Find runtime error
+  -P: Look for 8.3 file names }
 
 unit DelphiTasks;
 
@@ -189,6 +188,17 @@ type
     FTypeInfo       : boolean;
     FAlign          : boolean;
     FAlignSize      : integer;
+    FGenObj         : boolean;
+    FGenObjCpp      : boolean;
+    FGenObjIncNS    : boolean;
+    FGenObjExpSym   : boolean;
+    FTDDebugInfo    : boolean;
+    FGiantDebugInfo : boolean;
+    FRemoteDebugInfo: boolean;
+    FImplicitBuild  : boolean;
+    FMinStackSize   : cardinal;
+    FMaxStackSize   : cardinal;
+    FImageBase      : cardinal;
 
     FUnitPaths      : TUnitPathElement;
     FResourcePaths  : TResourcePathElement;
@@ -212,6 +222,14 @@ type
           optionFlag : string;pathsToOutput : TPaths) : string;
 
     function PathOpt(Opt :string; Path :TPath) :string;
+
+    property genobj                  :boolean read FGenObj       write FGenObj       default false;
+    property genobjcpp               :boolean read FGenObjCpp    write FGenObjCpp    default false;
+    property genobjincludenamespaces :boolean read FGenObjIncNS  write FGenObjIncNS  default false;
+    property genobjexportallsymbols  :boolean read FGenObjExpSym write FGenObjExpSym default false;
+
+    property minstacksize :cardinal read FMinStackSize write FMinStackSize default $00004000;
+    property maxstacksize :cardinal read FMaxStackSize write FMaxStackSize default $00100000;
   public
     constructor Create(Owner: TScriptElement); override;
     destructor  Destroy; override;
@@ -231,7 +249,6 @@ type
     procedure AddUnitAlias(OldUnit, NewUnit: string);
 
     procedure RestoreCFGs;
-
   published
     property basedir; // from TTask
 
@@ -269,6 +286,9 @@ type
     property localsymbols   :boolean read FLocalSymbols   write FLocalSymbols   default true;
     property definitioninfo :boolean read FDefinitionInfo write FDefinitionInfo default true;
     property referenceinfo  :boolean read FReferenceInfo  write FReferenceInfo  default false;
+    property tddebuginfo    :boolean read FTDDebugInfo    write FTDDebugInfo  default false;
+    property giantdebuginfo :boolean read FGiantDebugInfo write FGiantDebugInfo default false;
+    property remotedebuginfo:boolean read FRemoteDebugInfo write FRemoteDebugInfo default false;
     property console        :boolean read FConsole        write FConsole        default false;
     property warnings       :boolean read FEnableWarnings write FEnableWarnings default true;
     property hints          :boolean read FEnableHints    write FEnableHints    default true;
@@ -287,6 +307,8 @@ type
     property _typeinfo      :boolean read FTypeInfo       write FTypeInfo       default false;
     property align          :boolean read FAlign          write FAlign          default true;
     property alignsize      :integer read FAlignSize      write FAlignSize      default 8;
+    property implicitbuild  :boolean read FImplicitBuild  write FImplicitBuild  default true;
+    property imagebase      :cardinal read FImageBase     write FImageBase      default $00400000;
 
     property map            :TMapType read FMap write FMap default none;
 
@@ -368,6 +390,31 @@ type
     property NewUnit :string read FNewUnit write FNewUnit;
   end;
 
+  TGenObjElement = class(TOptionElement)
+  protected
+    FValue             :boolean;
+    FCppObj            :boolean;
+    FIncludeNamespaces :boolean;
+    FExportAllSymbols  :boolean;
+  public
+    procedure Init; override;
+  published
+    property Value             :boolean read FValue             write FValue;
+    property CppObj            :boolean read FCppObj            write FCppObj;
+    property IncludeNamespaces :boolean read FIncludeNamespaces write FIncludeNamespaces;
+    property ExportAllSymbols  :boolean read FExportAllSymbols  write FExportAllSymbols;
+  end;
+
+  TStackSizeElement = class(TOptionElement)
+  protected
+    FMin :cardinal;
+    FMax :cardinal;
+  public
+    procedure Init; override;
+  published
+    property min: cardinal read FMin write FMin default $00004000;
+    property max: cardinal read FMax write FMax default $00100000;
+  end;
 
 implementation
 var
@@ -548,6 +595,9 @@ begin
   FLocalSymbols := true;
   FDefinitionInfo := true;
   FReferenceInfo := false;
+  FTDDebugInfo := false;
+  FGiantDebugInfo := false;
+  FRemoteDebugInfo := false;
   FConsole := false;
   FEnableWarnings := true;
   FEnableHints := true;
@@ -566,6 +616,14 @@ begin
   FTypeInfo := false;
   FAlign := true;
   FAlignSize := 8;
+  FImplicitBuild := true;
+  FGenObj := false;
+  FGenObjCpp := false;
+  FGenObjIncNS := false;
+  FGenObjExpSym := false;
+  FMinStackSize := $00004000;
+  FMaxStackSize := $00100000;
+  FImageBase := $00400000;
   FAllChecks := false;
   FAllDebugInfo := true;
 
@@ -792,6 +850,33 @@ begin
     begin
       Log(vlVerbose, 'debuginfo=false');
       Result := Result + ' -$D-';
+    end;
+  end;
+
+  if HasAttribute('tddebuginfo') then
+  begin
+    if tddebuginfo then
+    begin
+      Log(vlVerbose, 'tddebuginfo=true');
+      Result := Result + ' -V';
+    end;
+  end;
+
+  if HasAttribute('giantdebuginfo') then
+  begin
+    if giantdebuginfo then
+    begin
+      Log(vlVerbose, 'giantdebuginfo=true');
+      Result := Result + ' -VN';
+    end;
+  end;
+
+  if HasAttribute('remotedebuginfo') then
+  begin
+    if remotedebuginfo then
+    begin
+      Log(vlVerbose, 'remotedebuginfo=true');
+      Result := Result + ' -VR';
     end;
   end;
 
@@ -1046,6 +1131,52 @@ begin
     end;
   end;
 
+  if HasAttribute('implicitbuild') then
+  begin
+    if not implicitbuild then
+    begin
+      Log(vlVerbose, 'implicitbuild=false');
+      Result := Result + ' -Z'
+    end;
+  end;
+
+  if HasAttribute('genobjcpp') or HasAttribute('genobj') then
+  begin
+    if genobjcpp then
+    begin
+      Log(vlVerbose, 'genobjcpp=true');
+      Result := Result + ' -JP';
+      if genobjincludenamespaces then
+      begin
+        Log(vlVerbose, 'genobjincludenamespaces=true');
+        Result := Result + 'N';
+      end;
+      if genobjexportallsymbols then
+      begin
+        Log(vlVerbose, 'genobjexportallsymbols=true');
+        Result := Result + 'E';
+      end;
+    end
+    else if genobj then
+    begin
+      Log(vlVerbose, 'genobj=true');
+      Result := Result + ' -J';
+    end;
+  end;
+
+  if HasAttribute('minstacksize') and HasAttribute('maxstacksize') then
+  begin
+    Log(vlVerbose, 'minstacksize=' + IntToStr(minstacksize));
+    Log(vlVerbose, 'maxstacksize=' + IntToStr(maxstacksize));
+    Result := Result + ' -$M' + IntToStr(minstacksize) + ',' + IntToStr(maxstacksize);
+  end;
+
+  if HasAttribute('imagebase') then
+  begin
+    Log(vlVerbose, 'imagebase=' + IntToStr(imagebase));
+    Result := Result + ' -K' + IntToStr(imagebase);
+  end;
+
   case map of
     segments : Result := Result + ' -GS';
     publics  : Result := Result + ' -GP';
@@ -1238,7 +1369,6 @@ begin
   end;
 end;
 
-
 procedure TDelphiCompileTask.AddWarning(Name: TWarning; Value :boolean);
 begin
   if Value then
@@ -1304,7 +1434,6 @@ begin
     dcc.AddDefine(Name, Value);
   end;
 end;
-
 
 { TPathSet }
 
@@ -1374,13 +1503,60 @@ begin
   end;
 end;
 
+{ TGenObjElement }
+
+procedure TGenObjElement.Init;
+begin
+  inherited Init;
+  if Enabled then
+  begin
+    Log(vlDebug, '%s %s', [TagName, 'Init']);
+    RequireAttribute('value');
+    dcc.genobj := Value;
+    dcc.SetAttribute('genobj', GetAttribute('value'));
+    if HasAttribute('cppobj') then
+    begin
+      dcc.genobjcpp := CppObj;
+      dcc.SetAttribute('genobjcpp', GetAttribute('cppobj'));
+    end;
+    if HasAttribute('includenamespaces') then
+    begin
+      dcc.genobjincludenamespaces := IncludeNamespaces;
+      dcc.SetAttribute('genobjincludenamespaces', GetAttribute('includenamespaces'));
+    end;
+    if HasAttribute('exportallsymbols') then
+    begin
+      dcc.genobjexportallsymbols := ExportAllSymbols;
+      dcc.SetAttribute('genobjexportallsymbols', GetAttribute('exportallsymbols'));
+    end;
+  end;
+end;
+
+{ TStackSizeElement }
+
+procedure TStackSizeElement.Init;
+begin
+  inherited Init;
+  if Enabled then
+  begin
+    Log(vlDebug, '%s %d %d', [TagName, Min, Max]);
+    RequireAttributes(['min', 'max']);
+    dcc.minstacksize := min;
+    dcc.SetAttribute('minstacksize', GetAttribute('min'));
+    dcc.maxstacksize := max;
+    dcc.SetAttribute('maxstacksize', GetAttribute('max'));
+  end;
+end;
+
 initialization
   RegisterTasks( [TDelphiCompileTask, TResourceCompileTask]);
   RegisterElements(TDelphiCompileTask, [
                          TDefineElement ,
                          TUsePackageElement,
                          TWarningElement,
-                         TUnitAliasElement
+                         TUnitAliasElement,
+                         TGenObjElement,
+                         TStackSizeElement
                          ]);
   with TDelphiCompileTask.FindDelphi('') do
   begin
