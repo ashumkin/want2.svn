@@ -322,7 +322,8 @@ begin
     Result := FindBuildFile(SearchUp)
   else
   begin
-    Result := BuildFile;
+    Log(vlDebug, Format('Findind buildfile %s', [BuildFile]));
+    Result := PathConcat(CurrentDir, BuildFile);
     Dir    := SuperPath(Result);
 
     Log(vlDebug, Format('Looking for "%s in "%s"', [BuildFile, Dir]));
@@ -351,7 +352,6 @@ end;
 
 function TScriptRunner.FindBuildFile(SearchUp: boolean): TPath;
 begin
-  Log(vlDebug, Format('Findind buildfile', [Result]));
   Result := FindBuildFile(DefaultBuildFileName, SearchUp);
   if not PathIsFile(Result) then
      Result := FindBuildFile(AntBuildFileName, SearchUp);

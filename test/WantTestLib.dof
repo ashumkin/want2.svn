@@ -40,7 +40,7 @@ ImageBase=4194304
 ExeDescription=
 [Directories]
 OutputDir=c:\home\want\bin
-UnitOutputDir=..\dcu
+UnitOutputDir=c:\tmp\dcu
 PackageDLLOutputDir=
 PackageDCPOutputDir=
 SearchPath=$(DELPHI)\Lib;..\src\;..\src\tasks;..\src\elements;..\src\lib;..\lib\xml;..\lib\jcl;..\lib\perlre;..\lib\paszlib;..\lib\paszlib\minizip;..\src\win32
@@ -78,16 +78,16 @@ ProductVersion=1.0.0.0
 Comments=
 [HistoryLists\hlDebugSourcePath]
 Count=6
-Item0=$(DELPHI)\Lib;..\src\;..\src\tasks;..\src\elements;..\src\lib;..\lib\xml;..\lib\jcl;..\lib\perlre;..\lib\dunit
-Item1=$(DELPHI)\Lib;..\src\;..\src\lib;..\src\elements;..\src\tasks;..\lib\jcl;..\lib\xml;..\lib\paszlib;..\lib\paszlib\minizip;..\lib\perlre;..\lib\dunit
+Item0=$(DELPHI)\Lib;..\src\;..\src\lib;..\src\elements;..\src\tasks;..\lib\jcl;..\lib\xml;..\lib\paszlib;..\lib\paszlib\minizip;..\lib\perlre;..\lib\dunit
+Item1=$(DELPHI)\Lib;..\src\;..\src\tasks;..\src\elements;..\src\lib;..\lib\xml;..\lib\jcl;..\lib\perlre;..\lib\dunit
 Item2=$(DELPHI)\Lib;..\src\;..\src\xml;..\src\tasks;..\src\jcl;..\src\paths;..\src\xml;..\src\LogMgr
 Item3=$(DELPHI)\Lib;..\src\;..\src\xml;..\src\tasks;..\src\jcl;..\src\paths;..\src\xml;..\src\LogMgr;..\lib\paszlib;..\lib\paszlib\minizip
 Item4=..\src\
 Item5=..\src
 [HistoryLists\hlConditionals]
 Count=4
-Item0=USE_JEDI_JCL
-Item1=USE_JEDI_JCL;NO_RUN_VSS_TESTS
+Item0=USE_JEDI_JCL;NO_RUN_VSS_TESTS
+Item1=USE_JEDI_JCL
 Item2=RUN_VSS_TESTS;USE_JEDI_JCL
 Item3=RUN_VSS_TESTS
 [HistoryLists\hlUnitAliases]
@@ -95,8 +95,8 @@ Count=1
 Item0=WinTypes=Windows;WinProcs=Windows;DbiTypes=BDE;DbiProcs=BDE;DbiErrs=BDE;
 [HistoryLists\hlSearchPath]
 Count=20
-Item0=$(DELPHI)\Lib;..\src\;..\src\tasks;..\src\elements;..\src\lib;..\lib\xml;..\lib\jcl;..\lib\perlre;..\lib\paszlib;..\lib\paszlib\minizip;..\src\win32
-Item1=$(DELPHI)\Lib;..\src\;..\src\lib;..\src\elements;..\src\tasks;..\src\win32;..\lib\jcl;..\lib\xml;..\lib\paszlib;..\lib\paszlib\minizip;..\lib\perlre;..\lib\dunit
+Item0=$(DELPHI)\Lib;..\src\;..\src\lib;..\src\elements;..\src\tasks;..\src\win32;..\lib\jcl;..\lib\xml;..\lib\paszlib;..\lib\paszlib\minizip;..\lib\perlre;..\lib\dunit
+Item1=$(DELPHI)\Lib;..\src\;..\src\tasks;..\src\elements;..\src\lib;..\lib\xml;..\lib\jcl;..\lib\perlre;..\lib\paszlib;..\lib\paszlib\minizip;..\src\win32
 Item2=$(DELPHI)\Lib;..\src\;..\src\lib;..\src\elements;..\src\tasks;..\lib\jcl;..\lib\xml;..\lib\paszlib;..\lib\paszlib\minizip;..\lib\perlre;..\lib\dunit
 Item3=$(DELPHI)\Lib;..\src\;..\src\tasks;..\src\elements;..\src\lib;..\lib\xml;..\lib\jcl;..\lib\perlre;..\lib\dunit
 Item4=$(DELPHI)\Lib;..\src\;..\src\lib;..\src\elements;..\src\tasks;..\lib\jcl;..\lib\xml;..\lib\paszlib;..\lib\paszlib\minizip;..\lib\perlre;..\blargh4
@@ -116,8 +116,9 @@ Item17=..\src\
 Item18=..\src
 Item19=..
 [HistoryLists\hlUnitOutputDirectory]
-Count=1
-Item0=..\dcu
+Count=2
+Item0=c:\tmp\dcu
+Item1=..\dcu
 [HistoryLists\hlOutputDirectorry]
 Count=2
 Item0=c:\home\want\bin
@@ -126,5 +127,7 @@ Item1=..\bin
 Count=1
 Item0=c:\home\dunit\bin\dunit.exe
 [HistoryLists\hlRunParameters]
-Count=1
-Item0=WantAcceptTestLib
+Count=3
+Item0=-buildfile c:\home\want\want.xml internal_tests
+Item1=-buildfile c:\home\want\want.xml compile
+Item2=WantAcceptTestLib

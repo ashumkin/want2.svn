@@ -49,7 +49,7 @@ Conditionals=USE_JEDI_JCL
 DebugSourceDirs=
 UsePackages=0
 [Parameters]
-RunParams=-buildfile c:\home\lasalle\src\want.xml sx
+RunParams=-buildfile c:\home\lasalle\src\want.xml cd
 HostApplication=
 [Version Info]
 IncludeVerInfo=0
@@ -87,8 +87,8 @@ Item5=..\src
 [HistoryLists\hlConditionals]
 Count=4
 Item0=USE_JEDI_JCL;NO_RUN_VSS_TESTS
-Item1=RUN_VSS_TESTS;USE_JEDI_JCL
-Item2=USE_JEDI_JCL
+Item1=USE_JEDI_JCL
+Item2=RUN_VSS_TESTS;USE_JEDI_JCL
 Item3=RUN_VSS_TESTS
 [HistoryLists\hlUnitAliases]
 Count=1
@@ -116,8 +116,9 @@ Item17=..\src\
 Item18=..\src
 Item19=..
 [HistoryLists\hlUnitOutputDirectory]
-Count=1
-Item0=..\dcu
+Count=2
+Item0=c:\tmp\dcu
+Item1=..\dcu
 [HistoryLists\hlOutputDirectorry]
 Count=2
 Item0=c:\home\want\bin
@@ -126,5 +127,7 @@ Item1=..\bin
 Count=1
 Item0=c:\home\dunit\bin\dunit.exe
 [HistoryLists\hlRunParameters]
-Count=1
-Item0=WantAcceptTestLib
+Count=3
+Item0=-buildfile c:\home\want\want.xml internal_tests
+Item1=-buildfile c:\home\want\want.xml compile
+Item2=WantAcceptTestLib

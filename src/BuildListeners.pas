@@ -95,7 +95,7 @@ begin
     Lines := TStringList.Create;
     try
       Msg := Msg + ' ';
-      JclStrings.StrToStrings(Msg, '#10', Lines);
+      JclStrings.StrToStrings(Msg, #10, Lines);
       for i := 0 to Lines.Count-1 do
       begin
         LogLine(Lines[i], Level);

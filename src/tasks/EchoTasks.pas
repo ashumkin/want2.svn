@@ -129,7 +129,12 @@ begin
     Result := S.Text;
 
     if input <> '' then
-      Result := Result + Evaluate( FileToString( ToSystemPath(input) ));
+      try
+        Result := Result + Evaluate( FileToString( ToSystemPath(input) ));
+      except
+        on e :Exception do
+          TaskFailure(Format('%s: %s', [input, e.Message]));
+      end;
   finally
     FreeAndNil(S);
   end;

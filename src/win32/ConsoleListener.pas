@@ -93,6 +93,7 @@ procedure TConsoleListener.LogLine(Msg: string; Level: TLogLevel);
 var
   n         :Integer;
 begin
+
   if (Length(Msg) = 0) or (Msg[Length(Msg)] = #13) then
     EXIT;
     

@@ -53,6 +53,7 @@ type
     FErrorLevel  :Integer;
     FTimeOut     :Longint;
     FOutput      :string;
+    FQuiet       :boolean;
 
     function BuildExecutable :string; virtual;
     function BuildArguments  :string; virtual;
@@ -80,6 +81,7 @@ type
     property failonerror:  boolean  read FFailOnError write FFailOnError default True;
     property errorlevel:   Integer  read FErrorLevel  write FErrorLevel;
     property output:       string   read FOutput      write FOutput;
+    property quiet:        boolean  read FQuiet       write FQuiet;
     {:@TODO Implement a TWaitableTimer class to implement timeouts.
       Use Windows.CreateWaitableTimer and Windows.SetWaitableTimer.
     }
@@ -103,6 +105,7 @@ type
     property failonerror;
     property errorlevel;
     property output;
+    property quiet;
   end;
 
   // this class will pass commands through the command processor
@@ -258,7 +261,7 @@ begin
       //!!! Inc(LineNo); // never used
       if output <> '' then
         Writeln(OutFile, Line)
-      else
+      else if not quiet then
         HandleOutputLine(Line);
     end;
   finally
