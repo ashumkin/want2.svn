@@ -36,7 +36,12 @@ unit DanteMainTest;
 interface
 
 uses
-  TestFramework, DanteMain, DanteTestUtil, DanteClassesTest, SysUtils;
+  SysUtils,
+  TestFramework,
+  WildPaths,
+  DanteMain,
+  DanteTestUtil,
+  DanteClassesTest;
 
 type
   TTestDanteMain = class(TTestDirCase)
@@ -73,16 +78,16 @@ begin
 
   Content :=
     CR+
-    '<project name="test_project" default="main">'                      + CR +
-    '  <target name="main">'                                            + CR +
-    '    <shell executable="mkdir ' + FNewDir + '" />'                  + CR +
+    '<project name="test_project" default="main">'                                + CR +
+    '  <target name="main">'                                                      + CR +
+    '    <shell executable="mkdir ' + FNewDir + '" />'                            + CR +
     '    <shell executable="copy '
-             + FBuildFileName + ' ' + FCopyOfFileName + '" />'          + CR +
+             + FBuildFileName + ' ' + FCopyOfFileName + '" />'                    + CR +
     '    <shell executable="copy '
-             + FBuildFileName + ' ' + FNewCopyOfFileName + '" />'       + CR +
-    '    <delete dir="' + FNewDir + '" />'                              + CR +
-    '  </target>'                                                       + CR +
-    '</project>'                                                        + CR;
+             + FBuildFileName + ' ' + FNewCopyOfFileName + '" />'                 + CR +
+    '    <delete dir="' + ToPath(FNewDir) + '" />'                                + CR +
+    '  </target>'                                                                 + CR +
+    '</project>'                                                                  + CR;
 
   WriteLn(FBuildFile, Content);
   CloseFile(FBuildFile);

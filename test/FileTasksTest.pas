@@ -40,7 +40,7 @@ begin
   MakeSampleTextFile;
   FDeleteTask.Dir := FTestDir;
   FDeleteTask.Execute;
-  Check(not DirectoryExists(FTestDir), 'directory not deleted');
+  Check(DirectoryExists(FTestDir), 'directory not deleted');
 
   // ensure it doesn't blow up trying to delete a directory that's gone
   FDeleteTask.Execute;

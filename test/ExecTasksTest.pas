@@ -6,7 +6,7 @@ uses ExecTasks, TestFramework;
 
 type
   THackedCustomExecTask = class(TCustomExecTask);
-  THackedShellExecTask = class(TShellExecTask);
+  THackedShellTask = class(TShellTask);
 
   TTestCustomExecTask = class(TTestCase)
   private
@@ -18,9 +18,9 @@ type
     procedure TestBuildCmdLine;
   end;
 
-  TTestShellExecTask = class(TTestCase)
+  TTestShellTask = class(TTestCase)
   private
-    FShellExecTask: THackedShellExecTask;
+    FShellTask: THackedShellTask;
   public
     procedure Setup; override;
     procedure TearDown; override;
@@ -57,31 +57,31 @@ begin
     FCustomExecTask.BuildCmdLine, 'BuildCmdLine failed');
 end;
 
-{ TTestShellExecTask }
+{ TTestShellTask }
 
-procedure TTestShellExecTask.Setup;
+procedure TTestShellTask.Setup;
 begin
   inherited;
-  FShellExecTask := THackedShellExecTask.Create(nil);
+  FShellTask := THackedShellTask.Create(nil);
 end;
 
-procedure TTestShellExecTask.TearDown;
+procedure TTestShellTask.TearDown;
 begin
-  FShellExecTask.Free;
+  FShellTask.Free;
   inherited;
 end;
 
-procedure TTestShellExecTask.TestBuildCmdLine;
+procedure TTestShellTask.TestBuildCmdLine;
 var
   OrigValue: boolean;
 begin
   OrigValue := JclSysInfo.IsWinNT;
   try
-    FShellExecTask.Executable := 'dir';
+    FShellTask.Executable := 'dir';
     JclSysInfo.IsWinNT := false;
-    CheckEquals('command.com /c dir', FShellExecTask.BuildCmdLine);
+    CheckEquals('command.com /c dir', FShellTask.BuildCmdLine);
     JclSysInfo.IsWinNT := true;
-    CheckEquals('cmd.exe /c dir', FShellExecTask.BuildCmdLine);
+    CheckEquals('cmd.exe /c dir', FShellTask.BuildCmdLine);
   finally
     JclSysInfo.IsWinNT := OrigValue;
   end;
@@ -89,7 +89,7 @@ end;
 
 initialization
   RegisterTest('Unit Tests', TTestCustomExecTask);
-  RegisterTest('Unit Tests', TTestShellExecTask);
+  RegisterTest('Unit Tests', TTestShellTask);
 
 end.
 

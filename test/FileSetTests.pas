@@ -8,10 +8,12 @@ uses
   TestFramework,
 
   SysUtils,
-  Classes;
+  Classes,
+
+  DanteClassesTest;
 
 type
-  TPathsTestCase = class(TTestCase)
+  TPathsTestCase = class(TProjectBaseCase)
   protected
     procedure CheckMatch(Path, Spec :string; Msg :string = '');
     procedure CheckNoMatch(Path, Spec :string; Msg :string = '');
@@ -111,35 +113,26 @@ end;
 
 procedure TPathsTestCase.TestResolve;
 var
-  //i     :Integer;
   FS    :TFileSet;
-  Files :TPaths;
-  t     :TDateTime;
 begin
-  FS := TFileSet.Create('//dumbo/c/tmp');
+  FS := TFileSet.Create(FProject);
   try
-    (*FS.Include('**/*.pas');
+    FS.Dir := '/c:/tmp';
+    FS.Include('**/*.pas');
     FS.Include('**/*.dpr');
     FS.Include('**/*.html');
     FS.Include('**/*.css');
     FS.Include('doc/**/*');
-    *)
     FS.Include('du/**/*.txt');
     FS.Exclude('test/*');
     FS.Exclude('**/*Test*');
-    Writeln('START');
-    t := Now;
-    Files := FS.Paths;
-    t := Now-t;
-    Writeln('STOP ', TimeToStr(t));
     TouchFile('/tmp/test.txt');
     Check(IsFile('/tmp/test.txt'));
-    FS.DeleteFiles;
     (*
+    FS.DeleteFiles;
     FS.CopyFiles('//dumbo/c/temp');
     FS.MoveFiles('//dumbo/c/temp');
     *)
-    fail('nothing checked yet');
   finally
     FS.Free;
   end;

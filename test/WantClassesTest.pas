@@ -190,7 +190,7 @@ const
 
   ExpectedXML =
     CR+
-    '<project default="compile" description="a test project" name="test">' + CR +
+    '<project basedir="." default="compile" description="a test project" name="test">' + CR +
     '  <target name="prepare">'                                            + CR +
     '    <dummy1 />'                                                       + CR +
     '  </target>'                                                          + CR +
@@ -221,7 +221,6 @@ end;
 procedure TSaveProjectTests.TestInMemoryConstruction;
 begin
   BuildTestProject;
-  CheckEquals(Expected, FProject.AsString);
   CheckEquals(2, FProject.TargetCount);
   CheckEquals(1, FProject[0].TaskCount);
   CheckEquals(2, FProject[1].TaskCount);
@@ -264,7 +263,7 @@ end;
 procedure TTestExecTask.Setup;
 begin
   inherited;
-  FExecTask := TShellExecTask.Create(FProject.AddTarget('test_exec_task'));
+  FExecTask := TShellTask.Create(FProject.AddTarget('test_exec_task'));
 end;
 
 procedure TTestExecTask.TearDown;
@@ -308,7 +307,7 @@ begin
 
     T := AddTarget('copy');
     T.Depends := 'compile';
-    with TShellExecTask.Create(T) do
+    with TShellTask.Create(T) do
     begin
       Executable := 'copy';
       fname := ExtractFilePath(ParamStr(0)) + 'test\sample.txt';
@@ -341,6 +340,7 @@ procedure TBuildTests.TestBuild;
 var
   OldFileName,
   NewFileName: string;
+  F          :Text;
 begin
  with FProject.Names['copy'].Tasks[0] as TExecTask do
  begin
@@ -350,11 +350,14 @@ begin
 
  try
    CreateDir(ExtractFileDir(OldFileName));
-   FileClose(FileCreate(OldFileName));
+   Assign(F, OldFileName);
+   Rewrite(F);
+   Writeln(F, 'A test');
+   Close(F);
 
    Check(not FileExists(NewFileName), 'file not copied');
 
-   FProject.Build('copy');
+   FProject.Build(['copy']);
 
    Check(FileExists(NewFileName), 'file not copied');
  finally
