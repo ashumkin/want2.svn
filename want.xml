@@ -18,6 +18,7 @@ See http://www.suigeneris.org/want/ for details.
   <property name="version" value="0.1.0.1" />
   <property name="increment.build" value="false" />
 
+  <property name="etc"       value="${basedir}/etc" />
   <property name="src"       value="${basedir}/src" />
   <property name="dist"      value="${basedir}/dist" />
   <property name="res"       value="${basedir}/res" />
@@ -56,10 +57,11 @@ See http://www.suigeneris.org/want/ for details.
     <delete dir="${bin}/**" />
   </target>
 
-  <target name="versioninfo" depends="prepare">
-    <regexp property="comma.version" 
-            pattern="\.0*([1-9]*[0-9])" subst=",\1" 
-            text="${version}" />
+  <target name="versioninfo" >
+    <regexp property="comma.version"
+            pattern="\." subst=","
+            text="${version}"
+     />
     <echo input="${src}/wantver.template.rc" file="${src}/wantver.rc" />
   </target>
 
@@ -98,7 +100,7 @@ See http://www.suigeneris.org/want/ for details.
       <define name="USE_TEXT_RUNNER" unless="debug" />
 
       <unitpath     refid="sources" >
-        <include name="${test}/**" />
+        <include  name="${test}/**" />
         <exclude  name="${test}/data" />
         <exclude  name="${test}/data/**" />
       </unitpath>
