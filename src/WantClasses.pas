@@ -85,6 +85,8 @@ type
     FTargets: TList;
     FDefaultTarget: string;
     FBeQuiet: boolean;
+    // base directory: where the build script was found
+    FBasePath: string;
 
     function  GetTarget(Index: Integer):TTarget;
     procedure Notification(AComponent: TComponent; Operation: TOperation); override;
@@ -97,6 +99,10 @@ type
     procedure Parse(const Image: string);
     procedure Load(const Path: string);
     procedure Save(const Path: string);
+
+    // use this function in Tasks to let the user specify relative
+    // directories that work consistently
+    function  RelativePath(SubPath :string) :string;
 
     function AsString: string;
     function AddTarget(Name: string = ''): TTarget;
@@ -112,6 +118,7 @@ type
 
     property Targets[i: Integer]: TTarget read GetTarget; default;
     property Names[TargetName :string] :TTarget read GetTargetByName;
+    property BasePath :string read FBasePath write FBasePath;
 
   published
     property DefaultTarget :string read FDefaultTarget write FDefaultTarget;
@@ -304,6 +311,7 @@ begin
   try
     S.LoadFromFile(Path);
     Parse(S.Text);
+    FBasePath := ExtractFilePath(ExpandFileName(Path));
   finally
     S.Free;
   end;
@@ -396,6 +404,11 @@ begin
     raise ENoDefaultTargetError.Create('No default target');
   end;
   Build(DefaultTarget);
+end;
+
+function TProject.RelativePath(SubPath: string): string;
+begin
+  Result := BasePath + SubPath;
 end;
 
 { TTarget }
