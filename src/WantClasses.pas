@@ -74,6 +74,7 @@ type
   TTaskClass  = class of TTask;
 
   EDanteException   = class(Exception);
+  EDanteError       = class(Exception);
   ETargetException  = class(EDanteException);
   ETaskException    = class(EDanteException);
 
@@ -128,9 +129,11 @@ type
     constructor Create(Owner: TDanteElement); reintroduce; overload; virtual;
 
     class function XMLTag :string; virtual;
-    procedure ParseXML(Node :MiniDom.IElement);      virtual;
+    
+    procedure ParseXML(Node :MiniDom.IElement);               virtual;
     function  ParseXMLChild(Child :MiniDom.IElement):boolean; virtual;
     procedure ParseError(Msg :string; Line :Integer);
+    procedure Validate;                              virtual;
 
     function  AsXML     :string;                virtual;
     function  ToXML(Dom :IDocument) : IElement; virtual;
@@ -290,6 +293,7 @@ function CommaTextToArray(Text :string) :TStringArray;
 function StringsToSystemPathList(List: TStrings): string;
 
 procedure RaiseLastSystemError(Msg :string = '');
+procedure DanteError(Msg :string = '');
 procedure TaskError(Msg :string = '');
 procedure TaskFailure(Msg :string = '');
 
@@ -336,6 +340,11 @@ begin
   end;
 end;
 
+
+procedure DanteError(Msg :string = '');
+begin
+   raise EDanteError.Create('!!! ' + Msg + ' !!!' );
+end;
 
 procedure TaskError(Msg :string);
 begin
@@ -420,6 +429,11 @@ begin
   end;
 end;
 
+procedure TDanteElement.Validate;
+begin
+  // do nothing
+end;
+
 procedure TDanteElement.ParseXML(Node: IElement);
 var
   i     :IIterator;
@@ -465,6 +479,8 @@ begin
         ParseError(Format('Element <%s> does not accept text', [XMLTag]), Child.LineNo);
     end;
   end;
+
+  Validate;
 end;
 
 function TDanteElement.SetAttribute(Name, Value: string): boolean;
@@ -1173,10 +1189,15 @@ begin
       ChangeDir(BasePath);
       Execute;
     except
-      on e :Exception do
+      on e :EDanteException do
       begin
         Log(vlErrors, e.Message);
         raise;
+      end;
+      on e :Exception do
+      begin
+        Log(vlErrors, e.Message);
+        TaskFailure(e.Message);
       end;
     end;
   finally
