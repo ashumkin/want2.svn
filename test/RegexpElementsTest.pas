@@ -41,7 +41,7 @@ uses
   RegexpElements;
 
 type
-  TPerlRETests = class(TProjectBaseCase)
+  TRegexpTests = class(TProjectBaseCase)
   published
     procedure Test;
   end;
@@ -49,9 +49,9 @@ type
 
 implementation
 
-{ TPerlRETests }
+{ TRegexpTests }
 
-procedure TPerlRETests.Test;
+procedure TRegexpTests.Test;
 const
   build_xml = ''
   +#10'<project name="test" default="dotest" >'
@@ -68,5 +68,5 @@ begin
 end;
 
 initialization
-  RegisterTests('Regexp', [TPerlRETests.Suite]);
+  RegisterTests('Regexp', [TRegexpTests.Suite]);
 end.
