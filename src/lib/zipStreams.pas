@@ -98,7 +98,7 @@ type
                            Time       :TDateTime;
                            Comment    :string = ''); overload;
 
-    procedure WriteFile( FileName :TPath;  Comment :string = '');
+    procedure WriteFile( const FileName :TPath;  Comment :string = '');
 
   public
     property ZipFileName      :TPath    read FZipFileName write FZipFileName;

@@ -39,7 +39,7 @@ MaxStackSize=1048576
 ImageBase=4194304
 ExeDescription=
 [Directories]
-OutputDir=..\bin
+OutputDir=..
 UnitOutputDir=..\dcu
 PackageDLLOutputDir=
 PackageDCPOutputDir=
@@ -49,7 +49,7 @@ Conditionals=
 DebugSourceDirs=
 UsePackages=0
 [Parameters]
-RunParams=-buildfile ..\make\build.xml  -debug
+RunParams=-buildfile make\build.xml
 HostApplication=
 [Version Info]
 IncludeVerInfo=0
@@ -92,31 +92,35 @@ Item1=RUN_VSS_TESTS
 Count=1
 Item0=WinTypes=Windows;WinProcs=Windows;DbiTypes=BDE;DbiProcs=BDE;DbiErrs=BDE;
 [HistoryLists\hlSearchPath]
-Count=18
-Item0=$(DELPHI)\Lib;..\src\;..\src\lib;..\src\elements;..\src\tasks;..\lib\jcl;..\lib\xml;..\lib\paszlib;..\lib\paszlib\minizip;..\lib\perlre;..\lib\dunit
-Item1=$(DELPHI)\Lib;..\src\;..\src\tasks;..\src\elements;..\src\lib;..\lib\xml;..\lib\jcl;..\lib\perlre;..\lib\dunit
-Item2=$(DELPHI)\Lib;..\src\;..\src\lib;..\src\elements;..\src\tasks;..\lib\jcl;..\lib\xml;..\lib\paszlib;..\lib\paszlib\minizip;..\lib\perlre;..\blargh4
-Item3=$(DELPHI)\Lib;..\src\;..\src\tasks;..\src\elements;..\src\lib;..\lib\xml;..\lib\jcl;..\lib\perlre
-Item4=$(DELPHI)\Lib;..\src\;..\src\tasks;..\src\elements;..\src\lib;..\lib\xml;..\lib\jcl
-Item5=$(DELPHI)\Lib;..\src\;..\src\tasks;..\src\lib;..\lib\xml;..\lib\jcl
-Item6=$(DELPHI)\Lib;..\src\;..\src\xml;..\src\tasks;..\src\jcl;..\src\paths;..\src\xml;..\src\LogMgr
-Item7=$(DELPHI)\Lib;..\src\;..\src\xml;..\src\tasks;..\src\jcl;..\src\paths;..\src\xml
-Item8=$(DELPHI)\Lib\Debug;..\src\;..\src\xml;..\src\tasks;..\src\jcl;..\src\paths;..\src\xml
-Item9=$(DELPHI)\Lib\Debug;..\src\;..\src\xml;..\src\tasks;..\src\jcl;..\src\paths
-Item10=$(DELPHI)\Lib\Debug;..\src\;..\src\xml;..\src\tasks;..\src\jcl
-Item11=.\jcl\
-Item12=..\jcl\
-Item13=..\src\;..\src\xml;..\src\tasks;..\src\jcl
-Item14=..\src\;..\src\xml
-Item15=..\src\
-Item16=..\src
-Item17=..
+Count=19
+Item0=$(DELPHI)\lib;.\lib;.\tasks;.\elements;..\lib\jcl;..\lib\xml;..\lib\paszlib;..\lib\paszlib\minizip;..\lib\perlre
+Item1=$(DELPHI)\Lib;..\src\;..\src\lib;..\src\elements;..\src\tasks;..\lib\jcl;..\lib\xml;..\lib\paszlib;..\lib\paszlib\minizip;..\lib\perlre;..\lib\dunit
+Item2=$(DELPHI)\Lib;..\src\;..\src\tasks;..\src\elements;..\src\lib;..\lib\xml;..\lib\jcl;..\lib\perlre;..\lib\dunit
+Item3=$(DELPHI)\Lib;..\src\;..\src\lib;..\src\elements;..\src\tasks;..\lib\jcl;..\lib\xml;..\lib\paszlib;..\lib\paszlib\minizip;..\lib\perlre;..\blargh4
+Item4=$(DELPHI)\Lib;..\src\;..\src\tasks;..\src\elements;..\src\lib;..\lib\xml;..\lib\jcl;..\lib\perlre
+Item5=$(DELPHI)\Lib;..\src\;..\src\tasks;..\src\elements;..\src\lib;..\lib\xml;..\lib\jcl
+Item6=$(DELPHI)\Lib;..\src\;..\src\tasks;..\src\lib;..\lib\xml;..\lib\jcl
+Item7=$(DELPHI)\Lib;..\src\;..\src\xml;..\src\tasks;..\src\jcl;..\src\paths;..\src\xml;..\src\LogMgr
+Item8=$(DELPHI)\Lib;..\src\;..\src\xml;..\src\tasks;..\src\jcl;..\src\paths;..\src\xml
+Item9=$(DELPHI)\Lib\Debug;..\src\;..\src\xml;..\src\tasks;..\src\jcl;..\src\paths;..\src\xml
+Item10=$(DELPHI)\Lib\Debug;..\src\;..\src\xml;..\src\tasks;..\src\jcl;..\src\paths
+Item11=$(DELPHI)\Lib\Debug;..\src\;..\src\xml;..\src\tasks;..\src\jcl
+Item12=.\jcl\
+Item13=..\jcl\
+Item14=..\src\;..\src\xml;..\src\tasks;..\src\jcl
+Item15=..\src\;..\src\xml
+Item16=..\src\
+Item17=..\src
+Item18=..
 [HistoryLists\hlUnitOutputDirectory]
 Count=1
 Item0=..\dcu
 [HistoryLists\hlOutputDirectorry]
-Count=1
-Item0=..\bin
+Count=2
+Item0=..
+Item1=..\bin
 [HistoryLists\hlRunParameters]
-Count=1
-Item0=-buildfile ..\make\build.xml  -debug
+Count=3
+Item0=-buildfile make\build.xml
+Item1=-buildfile ..\make\build.xml
+Item2=-buildfile ..\make\build.xml  -debug

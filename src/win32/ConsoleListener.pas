@@ -25,9 +25,13 @@ const
 
 type
   TConsoleLogManager = class(TLogManager)
+    FUseColor :boolean;
   protected
     procedure   OutputLog(   const aLine: String; const aFlush: Boolean;   const aLevel: TLogLevel);  override;
     procedure   OutputPrefix(const aPrefix: String; const aFlush: Boolean; const aLevel: TLogLevel);  override;
+
+  public
+    property UseColor :boolean read FUseColor write FUseColor;
   end;
 
 implementation
@@ -38,11 +42,11 @@ procedure TConsoleLogManager.OutputLog(const aLine: String; const aFlush: Boolea
 begin
   if IsConsole then
   begin
-    CRT32.TextColor(MsgColorMap[aLevel]);
+    if UseColor then CRT32.TextColor(MsgColorMap[aLevel]);
     try
       Writeln(aLine);
     finally
-      CRT32.Restore;
+      if UseColor then CRT32.Restore;
     end;
   end;
   inherited OutputLog(aLine, aFlush, aLevel);
@@ -52,11 +56,11 @@ procedure TConsoleLogManager.OutputPrefix(const aPrefix: String; const aFlush: B
 begin
   if IsConsole then
   begin
-    CRT32.TextColor(PrefixColorMap[aLevel]);
+    if UseColor then CRT32.TextColor(PrefixColorMap[aLevel]);
     try
       Write(aPrefix);
     finally
-      CRT32.Restore;
+      if UseColor then CRT32.Restore;
     end;
   end;
   inherited OutputPrefix(aPrefix, aFlush, aLevel);

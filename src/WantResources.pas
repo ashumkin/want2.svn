@@ -115,7 +115,8 @@ resourcestring
                      '                      build.xml'                            + C_EOL +
                      '  -quiet              Be very quiet..'                      + C_EOL +
                      '  -verbose            Be extra verbose.'                    + C_EOL +
-                     '  -debug              Print debugging information.'         + C_EOL;
+                     '  -debug              Print debugging information.'         + C_EOL +
+                     '  -color              Output to console using color.'       + C_EOL;
 
   DanteLicenseText1  = '--------------------------------------------------------------------------' + C_EOL +
                       ' Copyright (c) 2001, Dante Authors -- See authors.txt for complete list   ' + C_EOL +

@@ -1220,8 +1220,8 @@ begin
 
     LastDir := CurrentDir;
     try
-      ChangeDir(BasePath);
       Dom := MiniDom.ParseToDom(ToSystemPath(BuildFile));
+      ChangeDir(BasePath);
       Self.DoParseXML(Dom.Root);
     finally
       ChangeDir(LastDir);

@@ -94,7 +94,8 @@ begin
   Log(vlVerbose, CurrentDir);
   AboutToScratchPath(zipfile);
 
-  Paths := ToRelativePaths(FileSet.Paths, BasePath);
+  Changedir(FileSet.BasePath);
+  Paths := FileSet.RelativePaths;
 
   if Length(Paths) = 0 then
     Log
@@ -103,7 +104,7 @@ begin
 
   for p := Low(Paths) to High(Paths) do
   begin
-    Log(vlDebug, Paths[p]);
+    Log(vlVerbose, Paths[p]);
     FZipStream.WriteFile(Paths[p]);
   end;
 end;

@@ -58,6 +58,8 @@ const
 type
   TDante = class(TObject)
   protected
+    FUseColor :boolean;
+
     function RunConsole(CmdLine: string): boolean;
 
     procedure SetCommandLineProperties(Project :TProject);
@@ -93,10 +95,11 @@ procedure TDante.DoBuild( ABuildFileName: string;
 var
   Project: TProject;
   T:       string;
-  Logger: TLogManager;
+  Logger: TConsoleLogManager;
 begin
   Logger  := TConsoleLogManager.Create;
   Logger.Level := Level;
+  Logger.UseColor := SysUtils.FindCmdLineSwitch('color', ['/','-'], True);
   Logger.Start;
   try
 
@@ -224,7 +227,7 @@ begin
       PropValue := StrTrimQuotes(PropValue);
 
       Project.SetProperty(PropName, PropValue);
-    end;
+    end
   end;
 end;
 
