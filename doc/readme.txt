@@ -1,6 +1,7 @@
 Dante Build Management Tool for Delphi
 Copyright (c) 2001, Dante Authors -- See authors.txt for complete list
 All rights reserved.
+See license.txt for full license.
 http://dante.sourceforge.net
 
 
@@ -11,6 +12,12 @@ Dante is a no-cost, open source build management tool for Borland's Delphi.
 Dante wraps (or will wrap) common tasks like compiling Delphi code, basic shell
 commands, version control for popular packages and the like. Dante executes a
 build.xml file that directs its tasks.
+
+*******
+WARNING
+*******
+Dante is in a pre-release stage, so please use Dante with caution, especially
+with destructive shell tasks like delete.
 
 
 Why
@@ -40,9 +47,9 @@ approval is currently in progress).
 Um, Documentation?
 ------------------
 
-Don't have much yet. There is a great task writer's guide Juanco wrote up. For
-some general info, you can hit the Ant site as we've used their design as a
-starting point.
+Don't have much yet. There is a great task writer's guide Juanco wrote up for
+those interested in adding custom tasks. For some general info, you can hit the
+Ant site as we've used their design as a starting point.
 
 
 Acknowledgements
@@ -59,4 +66,5 @@ it easy to do so.
 Thanks to the Ant project for the inspiration.
 
 Chris Morris
-4/4/2001
+4/5/2001
+$Id$
