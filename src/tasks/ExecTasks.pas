@@ -51,7 +51,7 @@ type
   TCustomExecTask = class(TTask)
   protected
     FOS          :string;
-    FExecutable  :TPath;
+    FExecutable  :string;
     FArguments   :TStrings;
     FSkipLines   :Integer;
     FFailOnError :boolean;
@@ -98,7 +98,7 @@ type
   protected
     property Arguments:    string   read GetArguments write SetArguments;
     property ArgumentList: TStrings read FArguments   write SetArgumentList stored False;
-    property Executable:   TPath    read FExecutable  write FExecutable;
+    property Executable:   string   read FExecutable  write FExecutable;
     property SkipLines:    Integer  read FSkipLines   write FSkipLines;
     property OS:           string   read FOS          write FOS;
     property failonerror:  boolean  read FFailOnError write FFailOnError default True;
