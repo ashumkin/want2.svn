@@ -20,6 +20,7 @@ uses
   WantTasks,
   DUnitTasks,
   EditTasks,
+  LoggerTask,
   IniFileTasks;
 
 

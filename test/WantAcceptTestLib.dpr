@@ -23,6 +23,6 @@ uses
 {$R *.RES}
 
 exports
-  RegisteredTests index 1 name 'Test';
+  RegisteredTests name 'Test';
 end.
 

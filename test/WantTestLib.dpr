@@ -15,18 +15,16 @@ library WantTestLib;
 
 uses
   TestFramework,
-
-  {$IFDEF WIN32}
   Win32Implementations in '..\src\win32\Win32Implementations.pas',
-  {$ENDIF}
-
   WantClassesTest in 'WantClassesTest.pas',
   FileSetTests in 'FileSetTests.pas',
   ExecTasksTest in 'ExecTasksTest.pas',
   FileTasksTest in 'FileTasksTest.pas',
   DelphiTasksTest in 'DelphiTasksTest.pas',
   WildPathsTest in 'WildPathsTest.pas',
-  RegexpElementsTest in 'RegexpElementsTest.pas';
+  RegexpElementsTest in 'RegexpElementsTest.pas',
+  WantStandardTasks in '..\src\tasks\WantStandardTasks.pas',
+  StandardTasks in '..\src\tasks\StandardTasks.pas';
 
 {$R *.RES}
 

@@ -321,6 +321,7 @@ begin
         Result := Result + '/' + Parts[i];
     end;
   end;
+  Assert(Pos('//', Result) = 0);
 end;
 
 procedure CheckPath(Path :TPath);
@@ -340,8 +341,6 @@ begin
   CheckPath(BasePath);
 
   Result := SystemPath;
-  if BasePath <> '' then
-    Result := ExtractRelativePath(BasePath, Result);
   if (Length(Result) >= 2)
   and (Result[2] = ':')
   and (Result[1] in ['a'..'z', 'A'..'Z'])
@@ -351,6 +350,15 @@ begin
     Result := SystemPathDelimiter + Result;
   end;
   Result := StringReplace(Result, SystemPathDelimiter, '/', [rfReplaceAll]);
+  if (BasePath <> '') then
+  begin
+    if (Length(Result) = 0) then
+      Result := ToPath(BasePath)
+    else if Result[1] <> '/'  then
+    begin
+      Result := ToPath(BasePath) + '/' + Result;
+    end;
+  end;
 end;
 
 function ToSystemPath(const Path: TPath; const BasePath: TPath): string;

@@ -76,9 +76,9 @@ LocaleToUnicode=1
 ImagebaseMultiple=1
 SuspiciousTypecast=1
 PrivatePropAccessor=1
-UnsafeType=1
-UnsafeCode=1
-UnsafeCast=1
+UnsafeType=0
+UnsafeCode=0
+UnsafeCast=0
 [Linker]
 MapFile=3
 OutputObjs=0
@@ -94,7 +94,7 @@ OutputDir=c:\home\want\bin
 UnitOutputDir=c:\tmp\dcu
 PackageDLLOutputDir=
 PackageDCPOutputDir=
-SearchPath=..\src\;..\src\lib;..\src\elements;..\src\tasks;..\src\win32;..\lib\jcl;..\lib\xml;..\lib\paszlib;..\lib\perlre;..\lib\dunit;..\lib\jal\src;..\lib\jal\lib\paszlib
+SearchPath=..\src\;..\src\lib;..\src\elements;..\src\tasks;..\src\win32;..\lib\jcl;..\lib\perlre;..\lib\dunit;..\src\jal\src;..\src\jal\lib\paszlib
 Packages=Vcl50;Vclx50;VclSmp50;Vcldb50;vclado50;ibevnt50;Vclbde50;vcldbx50;Qrpt50;TeeUI50;TeeDB50;Tee50;Dss50;TeeQR50;VCLIB50;Vclmid50;vclie50;Inetdb50;Inet50;NMFast50;webmid50;dclocx50;dclaxserver50;Indy50;OE;RxCtl5;RxBDE5;RxDB5;msxml;OpenXML_D5;Vcl40;Vclx40;Vcldb40;kdao
 Conditionals=USE_JEDI_JCL;DUNIT_DLL
 DebugSourceDirs=
@@ -143,10 +143,11 @@ Item3=$(DELPHI)\Lib;..\src\;..\src\xml;..\src\tasks;..\src\jcl;..\src\paths;..\s
 Item4=..\src\
 Item5=..\src
 [HistoryLists\hlConditionals]
-Count=3
-Item0=USE_JEDI_JCL;NO_RUN_VSS_TESTS
-Item1=USE_JEDI_JCL
-Item2=RUN_VSS_TESTS
+Count=4
+Item0=USE_JEDI_JCL;DUNIT_DLL
+Item1=USE_JEDI_JCL;NO_RUN_VSS_TESTS
+Item2=USE_JEDI_JCL
+Item3=RUN_VSS_TESTS
 [HistoryLists\hlUnitAliases]
 Count=1
 Item0=WinTypes=Windows;WinProcs=Windows;DbiTypes=BDE;DbiProcs=BDE;DbiErrs=BDE;

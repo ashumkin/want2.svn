@@ -472,7 +472,7 @@ begin
     WildPaths.ToSystemPath(FWantElement.ToAbsolutePath(ToPath(AbsPath))),
     'ToAbsolutePath');
   CheckEquals(
-    FWantElement.ToWantPath(AbsPath),
+    FWantElement.ToAbsolutePath(AbsPath),
     ToPath(AbsPath),
     'ToAbsolutePath');
 end;
