@@ -71,6 +71,7 @@ type
   TUnitPathElement     = class(TPathSet);
   TResourcePathElement = class(TPathSet);
   TIncludePathElement  = class(TPathSet);
+  TObjectPathElement   = class(TPathSet);
 
   TCustomDelphiTask = class(TCustomExecTask)
   protected
@@ -125,6 +126,7 @@ type
     FUnitPaths      : TUnitPathElement;
     FResourcePaths  : TResourcePathElement;
     FIncludePaths   : TIncludePathElement;
+    FObjectPaths    : TObjectPathElement;
 
     FDefines        : TStrings;
     FPackages       : TStrings;
@@ -137,6 +139,10 @@ type
 
     function ReadLibraryPaths :string;
 
+    function OutputPathElements(const optionDescription,
+          optionFlag : string;pathsToOutput : TPaths) : string;
+          
+    function PathOpt(Opt :string; Path :TPath) :string;          
   public
     constructor Create(Owner: TScriptElement); override;
     destructor  Destroy; override;
@@ -149,6 +155,7 @@ type
     procedure AddUnitPath(Path: TPath);
     procedure AddResourcePath(Path: TPath);
     procedure AddIncludePath(Path: TPath);
+    procedure AddObjectPath(Path : TPath);
     procedure AddDefine(Name, Value :string);
     procedure AddPackage(Path :string);
 
@@ -161,6 +168,7 @@ type
 
  function CreateResourcePath :TResourcePathElement;
     function CreateIncludePath  :TIncludePathElement;
+    function CreateObjectPath   :TObjectPathElement; 
 
     // these properties are mapped to XML attributes
     property Arguments;
@@ -378,6 +386,8 @@ begin
   FUnitPaths      := TUnitPathElement.Create(Self);
   FResourcePaths  := TResourcePathElement.Create(Self);
   FIncludePaths   := TIncludePathElement.Create(Self);
+  FObjectPaths    := TObjectPathElement.Create(Self);
+  
   FDefines        := TStringList.Create;
   FPackages       := TStringList.Create;
   FWarnings       := true;
@@ -418,19 +428,31 @@ begin
   Result := 'dcc';
 end;
 
-function TDelphiCompileTask.BuildArguments: string;
-  function PathOpt(Opt :string; Path :TPath) :string;
+function TDelphiCompileTask.OutputPathElements(const optionDescription,
+      optionFlag : string;pathsToOutput : TPaths) : string;
+var
+  path : integer;
+begin
+  result := '';
+  for path := Low(pathsToOutput) to High(pathsToOutput) do
+  begin
+    Log(vlVerbose, '%s %s', [optionDescription,ToRelativePath(pathsToOutput[path])]);
+    Result := Result + PathOpt(optionFlag, pathsToOutput[path]);
+  end;
+end;
+
+function TDelphiCompileTask.PathOpt(Opt :string; Path :TPath) :string;
   begin
     Result := Format(' -%s%s', [Opt, ToSystemPath(ToPath(Path))] );
   end;
 
+function TDelphiCompileTask.BuildArguments: string;
 var
   Sources: TPaths;
   d      : Integer;
   s      : Integer;
   p      : Integer;
   PS     : TStringArray;
-  Paths  : TPaths;
   cfg    : TPath;
 begin
   Result := inherited BuildArguments + ' ';
@@ -589,26 +611,14 @@ begin
     end;
   end;
 
-  Paths := FUnitPaths.Paths;
-  for p := Low(paths) to High(Paths) do
-  begin
-    Log(vlVerbose, 'unitpath %s', [ToRelativePath(Paths[p])]);
-    Result := Result + PathOpt('U', Paths[p]);
-  end;
+  result := result + OutputPathElements('unitpath','U',FUnitPaths.Paths);
 
-  Paths := FResourcePaths.Paths;
-  for p := Low(paths) to High(Paths) do
-  begin
-    Log(vlVerbose, 'resourcepath %s', [ToRelativePath(Paths[p])]);
-    Result := Result + PathOpt('R', Paths[p]);
-  end;
+  result := result + OutputPathElements('resourcepath','R',FResourcePaths.Paths);
 
-  Paths := FIncludePaths.Paths;
-  for p := Low(paths) to High(Paths) do
-  begin
-    Log(vlVerbose, 'includepath %s', [ToRelativePath(Paths[p])]);
-    Result := Result + PathOpt('I', Paths[p]);
-  end;
+  result := result + OutputPathElements('includepath','I',FResourcePaths.Paths);
+  
+  result := result + OutputPathElements('objectpath','O',FObjectPaths.Paths);  
+
 
   if Length(Sources) = 0 then
     TaskFailure(Format('could not find %s to compile', [ToSystemPath(PathConcat(BasePath, source))]));
@@ -622,6 +632,11 @@ end;
 procedure TDelphiCompileTask.AddIncludePath(Path: TPath);
 begin
   FIncludePaths.Include(Path);
+end;
+
+procedure TDelphiCompileTask.AddObjectPath(Path : TPath);
+begin
+  FObjectPaths.Include(Path);
 end;
 
 procedure TDelphiCompileTask.AddResourcePath(Path: TPath);
@@ -657,6 +672,11 @@ end;
 function TDelphiCompileTask.CreateIncludePath: TIncludePathElement;
 begin
   Result := FIncludePaths;
+end;
+
+function TDelphiCompileTask.CreateObjectPath: TObjectPathElement;
+begin
+  Result := FObjectPaths;
 end;
 
 function TDelphiCompileTask.CreateResourcePath: TResourcePathElement;
