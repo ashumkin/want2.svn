@@ -314,7 +314,7 @@ begin
    else
      Log(vlWarnings, Line);
 
-    (*
+    (*!!!
    with regex do
    begin
      inherited Log(Level, ToRelativePath(ToPath(SubExp[1].Text)) + ' ' + SubExp[2].Text);
