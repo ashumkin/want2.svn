@@ -53,6 +53,10 @@ uses
   Classes;
 
 
+const
+  DelphiRegRoot  = 'SOFTWARE\Borland\Delphi';
+  DelphiRootKey  = 'RootDir';
+
 type
   EDelphiTaskError       = class(ETaskError);
   EDelphiNotFoundError   = class(EDelphiTaskError);
@@ -81,7 +85,18 @@ type
 
   TCustomDelphiTask = class(TCustomExecTask)
   protected
+    FVersions : string;
+
+    FVersionFound :string;
+
+    function RootForVersion(version: string): string;
+    function FindDelphiVersion(ver :string) :string;
     function FindDelphiDir: string;
+
+    function ReadUserOption(Key, Name :string):string;
+    function ReadMachineOption(Key, Name :string):string;
+  published
+    property versions: string read FVersions  write FVersions;
   end;
 
   TDelphiCompileTask = class(TCustomDelphiTask)
@@ -96,15 +111,19 @@ type
     FOptimize       : boolean;
     FDebug          : boolean;
     FConsole        : boolean;
+    FUseLibraryPath : boolean;
 
     FUnitPaths      : TStrings;
     FResourcePaths  : TStrings;
     FIncludePaths   : TStrings;
 
+    function BuildExecutable: string; override;
     function BuildArguments: string; override;
     function FindCompiler: string;
 
     procedure SetExes(Value: string);
+
+    function ReadLibraryPaths :string;
 
   public
     constructor Create(Owner: TDanteElement); override;
@@ -133,8 +152,8 @@ type
     property ArgumentList stored False;
     property SkipLines;
 
-    property exes: string read FExesPath write SetExes;
-    property dcus: string read FDCUPath write FDCUPath;
+    property exes:    string read FExesPath write SetExes;
+    property dcus:    string read FDCUPath  write FDCUPath;
 
     property quiet: boolean read FQuiet write FQuiet default true;
     property make: boolean read FMake write FMake;
@@ -143,6 +162,8 @@ type
     property optimize: boolean read FOptimize write FOptimize;
     property debug:    boolean read FDebug    write FDebug;
     property console:  boolean read FConsole  write FConsole;
+
+    property uselibrarypath : boolean read FUseLibraryPath write FUseLibraryPath;
 
     property source : string read FSource     write FSource;
   end;
@@ -173,31 +194,63 @@ implementation
 { TCustomDelphiTask }
 
 function TCustomDelphiTask.FindDelphiDir: string;
-const
-  DelphiRegRoot  = 'SOFTWARE\Borland\Delphi';
-  DelphiRootKey  = 'RootDir';
-
-  function RootFor(version: Integer): string;
-  begin
-    Result := Format('%s\%d.0', [DelphiRegRoot, version]);
-  end;
-
-  function ReadRootFor(version: Integer):string;
-  begin
-    Result := RegReadStringDef(HKEY_LOCAL_MACHINE, RootFor(version), DelphiRootKey, '');
-  end;
-
 var
-  ver: Integer;
+  ver:  Integer;
+  vers: TStringArray;
+  i     :Integer;
 begin
-  for ver := 6 downto 4 do
+  vers := nil;
+  if versions <> '' then
   begin
-    Result := ReadRootFor(ver);
-    if Result <> '' then EXIT;
+    vers := TextToArray(versions);
+    for i := 0 to High(vers) do
+    begin
+       Result := FindDelphiVersion(vers[i]);
+       if Result <> '' then
+       begin
+         FVersionFound := vers[i];
+         BREAK;
+       end;
+    end;
+  end
+  else
+  begin
+    for ver := 6 downto 4 do
+    begin
+      Result := FindDelphiVersion(IntToStr(ver));
+      if Result <> '' then
+      begin
+        FVersionFound := IntToStr(ver);
+        BREAK;
+      end;
+    end;
   end;
-  raise EDelphiNotFoundError.Create('');
+  if Result = '' then
+    raise EDelphiNotFoundError.Create('Could not find delphi');
 end;
 
+
+function TCustomDelphiTask.FindDelphiVersion(ver: string): string;
+begin
+  Result := RegReadStringDef(HKEY_LOCAL_MACHINE, RootForVersion(ver), DelphiRootKey, '');
+end;
+
+function TCustomDelphiTask.ReadMachineOption(Key, Name: string): string;
+begin
+  Result := RegReadStringDef(HKEY_LOCAL_MACHINE, RootForVersion(FVersionFound)+'\'+Key, Name, '');
+end;
+
+function TCustomDelphiTask.ReadUserOption(Key, Name: string): string;
+begin
+  Result := RegReadStringDef(HKEY_CURRENT_USER, RootForVersion(FVersionFound)+'\'+Key, Name, '');
+end;
+
+function TCustomDelphiTask.RootForVersion(version: string): string;
+begin
+  if Pos('.', version) = 0 then
+    version := version + '.0';
+  Result := Format('%s\%s', [DelphiRegRoot, version]);
+end;
 
 { TDelphiCompileTask }
 
@@ -210,8 +263,6 @@ begin
   FUnitPaths      := TStringList.Create;
   FResourcePaths  := TStringList.Create;
   FIncludePaths   := TStringList.Create;
-
-  self.Executable := WildPaths.ToPath(FindCompiler);
 end;
 
 destructor TDelphiCompileTask.Destroy;
@@ -237,8 +288,6 @@ begin
   inherited Execute;
 end;
 
-
-
 function TDelphiCompileTask.FindCompiler: string;
 begin
   Result := FindDelphiDir + '\bin\dcc32.exe';
@@ -249,6 +298,12 @@ end;
 class function TDelphiCompileTask.TagName: string;
 begin
   Result := 'dcc';
+end;
+
+function TDelphiCompileTask.BuildExecutable: string;
+begin
+  Executable := ToDantePath(FindCompiler);
+  Result := inherited BuildExecutable;
 end;
 
 function TDelphiCompileTask.BuildArguments: string;
@@ -301,6 +356,9 @@ begin
 
   if FIncludePaths.Count > 0 then
     Result := Result + ' -R' + StringsToSystemPathList(FIncludePaths);
+
+  if useLibraryPath then
+    Result := Result + ' -U' + ReadLibraryPaths;
 end;
 
 function TDelphiCompileTask.createUnit: TUnitElement;
@@ -337,6 +395,13 @@ procedure TDelphiCompileTask.AddResourcePath(Path: TPath);
 begin
   FResourcePaths.Add(Path);
 end;
+
+function TDelphiCompileTask.ReadLibraryPaths: string;
+begin
+  Result := ReadUserOption('Library', 'Search Path') + ';' +
+            ReadUserOption('Library', 'SearchPath')
+end;
+
 
 { TUnitElement }
 

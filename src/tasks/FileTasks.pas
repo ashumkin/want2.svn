@@ -173,7 +173,7 @@ var
   Paths :TStringArray;
   p     :Integer;
 begin
-  Paths := CommaTextToArray(Value);
+  Paths := TextToArray(Value);
   for p := Low(Paths) to High(Paths) do
     FFileSets[0].Include(Paths[p]);
 end;
@@ -183,7 +183,7 @@ var
   Paths :TStringArray;
   p     :Integer;
 begin
-  Paths := CommaTextToArray(Value);
+  Paths := TextToArray(Value);
   for p := Low(Paths) to High(Paths) do
     FFileSets[0].Exclude(Paths[p]);
 end;

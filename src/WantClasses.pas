@@ -224,7 +224,7 @@ type
 
     procedure DoParseXML(Node: MiniDom.IElement);
 
-    procedure SetBaseDir(const Path: TPath);  override;
+    procedure SetBaseDir(const Value: TPath); override;
     function  GetBaseDir: TPath;              override;
 
     procedure SetRootPath(const Path :TPath);
@@ -340,7 +340,7 @@ function  FindElement(Tag :string; AppliedTo :TClass = nil) :TDanteElementClass;
 procedure RegisterElement(ElementClass :TDanteElementClass; AppliesTo : TDanteElementClass = nil); overload;
 procedure RegisterElement(ElementClass :TDanteElementClass; AppliesTo : TDanteElementClassArray); overload;
 
-function CommaTextToArray(Text: string): TStringArray;
+function  TextToArray(const Text: string; const Delimiter :string = ','): TStringArray;
 
 procedure RaiseLastSystemError(Msg: string = '');
 procedure DanteError(Msg: string = '');
@@ -449,14 +449,14 @@ begin
   raise ETaskError.Create(SysErrorMessage(GetLastError) + Msg)
 end;
 
-function CommaTextToArray(Text: string): TStringArray;
+function TextToArray(const Text: string; const Delimiter :string): TStringArray;
 var
   S: TStrings;
   i: Integer;
 begin
   S := TStringList.Create;
   try
-    StrToStrings(Text, ',', S);
+    JclStrings.StrToStrings(Text, Delimiter, S);
     SetLength(Result, S.Count);
     for i := 0 to S.Count-1 do
        Result[i] := Trim(S[i]);
@@ -735,7 +735,7 @@ begin
   Paths  := nil;
   for i := 0 to List.Count-1 do
   begin
-    Paths := CommaTextToArray(List[i]);
+    Paths := TextToArray(List[i]);
     for p := Low(Paths) to High(Paths) do
       Result := Result + ';' + ToSystemPath(Paths[p], Base);
   end;
@@ -851,6 +851,7 @@ end;
 procedure TDanteElement.SetBaseDir(const Value: TPath);
 begin
   FBaseDir := Value;
+  //!!!SetProperty('basedir', BasePath);
 end;
 
 procedure TDanteElement.SetID(Value: string);
@@ -1103,7 +1104,7 @@ begin
   if Sched.IndexOf(Target) >= 0 then
      EXIT; // done
 
-  Deps := CommaTextToArray(Target.Depends);
+  Deps := TextToArray(Target.Depends);
   for i := Low(Deps) to High(Deps) do
      BuildSchedule(Deps[i], Sched);
 
@@ -1287,10 +1288,10 @@ begin
     Result := PathConcat(RootPath, BaseDir);
 end;
 
-procedure TProject.SetBaseDir(const Path: TPath);
+procedure TProject.SetBaseDir(const Value: TPath);
 begin
-  inherited SetBaseDir(Path);
-  SetProperty('basedir', PathConcat(RootPath, Path));
+  inherited SetBaseDir(Value);
+  SetProperty('basedir', PathConcat(RootPath, Value));
 end;
 
 function TProject.GetBaseDir: TPath;
@@ -1348,6 +1349,7 @@ begin
   if not PathIsFile(Result) then
     DanteError(Format('cannot find build file "%s" in "%s": ',[BuildFile, BaseDir]));
 end;
+
 
 
 { TTarget }
