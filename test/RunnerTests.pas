@@ -71,21 +71,9 @@ begin
     'object TestProject: TProject                                       ' + CR +
     '  DefaultTarget = ''Main''                                         ' + CR +
     '  object Main: TTarget                                             ' + CR +
-    '    object ExecNT: TExecTask                                       ' + CR +
-    '      Executable = ''cmd.exe''                                     ' + CR +
-    '      OS = ''Windows NT''                                          ' + CR +
-    '      Arguments.Strings = (                                        ' + CR +
-    '        ''/c copy''                                                ' + CR +
-    '        ''' + FBuildFileName + '''                                 ' + CR +
-    '        ''' + FCopyOfFileName + ''')                               ' + CR +
-    '    end                                                            ' + CR +
-    '    object Exec9x: TExecTask                                       ' + CR +
-    '      Executable = ''command.com''                                 ' + CR +
-    '      OS = ''Windows 9x''                                          ' + CR +
-    '      Arguments.Strings = (                                        ' + CR +
-    '        ''/c copy''                                                ' + CR +
-    '        ''' + FBuildFileName + '''                                 ' + CR +
-    '        ''' + FCopyOfFileName + ''')                               ' + CR +
+    '    object ShellExec: TShellExecTask                               ' + CR +
+    '      Executable = ''copy ' + FBuildFileName + ' ' +
+                          FCopyOfFileName + '''                         ' + CR +
     '    end                                                            ' + CR +
     '  end                                                              ' + CR +
     'end                                                                ' + CR;
