@@ -9,8 +9,6 @@ const
   PrefixColorMap :array[TLogLevel] of WORD = (
     CRT32.LightRed,
     CRT32.Magenta,
-    CRT32.LightCyan,
-    CRT32.LightBlue,
     CRT32.Green,
     CRT32.Blue,
     CRT32.DarkGray
@@ -19,8 +17,6 @@ const
   MsgColorMap :array[TLogLevel] of WORD = (
     CRT32.Yellow,
     CRT32.LightMagenta,
-    CRT32.White,
-    CRT32.White,
     CRT32.White,
     CRT32.DarkGray,
     CRT32.LightGray
