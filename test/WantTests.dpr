@@ -24,7 +24,7 @@ uses
   ConsoleScriptRunner in '..\src\win32\ConsoleScriptRunner.pas',
   StyleTasks in '..\src\tasks\StyleTasks.pas',
   MSXMLEngineImpl in '..\src\win32\MSXMLEngineImpl.pas',
-  CVSTasksTests in 'CVSTaksTests.pas';
+  CVSTasksTests in 'CVSTasksTests.pas';
 
 {$R *.RES}
 

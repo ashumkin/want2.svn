@@ -107,6 +107,7 @@ See http://www.suigeneris.org/want/ for details.
 
       <define name="USE_JEDI_JCL" />
       <define name="DUNIT_DLL" />
+      <define name="SUPPORTS_WIDESTRING" />
 
       <unitpath     refid="sources"   />
       <includepath  refid="sources"   />
@@ -130,6 +131,7 @@ See http://www.suigeneris.org/want/ for details.
 
       <define name="USE_TEXT_RUNNER" unless="debug" />
       <define name="DUNIT_DLL" />
+      <define name="SUPPORTS_WIDESTRING" />
 
       <unitpath     refid="sources" >
         <include  name="${test}/**" />
@@ -154,6 +156,7 @@ See http://www.suigeneris.org/want/ for details.
 
       <define name="USE_TEXT_RUNNER" unless="debug" />
       <define name="DUNIT_DLL" />
+      <define name="SUPPORTS_WIDESTRING" />
 
       <unitpath     refid="sources" >
         <include name="${test}/**" />
