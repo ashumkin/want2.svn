@@ -70,9 +70,9 @@ begin
     FDelphiTask := TDelphiCompileTask.Create(T);
     with FDelphiTask do
     begin
-      basedir := PathConcat(FProject.BasePath, 'src');
-      writeln(ToSystemPath(basedir));
-      writeln(CurrentDir);
+      basedir := 'src';
+      Log(ToSystemPath(basedir));
+      Log(CurrentDir);
       source  := 'dante.dpr';
       exes    := '/tmp';
       dcus    := '/tmp';

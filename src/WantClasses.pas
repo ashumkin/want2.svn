@@ -1134,7 +1134,9 @@ begin
   if Assigned(FOnLog) then
     FOnLog(Msg, Verbosity)
   else if Self.Verbosity >= Verbosity then
-    writeln(Msg);
+  begin
+    if IsConsole then writeln(Msg);
+  end;
 end;
 
 procedure TProject.Build(Target: string);

@@ -30,7 +30,9 @@ TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
 THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 --------------------------------------------------------------------------------
 Original Author: Juancarlo Añez
-Contributors   : Chris Morris 
+Contributors   :
+  Chris Morris
+  Mark Watts 
 }
 unit ExecTasks;
 
@@ -248,7 +250,10 @@ begin
     Child.Run(CmdLine);
     HandleOutput(Child);
     if (Child.ExitCode <> 0) and FailOnError then
+    begin
+      Log(vlVerbose, 'Exit code not zero');
       raise ETaskFailure.Create('failed');
+    end;
   finally
     Child.Free;
   end;
@@ -323,7 +328,7 @@ begin
   Result := 0;
   FillChar(StartupInfo, SizeOf(StartupInfo), #0);
   StartupInfo.cb := SizeOf(StartupInfo);
-  StartupInfo.dwFlags := STARTF_USESTDHANDLES;
+  StartupInfo.dwFlags := STARTF_USESTDHANDLES or STARTF_USESHOWWINDOW;
   StartupInfo.wShowWindow := SW_HIDE;
 
   StartupInfo.hStdInput   := hInput;
@@ -428,7 +433,9 @@ begin
      RaiseLastSystemError('CreatePipe');
 
   // Create child input handle
-  if not DuplicateHandle(hCurrentProcess, GetStdHandle(STD_INPUT_HANDLE),
+  if not IsConsole then
+    hInputRead := 0
+  else if not DuplicateHandle(hCurrentProcess, GetStdHandle(STD_INPUT_HANDLE),
                          hCurrentProcess, @hInputRead,0,
                        TRUE,DUPLICATE_SAME_ACCESS) then
      RaiseLastSystemError('DuplicateHandle');
@@ -466,7 +473,10 @@ begin
   // output pipe are maintained in this process or else the pipe will
   // not close when the child process exits and the ReadFile will hang.
   if not CloseHandle(hOutputWrite) then RaiseLastSystemError('CloseHandle');
-  if not CloseHandle(hInputRead )  then RaiseLastSystemError('CloseHandle');
+  if hInputRead <> 0 then
+  begin
+    if not CloseHandle(hInputRead )  then RaiseLastSystemError('CloseHandle');
+  end;
   if not CloseHandle(hErrorWrite)  then RaiseLastSystemError('CloseHandle');
 end;
 

@@ -31,7 +31,7 @@ UnitAliases=WinTypes=Windows;WinProcs=Windows;DbiTypes=BDE;DbiProcs=BDE;DbiErrs=
 [Linker]
 MapFile=3
 OutputObjs=0
-ConsoleApp=0
+ConsoleApp=1
 DebugInfo=0
 RemoteSymbols=0
 MinStackSize=16384
@@ -45,7 +45,7 @@ PackageDLLOutputDir=
 PackageDCPOutputDir=
 SearchPath=$(DELPHI)\Lib;..\src\;..\src\tasks;..\src\elements;..\src\lib;..\lib\xml;..\lib\jcl;..\lib\perlre;..\lib\dunit
 Packages=Vcl50;Vclx50;VclSmp50;Vcldb50;vclado50;ibevnt50;Vclbde50;vcldbx50;Qrpt50;TeeUI50;TeeDB50;Tee50;Dss50;TeeQR50;VCLIB50;Vclmid50;vclie50;Inetdb50;Inet50;NMFast50;webmid50;dclocx50;dclaxserver50;Indy50;OE;RxCtl5;RxBDE5;RxDB5;msxml;OpenXML_D5
-Conditionals=RUN_VSS_TESTS
+Conditionals=RUN_VSS_TESTS;USE_JEDI_JCL
 DebugSourceDirs=$(DELPHI)\Lib;..\src\;..\src\tasks;..\src\elements;..\src\lib;..\lib\xml;..\lib\jcl;..\lib\perlre;..\lib\dunit
 UsePackages=0
 [Parameters]
