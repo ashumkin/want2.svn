@@ -233,6 +233,8 @@ var
   ABuf: array[1..2048] of Char;
   BBuf: array[1..2048] of Char;
 begin
+  { read-only, required for read-only files, and all we need here anyway }
+  FileMode := 0;
   AssignFile(A, AFileName);
   AssignFile(B, BFileName);
   Reset(A, 1);
