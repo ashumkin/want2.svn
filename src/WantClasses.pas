@@ -87,11 +87,13 @@ type
     FBeQuiet: boolean;
     // base directory: where the build script was found
     FBasePath: string;
+    FProperties: TStrings;
 
     function  GetTarget(Index: Integer):TTarget;
-    procedure Notification(AComponent: TComponent; Operation: TOperation); override;
 
     procedure BuildSchedule(TargetName :string; Sched :TList);
+
+    procedure Notification(AComponent: TComponent; Operation: TOperation); override;
   public
     constructor Create(Owner: TComponent = nil);  override;
     destructor  Destroy; override;
@@ -108,7 +110,10 @@ type
     function AddTarget(Name: string = ''): TTarget;
     function TargetCount: Integer;
 
-    function GetTargetByName(name :string):TTarget;
+    function GetTargetByName(Name :string):TTarget;
+
+    procedure SetProperties(Value :TStrings);
+    function  PropertyDefined(Name :string): boolean;
 
     function Schedule(TargetName :string) :TTargetArray;
     procedure Build(TargetName :string); overload;
@@ -123,6 +128,7 @@ type
   published
     property DefaultTarget :string read FDefaultTarget write FDefaultTarget;
     property BeQuiet: boolean read FBeQuiet write FBeQuiet;
+    property Properties :TStrings read FProperties write SetProperties;
   end;
 
   TTarget = class(TDanteComponent)
@@ -160,8 +166,17 @@ type
     procedure Log(Msg :string = '');
 
   published
-    // Tag is the name to use for the task in build scripts
+    // Tag is the Name to use for the task in build scripts
     property Tag : string read GetTag;
+  end;
+
+
+  // for properties
+  TWriteOnceStringList = class(TStringList)
+  public
+    constructor Create;
+    function Add(const S: string): Integer; override;
+    procedure Insert(Index: Integer; const S: string); override;
   end;
 
 implementation
@@ -225,12 +240,14 @@ end;
 constructor TProject.Create(Owner: TComponent);
 begin
   inherited Create(Owner);
-  FTargets := TList.Create;
+  FTargets    := TList.Create;
+  FProperties := TWriteOnceStringList.Create;
 end;
 
 destructor TProject.Destroy;
 begin
   FTargets.Free;
+  FProperties.Free;
   inherited Destroy;
 end;
 
@@ -331,11 +348,11 @@ begin
 end;
 
 
-function TProject.GetTargetByName(name: string): TTarget;
+function TProject.GetTargetByName(Name: string): TTarget;
 begin
-  Result := self.FindComponent(name) as TTarget;
+  Result := self.FindComponent(Name) as TTarget;
   if Result = nil then
-    raise ETargetNotFoundException.Create(name);
+    raise ETargetNotFoundException.Create(Name);
 end;
 
 procedure TProject.BuildSchedule(TargetName: string; Sched: TList);
@@ -409,6 +426,17 @@ end;
 function TProject.RelativePath(SubPath: string): string;
 begin
   Result := BasePath + SubPath;
+end;
+
+procedure TProject.SetProperties(Value: TStrings);
+begin
+  FProperties.Assign(Value);
+end;
+
+function TProject.PropertyDefined(Name: string): boolean;
+begin
+  Result :=   (Properties.IndexOf(Name) >= 0)
+           or (Properties.IndexOfName(Name) >= 0)
 end;
 
 { TTarget }
@@ -502,6 +530,28 @@ begin
       raise;
     end;
   end;
+end;
+
+{ TWriteOnceStringList }
+
+function TWriteOnceStringList.Add(const S: string): Integer;
+begin
+  Result := IndexOf(S);
+  if Result < 0 then
+    Result := inherited Add(S);
+end;
+
+constructor TWriteOnceStringList.Create;
+begin
+  inherited Create;
+  Sorted := true;
+  Duplicates := dupError;
+end;
+
+procedure TWriteOnceStringList.Insert(Index: Integer; const S: string);
+begin
+  if IndexOf(S) < 0 then
+    inherited Insert(Index, S);
 end;
 
 initialization
