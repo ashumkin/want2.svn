@@ -53,11 +53,17 @@ type
   end;
 
 
-function Replace(Text, Pattern, Subst :string; All :boolean = true) :string;
+function Match(Pattern, Text :string) :boolean;
+function Replace(Pattern, Subst, Text :string; All :boolean = true) :string;
 
 implementation
 
-function Replace(Text, Pattern, Subst :string; All :boolean = true) :string;
+function Match(Pattern, Text :string) :boolean;
+begin
+  Result := UPerlRE.regex.Match(Pattern, Text);
+end;
+
+function Replace(Pattern, Subst, Text :string; All :boolean = true) :string;
 var
   Regexp      :TXRegexp;
 begin
@@ -123,5 +129,7 @@ begin
   end;
 end;
 
-
+initialization
+  with UPerlRE.regex do
+    Options := Options or PCRE_EXTENDED;
 end.
