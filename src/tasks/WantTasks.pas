@@ -71,8 +71,6 @@ type
     procedure Init; override;
     procedure Execute;  override;
   published
-    function CreateProperty :TPropertyElement; override;
-
     property _target;
     property buildfile :string read FBuildFile write FBuildFile;
     property dir       :string read FDir       write FDir;
@@ -94,10 +92,9 @@ implementation
 constructor TDanteTask.Create(Owner: TDanteElement);
 begin
   inherited Create(Owner);
-  FSubProject := TProject.Create;
+  FSubProject := TProject.Create(Self);
+  FSubProject.RunPath := ToAbsolutePath(Project.RunPath);
   FSubProject.OnLog := Self.Log;
-  FSubProject.Properties := Self.Project.Properties;
-  FSubProject.SetInitialBaseDir('');
 
   buildfile := DanteClasses.BuildFileName;
 end;
@@ -117,25 +114,17 @@ end;
 
 procedure TDanteTask.Execute;
 begin
-  // this allows the sub project to inherit paths
-  // calculated by the current project
-  FSubProject.RunPath := ToAbsolutePath(Project.RunPath);
   if dir <> '' then
     FSubProject.SetInitialBaseDir(dir);
 
   Log('building "%s" in directory "%s"', [
                      ToRelativePath(buildfile),
-                     ToRelativePath(dir)
+                     ToRelativePath(FSubProject.BasePath)
                      ]);
 
 
   FSubProject.LoadXML(buildfile, false);
   FSubProject.Build(_target);
-end;
-
-function TDanteTask.CreateProperty: TPropertyElement;
-begin
-  Result := FSubProject.CreateProperty;
 end;
 
 { TSubProjectPropertyElement }
