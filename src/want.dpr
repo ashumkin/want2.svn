@@ -60,8 +60,10 @@ uses
   BuildListeners in 'BuildListeners.pas',
   WantUtils in 'WantUtils.pas',
   IniFileTasks in 'tasks\IniFileTasks.pas',
+  {$IFNDEF VER130}
   StyleTasks in 'tasks\StyleTasks.pas',
   MSXMLEngineImpl in 'win32\MSXMLEngineImpl.pas',
+  {$ENDIF VER130}
   CVSTasks in 'tasks\CVSTasks.pas',
   GZipTasks in 'tasks\GZipTasks.pas',
   InnoSetupTasks in 'tasks\InnoSetupTasks.pas';
