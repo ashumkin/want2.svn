@@ -227,6 +227,8 @@ begin
     vers := StringToArray(versions);
     for i := 0 to High(vers) do
     begin
+       if StrLeft(vers[i], 2) <> '.0' then
+         vers[i] := vers[i] + '.0';
        Result := FindDelphiVersion(vers[i]);
        if Result <> '' then
        begin
@@ -622,6 +624,7 @@ end;
 procedure TResourceCompileTask.Init;
 begin
   inherited Init;
+  versions := '2,3,4,5,6';
   RequireAttribute('file');
 end;
 

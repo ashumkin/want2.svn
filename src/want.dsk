@@ -11,12 +11,6 @@ MaxTop=-1
 ClientWidth=804
 ClientHeight=78
 
-[BreakpointWindow]
-Column0Width=100
-Column1Width=75
-Column2Width=225
-Column3Width=40
-
 [CallStackWindow]
 Create=1
 Visible=1
@@ -51,7 +45,7 @@ Dockable=1
 
 [LocalVarsWindow]
 Create=1
-Visible=0
+Visible=1
 State=0
 Left=11
 Top=0
@@ -71,25 +65,36 @@ File_1=SourceModule,'C:\home\want\src\WantUtils.pas',0,1,84,17,116,0,0
 File_2=SourceModule,'C:\home\want\src\WantClasses.pas',0,1,809,51,813,0,0
 File_3=SourceModule,'C:\home\want\lib\jal\JalPaths.pas',0,1,1,1,1,0,0
 File_4=SourceModule,'C:\home\want\src\tasks\EditTasks.pas',0,1,542,9,545,0,0
-File_5=SourceModule,'C:\home\want\src\ScriptRunner.pas',0,1,207,2,222,0,0
-File_6=SourceModule,'C:\home\want\test\WildPathsTest.pas',0,1,25,26,33,0,0
+File_5=SourceModule,'C:\home\want\test\WildPathsTest.pas',0,1,25,26,33,0,0
 
 [Modules]
-Module0=C:\home\want\src\win32\WIN32.pas
+Module0=C:\home\want\src\ScriptRunner.pas
 Module1=C:\home\want\test\WantAcceptTestLib.dpr
-Module2=C:\home\want\src\win32\ConsoleListener.pas
-Module3=C:\home\want\test\ExternalTests.pas
-Module4=c:\home\dunit\src\TestFramework.pas
-Module5=C:\home\want\src\lib\WildPaths.pas
-Count=6
+Module2=C:\home\want\src\tasks\DelphiTasks.pas
+Module3=C:\home\want\src\win32\WIN32.pas
+Module4=C:\home\want\src\win32\ConsoleListener.pas
+Module5=C:\home\want\test\ExternalTests.pas
+Module6=c:\home\dunit\src\TestFramework.pas
+Module7=C:\home\want\src\lib\WildPaths.pas
+Count=8
 EditWindowCount=1
 
-[C:\home\want\src\win32\WIN32.pas]
+[C:\home\want\src\ScriptRunner.pas]
 ModuleType=SourceModule
 FormState=0
 FormOnTop=0
 
 [C:\home\want\test\WantAcceptTestLib.dpr]
+ModuleType=SourceModule
+FormState=0
+FormOnTop=0
+
+[C:\home\want\src\tasks\DelphiTasks.pas]
+ModuleType=SourceModule
+FormState=0
+FormOnTop=0
+
+[C:\home\want\src\win32\WIN32.pas]
 ModuleType=SourceModule
 FormState=0
 FormOnTop=0
@@ -144,17 +149,19 @@ LeftPanelSize=0
 LeftPanelClients=CodeExplorer@EditWindow0
 LeftPanelData=00000400010000000C000000436F64654578706C6F7265720000000000000000000000000000000000FFFFFFFF
 RightPanelSize=0
-BottomPanelSize=0
+BottomPanelSize=149
 BottomPanelClients=MessageView@EditWindow0,LocalVarsWindow
-BottomPanelData=00000400020000000B0000004D657373616765566965770F0000004C6F63616C5661727357696E646F77F602000000000000009500000000000000FFFFFFFF
-ViewCount=6
-CurrentView=3
+BottomPanelData=00000400010000000B0000004D65737361676556696577F6020000000000000095000000000000000100000000F60200000F0000004C6F63616C5661727357696E646F77FFFFFFFF
+ViewCount=8
+CurrentView=5
 View0=0
 View1=1
 View2=2
 View3=3
 View4=4
 View5=5
+View6=6
+View7=7
 
 [CodeExplorer@EditWindow0]
 Create=1
@@ -212,18 +219,32 @@ LeftCol=1
 [View3]
 Module=C:\home\want\src\win32\WIN32.pas
 CursorX=1
-CursorY=30
+CursorY=31
 TopLine=16
 LeftCol=1
 
 [View4]
+Module=C:\home\want\src\tasks\DelphiTasks.pas
+CursorX=1
+CursorY=232
+TopLine=210
+LeftCol=1
+
+[View5]
+Module=C:\home\want\src\ScriptRunner.pas
+CursorX=16
+CursorY=161
+TopLine=141
+LeftCol=1
+
+[View6]
 Module=c:\home\dunit\src\TestFramework.pas
 CursorX=1
 CursorY=81
 TopLine=81
 LeftCol=1
 
-[View5]
+[View7]
 Module=C:\home\want\src\lib\WildPaths.pas
 CursorX=1
 CursorY=489
@@ -242,9 +263,8 @@ Watch3='Matches[i]',256,0,18,1
 Watch4='FIncludes[i]',256,0,18,1
 
 [Breakpoints]
-Count=2
-Breakpoint0='C:\home\want\src\ScriptRunner.pas',285,'',0,1
-Breakpoint1='c:\home\dunit\src\TestFramework.pas',1531,'',0,1
+Count=1
+Breakpoint0='c:\home\dunit\src\TestFramework.pas',1531,'',0,1
 
 [AddressBreakpoints]
 Count=0

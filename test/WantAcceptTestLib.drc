@@ -1,19 +1,15 @@
 #define Consts_SBitsIndexError 65344
-#define Consts_SInvalidRegType 65345
-#define Consts_SRegCreateFailed 65346
-#define Consts_SRegSetDataFailed 65347
-#define Consts_SRegGetDataFailed 65348
-#define Consts_SDuplicateMenus 65349
-#define Consts_SDockedCtlNeedsName 65350
-#define Consts_SDockTreeRemoveError 65351
-#define Consts_SDockZoneNotFound 65352
-#define Consts_SDockZoneHasNoCtl 65353
-#define JclResources_RsCannotCreateDir 65354
-#define JclResources_RsFileUtilsNoVersionInfo 65355
-#define ComConst_SOleError 65356
-#define ComConst_SNoMethod 65357
-#define ComConst_SVarNotObject 65358
-#define WantResources_WantUsageText 65359
+#define Consts_SDuplicateMenus 65345
+#define Consts_SDockedCtlNeedsName 65346
+#define Consts_SDockTreeRemoveError 65347
+#define Consts_SDockZoneNotFound 65348
+#define Consts_SDockZoneHasNoCtl 65349
+#define JclResources_RsCannotCreateDir 65350
+#define JclResources_RsFileUtilsNoVersionInfo 65351
+#define ComConst_SOleError 65352
+#define ComConst_SNoMethod 65353
+#define ComConst_SVarNotObject 65354
+#define WantResources_WantUsageText 65355
 #define Consts_SmkcSpace 65360
 #define Consts_SmkcPgUp 65361
 #define Consts_SmkcPgDn 65362
@@ -193,10 +189,6 @@
 STRINGTABLE
 BEGIN
 	Consts_SBitsIndexError,	"Bits index out of range"
-	Consts_SInvalidRegType,	"Invalid data type for '%s'"
-	Consts_SRegCreateFailed,	"Failed to create key %s"
-	Consts_SRegSetDataFailed,	"Failed to set data for '%s'"
-	Consts_SRegGetDataFailed,	"Failed to get data for '%s'"
 	Consts_SDuplicateMenus,	"Menu '%s' is already being used by another form"
 	Consts_SDockedCtlNeedsName,	"Docked control must have a name"
 	Consts_SDockTreeRemoveError,	"Error removing control from dock tree"

@@ -3,15 +3,11 @@
 #define Consts_SInvalidPropertyValue 65426
 #define Consts_SNoCanvasHandle 65427
 #define Consts_SIniFileWriteError 65428
-#define Consts_SInvalidRegType 65429
-#define Consts_SRegCreateFailed 65430
-#define Consts_SRegSetDataFailed 65431
-#define Consts_SRegGetDataFailed 65432
-#define JclResources_RsCannotCreateDir 65433
-#define JclResources_RsFileUtilsNoVersionInfo 65434
-#define ComConst_SOleError 65435
-#define ComConst_SNoMethod 65436
-#define ComConst_SVarNotObject 65437
+#define JclResources_RsCannotCreateDir 65429
+#define JclResources_RsFileUtilsNoVersionInfo 65430
+#define ComConst_SOleError 65431
+#define ComConst_SNoMethod 65432
+#define ComConst_SVarNotObject 65433
 #define SysConst_SLongDayNameSun 65440
 #define SysConst_SLongDayNameMon 65441
 #define SysConst_SLongDayNameTue 65442
@@ -115,10 +111,6 @@ BEGIN
 	Consts_SInvalidPropertyValue,	"Invalid property value"
 	Consts_SNoCanvasHandle,	"Canvas does not allow drawing"
 	Consts_SIniFileWriteError,	"Unable to write to %s"
-	Consts_SInvalidRegType,	"Invalid data type for '%s'"
-	Consts_SRegCreateFailed,	"Failed to create key %s"
-	Consts_SRegSetDataFailed,	"Failed to set data for '%s'"
-	Consts_SRegGetDataFailed,	"Failed to get data for '%s'"
 	JclResources_RsCannotCreateDir,	"Unable to create directory"
 	JclResources_RsFileUtilsNoVersionInfo,	"File contains no version information"
 	ComConst_SOleError,	"OLE error %.8x"

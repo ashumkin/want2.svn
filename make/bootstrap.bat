@@ -7,9 +7,10 @@ brcc32 ..\src\license.rc
 
 cd ..\src
 dcc32 -Q -B -N%TEMP% -E%TEMP% ..\src\want.dpr -Ulib;tasks;elements;..\lib\jcl;..\lib\xml;..\lib\paszlib;..\lib\perlre -U..\lib\dunit\src
-cd ..\make
 if ERRORLEVEL 1 goto ERROR
-%TEMP%\want.exe -color -verbose %1 %2 %3 %4 %5 %6 %7 %8 %9
+if ERRORLEVEL 1 goto ERROR
+%TEMP%\want.exe %1 %2 %3 %4 %5 %6 %7 %8 %9
 goto END
 :ERROR
 :END
+cd ..\make
