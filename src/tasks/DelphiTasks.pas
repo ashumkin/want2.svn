@@ -39,6 +39,10 @@ interface
 uses
   DanteClasses,
   ExecTasks,
+  WildPaths,
+
+  Collections,
+  MiniDom,
 
   JclBase,
   JclMiscel,
@@ -57,17 +61,88 @@ type
 
   TDelphiCompileTask = class(TCustomExecTask)
   protected
+    FOutputPath      :string;
+    FUnitOutputPath  :string;
+    FSource          :string;
+    FQuiet           :boolean;
+    FMake            :boolean;
+    FBuild           :boolean;
+
+    FUnitPaths     :TStrings;
+
+    function BuildCmdLine: string; override;
     function FindDelphiDir :string;
     function FindCompiler :string;
   public
+    constructor Create(owner :TComponent); override;
+    destructor  Destroy; override;
+
+    class function XMLTag :string; override;
+    procedure ParseXML(Node :MiniDom.IElement); override;
+
+
     procedure Execute; override;
   published
+
     property Arguments;
+    property ArgumentList stored False;
+
+    property exes :string    read FOutputPath     write FOutputPath;
+    property dcus :string    read FUnitOutputPath write FUnitOutputPath;
+
+    property quiet :boolean read FQuiet write FQuiet;
+    property make  :boolean read FMake  write FMake;
+    property build :boolean read FBuild write FBuild;
+
+    property source :string read FSource write FSource;
   end;
 
 implementation
 
 { TDelphiCompileTask }
+
+function TDelphiCompileTask.BuildCmdLine: string;
+var
+  Paths: string;
+  i:     Integer;
+begin
+  Result := inherited BuildCmdLine;
+
+  if source <> '' then
+    Result := Result + ' ' + ToSystemPath(source);
+
+  if exes <> '' then
+    Result := Result + ' -E' + ToSystemPath(exes);
+  if dcus <> '' then
+    Result := Result + ' -N' + ToSystemPath(dcus);
+  if quiet then
+    Result := Result + ' -Q';
+
+  if build then
+    Result := Result + ' -B'
+  else if make then
+    Result := Result + ' -M';
+
+  if FUnitPaths.Count > 0 then
+  begin
+    Paths := '';
+    for i := 0 to FUnitPaths.Count-1 do
+      Paths := Paths + ';' + ToSystemPath(FUnitPaths[i]);
+    Result := Result + ' -U' + Paths;
+  end;
+end;
+
+constructor TDelphiCompileTask.Create(owner: TComponent);
+begin
+  inherited Create(owner);
+  FUnitPaths := TStringList.Create;
+end;
+
+destructor TDelphiCompileTask.Destroy;
+begin
+  FUnitPaths.Free;
+  inherited Destroy;
+end;
 
 procedure TDelphiCompileTask.Execute;
 begin
@@ -108,6 +183,29 @@ begin
   raise EDelphiNotFoundError.Create('');
 end;
 
+procedure TDelphiCompileTask.ParseXML(Node: IElement);
+var
+  i:    IIterator;
+  paths :TStringArray;
+  p:    Integer;
+begin
+  inherited ParseXML(Node);
+
+  paths := nil;
+  i := Node.Children('unit').Iterator;
+  while i.HasNext do
+  begin
+    paths := CommaTextToArray((i.Next as IElement).attributeValue('path') );
+    for p := Low(paths) to High(paths) do
+      FUnitPaths.Add(paths[p]);
+  end;
+end;
+
+class function TDelphiCompileTask.XMLTag: string;
+begin
+  Result := 'dcc';
+end;
+
 initialization
-  RegisterClasses([TDelphiCompileTask]);
+  RegisterTasks([TDelphiCompileTask]);
 end.
