@@ -81,7 +81,7 @@ type
     FVersionFound :string;
     FDelphiDir    :string;
     FToolPath     :string;
-
+    FVersionNumber:double;
     procedure HandleOutputLine(Line :string); override;
 
     class function RootForVersion(version: string): string;
@@ -180,7 +180,7 @@ type
 
     function CreateUnitPath     :TUnitPathElement;
 
- function CreateResourcePath :TResourcePathElement;
+    function CreateResourcePath :TResourcePathElement;
     function CreateIncludePath  :TIncludePathElement;
     function CreateObjectPath   :TObjectPathElement; 
 
@@ -281,6 +281,8 @@ type
 
 
 implementation
+var
+  WarningVersion : Array[TWarning] of double=(7.0,6.0,6.0,6.0,6.0);
 
 { TCustomDelphiTask }
 
@@ -327,6 +329,9 @@ begin
     FVersionFound := Version;
     FDelphiDir    := Directory;
     FToolPath     := ToolPath;
+    DecimalSeparator := '.';
+    FVersionNumber := StrToFloat(Version);
+    GetFormatSettings();
   end;
   if FToolPath = '' then
     TaskError('Could not find ' + ToolName);
@@ -618,11 +623,14 @@ begin
 
   for w := Low(TWarning) to High(TWarning) do
   begin
-    wname := GetEnumName(TypeInfo(TWarning), Ord(w));
-    if w in FWarnings then
-      Result := Result + ' -W+' + wname
-    else
-      Result := Result + ' -W-' + wname;
+    if  FVersionNumber >= WarningVersion[w] then
+    begin
+      wname := GetEnumName(TypeInfo(TWarning), Ord(w));
+      if w in FWarnings then
+        Result := Result + ' -W+' + wname
+      else
+        Result := Result + ' -W-' + wname;
+    end;
   end;
 
   for p := 0 to FPackages.Count-1 do
