@@ -28,7 +28,6 @@ Z=1
 ShowHints=1
 ShowWarnings=1
 UnitAliases=WinTypes=Windows;WinProcs=Windows;DbiTypes=BDE;DbiProcs=BDE;DbiErrs=BDE;
-
 [Linker]
 MapFile=0
 OutputObjs=0
@@ -39,7 +38,6 @@ MinStackSize=16384
 MaxStackSize=1048576
 ImageBase=4194304
 ExeDescription=
-
 [Directories]
 OutputDir=c:\tmp
 UnitOutputDir=c:\tmp
@@ -50,11 +48,9 @@ Packages=Vcl50;Vclx50;VclSmp50;Vcldb50;vclado50;ibevnt50;Vclbde50;vcldbx50;Qrpt5
 Conditionals=USE_JEDI_JCL
 DebugSourceDirs=
 UsePackages=0
-
 [Parameters]
-RunParams=-buildfile c:\home\want\want.xml
+RunParams=-buildfile c:\home\lasalle\src\want.xml sx
 HostApplication=
-
 [Version Info]
 IncludeVerInfo=0
 AutoIncBuild=0
@@ -69,7 +65,6 @@ Private=0
 DLL=0
 Locale=1033
 CodePage=1252
-
 [Version Info Keys]
 CompanyName=
 FileDescription=
@@ -81,7 +76,6 @@ OriginalFilename=
 ProductName=
 ProductVersion=1.0.0.0
 Comments=
-
 [HistoryLists\hlDebugSourcePath]
 Count=6
 Item0=$(DELPHI)\Lib;..\src\;..\src\lib;..\src\elements;..\src\tasks;..\lib\jcl;..\lib\xml;..\lib\paszlib;..\lib\paszlib\minizip;..\lib\perlre;..\lib\dunit
@@ -90,18 +84,15 @@ Item2=$(DELPHI)\Lib;..\src\;..\src\xml;..\src\tasks;..\src\jcl;..\src\paths;..\s
 Item3=$(DELPHI)\Lib;..\src\;..\src\xml;..\src\tasks;..\src\jcl;..\src\paths;..\src\xml;..\src\LogMgr;..\lib\paszlib;..\lib\paszlib\minizip
 Item4=..\src\
 Item5=..\src
-
 [HistoryLists\hlConditionals]
 Count=4
 Item0=USE_JEDI_JCL;NO_RUN_VSS_TESTS
 Item1=RUN_VSS_TESTS;USE_JEDI_JCL
 Item2=USE_JEDI_JCL
 Item3=RUN_VSS_TESTS
-
 [HistoryLists\hlUnitAliases]
 Count=1
 Item0=WinTypes=Windows;WinProcs=Windows;DbiTypes=BDE;DbiProcs=BDE;DbiErrs=BDE;
-
 [HistoryLists\hlSearchPath]
 Count=20
 Item0=$(DELPHI)\Lib;..\src\;..\src\lib;..\src\elements;..\src\tasks;..\src\win32;..\lib\jcl;..\lib\xml;..\lib\paszlib;..\lib\paszlib\minizip;..\lib\perlre;..\lib\dunit
@@ -124,21 +115,17 @@ Item16=..\src\;..\src\xml
 Item17=..\src\
 Item18=..\src
 Item19=..
-
 [HistoryLists\hlUnitOutputDirectory]
 Count=1
 Item0=..\dcu
-
 [HistoryLists\hlOutputDirectorry]
 Count=2
 Item0=c:\home\want\bin
 Item1=..\bin
-
 [HistoryLists\hlHostApplication]
 Count=1
 Item0=c:\home\dunit\bin\dunit.exe
-
 [HistoryLists\hlRunParameters]
 Count=2
-Item0=-buildfile c:\home\want\want.xml
+Item0=-buildfile c:\home\lasalle\src\want.xml sx
 Item1=WantAcceptTestLib

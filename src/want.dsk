@@ -60,17 +60,29 @@ File_6=SourceModule,'C:\home\want\src\ScriptRunner.pas',0,1,63,1,87,0,0
 File_7=SourceModule,'c:\lib\pascal\jcl\source\JclStrings.pas',0,1,254,98,279,0,0
 
 [Modules]
-Module0=C:\home\want\src\tasks\EchoTasks.pas
-Module1=C:\home\want\src\tasks\DelphiTasks.pas
-Count=2
+Module0=C:\home\want\src\tasks\DelphiTasks.pas
+Module1=C:\home\want\src\tasks\EchoTasks.pas
+Module2=C:\home\want\src\tasks\ZipTasks.pas
+Module3=C:\home\want\src\tasks\FileTasks.pas
+Count=4
 EditWindowCount=1
+
+[C:\home\want\src\tasks\DelphiTasks.pas]
+ModuleType=SourceModule
+FormState=0
+FormOnTop=0
 
 [C:\home\want\src\tasks\EchoTasks.pas]
 ModuleType=SourceModule
 FormState=0
 FormOnTop=0
 
-[C:\home\want\src\tasks\DelphiTasks.pas]
+[C:\home\want\src\tasks\ZipTasks.pas]
+ModuleType=SourceModule
+FormState=0
+FormOnTop=0
+
+[C:\home\want\src\tasks\FileTasks.pas]
 ModuleType=SourceModule
 FormState=0
 FormOnTop=0
@@ -97,14 +109,14 @@ MessageView=MessageView@EditWindow0
 Create=1
 Visible=1
 State=0
-Left=235
+Left=55
 Top=142
-Width=696
-Height=482
+Width=876
+Height=584
 MaxLeft=-1
 MaxTop=-1
-ClientWidth=688
-ClientHeight=455
+ClientWidth=868
+ClientHeight=557
 LeftPanelSize=0
 LeftPanelClients=CodeExplorer@EditWindow0
 LeftPanelData=00000400010000000C000000436F64654578706C6F7265720000000000000000000000000000000000FFFFFFFF
@@ -112,10 +124,12 @@ RightPanelSize=0
 BottomPanelSize=0
 BottomPanelClients=MessageView@EditWindow0
 BottomPanelData=00000400010000000B0000004D657373616765566965770000000000000000000000000000000000FFFFFFFF
-ViewCount=2
-CurrentView=1
+ViewCount=4
+CurrentView=0
 View0=0
 View1=1
+View2=2
+View3=3
 
 [CodeExplorer@EditWindow0]
 Create=1
@@ -151,17 +165,31 @@ Dockable=1
 
 [View0]
 Module=C:\home\want\src\tasks\DelphiTasks.pas
-CursorX=7
-CursorY=334
-TopLine=315
+CursorX=40
+CursorY=399
+TopLine=369
 LeftCol=1
 
 [View1]
 Module=C:\home\want\src\tasks\EchoTasks.pas
-CursorX=97
-CursorY=72
+CursorX=33
+CursorY=86
 TopLine=53
-LeftCol=37
+LeftCol=1
+
+[View2]
+Module=C:\home\want\src\tasks\ZipTasks.pas
+CursorX=1
+CursorY=96
+TopLine=84
+LeftCol=1
+
+[View3]
+Module=C:\home\want\src\tasks\FileTasks.pas
+CursorX=1
+CursorY=191
+TopLine=170
+LeftCol=1
 
 [DockHosts]
 DockHostCount=0
@@ -175,9 +203,8 @@ Watch3='Matches[i]',256,0,18,1
 Watch4='FIncludes[i]',256,0,18,1
 
 [Breakpoints]
-Count=2
+Count=1
 Breakpoint0='C:\home\want\test\ExternalTests.pas',256,'',0,1
-Breakpoint1='C:\home\want\src\tasks\DelphiTasks.pas',389,'',0,1
 
 [AddressBreakpoints]
 Count=0

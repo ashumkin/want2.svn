@@ -90,7 +90,7 @@ begin
   Log(vlVerbose, CurrentDir);
   AboutToScratchPath(zipfile);
 
-  Paths := ToRelativePaths(FileSet.Paths, BasePath);
+  Paths := FileSet.RelativePaths;
 
   if Length(Paths) = 0 then
     Log

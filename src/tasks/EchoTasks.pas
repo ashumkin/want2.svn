@@ -67,7 +67,7 @@ begin
   else
   begin
     if input = '' then
-      Log(SysUtils.Format('echo %s to "%s"', [ToRelativePath(_file)]))
+      Log(SysUtils.Format('echo "%s"', [ToRelativePath(_file)]))
     else
       Log(SysUtils.Format('echo "%s" to "%s"', [ToRelativePath(input), ToRelativePath(_file)]));
     AboutToScratchPath(_file);
