@@ -273,7 +273,10 @@ var
   LastDir: TPath;
 begin
   if not Task.Enabled then
+  begin
+    Log(vlVerbose, Format('skipping disabled task <%s>', [Task.TagName]));
     EXIT;
+  end;
   Listener.TaskStarted(Task);
 
   Log(vlDebug, Format('basedir="%s"',   [Task.BaseDir]));

@@ -568,31 +568,26 @@ var
   i       :Integer;
   LastDir :TPath;
 begin
-  if not Enabled then
-    Log(vlDebug, '%s disabled', [TagName])
-  else
-  begin
-    LastDir := CurrentDir;
+  LastDir := CurrentDir;
+  try
     try
-      try
-        with Attributes do
-        begin
-          for a := 0 to Count-1 do
-            SetDelphiProperty(Names[a], Evaluate(Values[Names[a]]) );
-        end;
-
-        ChangeDir(BasePath, false);
-        Self.Init;
-      except
-        on e :Exception do
-           WantError(Format('(%d:%d) could not configure <%s>:'#10'%s', [Line, Column, TagName, e.Message]));
+      with Attributes do
+      begin
+        for a := 0 to Count-1 do
+          SetDelphiProperty(Names[a], Evaluate(Values[Names[a]]) );
       end;
 
-      for i := 0 to ChildCount-1 do
-        Children[i].Configure;
-    finally
-      ChangeDir(LastDir, False);
+      ChangeDir(BasePath, false);
+      Self.Init;
+    except
+      on e :Exception do
+         WantError(Format('(%d:%d) could not configure <%s>:'#10'%s', [Line, Column, TagName, e.Message]));
     end;
+
+    for i := 0 to ChildCount-1 do
+      Children[i].Configure;
+  finally
+    ChangeDir(LastDir, False);
   end;
 end;
 
