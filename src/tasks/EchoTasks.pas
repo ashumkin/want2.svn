@@ -78,7 +78,7 @@ var
   sysfile:  string;
 begin
   inherited Execute;
-  msg := _message + FormatText;
+  msg := Evaluate( _message + FormatText );
   if _file = '' then
     Log(msg, Level)
   else
@@ -147,7 +147,7 @@ begin
       if not FileExists(ToSystemPath(input)) then
         TaskFailure(Format('file "%s" not found', [ToSystemPath(input)]));
       try
-        Result := Result + Evaluate( FileToString( ToSystemPath(input) ));
+        Result := Result + FileToString( ToSystemPath(input) );
       except
         on e :Exception do
           TaskFailure(Format('%s: %s', [input, e.Message]));
