@@ -1,0 +1,3597 @@
+2002-01-29 02:03  juanco
+
+	* .cvsignore: ignore build dirs
+
+2002-01-28 17:19  juanco
+
+	* release.ini, src/tasks/DelphiTasks.pas: separate multiple compile
+	targets with spaces
+
+2002-01-25 18:17  juanco
+
+	* etc/bku.btm: CVS repository moved to remore server: do not
+	attempt backup
+
+2002-01-25 17:06  juanco
+
+	* doc/index.html, src/want.cfg, src/want.dof, src/want.dsk,
+	src/tasks/DelphiTasks.pas, src/win32/WIN32.pas,
+	test/WantAcceptTestLib.drc: removed writeable const related errors
+
+2002-01-08 18:12  root
+
+	* CVSROOT/: checkoutlist, commitinfo, config, cvswrappers,
+	editinfo, loginfo, modules, notify, rcsinfo, taginfo, verifymsg:
+	initial checkin
+
+2002-01-08 16:50  juanca
+
+	* release.ini, doc/index.html, src/WantClasses.pas, src/want.cfg,
+	src/want.dof, src/want.dsk: release 0.1.109
+
+2002-01-07 23:32  juanca
+
+	* release.ini, want.xml, doc/index.html, make/bootstrap.bat,
+	src/WantClasses.pas, src/want.dof, src/want.dpr, src/want.dsk,
+	src/lib/WildPaths.pas, src/tasks/ExecTasks.pas (utags: v_0_1_109):
+	fixed more problems with directories with spaces
+
+2002-01-07 14:49  juanca
+
+	* README.TXT (tags: v_0_1_109), release.ini, test/WantTestLib.drc
+	(tags: v_0_1_109): added basic README.TXT
+
+2002-01-07 14:43  juanca
+
+	* src/WantClasses.pas, src/want.dof, src/want.dsk,
+	src/elements/Properties.pas (tags: v_0_1_109),
+	test/WantTestLib.drc, test/WantTestLib.dsk (tags: v_0_1_109): make
+	properties be undefined if empty
+
+2002-01-07 14:12  juanca
+
+	* want.xml, want.xml: increment build number only if master version
+
+2002-01-07 14:07  juanca
+
+	* want.xml: included unzipped sources to external libraries in .zip
+
+2002-01-07 14:07  juanca
+
+	* want.xml: include .ini files in .zip
+
+2002-01-07 14:03  juanca
+
+	* make/bootstrap.bat: turn off optimizations in bootstrap script to
+	avoid problems with delphi 6
+
+2002-01-06 03:54  juanca
+
+	* release.ini, doc/index.html, lib/jal-0.1.3.zip: release
+
+2002-01-05 23:57  juanca
+
+	* release.ini, doc/index.html, src/want.dsk, test/WantTestLib.dsk,
+	test/WantTests.dof (tags: v_0_1_109), test/WantTests.dpr (tags:
+	v_0_1_109), lib/jal/release.ini, lib/jal/src/JALCollections.pas,
+	lib/jal/src/JALXMLParser.pas: repaired memory leaks
+
+2002-01-05 15:47  juanca
+
+	* release.ini, doc/index.html, src/tasks/ExecTasks.pas,
+	test/ExecTasksTest.pas (tags: v_0_1_109): removed redundant double
+	quotes in <exec> tasks
+
+2002-01-04 16:11  juanca
+
+	* release.ini, doc/index.html: release 0.1.99
+
+2002-01-04 15:48  juanca
+
+	* lib/jal-0.1.3.zip: new version of the JAL library
+
+2002-01-04 14:33  juanca
+
+	* release.ini, doc/index.html, src/elements/.cvsignore (tags:
+	v_0_1_109): routine
+
+2001-12-21 15:43  juanca
+
+	* want.xml: fixed changelog target wich got broken somehow
+
+2001-12-21 15:27  juanca
+
+	* release.ini, want.xml, src/want.dsk, src/lib/WildPaths.pas,
+	src/tasks/DelphiTasks.pas (tags: v_0_1_109): quote system paths
+	that conatain spaces
+
+2001-12-19 23:17  juanca
+
+	* doc/style.css (tags: v_0_1_109): fortmatting of images
+
+2001-12-19 23:07  juanca
+
+	* release.ini, doc/index.html, src/tasks/DelphiTasks.pas: fixed
+	(again) lack of quoting bug in <dunit> task
+
+2001-12-18 23:23  juanca
+
+	* release.ini, doc/index.html, release.ini, doc/index.html: release
+
+2001-12-18 23:23  juanca
+
+	* want.xml: Separate build from version bumping from updating web
+	page.
+
+2001-12-18 23:14  juanca
+
+	* want.xml: Do not update web until dist.
+
+2001-12-18 23:01  juanca
+
+	* want.xml: Use new pattern to exclude ./lib subdirectories.
+
+2001-12-18 22:59  juanca
+
+	* src/tasks/DelphiTasks.pas: BUG: Use of default lib directories
+	must be quoted.
+
+2001-12-17 22:12  juanca
+
+	* release.ini, doc/index.html, src/want.cfg (tags: v_0_1_109),
+	src/want.dof, src/want.dpr, src/want.dsk, release.ini,
+	doc/index.html: routine
+
+2001-12-17 22:10  juanca
+
+	* src/tasks/DUnitTasks.pas (tags: v_0_1_109),
+	src/tasks/DelphiTasks.pas, src/tasks/EchoTasks.pas (tags:
+	v_0_1_109), src/tasks/EditTasks.pas (tags: v_0_1_109),
+	src/tasks/ExecTasks.pas, src/tasks/FileTasks.pas (tags: v_0_1_109),
+	src/tasks/ZipTasks.pas (tags: v_0_1_109), test/WildPathsTest.pas
+	(tags: v_0_1_109), test/ExecTasksTest.pas, test/ExternalTests.pas
+	(tags: v_0_1_109), test/FileSetTests.pas (tags: v_0_1_109),
+	test/FileTasksTest.pas (tags: v_0_1_109), test/RunnerTests.pas
+	(tags: v_0_1_109), test/WantAcceptTestLib.cfg (tags: v_0_1_109),
+	test/WantAcceptTestLib.dof (tags: v_0_1_109), test/WantTestLib.cfg
+	(tags: v_0_1_109), test/WantTestLib.dof (tags: v_0_1_109),
+	test/WantTestLib.dpr (tags: v_0_1_109), test/data/inifile/want.xml
+	(tags: v_0_1_109): upgraded <dunit> task to latest version of
+	DUnit, with status messages
+
+2001-12-17 22:08  juanca
+
+	* src/: elements/PatternSets.pas (tags: v_0_1_109),
+	lib/WildPaths.pas: debugged WildPaths.IsMatch so CVS/** matches
+	xxx/CVS
+
+2001-12-17 22:07  juanca
+
+	* src/: ScriptRunner.pas (tags: v_0_1_109), WantClasses.pas,
+	lib/ScriptParser.pas (tags: v_0_1_109), win32/ConsoleListener.pas
+	(tags: v_0_1_109), win32/ConsoleScriptRunner.pas (tags: v_0_1_109),
+	win32/Win32ChildProcesses.pas (tags: v_0_1_109): debugged logging
+	of errors
+
+2001-12-17 22:04  juanca
+
+	* lib/: dunit-4.1.2.zip, jal-0.1.1.zip, jcl-1.0.zip,
+	jal/release.ini: upgraded libraries
+
+2001-12-03 16:34  juanca
+
+	* src/tasks/DelphiTasks.pas: bug: basedir attribute must not be
+	required in <dcc>
+
+2001-12-03 16:33  juanca
+
+	* src/tasks/FileTasks.pas: avoid using default fileset if nothing
+	added to it
+
+2001-12-03 16:33  juanca
+
+	* src/tasks/ExecTasks.pas: require either path or value in
+	<exec>.<arg>
+
+2001-12-03 16:32  juanca
+
+	* src/tasks/EchoTasks.pas: decrease verbosity of <echo>
+
+2001-12-03 16:32  juanca
+
+	* src/tasks/DUnitTasks.pas: compatibility with D6
+
+2001-12-03 16:31  juanca
+
+	* src/lib/WildPaths.pas: minor refactoring
+
+2001-12-03 16:31  juanca
+
+	* src/elements/PatternSets.pas: new atempt at ignoring CVS stuff in
+	pattern sets
+
+2001-12-03 16:30  juanca
+
+	* src/elements/RegexpElements.pas (tags: v_0_1_109): make verbose
+	be less verbose for <regexp>
+
+2001-12-03 16:29  juanca
+
+	* src/WantClasses.pas: Added @{} path macro expansion.
+	
+	BUG: Fixed GPF bug while checking for the presence of attributes.
+
+2001-12-03 16:27  juanca
+
+	* lib/jal/src/: JALSAX.pas, JALXMLParser.pas: changes for
+	compatibility with Delphi 6
+
+2001-12-03 12:56  juanca
+
+	* lib/jal/.cvsignore: ignore generated directories
+
+2001-11-27 19:41  juanca
+
+	* doc/: index.html, index.template.html (tags: v_0_1_109): make
+	index.html point to the public want site
+
+2001-11-27 18:37  juanca
+
+	* release.ini, doc/index.html, test/WantAcceptTestLib.drc (tags:
+	v_0_1_109) (utags: v_0_1_31): dist 0.1.31
+
+2001-11-27 18:34  juanca
+
+	* release.ini, doc/index.html, src/wantver.rc: removed generated
+	.rc files from repository
+
+2001-11-27 18:32  juanca
+
+	* release.ini, doc/index.html, test/WantAcceptTestLib.drc,
+	release.ini, doc/index.html, src/.cvsignore (tags: v_0_1_109),
+	src/want.cfg, src/want.dof, src/want.dsk, lib/jal/test/.cvsignore:
+	routine
+
+2001-11-27 18:32  juanca
+
+	* private/juanco/todo_juanco.html (tags: v_0_1_109, v_0_1_31): new
+	todo items for juanco
+
+2001-11-27 18:29  juanca
+
+	* src/: .cvsignore, want.dsk (utags: v_0_1_31): ignore generated
+	.res files (should move them to scratch directory)
+
+2001-11-27 18:29  juanca
+
+	* want.xml (tags: v_0_1_31): ignore CVS directories (want should do
+	it by default)
+
+2001-11-27 18:29  juanca
+
+	* lib/jal/test/: ExpressionTests.pas, JALTestLib.dsk: stricter
+	tests for expression parsing
+
+2001-11-27 18:27  juanca
+
+	* lib/jal/src/: JALExpressions.pas, JalParse.pas: raise only
+	EParseEceptions from TParser
+
+2001-11-27 18:26  juanca
+
+	* src/: WantClasses.pas, want.cfg, want.dof, want.dsk, wantver.rc,
+	wantver.res, tasks/ExecTasks.pas (tags: v_0_1_31), win32/WIN32.pas
+	(tags: v_0_1_109, v_0_1_31): added support for TStrings and IPath
+	properties
+
+2001-11-27 18:25  juanca
+
+	* lib/: jal-0.1.0.zip, jal-0.1.1.zip (tags: v_0_1_31): upgraded JAL
+	library
+
+2001-11-27 18:23  juanca
+
+	* lib/jal/: release.ini, want.xml: added want script to test and
+	package the library
+
+2001-11-27 18:11  juanca
+
+	* lib/jcl-1.11.zip (tags: v_0_1_109, v_0_1_31): upgraded to JCL
+	1.11
+
+2001-11-27 15:16  juanca
+
+	* release.ini, doc/index.html, src/ScriptRunner.pas (tags:
+	v_0_1_31), src/WantClasses.pas (tags: v_0_1_31), src/want.cfg
+	(tags: v_0_1_31), src/want.dof (tags: v_0_1_31), src/want.dsk,
+	src/wantver.rc (tags: v_0_1_31), test/WantAcceptTestLib.drc: BUG:
+	tasks must be configured to know if they are enabled
+
+2001-11-27 14:37  juanca
+
+	* src/: license.res, wantver.res: removed generated .res files from
+	repository
+
+2001-11-16 22:42  juanca
+
+	* src/.cvsignore: routine
+
+2001-11-16 18:39  juanca
+
+	* release.ini, doc/index.html, src/WantClasses.pas, src/want.dsk,
+	src/wantver.rc, src/wantver.res: make all system paths absolute
+
+2001-11-16 18:15  juanca
+
+	* release.ini, doc/index.html, src/WantClasses.pas, src/want.dof,
+	src/want.dsk, src/wantver.rc, src/wantver.res,
+	src/tasks/ExecTasks.pas, test/WantAcceptTestLib.drc: detect
+	circular target dependencies
+
+2001-11-16 16:56  juanca
+
+	* release.ini: Current release is now kept in file release.ini
+
+2001-11-16 16:55  juanca
+
+	* want.xml, doc/index.html, src/ScriptRunner.pas,
+	src/WantClasses.pas, src/want.cfg, src/want.dof, src/want.dpr,
+	src/want.dsk, src/wantver.rc, src/elements/Attributes.pas (tags:
+	v_0_1_109, v_0_1_31), src/lib/ScriptParser.pas (tags: v_0_1_31),
+	src/lib/WildPaths.pas (tags: v_0_1_31),
+	src/win32/ConsoleListener.pas (tags: v_0_1_31): Now all task
+	attributes can be specified as nested xml elements.
+	
+	Revised log messages and console logging format.
+	
+	Reading of .INI files is now donew through
+	?{file:section:key|default} expressions.
+	
+	Added ={expre} mathematical expression evaluation.
+	
+	Automatically bump up the build number ater every "want dist".
+	
+	Removed parsing and execution buglets.
+
+2001-11-16 16:52  juanca
+
+	* src/tasks/: EchoTasks.pas (tags: v_0_1_31), ExecTasks.pas,
+	FileTasks.pas (tags: v_0_1_31), IniFileTasks.pas (tags: v_0_1_109,
+	v_0_1_31), WantTasks.pas (tags: v_0_1_109, v_0_1_31): buglets in
+	<echo> task
+
+2001-11-16 16:52  juanca
+
+	* src/tasks/DelphiTasks.pas (tags: v_0_1_31): todo stuff
+
+2001-11-16 16:51  juanca
+
+	* lib/jal/test/: ExpressionTests.pas, JALTestLib.cfg,
+	JALTestLib.dof, JALTestLib.dpr, JALTestLib.dsk: added mathematical
+	expressions to JAL library
+
+2001-11-16 16:50  juanca
+
+	* lib/jal/src/: JALExpressions.pas, JALStrings.pas, JalParse.pas,
+	JalPaths.pas: be more permissive about path format
+
+2001-11-16 14:21  juanca
+
+	* release.ini, doc/index.html, src/.cvsignore,
+	src/ScriptRunner.pas, src/WantClasses.pas, src/license.res,
+	src/want.cfg, src/want.dof, src/want.dpr (tags: v_0_1_31),
+	src/wantver.rc, src/wantver.res, src/tasks/ExecTasks.pas,
+	src/want.dsk: more debug logging
+
+2001-11-16 14:20  juanca
+
+	* want.xml: bug in computing build number
+
+2001-11-13 20:44  juanca
+
+	* want.xml, doc/index.html, src/wantver.rc: bump up version number
+
+2001-11-13 20:04  juanca
+
+	* lib/jal/src/JALFiles.pas: added simple logging facility
+
+2001-11-13 18:08  juanca
+
+	* src/: want.dof, want.dsk, lib/WildPaths.pas, tasks/ExecTasks.pas:
+	make exec tasks report only the exec file name, and no path
+
+2001-11-13 17:48  juanca
+
+	* doc/index.html, src/want.dof, src/want.dsk,
+	src/win32/ConsoleListener.pas, doc/index.html: BUG: not reporting
+	non-tas errors
+
+2001-11-13 17:23  juanca
+
+	* doc/index.html, src/BuildListeners.pas (tags: v_0_1_109,
+	v_0_1_31), src/ScriptRunner.pas, src/WantClasses.pas, src/want.dof,
+	src/want.dsk, src/win32/ConsoleListener.pas: refactor BuildListener
+	to avoid duplicate error reporting
+
+2001-11-13 16:54  juanca
+
+	* src/tasks/WantTasks.pas: use absolute basedir by default so
+	sub-want tasks work
+
+2001-11-08 16:59  juanca
+
+	* src/want.dsk: routine
+
+2001-11-02 17:41  juanca
+
+	* lib/jal/src/JALAlgorithms.pas: added algorithms that work with
+	collections
+
+2001-10-26 16:10  juanca
+
+	* lib/jal/src/JALGZipStreams.pas: BUG: buglets in TGZipStream
+	calculation of size
+
+2001-10-26 16:05  juanca
+
+	* test/data/file/gziptasks/simple/: build.xml, final/afile.txt,
+	final/afile2.txt, final/afile2.txt.gz, setup/afile.txt,
+	setup/afile2.txt, setup/afile2.txt.gz (utags: v_0_1_109, v_0_1_31,
+	v_0_1_4): added external tests for <gzip> task
+
+2001-10-26 16:03  juanca
+
+	* src/ScriptRunner.pas: fixed error processing bugs in script
+	runner
+
+2001-10-26 16:03  juanca
+
+	* src/lib/zipStreams.pas, test/ExternalTests.pas (tags: v_0_1_31,
+	v_0_1_4), test/WantAcceptTestLib.drc: Moved ZipStreams to JAL
+	library
+
+2001-10-26 16:03  juanca
+
+	* src/lib/ScriptParser.pas (tags: v_0_1_4): fixed error processing
+	bugs in script parser
+
+2001-10-26 16:02  juanca
+
+	* src/tasks/: GZipTasks.pas (tags: v_0_1_109), StandardTasks.pas
+	(tags: v_0_1_109), ZipTasks.pas (utags: v_0_1_31, v_0_1_4): added
+	<gzip> task. Moved ZipStreams to JAL library
+
+2001-10-26 16:01  juanca
+
+	* src/tasks/DelphiTasks.pas: Added Map option to <dcc> task.
+
+2001-10-26 15:58  juanca
+
+	* lib/jal/src/: JALGZipStreams.pas, JALStrings.pas, JalPaths.pas,
+	JalProxyStreams.pas, JalUtils.pas, JalZipStreams.pas: Moved zip
+	streams into JAL library.
+	
+	Several minor bug fixes.
+
+2001-10-26 15:49  juanca
+
+	* doc/index.html, src/ScriptRunner.pas (tags: v_0_1_4),
+	lib/jal/src/JalPaths.pas, src/want.cfg (tags: v_0_1_4),
+	src/want.dof (tags: v_0_1_4), src/want.dsk, src/lib/WildPaths.pas,
+	doc/index.html, src/want.dsk (tags: v_0_1_4),
+	src/lib/WildPaths.pas, lib/jal/src/JalPaths.pas, doc/index.html
+	(tags: v_0_1_4), lib/jal/src/JalPaths.pas, src/wantver.rc (tags:
+	v_0_1_4), src/lib/WildPaths.pas (tags: v_0_1_4),
+	test/WantAcceptTestLib.drc (tags: v_0_1_4): detect invalid
+	characters in paths
+
+2001-10-26 14:12  juanca
+
+	* doc/index.html, src/wantver.rc, src/win32/WIN32.pas (tags:
+	v_0_1_4), want.xml, doc/index.html, src/want.cfg, src/want.dof,
+	src/want.dpr (tags: v_0_1_4), src/want.dsk, src/wantver.rc,
+	doc/index.html, src/wantver.rc, doc/index.html, src/want.dsk:
+	routine
+
+2001-10-26 14:12  juanca
+
+	* want.xml (tags: v_0_1_4): Compile with USE_JEDI_JCL defined, so
+	<dunit> task can report modules and addresses.
+
+2001-10-26 13:58  juanca
+
+	* src/: want.cfg, want.dof, want.dsk, wantver.rc,
+	tasks/DelphiTasks.pas (tags: v_0_1_4): BUG: errors figuring out
+	.cfg file name.
+
+2001-10-26 13:58  juanca
+
+	* lib/jal/src/JALStrings.pas: Bug in calculations in StrRight
+
+2001-10-23 20:05  juanca
+
+	* doc/index.html, src/ScriptRunner.pas, src/WantClasses.pas (tags:
+	v_0_1_4), src/want.cfg, src/want.dof, src/want.dpr, src/want.dsk,
+	src/tasks/EchoTasks.pas (tags: v_0_1_4), src/tasks/WantTasks.pas
+	(tags: v_0_1_4): improved error reporting during configuration
+	phase.
+	
+	removed some small errors.
+	
+	check for basedir directory existence before running task.
+
+2001-10-23 20:03  juanca
+
+	* etc/bku.btm (tags: v_0_1_109, v_0_1_31, v_0_1_4): also do a full
+	backup of JAL library
+
+2001-10-23 20:02  juanca
+
+	* test/: ExternalTests.pas, RunnerTests.pas (tags: v_0_1_31,
+	v_0_1_4), WantAcceptTestLib.cfg (tags: v_0_1_31, v_0_1_4),
+	WantAcceptTestLib.dof (tags: v_0_1_31, v_0_1_4),
+	WantAcceptTestLib.dpr (tags: v_0_1_109, v_0_1_31, v_0_1_4),
+	WantTestLib.cfg (tags: v_0_1_31, v_0_1_4), WantTestLib.dof (tags:
+	v_0_1_31, v_0_1_4): fixed minor problems with test cases and latest
+	versionof want
+
+2001-10-23 20:01  juanca
+
+	* src/lib/WildPaths.pas: By default, check if change directory
+	suceeded.
+
+2001-10-23 20:00  juanca
+
+	* lib/jal/src/JALStrings.pas: BUG: TrimStringArray was not
+	returning anything
+
+2001-10-23 18:56  juanca
+
+	* src/tasks/DelphiTasks.pas: Use a default library path of
+	$(DELPHI)\Lib as default.
+
+2001-10-23 17:56  juanca
+
+	* lib/jal/lib/paszlib/: UNZIP.PAS, ZIP.PAS: do not report hints or
+	warnings for paszlib
+
+2001-10-23 17:52  juanca
+
+	* lib/jal/lib/paszlib/: ZCONF.INC, ZDEFLATE.PAS, ZIPUTILS.PAS,
+	zutil.pas, UNZIP.PAS, ZIP.PAS: adopted fixed version of paszlib
+	from want
+
+2001-10-23 17:49  juanca
+
+	* lib/jal/lib/paszlib/: CRC.PAS, ZDEFLATE.PAS, zutil.pas: removed
+	superfluous warnings
+
+2001-10-23 15:31  juanca
+
+	* lib/jal/src/JALStrings.pas: string handling functions for
+	unix-style configuration files
+
+2001-10-23 15:13  juanca
+
+	* lib/jal/src/JALGZipStreams.pas: support for gzip/gunzip streams
+
+2001-10-23 15:11  juanca
+
+	* lib/jal/lib/paszlib/: ADLER.PAS, CRC.PAS, TREES.PAS, ZCONF.INC,
+	ZDEFLATE.PAS, ZINFLATE.PAS, ZIPUTILS.PAS, ZLIB.PAS, dzlib.pas,
+	dzlib.txt, example.pas, gzio.pas, infblock.pas, infcodes.pas,
+	inffast.pas, inftrees.pas, infutil.pas, minigzip.pas, paszlib.html,
+	MINIUNZ.PAS, paszlib.xbm, readme.txt, strutils.pas, zcompres.pas,
+	zuncompr.pas, zutil.pas, MINIZIP.PAS, UNZIP.PAS, ZIP.PAS: added
+	paszlib, required for zip and gzip file support
+
+2001-10-19 19:50  juanca
+
+	* lib/jal/src/JalDXF.pas: added topological sorting to routes
+
+2001-10-11 17:30  juanca
+
+	* lib/: dunit-4.1.1.zip, dunit-4.1.2.zip (tags: v_0_1_31, v_0_1_4):
+	Updated version of dunit
+
+2001-10-08 18:19  juanca
+
+	* doc/index.html, src/tasks/DelphiTasks.pas, want.xml (utags:
+	v_0_1_3): Added usepackage element to <dcc> task.
+
+2001-10-08 17:46  juanca
+
+	* want.xml, doc/index.html, doc/index.template.html (tags:
+	v_0_1_31, v_0_1_4, v_0_1_3), src/wantver.rc (tags: v_0_1_3): Bumped
+	version to 0.1.3.  Automatically update version info in
+	doc/index.html
+
+2001-10-08 17:26  juanca
+
+	* src/: ScriptRunner.pas, WantClasses.pas, want.dof, want.dsk,
+	lib/ScriptParser.pas (utags: v_0_1_3): Improved error reporting
+	during init/configure phase
+
+2001-10-08 17:21  juanca
+
+	* lib/jal/src/JALXMLParser.pas: BUG: Not checking for EOF while
+	parsing comments
+
+2001-09-22 19:55  juanca
+
+	* want.xml: Buped version number to 0.1.2
+
+2001-09-22 19:55  juanca
+
+	* src/: want.dof, want.dsk, tasks/DelphiTasks.pas, win32/WIN32.pas
+	(tags: v_0_1_3): Warn if could not rename a Delphi .cfg file
+
+2001-09-21 19:03  juanca
+
+	* make/bootstrap.bat (tags: v_0_1_31, v_0_1_4, v_0_1_3),
+	src/want.dof, src/want.dsk, src/tasks/DelphiTasks.pas,
+	src/win32/WIN32.pas, test/WantAcceptTestLib.dof (tags: v_0_1_3),
+	test/WantAcceptTestLib.drc (tags: v_0_1_3), test/WantTestLib.drc
+	(tags: v_0_1_31, v_0_1_4, v_0_1_3): routine
+
+2001-09-21 19:02  juanca
+
+	* doc/index.html: Added download link for v 0.1.1
+
+2001-09-05 20:46  juanca
+
+	* lib/jal/src/JALGeometry.pas: Make sure turn restrictions go a way
+	when nodes are deleted.  Don't include nodes with 0,0 coordinates
+	in scale calculations.
+
+2001-09-05 14:15  juanca
+
+	* lib/jal/src/: JALFiles.pas, JALGeomModels.pas, JalDXF.pas: Added
+	RenameFileToBackup function
+
+2001-08-27 17:59  juanca
+
+	* lib/jal/: src/JALGeomModels.pas, src/JALGeometry.pas,
+	src/JALMath.pas, src/JALStrings.pas, src/JalDXF.pas,
+	src/JalParse.pas, test/JalDXFTestLib.dpr, test/JalDXFTests.cfg,
+	test/JalDXFTests.dof, test/JalDXFTests.dpr, test/JalDXFTests.dsk,
+	test/JalDXFTests.res, test/TestDXFParse.pas: Added basic DXF parser
+	and shape classes
+
+2001-08-22 18:53  juanca
+
+	* src/: want.dsk, wantver.rc: Ready for 0.1.1 release
+
+2001-08-03 18:40  juanca
+
+	* lib/jal/src/: JALGeometry.pas, JALMath.pas: Fixed minor bugs
+
+2001-08-01 19:25  juanca
+
+	* lib/jal/src/: JALGeomModels.pas, JALGeometry.pas: Improvements to
+	handling of DXF files.	First D6 compatibility changes.
+
+2001-07-27 22:45  juanca
+
+	* lib/jal/src/: JALGeomModels.pas, JALGeometry.pas: Added ability
+	to show DXF files to TUS
+
+2001-07-27 17:15  juanca
+
+	* lib/jal/src/JALGeometry.pas: Adapted graphics rendering to new
+	JALGeometry unit.
+
+2001-07-26 18:49  juanca
+
+	* lib/jal/src/JALGeometry.pas: Added functionality needed to
+	support DXF files.
+
+2001-07-26 14:48  juanca
+
+	* lib/jal/src/JALGeometry.pas: Treatment of points, coordinates,
+	and transformations.
+
+2001-07-10 13:39  juanca
+
+	* want.xml, src/want.dof, src/want.dsk,
+	src/win32/ConsoleListener.pas (tags: v_0_1_4, v_0_1_3),
+	src/win32/WIN32.pas, test/WantAcceptTestLib.drc: Try to avoid
+	messing screen colors when want is aborted with Ctrl+C
+
+2001-07-04 18:17  juanca
+
+	* lib/jal/src/JALStdIO.pas: Added JALStdIO.pas to library.
+
+2001-07-03 20:10  juanca
+
+	* lib/jal/src/: JALFiles.pas, JALStrings.pas: More routines for
+	manipulating TStrings
+
+2001-06-29 16:30  juanca
+
+	* lib/jal/src/JALStrings.pas: Added JalStrings.ArrayToString
+
+2001-06-28 18:50  juanca
+
+	* doc/: history.html (tags: v_0_1_109, v_0_1_31, v_0_1_4, v_0_1_3),
+	index.html (utags: v_0_1_0_base): Added basic formatting to web
+	page
+
+2001-06-28 18:42  juanca
+
+	* index.html, doc/task_writers_guide.html (tags: v_0_1_109,
+	v_0_1_31, v_0_1_4, v_0_1_3, v_0_1_0_base), doc/elements/tstamp.html
+	(tags: v_0_1_109, v_0_1_31, v_0_1_4, v_0_1_3, v_0_1_0_base),
+	private/juanco/URITests.dpr (tags: v_0_1_109, v_0_1_31, v_0_1_4,
+	v_0_1_3, v_0_1_0_base), private/juanco/notes_juanco.html (tags:
+	v_0_1_109, v_0_1_31, v_0_1_4, v_0_1_3, v_0_1_0_base),
+	private/juanco/todo_juanco.html (tags: v_0_1_4, v_0_1_3,
+	v_0_1_0_base), private/juanco/uris_juanco.html (tags: v_0_1_109,
+	v_0_1_31, v_0_1_4, v_0_1_3, v_0_1_0_base), src/want.dsk (tags:
+	v_0_1_0_base), src/lib/.cvsignore (tags: v_0_1_109, v_0_1_31,
+	v_0_1_4, v_0_1_3, v_0_1_0_base), test/ExternalTests.pas (tags:
+	v_0_1_3, v_0_1_0_base), test/WantAcceptTestLib.drc (tags:
+	v_0_1_0_base), test/WantTestLib.dsk (tags: v_0_1_31, v_0_1_4,
+	v_0_1_3, v_0_1_0_base), test/WantTests.dof (tags: v_0_1_31,
+	v_0_1_4, v_0_1_3, v_0_1_0_base), test/data/edit/readwrite/build.xml
+	(tags: v_0_1_109, v_0_1_31, v_0_1_4, v_0_1_3, v_0_1_0_base),
+	test/data/edit/readwrite/final/added_dot.txt (tags: v_0_1_109,
+	v_0_1_31, v_0_1_4, v_0_1_3, v_0_1_0_base),
+	test/data/edit/readwrite/final/added_end.txt (tags: v_0_1_109,
+	v_0_1_31, v_0_1_4, v_0_1_3, v_0_1_0_base),
+	test/data/edit/readwrite/final/added_zero.txt (tags: v_0_1_109,
+	v_0_1_31, v_0_1_4, v_0_1_3, v_0_1_0_base),
+	test/data/edit/readwrite/final/c.txt (tags: v_0_1_109, v_0_1_31,
+	v_0_1_4, v_0_1_3, v_0_1_0_base),
+	test/data/edit/readwrite/final/c1.txt (tags: v_0_1_109, v_0_1_31,
+	v_0_1_4, v_0_1_3, v_0_1_0_base),
+	test/data/edit/readwrite/final/c2.txt (tags: v_0_1_109, v_0_1_31,
+	v_0_1_4, v_0_1_3, v_0_1_0_base),
+	test/data/edit/readwrite/final/c_all.txt (tags: v_0_1_109,
+	v_0_1_31, v_0_1_4, v_0_1_3, v_0_1_0_base),
+	test/data/edit/readwrite/final/file.txt (tags: v_0_1_109, v_0_1_31,
+	v_0_1_4, v_0_1_3, v_0_1_0_base),
+	test/data/edit/readwrite/final/full.txt (tags: v_0_1_109, v_0_1_31,
+	v_0_1_4, v_0_1_3, v_0_1_0_base),
+	test/data/edit/readwrite/final/full2.txt (tags: v_0_1_109,
+	v_0_1_31, v_0_1_4, v_0_1_3, v_0_1_0_base),
+	test/data/edit/readwrite/final/inserted_dot.txt (tags: v_0_1_109,
+	v_0_1_31, v_0_1_4, v_0_1_3, v_0_1_0_base),
+	test/data/edit/readwrite/final/inserted_end.txt (tags: v_0_1_109,
+	v_0_1_31, v_0_1_4, v_0_1_3, v_0_1_0_base),
+	test/data/edit/readwrite/final/jcl.txt,
+	test/data/edit/readwrite/final/jcl1.txt,
+	test/data/edit/readwrite/final/jcl2.txt,
+	test/data/edit/readwrite/final/jcl_all.txt,
+	test/data/edit/readwrite/final/nextthree.txt (tags: v_0_1_109,
+	v_0_1_31, v_0_1_4, v_0_1_3, v_0_1_0_base),
+	test/data/edit/readwrite/final/threefirst.txt (tags: v_0_1_109,
+	v_0_1_31, v_0_1_4, v_0_1_3, v_0_1_0_base),
+	test/data/edit/readwrite/setup/file.txt (tags: v_0_1_109, v_0_1_31,
+	v_0_1_4, v_0_1_3, v_0_1_0_base),
+	test/data/file/copyrecursive/build.xml (tags: v_0_1_109, v_0_1_31,
+	v_0_1_4, v_0_1_3, v_0_1_0_base), test/data/file/move/all/build.xml
+	(tags: v_0_1_109, v_0_1_31, v_0_1_4, v_0_1_3, v_0_1_0_base),
+	test/data/file/move/recursive/build.xml (tags: v_0_1_109, v_0_1_31,
+	v_0_1_4, v_0_1_3, v_0_1_0_base),
+	test/data/file/move/single/build.xml (tags: v_0_1_109, v_0_1_31,
+	v_0_1_4, v_0_1_3, v_0_1_0_base),
+	test/data/file/ziptasks/simple_unzip/build.xml (tags: v_0_1_109,
+	v_0_1_31, v_0_1_4, v_0_1_3, v_0_1_0_base): Removed last vestiges of
+	dante
+
+2001-06-28 17:46  juanca
+
+	* doc/readme.txt: Removed old dante readme.txt
+
+2001-06-28 17:43  juanca
+
+	* lib/: paszlib-1.0-dante-1.zip, paszlib-1.0-want-1.zip (tags:
+	v_0_1_109, v_0_1_31, v_0_1_4, v_0_1_3, v_0_1_0_base): Updated
+	paszlib .zip
+
+2001-06-28 17:42  juanca
+
+	* lib/jal-0.1.0.zip (tags: v_0_1_4, v_0_1_3, v_0_1_0_base): Added
+	zip for JAL library
+
+2001-06-28 17:41  juanca
+
+	* lib/: dunit-3.2.8.1.zip, dunit-4.1.1.zip (tags: v_0_1_3,
+	v_0_1_0_base): Updated DUnit to latest version
+
+2001-06-28 17:38  juanca
+
+	* want.xml (tags: v_0_1_0_base): Ready for first release
+
+2001-06-28 17:37  juanca
+
+	* src/: WantClasses.pas (tags: v_0_1_0_base), want.dsk, wantver.rc
+	(tags: v_0_1_0_base): Worked around bug in JCL.GetEnvironmentVar
+	that made it return strings with embedded nulls
+
+2001-06-28 17:37  juanca
+
+	* test/: WantAcceptTestLib.drc, WantTestLib.drc (tags:
+	v_0_1_0_base), WildPathsTest.pas (tags: v_0_1_31, v_0_1_4, v_0_1_3,
+	v_0_1_0_base): Updated path tests to latest version of WildPaths
+
+2001-06-27 12:53  juanca
+
+	* lib/jal/src/JALMath.pas: Added JALMath unit.
+
+2001-06-21 18:33  juanca
+
+	* lib/jal/src/JALMiniDOM.pas: Made MiniDom capable of ignoring
+	whitespace
+
+2001-06-11 19:31  juanca
+
+	* src/: want.dof (tags: v_0_1_0_base), want.dsk,
+	tasks/EditTasks.pas (tags: v_0_1_31, v_0_1_4, v_0_1_3,
+	v_0_1_0_base): BUG: <edit><write> would not use the default file
+	name, nor default to a 0,$ range
+
+2001-06-07 15:53  juanca
+
+	* src/want.dsk, lib/jal/src/JalPaths.pas, src/lib/WildPaths.pas
+	(tags: v_0_1_3, v_0_1_0_base): Removed dependency from JalPaths to
+	WildPaths
+
+2001-06-07 15:19  juanca
+
+	* src/want.dof, src/want.dpr (tags: v_0_1_3, v_0_1_0_base),
+	src/want.dsk, test/WantAcceptTestLib.dof (tags: v_0_1_0_base):
+	routine
+
+2001-06-07 15:19  juanca
+
+	* src/tasks/DelphiTasks.pas (tags: v_0_1_0_base): Enclose paths in
+	<dcc> task in double quotes.
+
+2001-06-07 15:19  juanca
+
+	* src/elements/PatternSets.pas (tags: v_0_1_31, v_0_1_4, v_0_1_3,
+	v_0_1_0_base): BUG: Nested patternsets where being ignored at
+	times.
+
+2001-06-07 15:18  juanca
+
+	* src/lib/WildPaths.pas: Make relative paths start with . when
+	appropiate.
+
+2001-06-07 15:17  juanca
+
+	* lib/jal/src/JalPaths.pas: Finished implementing IPath.Find.
+
+2001-05-29 17:10  juanca
+
+	* src/lib/WildPaths.pas, test/WantAcceptTestLib.dpr (tags: v_0_1_3,
+	v_0_1_0_base): Updated license boilerplate
+
+2001-05-29 17:10  juanca
+
+	* src/tasks/FileTasks.pas (tags: v_0_1_4, v_0_1_3, v_0_1_0_base):
+	BUG: Filesets with sub-patternsets were being ignored by file
+	tasks.
+
+2001-05-29 17:09  juanca
+
+	* src/want.dsk: Routine.
+
+2001-05-29 17:09  juanca
+
+	* lib/jal/src/JALStrings.pas: BUG: Trim tokens in StringToArray.
+
+2001-05-29 17:08  juanca
+
+	* want.xml: BUG: Filesets with sub-patternsets were being excluded
+	from file tasks.
+	
+	BUG: Check in of versioninfo task in want.xml didn't make it into
+	last check in.
+
+2001-05-23 22:58  juanca
+
+	* lib/jal/etc/bku.bat: Added bku.bat batch script.
+
+2001-05-23 22:35  juanca
+
+	* lib/jal/src/: JALStrings.pas, JalPaths.pas: Implemented IPath.
+
+2001-05-22 18:42  juanca
+
+	* src/ScriptRunner.pas (tags: v_0_1_0_base), src/WantClasses.pas,
+	src/want.dof, src/want.dpr, src/want.dsk,
+	lib/jal/src/JALStrings.pas, src/elements/PatternSets.pas,
+	src/lib/ScriptParser.pas (tags: v_0_1_0_base),
+	src/tasks/DelphiTasks.pas, src/tasks/EchoTasks.pas (tags: v_0_1_3,
+	v_0_1_0_base), src/tasks/ExecTasks.pas (tags: v_0_1_4, v_0_1_3,
+	v_0_1_0_base), src/tasks/FileTasks.pas,
+	src/win32/ConsoleScriptRunner.pas (tags: v_0_1_31, v_0_1_4,
+	v_0_1_3, v_0_1_0_base), test/WantAcceptTestLib.dpr: Updated some
+	copyrights.
+
+2001-05-22 18:38  juanca
+
+	* src/ScriptRunner.pas, src/WantClasses.pas, src/want.cfg (tags:
+	v_0_1_3, v_0_1_0_base), src/want.dof, src/elements/PatternSets.pas,
+	src/lib/ScriptParser.pas, src/tasks/DelphiTasks.pas,
+	src/tasks/FileTasks.pas, src/win32/ConsoleScriptRunner.pas,
+	test/WantAcceptTestLib.cfg (tags: v_0_1_3, v_0_1_0_base),
+	test/WantAcceptTestLib.dof, test/WantTestLib.cfg (tags: v_0_1_3,
+	v_0_1_0_base), test/WantTestLib.dof (tags: v_0_1_3, v_0_1_0_base),
+	test/WantTestLib.dpr (tags: v_0_1_31, v_0_1_4, v_0_1_3,
+	v_0_1_0_base), src/WantClasses.pas, src/want.dof, src/want.dpr,
+	src/want.dsk: Switched to using JAL library.
+
+2001-05-22 18:37  juanca
+
+	* lib/jal/src/: JALCollections.pas, JALMiniDOM.pas, JALStrings.pas,
+	JALSAX.pas, JALXML.pas, JALXMLParser.pas: Updates from WANT
+	project.
+
+2001-05-22 18:20  juanca
+
+	* lib/jal/src/: JALFiles.pas, JALOwnedTrees.pas, JALStrings.pas:
+	Updated copyrights.
+
+2001-05-22 17:53  juanca
+
+	* lib/sax-xml-1.0.1.zip: Now SAX XML is part of JAL library.
+
+2001-05-21 23:02  juanca
+
+	* src/BuildListeners.pas (tags: v_0_1_4, v_0_1_3, v_0_1_0_base),
+	src/ScriptRunner.pas, src/want.dof, src/want.dsk,
+	src/lib/ChildProcesses.pas (tags: v_0_1_109, v_0_1_31, v_0_1_4,
+	v_0_1_3, v_0_1_0_base), src/tasks/DelphiTasks.pas,
+	src/tasks/EchoTasks.pas, src/tasks/ExecTasks.pas,
+	src/tasks/FileTasks.pas, src/win32/ConsoleListener.pas (tags:
+	v_0_1_0_base), test/WantAcceptTestLib.cfg,
+	test/WantAcceptTestLib.dof, test/WantTestLib.cfg,
+	test/WantTestLib.dof, test/WantTestLib.drc: Removed more console
+	capturing bugs.
+	
+	Improved logging of <dcc>.
+	
+	Added quiet attribute to <exec>.
+
+2001-05-21 14:36  juanca
+
+	* lib/jal/src/JALFiles.pas: Agregada generacion automatica de
+	imagen ISO del CD de instalacion
+
+2001-05-20 20:55  juanca
+
+	* src/BuildListeners.pas, src/want.cfg, src/want.dof, src/want.dsk,
+	src/lib/ChildProcesses.pas, src/win32/ConsoleListener.pas,
+	test/WantAcceptTestLib.drc: Attempts to handle output intended to
+	ovewrite the last line
+
+2001-05-20 20:54  juanca
+
+	* src/tasks/ExecTasks.pas: Added errorlevel attribute to <exec> to
+	support programs like hhc.exe that return a non zero exit code even
+	when they suceeded.
+
+2001-05-20 15:08  juanca
+
+	* src/: want.dof, want.dsk, tasks/EchoTasks.pas,
+	tasks/FileTasks.pas, tasks/ZipTasks.pas (tags: v_0_1_3,
+	v_0_1_0_base): BUG: FileTasks didn't use paths relative to the
+	fileset's base path. This caused unexpected results. Fixed the
+	<zip> task too, so relative paths work as expected.
+
+2001-05-20 15:02  juanca
+
+	* src/: want.dof, tasks/DUnitTasks.pas (tags: v_0_1_31, v_0_1_4,
+	v_0_1_3, v_0_1_0_base): Made the <dunit> task use the new
+	TestModules.pas from the framework.
+
+2001-05-17 20:28  juanca
+
+	* src/tasks/DUnitTasks.pas: routine
+
+2001-05-17 20:27  juanca
+
+	* want.xml: Don't delete want.cfg. The <dcc> task skips it by
+	default.
+
+2001-05-17 20:12  juanca
+
+	* lib/jal/src/JALStrings.pas: Agregados archivos de libreria usados
+	por EVA
+
+2001-05-17 20:05  juanca
+
+	* src/tasks/DUnitTasks.pas: Fixed error message
+
+2001-05-16 15:33  juanca
+
+	* src/want.dof, src/want.dsk, src/tasks/EchoTasks.pas,
+	test/WantAcceptTestLib.drc, test/WantTestLib.drc: Make <echo> log
+	its input file name, if any.
+
+2001-05-16 15:33  juanca
+
+	* want.xml: Use <echo> instead of <edit> to process templates.
+	
+	Make <echo> task log its "input" file name, if any.
+
+2001-05-16 15:26  juanca
+
+	* src/: ScriptRunner.pas, WantClasses.pas, want.dof, want.dsk:
+	Improved error reporting. Avoid duplicate messages.
+
+2001-05-16 15:26  juanca
+
+	* src/tasks/DelphiTasks.pas: <dcc> task will now rename .cfg files
+	out of the way by default.  Use usecfg=true attribute to leave the
+	.cfgs in place.
+
+2001-05-15 16:18  juanca
+
+	* src/want.dpr, src/want.dsk, src/tasks/EchoTasks.pas,
+	src/tasks/IniFileTasks.pas (tags: v_0_1_4, v_0_1_3, v_0_1_0_base),
+	src/tasks/StandardTasks.pas (tags: v_0_1_3, v_0_1_0_base),
+	test/WantTestLib.drc, test/data/echo/want.xml (tags: v_0_1_109,
+	v_0_1_31, v_0_1_4, v_0_1_3, v_0_1_0_base),
+	test/data/echo/final/final.txt (tags: v_0_1_109, v_0_1_31, v_0_1_4,
+	v_0_1_3, v_0_1_0_base), test/data/echo/final/template.txt (tags:
+	v_0_1_109, v_0_1_31, v_0_1_4, v_0_1_3, v_0_1_0_base),
+	test/data/echo/setup/template.txt (tags: v_0_1_109, v_0_1_31,
+	v_0_1_4, v_0_1_3, v_0_1_0_base): Added an "input"
+	attribute/property to the <echo> tast so it can be used to evaluate
+	property instances in external templates:
+	
+	  <echo input="template.txt" file="output.txt" />
+	
+	Will evaluate all property instances ( ${propname}  ) in
+	template.txt and write the result to output.txt./
+
+2001-05-15 16:05  juanca
+
+	* test/: ExternalTests.pas, WantTestLib.drc, data/inifile/want.xml
+	(tags: v_0_1_31, v_0_1_4, v_0_1_3, v_0_1_0_base): Added <ini> (read
+	ini file to property) element and <inifile> task.
+
+2001-05-15 15:40  juanca
+
+	* test/data/inifile/: want.xml, final/test.ini (tags: v_0_1_109,
+	v_0_1_31, v_0_1_4, v_0_1_3, v_0_1_0_base), final/test2.ini (tags:
+	v_0_1_109, v_0_1_31, v_0_1_4, v_0_1_3, v_0_1_0_base),
+	setup/test.ini (tags: v_0_1_109, v_0_1_31, v_0_1_4, v_0_1_3,
+	v_0_1_0_base): Added <ini> and <inifile> tests
+
+2001-05-14 19:15  juanca
+
+	* src/want.dof, src/want.dsk, src/tasks/ExecTasks.pas,
+	test/WantAcceptTestLib.drc: BUG: TCustomExecTask would let
+	TChildProcess generated exceptions run through. Fixed.
+
+2001-05-11 19:51  juanca
+
+	* src/ScriptRunner.pas, src/WantResources.pas (tags: v_0_1_109,
+	v_0_1_31, v_0_1_4, v_0_1_3, v_0_1_0_base), src/want.dof,
+	src/want.dsk, src/win32/ConsoleScriptRunner.pas,
+	test/WantTestLib.drc: BUG: Failure to find build file was not being
+	logged to console.
+	
+	Changed -color commandline option to -nocolor. Default to color
+	output.
+
+2001-05-11 19:37  juanca
+
+	* src/BuildListeners.pas, src/ScriptRunner.pas,
+	src/WantClasses.pas, src/WantUtils.pas (tags: v_0_1_109, v_0_1_31,
+	v_0_1_4, v_0_1_3, v_0_1_0_base), src/want.dpr, src/want.dsk,
+	src/elements/PatternSets.pas, src/lib/WildPaths.pas,
+	src/tasks/EchoTasks.pas, lib/jal/src/JALOwnedTrees.pas,
+	src/tasks/ExecTasks.pas, src/tasks/LoggerTask.pas (tags: v_0_1_109,
+	v_0_1_31, v_0_1_4, v_0_1_3, v_0_1_0_base),
+	src/win32/ConsoleListener.pas, src/win32/ConsoleScriptRunner.pas:
+	Removed direct dependencies of WantClasses and WildPaths on JCL.
+
+2001-05-11 18:50  juanca
+
+	* want.xml, src/ScriptRunner.pas, src/WantClasses.pas,
+	src/want.dof, src/want.dsk, src/tasks/DUnitTasks.pas,
+	src/tasks/DelphiTasks.pas, src/win32/ConsoleListener.pas,
+	src/win32/ConsoleScriptRunner.pas, test/DelphiTasksTest.pas (tags:
+	v_0_1_109, v_0_1_31, v_0_1_4, v_0_1_3, v_0_1_0_base),
+	test/ExternalTests.pas, test/RunnerTests.pas (tags: v_0_1_3,
+	v_0_1_0_base), test/WantAcceptTestLib.dpr, test/WantClassesTest.pas
+	(tags: v_0_1_109, v_0_1_31, v_0_1_4, v_0_1_3, v_0_1_0_base),
+	test/WantTestLib.cfg, test/WantTestLib.dof, test/WantTestLib.drc,
+	test/WantTests.dof, test/WantTests.dpr (tags: v_0_1_31, v_0_1_4,
+	v_0_1_3, v_0_1_0_base): Updated tests and want.xml after
+	refactoring of script running logic.
+
+2001-05-11 17:18  juanca
+
+	* private/juanco/refactorings.html (tags: v_0_1_109, v_0_1_31,
+	v_0_1_4, v_0_1_3, v_0_1_0_base), src/BuildListeners.pas,
+	src/ScriptRunner.pas, src/WantClasses.pas, src/want.dof,
+	src/want.dpr, src/want.dsk, src/lib/ScriptParser.pas,
+	src/tasks/DelphiTasks.pas, src/tasks/ExecTasks.pas,
+	src/tasks/WantTasks.pas (tags: v_0_1_3, v_0_1_0_base),
+	src/win32/ConsoleListener.pas, src/win32/ConsoleScriptRunner.pas,
+	test/DelphiTasksTest.pas, test/ExecTasksTest.pas (tags: v_0_1_31,
+	v_0_1_4, v_0_1_3, v_0_1_0_base), test/ExternalTests.pas,
+	test/RegexpElementsTest.pas (tags: v_0_1_109, v_0_1_31, v_0_1_4,
+	v_0_1_3, v_0_1_0_base), test/RunnerTests.pas,
+	test/WantAcceptTestLib.dpr, test/WantAcceptTestLib.drc,
+	test/WantClassesTest.pas, test/WantTestLib.drc: Moved build logic
+	out of WantClasses and itno ScriptRunner
+
+2001-05-11 13:15  juanca
+
+	* src/ScriptRunner.pas, src/WantResources.pas, src/want.dpr,
+	src/want.dsk, src/tasks/StandardTasks.pas, src/tasks/WantTasks.pas,
+	test/WantAcceptTestLib.dpr: Removed references to VssTasks.
+	
+	Renamed WantBase.pas to WantResources.pas.
+
+2001-05-11 13:14  juanca
+
+	* test/VssTasksTest.pas: Removed VssTasksTest.pas
+
+2001-05-11 13:13  juanca
+
+	* src/tasks/vsstasks.pas: Removed VssTasks.pas
+
+2001-05-11 13:09  juanca
+
+	* private/juanco/refactorings.html, src/WantResources.pas,
+	src/want.bpg (tags: v_0_1_109, v_0_1_31, v_0_1_4, v_0_1_3,
+	v_0_1_0_base), src/want.dof, src/want.dpr, src/want.dsk,
+	src/lib/ChildProcesses.pas, src/tasks/ExecTasks.pas,
+	src/win32/WIN32.pas (tags: v_0_1_0_base),
+	src/win32/Win32ChildProcesses.pas (tags: v_0_1_31, v_0_1_4,
+	v_0_1_3, v_0_1_0_base), src/win32/Win32Implementations.pas (tags:
+	v_0_1_109, v_0_1_31, v_0_1_4, v_0_1_3, v_0_1_0_base),
+	test/WantAcceptTestLib.cfg, test/WantAcceptTestLib.dof,
+	test/WantAcceptTestLib.dpr, test/WantTestLib.cfg,
+	test/WantTestLib.dof, test/WantTestLib.dpr, test/WantTestLib.drc:
+	Factored TChildProcess out of ExecTasks and into
+	lib/ChildProcesses.
+	
+	Factored TWin32ChildProcess out of ChildProcesses and into
+	win32/ChildProcesses.pas
+	
+	Fixed some copyrights.
+	
+	Added notes on pending refactorings.
+
+2001-05-10 19:41  juanca
+
+	* want.xml, private/juanco/.cvsignore (tags: v_0_1_109, v_0_1_31,
+	v_0_1_4, v_0_1_3, v_0_1_0_base), src/ScriptRunner.pas,
+	src/WantResources.pas, src/want.dof, src/want.dsk, src/wantver.rc,
+	src/wantver.template.rc (tags: v_0_1_109, v_0_1_31, v_0_1_4,
+	v_0_1_3, v_0_1_0_base), test/WantTestLib.drc: Fixed copyright
+	notices.
+	
+	Make program respond to -v -version and --version options with
+	copyright information.
+	
+	Added versioninfo target that produces version .rc using <edit>
+	over a template.
+
+2001-05-10 19:04  juanca
+
+	* want.xml: Moved want.xml to root directory.
+	
+	Moved resource compilation into its own target.
+
+2001-05-10 19:03  juanca
+
+	* doc/: .cvsignore, COPYING.html, COPYING.txt, copyright.txt,
+	license.txt (utags: v_0_1_109, v_0_1_3, v_0_1_31, v_0_1_4,
+	v_0_1_0_base): Added GNU General Public License. Updated license
+	and copyright files with info about all copyright holders.
+
+2001-05-10 19:00  juanca
+
+	* src/want.dpr: Moved commandline parsing to TConsoleScriptRunner.
+
+2001-05-10 19:00  juanca
+
+	* src/WantResources.pas: Don't let Copyright and License routines
+	in DanteBase raise an exception.
+	
+	Updated default copyright and license texts.
+
+2001-05-10 18:59  juanca
+
+	* src/license.rc (tags: v_0_1_109, v_0_1_31, v_0_1_4, v_0_1_3,
+	v_0_1_0_base): Added COPYRIGHT resource to license.rc.
+
+2001-05-10 18:58  juanca
+
+	* src/ScriptRunner.pas: Improved implementation of commandline
+	parsing.
+	
+	Use More routine to output license information.
+	
+	Handle -h and -L switches in ConsoleRunner.
+
+2001-05-10 18:58  juanca
+
+	* src/elements/RegexpElements.pas (tags: v_0_1_31, v_0_1_4,
+	v_0_1_3, v_0_1_0_base): Removed parameter order bug in <regexp>
+	task implementation.
+
+2001-05-10 18:57  juanca
+
+	* test/WantAcceptTestLib.cfg, test/WantAcceptTestLib.dof,
+	test/WantAcceptTestLib.dsk (tags: v_0_1_109, v_0_1_31, v_0_1_4,
+	v_0_1_3, v_0_1_0_base), test/WantTestLib.cfg, test/WantTestLib.dof,
+	test/WantTestLib.dsk, src/want.dof, src/want.dsk: routine
+
+2001-05-10 18:57  juanca
+
+	* test/RunnerTests.pas: Renamed TTestDantemain to
+	TScriptRunnerTests.
+
+2001-05-10 18:57  juanca
+
+	* test/: ExternalTests.pas, WantClassesTest.pas: Replaced
+	TLogManager by TBuildListener.
+
+2001-05-10 18:51  juanca
+
+	* src/lib/XPerlRE.pas, lib/perlre-1.1.zip (utags: v_0_1_109,
+	v_0_1_3, v_0_1_31, v_0_1_4, v_0_1_0_base): Use 1.1 version of
+	PerlRE.
+	
+	Fixed parameter order bug in XPerlRE.pas
+
+2001-05-10 18:18  juanca
+
+	* lib/perlre-1.1.zip: New version of perlre
+
+2001-05-10 16:45  juanca
+
+	* src/: ScriptRunner.pas, WantClasses.pas, WantResources.pas,
+	want.cfg, want.dof, want.dpr, want.dsk,
+	elements/RegexpElements.pas, lib/WildPaths.pas, lib/XPerlRE.pas,
+	win32/CRT32.pas (tags: v_0_1_109, v_0_1_31, v_0_1_4, v_0_1_3,
+	v_0_1_0_base), win32/ConsoleListener.pas, tasks/DelphiTasks.pas,
+	tasks/EditTasks.pas, tasks/ExecTasks.pas: Improved logic and
+	formatting of log and error messages
+
+2001-05-10 14:57  juanca
+
+	* src/tasks/DelphiTasks.pas: Added <dcc>.warnings attribute and
+	corresponding Attribute-element. Default to true.
+
+2001-05-10 14:53  juanca
+
+	* src/win32/ConsoleListener.pas: Log task description only if not
+	empty.
+
+2001-05-10 14:53  juanca
+
+	* src/lib/XPerlRE.pas: Added a Match function that can be called
+	without instantiating a TXRegexp.
+
+2001-05-10 14:53  juanca
+
+	* src/tasks/DelphiTasks.pas: Try to detect error messages and log
+	them at the appropiate log level.
+
+2001-05-10 14:39  juanca
+
+	* src/win32/: ConsoleListener.pas, Resources.pas (tags: v_0_1_109,
+	v_0_1_31, v_0_1_4, v_0_1_3, v_0_1_0_base), VersionInfoResources.pas
+	(tags: v_0_1_109, v_0_1_31, v_0_1_4, v_0_1_3, v_0_1_0_base): Added
+	initial implementation of .res resource/versioninfo parsing and
+	generation.
+
+2001-05-10 14:36  juanca
+
+	* src/: ScriptRunner.pas, WantClasses.pas, want.dof, want.dpr,
+	want.dsk, win32/ConsoleListener.pas, lib/LogMgr.pas,
+	lib/ScriptParser.pas, tasks/WantTasks.pas: Replaced TLogManager
+	with Ant-inspired TBuildListener that receives notifications of
+	relevant events appart from logs.
+	
+	Gave special treatment to attributes of type TLogLevel enumeration.
+
+2001-05-10 14:34  juanca
+
+	* src/tasks/: EchoTasks.pas, EditTasks.pas: Added Level
+	attribute/property to <echo> and <edit><print> so the output is
+	only produced at the specified log level.
+
+2001-05-09 16:16  juanca
+
+	* want.xml: Removed build number from version number.
+
+2001-05-09 16:15  juanca
+
+	* src/: WantClasses.pas, want.dof, want.dpr, want.dsk: BUG:
+	Evaluate did not search for subsequent {} patterns after the last
+	substitution, so it would go into an infinite loop if a property
+	was not defined. Fixed.
+
+2001-05-09 16:13  juanca
+
+	* src/lib/WildPaths.pas: Made ToRelativePath be more strict about
+	which paths can be made relative.
+
+2001-05-09 16:13  juanca
+
+	* src/tasks/EditTasks.pas: Implemented <subst> element in <edit>
+	task.
+	
+	Fixed some file handling bugs in <edit> task.
+
+2001-05-09 16:12  juanca
+
+	* src/: lib/XPerlRE.pas, elements/RegexpElements.pas: Created
+	TXRegexp = class(TPerlRE) that implements a Replace method.
+	
+	Made TRegexpElement use new implementation.
+
+2001-05-09 15:33  juanca
+
+	* src/WantClasses.pas: Make undefined properties return ${propname}
+	when evaluated.
+
+2001-05-08 01:27  juanca
+
+	* doc/history.html: Added Want history page.
+
+2001-05-08 01:25  juanca
+
+	* doc/: dunit_want.xml (tags: v_0_1_109, v_0_1_31, v_0_1_4,
+	v_0_1_3, v_0_1_0_base), index.html, want_want.xml (tags: v_0_1_109,
+	v_0_1_31, v_0_1_4, v_0_1_3, v_0_1_0_base), images/failure.png
+	(tags: v_0_1_109, v_0_1_31, v_0_1_4, v_0_1_3, v_0_1_0_base),
+	images/success.png (tags: v_0_1_109, v_0_1_31, v_0_1_4, v_0_1_3,
+	v_0_1_0_base): Factored out Want/Dante history into its own
+	history.html page.
+	
+	Added introductory notes and screenshots ti Want page.
+
+2001-05-07 21:03  juanca
+
+	* src/want.dpr, src/want.dsk, src/lib/WildPaths.pas,
+	src/lib/clutilfile.pas, src/lib/clversionrcunit.pas,
+	src/tasks/EditTasks.pas, src/tasks/StandardTasks.pas,
+	test/ExternalTests.pas, test/VersionInfoTasksTest.pas,
+	test/WantAcceptTestLib.drc, test/WantAcceptTestLib.dsk,
+	test/WantTests.dpr: Removed remaining dependencies on chrismo's
+	cLabs units
+
+2001-05-07 19:43  juanca
+
+	* src/lib/clUtilConsole.pas, src/tasks/VersionInfoTasks.pas,
+	test/clUtilConsoleTest.pas, test/clUtilFileTest.pas,
+	test/clVersionRcUnitTest.pas: Removed most reference to chrismo's
+	cLabs units
+
+2001-05-07 19:39  juanca
+
+	* want.xml: Compile want.exe in console mode
+
+2001-05-07 19:38  juanca
+
+	* test/WantClassesTest.pas: Added test for property/attribute
+	initialization
+
+2001-05-07 19:37  juanca
+
+	* src/: want.dof, tasks/DUnitTasks.pas: Improved format ouf
+	DUnitTask output
+
+2001-05-07 19:31  juanca
+
+	* src/: WantClasses.pas, want.dof, elements/Attributes.pas (tags:
+	v_0_1_4, v_0_1_3, v_0_1_0_base), tasks/DelphiTasks.pas: BUG: Too
+	early evaluation of properties returned because of
+	attribute/element enabling fix. Fixed.
+
+2001-05-07 19:24  juanca
+
+	* src/: WantClasses.pas, want.dof, want.dsk,
+	elements/Attributes.pas, lib/ScriptParser.pas,
+	tasks/DUnitTasks.pas, tasks/ExecTasks.pas, tasks/FileTasks.pas:
+	BUG: Attribute elements would set their value even when disabled.
+	Fixed.
+
+2001-05-07 17:06  juanca
+
+	* src/: ScriptRunner.pas, want.cfg, want.dof, want.dsk: Make sure
+	that TConsoleScriptRunner searches for build files in current and
+	super dirs.
+
+2001-05-07 17:05  juanca
+
+	* src/WantClasses.pas: BUG: Properties were being evaluated before
+	calling Init. Fixed.  BUG: FindBuildFile was not retreiving the Dir
+	from the absolute path. Fixed.
+
+2001-05-03 15:38  juanca
+
+	* etc/bku.btm (tags: v_0_1_3, v_0_1_0_base), src/ScriptRunner.pas,
+	src/want.dof, src/want.dsk, src/lib/ScriptParser.pas: BUG: Some
+	parse errors were not being logged to the console. Fixed
+
+2001-05-03 15:28  juanca
+
+	* want.xml: Buildfine now outputs want.exe to the {want}/bin
+	directory
+
+2001-05-02 20:59  juanca
+
+	* etc/bku.btm: Added etc dir
+
+2001-05-02 20:59  juanca
+
+	* private/juanco/todo_juanco.html, src/ScriptRunner.pas,
+	src/want.dpr, src/want.dsk, src/tasks/EditTasks.pas,
+	test/ExternalTests.pas, test/RunnerTests.pas,
+	test/WantAcceptTestLib.dsk, test/WantTestLib.dof,
+	test/WantTestLib.dpr, test/WantTestLib.dsk: Renamed TDante to
+	TScriptRunner.
+	
+	Added capability of handling several files to TEditTask. Untested.
+
+2001-05-02 18:08  juanca
+
+	* doc/authors.txt, doc/license.txt, want.xml, src/ScriptRunner.pas,
+	src/WantClasses.pas, src/WantResources.pas, src/want.dof,
+	src/want.dpr, src/want.dsk, src/elements/Attributes.pas,
+	src/elements/PatternSets.pas, src/elements/Properties.pas (tags:
+	v_0_1_31, v_0_1_4, v_0_1_3, v_0_1_0_base),
+	src/elements/RegexpElements.pas, src/elements/StandardElements.pas
+	(tags: v_0_1_109, v_0_1_31, v_0_1_4, v_0_1_3, v_0_1_0_base),
+	src/elements/TimeElements.pas (tags: v_0_1_109, v_0_1_31, v_0_1_4,
+	v_0_1_3, v_0_1_0_base), src/lib/ScriptParser.pas,
+	src/tasks/CustomTasks.pas (tags: v_0_1_109, v_0_1_31, v_0_1_4,
+	v_0_1_3, v_0_1_0_base), src/tasks/DUnitTasks.pas,
+	src/tasks/DelphiTasks.pas, src/tasks/EchoTasks.pas,
+	src/tasks/EditTasks.pas, src/tasks/ExecTasks.pas,
+	lib/jal/src/JALOwnedTrees.pas, src/tasks/FileTasks.pas,
+	src/tasks/LoggerTask.pas, src/tasks/StandardTasks.pas,
+	src/tasks/VersionInfoTasks.pas, src/tasks/WantStandardTasks.pas
+	(tags: v_0_1_109, v_0_1_31, v_0_1_4, v_0_1_3, v_0_1_0_base),
+	src/tasks/WantTasks.pas, src/tasks/ZipTasks.pas,
+	src/tasks/vsstasks.pas, test/DelphiCompileTest.pas (tags:
+	v_0_1_109, v_0_1_31, v_0_1_4, v_0_1_3, v_0_1_0_base),
+	test/DelphiTasksTest.pas, test/ExecTasksTest.pas,
+	test/ExternalTests.pas, test/FileSetTests.pas (tags: v_0_1_31,
+	v_0_1_4, v_0_1_3, v_0_1_0_base), test/FileTasksTest.pas (tags:
+	v_0_1_31, v_0_1_4, v_0_1_3, v_0_1_0_base),
+	test/RegexpElementsTest.pas, test/RunnerTests.pas,
+	test/VersionInfoTasksTest.pas, test/VssTasksTest.pas,
+	test/WantAcceptTestLib.dof, test/WantAcceptTestLib.dpr,
+	test/WantAcceptTestLib.drc, test/WantAcceptTestLib.dsk,
+	test/WantClassesTest.pas, test/WantTests.dof, test/WantTests.dpr,
+	test/WildPathsTest.pas: Updated copyright notices.
+
+2001-05-02 16:58  juanca
+
+	* src/clUtilConsole.pas: Removed multiple copies of
+	clUtilConsole.pas
+
+2001-05-02 16:57  juanca
+
+	* test/: DanteAcceptTest.dof, DanteAcceptTest.dpr, DanteTest.dof,
+	DanteTest.dpr, DanteTestUtil.pas: Removed dante specific test units
+
+2001-05-02 16:53  juanca
+
+	* test/: WantTests.dof, WantTests.dpr: Added WantTests project
+
+2001-05-02 16:53  juanca
+
+	* test/: WantAcceptTestLib.cfg, WantAcceptTestLib.dof,
+	WantAcceptTestLib.dpr, WantAcceptTestLib.drc,
+	WantAcceptTestLib.dsk, WantAcceptTestLib.res (tags: v_0_1_109,
+	v_0_1_31, v_0_1_4, v_0_1_3, v_0_1_0_base), WantTestLib.cfg,
+	WantTestLib.dof, WantTestLib.dpr, WantTestLib.drc, WantTestLib.dsk,
+	WantTestLib.res (tags: v_0_1_109, v_0_1_31, v_0_1_4, v_0_1_3,
+	v_0_1_0_base): Added test dlls to be used with the dunit task
+
+2001-05-02 16:51  juanca
+
+	* test/clUtilConsoleTest.pas, src/want.dsk,
+	test/WantAcceptTestLib.drc, test/WantTestLib.dpr,
+	test/WantTestLib.drc, test/WildPathsTest.pas: routine
+
+2001-05-02 16:49  juanca
+
+	* src/: .cvsignore (tags: v_0_1_4, v_0_1_3, v_0_1_0_base),
+	dante.bpg, dante.dof, dante.dpr, license.rc, want.cfg, want.dof,
+	want.dpr, want.dsk, wantver.rc: Removed dante.* and added want.*
+
+2001-05-02 16:49  juanca
+
+	* src/forms/: ScriptFrm.dfm, ScriptFrm.pas (utags: v_0_1_109,
+	v_0_1_3, v_0_1_31, v_0_1_4, v_0_1_0_base): Added initial version of
+	GUI.
+
+2001-05-02 16:48  juanca
+
+	* src/tasks/WantStandardTasks.pas: Added WantStandardTasks.pas
+
+2001-05-02 16:48  juanca
+
+	* src/tasks/EditTasks.pas: Added EditTasks.pas. TEditTask is an
+	editor-task with commands like those of Unix ed.
+
+2001-05-02 16:47  juanca
+
+	* src/tasks/DUnitTasks.pas: Added DUnitTasks.pas. Tests are loaded
+	from DLLs.
+
+2001-05-02 16:44  juanca
+
+	* want.xml, make/bootstrap.bat (tags: v_0_1_0_base),
+	src/WantClasses.pas, src/WantResources.pas, src/ScriptRunner.pas,
+	src/elements/Attributes.pas, src/elements/PatternSets.pas,
+	src/elements/Properties.pas, src/elements/RegexpElements.pas,
+	src/elements/TimeElements.pas, src/lib/ScriptParser.pas,
+	src/lib/WildPaths.pas, src/lib/clUtilConsole.pas,
+	src/tasks/DelphiTasks.pas, src/tasks/WantTasks.pas,
+	src/tasks/ExecTasks.pas, src/tasks/FileTasks.pas,
+	src/tasks/LoggerTask.pas, src/tasks/ZipTasks.pas,
+	test/WantClassesTest.pas, test/ExecTasksTest.pas: Renamed
+	TDanteElement to TScriptElement.
+	
+	Worked around code generation bugs that crashed exception handling
+	in TDanteTask.Execute.
+	
+	Minor bug fixes.
+
+2001-05-01 19:14  juanca
+
+	* test/data/edit/readwrite/: build.xml, final/added_dot.txt,
+	final/added_end.txt, final/added_zero.txt, final/file.txt,
+	final/full.txt, final/full2.txt, final/inserted_dot.txt,
+	final/inserted_end.txt, final/jcl.txt, final/jcl1.txt,
+	final/jcl2.txt, final/jcl_all.txt, final/nextthree.txt,
+	final/threefirst.txt, setup/file.txt: Added basic tests for the
+	<edit> task
+
+2001-05-01 19:04  juanca
+
+	* want.xml, make/bootstrap.bat, private/juanco/todo_juanco.html,
+	src/WantClasses.pas, src/WantResources.pas, src/ScriptRunner.pas,
+	src/dante.dpr, src/elements/PatternSets.pas,
+	src/elements/RegexpElements.pas, src/lib/LogMgr.pas,
+	src/lib/WildPaths.pas, lib/jal/src/JALOwnedTrees.pas,
+	src/lib/zipStreams.pas (tags: v_0_1_3, v_0_1_0_base),
+	src/tasks/DelphiTasks.pas, src/tasks/EchoTasks.pas,
+	src/tasks/ExecTasks.pas, src/tasks/LoggerTask.pas,
+	src/tasks/StandardTasks.pas, src/tasks/WantTasks.pas,
+	src/tasks/VersionInfoTasks.pas, src/tasks/ZipTasks.pas,
+	test/DanteAcceptTest.dpr, test/DanteTest.dpr,
+	test/DelphiTasksTest.pas, test/ExecTasksTest.pas,
+	test/ExternalTests.pas, test/WantClassesTest.pas,
+	test/FileTasksTest.pas, test/RegexpElementsTest.pas: Factored
+	project parser out of DanteClasses and into ScriptParser.
+	
+	Use make JclSysUtils.FreeAndNil accessible through DanteClasses and
+	use it accross the board.
+
+2001-04-29 20:50  juanco
+
+	* private/juanco/todo_juanco.html: Updated juanco's todo
+
+2001-04-29 20:44  juanco
+
+	* src/: elements/StandardElements.pas, tasks/DelphiTasks.pas:
+	Factored out element to attribute mapping functionality of <dcc>
+	task into Attributes.pas so other tasks can use it.
+
+2001-04-29 18:56  juanco
+
+	* want.xml, make/bootstrap.bat, src/WantResources.pas,
+	src/tasks/DelphiTasks.pas: Now most options to the <dcc> task can
+	be specified both as attributes and elements. This allows for
+	setting options conditionally, i.e.:
+	
+	  <dcc>
+	    <optimize value="yes"  unless="DEBUG" />
+	
+	Updated build.xml to use new features.
+
+2001-04-29 18:54  juanco
+
+	* src/elements/PatternSets.pas: BUG: Concatenating base path to
+	include/exclude patterns in Patternsets preventing generic patterns
+	like **/CVS from matching everything they should.  Fixed.
+
+2001-04-29 18:52  juanco
+
+	* lib/: paszlib-1.0-dante-1.zip, paszlib-1.0.zip: Overflow checking
+	in paszlib\zDeflate.pas produces an error. Patched.
+
+2001-04-29 16:51  juanco
+
+	* test/data/parsing/conditionals/: final/should_1.txt,
+	final/should_2.txt, final/should_3.txt, build.xml (utags:
+	v_0_1_109, v_0_1_3, v_0_1_31, v_0_1_4, v_0_1_0_base): Added
+	external test for build script conditionals.
+
+2001-04-29 16:49  juanco
+
+	* src/: elements/TimeElements.pas, tasks/EchoTasks.pas,
+	tasks/ExecTasks.pas: Updated element registration to new
+	RegisterElements format.
+	
+	Fixed logs which were either to verbose or did not apply
+	ToRelativePath to logged file paths.
+
+2001-04-29 16:47  juanco
+
+	* src/lib/clutilfile.pas: Made TclFileCompare.CompareFiles be a
+	class function so it can be easily called without instantiating the
+	object.
+
+2001-04-29 16:45  juanco
+
+	* make/bootstrap.bat: Made dcc32 call in bootstrap.bat again be
+	quiet
+
+2001-04-29 16:45  juanco
+
+	* want.xml, src/tasks/DelphiTasks.pas, test/DelphiTasksTest.pas:
+	Changes to <dcc> task. Renamed dcus to dcuoutput, exes to
+	exeoutput, unit to unitpath, resource to resourcepath, include to
+	includepath.
+	
+	With new version of patternsets, path elements support refid as an
+	attribute, and buils cripts  can be less verbose: <unitpath
+	refid="sources" />.
+	
+	Updated dante's build.xml to match <dcc> task changes.
+
+2001-04-29 16:41  juanco
+
+	* src/elements/PatternSets.pas: Added support for refid as
+	attribute to filesets. That is: <fileset refid="apatternsetname" 
+	/>
+
+2001-04-29 16:39  juanco
+
+	* test/ExternalTests.pas: Made TDanteExternalTest support test
+	directories in which the setup and final dirs are expanded in
+	directories instead of zipped.
+	
+	Made TDanteExternalTest report the file names of files for which
+	the content did not match.
+
+2001-04-29 16:37  juanco
+
+	* src/WantClasses.pas: Added support for conditionals if= and
+	unless=. Aliased the conditionals to ifdef= and ifndef=, to make
+	Delphi programmers happy.
+	
+	Refactored RegisterElement and friends so the parent element is the
+	first paramenter and the child elements are listed in the second.
+	This makes RegisterElement calls look more like syntax definitions,
+	which is sort of what they are.
+
+2001-04-28 03:25  juanco
+
+	* doc/: style.css (tags: v_0_1_31, v_0_1_4, v_0_1_3, v_0_1_0_base),
+	task_writers_guide.html: Fixed bugs still present in the Task
+	Writers Guide. Also updated it to the latest version of Dante's
+	core classes and methods.
+
+2001-04-28 02:14  juanco
+
+	* want.xml: Changes to build.xml according to suggestions by Andrew
+	Smith.
+	
+	Set uselibrarypath=false in all <dcc> instances, and make all
+	targets that use <dcc> depend on the 'clean' target. This should
+	avoid conflicts with user setups and let us detect if something got
+	out of wack while compiling with the IDE.
+	
+	Other changes:
+	
+	Cleaned up the "dist" task. Used generic wildcards to make sure
+	that all .zips in the ./lib directory are included, but none of the
+	./lib subdirectories are.
+	
+	The 'clean' target will not remove the 'dist' directory. This
+	change should let Chris accumulate release .zips in his hard disk.
+	
+	The 'clean' target removes files in the ./dcu directory but does
+	not remove the directory.  This change was done to avoid having the
+	target file while trying to remove ./dcu.  The ./dcu directory
+	contained CVS files in early snapshots, and those are ignored by
+	the file tasks by default. Gave same treatment to the ./bin
+	directory.
+
+2001-04-27 21:39  juanco
+
+	* private/juanco/todo_juanco.html: Updated juanco's todo list
+
+2001-04-27 21:37  juanco
+
+	* doc/authors.txt: Added e-mail address to Juanco's entry.
+
+2001-04-27 12:58  chrismo
+
+	* test/VssTasksTest.pas: Changed TProject.Level back to
+	TProject.Verbosity
+
+2001-04-27 12:58  chrismo
+
+	* src/dante.dpr: fixed typo in comment
+
+2001-04-27 12:57  chrismo
+
+	* doc/authors.txt: no message
+
+2001-04-27 01:13  juanco
+
+	* src/: lib/LogMgr.pas, win32/ConsoleListener.pas: Patches so
+	console log manager works under Win9x
+
+2001-04-26 21:39  juanco
+
+	* src/tasks/ExecTasks.pas: Try to detect runnaway applications in
+	<exec>
+
+2001-04-26 21:37  juanco
+
+	* src/ScriptRunner.pas: Avoid logging EDanteExceptions twice
+
+2001-04-26 00:27  juanco
+
+	* lib/sax-xml-1.0.1.zip, src/WantClasses.pas,
+	src/tasks/EchoTasks.pas, test/DelphiTasksTest.pas: Gave EchoTask
+	the smarts to remove leading white space from its _text attribute.
+
+2001-04-25 23:31  juanco
+
+	* src/tasks/VersionInfoTasks.pas: Added a 'property' attribute to
+	<versioninfo> that, if present, will receive the complete version
+	string.
+
+2001-04-25 23:24  juanco
+
+	* src/ScriptRunner.pas: Made TDante accept system dependent paths
+	once more.
+
+2001-04-25 22:11  juanco
+
+	* src/: ScriptRunner.pas, WantClasses.pas: Made 'description' an
+	attribute/property of all dante elements. Projects, targets, and
+	tasks will log their description if present.
+
+2001-04-25 21:57  juanco
+
+	* src/: ScriptRunner.pas, WantClasses.pas, lib/LogMgr.pas,
+	tasks/WantTasks.pas: Refactored logging functionality to remove
+	redundancy.
+
+2001-04-25 21:21  juanco
+
+	* private/juanco/todo_juanco.html, src/WantClasses.pas,
+	src/ScriptRunner.pas, src/dante.dof, src/dante.dpr,
+	test/DanteTest.dof, test/DelphiTasksTest.pas,
+	test/ExternalTests.pas, test/RunnerTests.pas,
+	test/WantClassesTest.pas: Refactored TDante to make it descend from
+	DanteClasses.TProject. TDante does not create a LogManager.
+	
+	Created a TConsoleDante that parses commandline options and logs to
+	a TConsoleLogManager.
+	
+	Changed test cases so they create log managers when appropiate.
+
+2001-04-25 21:10  juanco
+
+	* src/: lib/LogMgr.pas, win32/ConsoleListener.pas: Factored file
+	stuff out of TLogManager into a TFileLogManager.
+
+2001-04-25 20:38  juanca
+
+	* doc/: dunit_want.xml, want_want.xml, index.html: Added dante's
+	build.xml and uptated dunit's
+
+2001-04-25 20:10  juanca
+
+	* lib/jal/src/JALMiniDOM.pas: BUG: MiniDom was ignoreing
+	ignorableWhiteSpace.
+
+2001-04-25 18:39  juanco
+
+	* test/: DanteTest.dof, ExternalTests.pas, data/unzip.exe: Use
+	ZipStreams.ExtractAll to extract files in DanteExternalTests.pas
+
+2001-04-25 18:33  juanco
+
+	* src/lib/zipStreams.pas: Added an ExtractAll procedure to
+	ZipStreams
+
+2001-04-25 05:19  juanco
+
+	* lib/: dunit-3.2.7.1.zip, dunit-3.2.8.1.zip: Updated dunit .zip to
+	latest version
+
+2001-04-25 05:08  juanco
+
+	* src/dante.dpr: Make dante.exe halt with non zero exit code if
+	build failed.
+
+2001-04-25 01:49  chrismo
+
+	* src/dante.dpr: Removed path from dantever.res reference so
+	bootstrap.bat on a clean machine would work.
+
+2001-04-25 01:46  juanco
+
+	* src/: WantClasses.pas, lib/LogMgr.pas, tasks/WantTasks.pas: BUG:
+	Sub project output was being lost. Fixed by added an OnTaggedLog
+	event to TProject (ugly!).
+
+2001-04-25 00:53  juanco
+
+	* doc/style.css, doc/elements/tstamp.html, src/WantClasses.pas,
+	src/elements/StandardElements.pas, src/elements/TimeElements.pas:
+	Added <tstamp> element (not task), with extensions. Added
+	documentation too. No test cases.
+
+2001-04-25 00:51  juanco
+
+	* src/WantResources.pas: Fixed formatting of license string
+
+2001-04-24 23:20  juanco
+
+	* lib/: sax-xml-1.0.1.zip, sax-xml-1.0.zip: BUG: A ']' character in
+	a CharData section would hang the parser. Fixed, and updated parser
+	.zip.
+
+2001-04-24 19:17  juanca
+
+	* lib/jal/src/JALXMLParser.pas: BUG: A ']' character in a CharData
+	section would hang the parser. Fixed.
+
+2001-04-24 03:30  juanco
+
+	* src/: WantClasses.pas, lib/LogMgr.pas, tasks/WantTasks.pas:
+	Restored OnLog event to TProject so <dante> task can use it.
+
+2001-04-24 03:19  juanco
+
+	* src/: ScriptRunner.pas, WantClasses.pas, WantResources.pas,
+	tasks/WantTasks.pas: Restored functionality for finding build files
+	to TProject so <dante> task can use it.
+
+2001-04-24 01:25  juanco
+
+	* make/bootstrap.bat, src/ScriptRunner.pas, src/lib/clutilfile.pas,
+	src/lib/zipStreams.pas, src/tasks/ZipTasks.pas, test/DanteTest.dof,
+	test/ExternalTests.pas,
+	test/data/file/ziptasks/simple_unzip/build.xml,
+	test/data/file/ziptasks/simple_unzip/final.zip (tags: v_0_1_109,
+	v_0_1_31, v_0_1_4, v_0_1_3, v_0_1_0_base),
+	test/data/file/ziptasks/simple_unzip/setup.zip (tags: v_0_1_109,
+	v_0_1_31, v_0_1_4, v_0_1_3, v_0_1_0_base): Added <unzip> task, and
+	simple external test.
+
+2001-04-24 01:24  juanco
+
+	* test/VersionInfoTasksTest.pas: Renamed TRcInvVerTest to
+	TVersioninfoTest.
+
+2001-04-23 23:38  juanco
+
+	* test/RegexpElementsTest.pas: Changed TPerlRETests to TRegexpTests
+
+2001-04-23 23:36  juanco
+
+	* test/ExternalTests.pas: BUG: Typo in external tests code
+	prevented check for files in B dir but not in A dir.
+
+2001-04-23 23:34  juanco
+
+	* test/: DanteAcceptTest.dof, ExternalTests.pas: BUG: Copying of
+	setup.zip and final.zip to test directories made directory
+	comparisons fail. Fixed.
+	
+	BUG: Directory comparison did not report the mismatched files.
+	Fixed.
+
+2001-04-23 23:05  juanco
+
+	* src/WantClasses.pas: BUG: Reversed previous change to LoadXML
+	because it caused external tests to fail. Made the path to the
+	build script absoulte on entry to avoid problems with relative
+	paths.
+
+2001-04-23 22:47  juanco
+
+	* src/tasks/ZipTasks.pas: Reversed change that made <zip> honor
+	basedirs of its <filesets>. The change prevented the use of
+	<fileset> as a partitioning deviced because it made the .zip dir
+	structure not match the actual dir structure. What we really need
+	is a way to make <zip> open existing files without scratching them.
+
+2001-04-23 21:50  juanco
+
+	* src/: ScriptRunner.pas, WantClasses.pas, WantResources.pas,
+	dante.dof, lib/zipStreams.pas, tasks/ZipTasks.pas,
+	win32/ConsoleListener.pas: BUG: ChangeDir before loading XML file
+	would prevent TProject from finding build files specified with
+	relative paths. Fixed.
+
+2001-04-23 21:01  chrismo
+
+	* test/ExternalTests.pas: Turned on verbose logging
+
+2001-04-23 20:57  chrismo
+
+	* test/data/file/move/: overwrite/build.xml,
+	overwrite_readonly/build.xml (utags: v_0_1_109, v_0_1_3, v_0_1_31,
+	v_0_1_4, v_0_1_0_base): Removal of old external test data locations
+
+2001-04-23 20:49  chrismo
+
+	* src/tasks/vsstasks.pas: Oops ... forgot to register the new tasks
+
+2001-04-23 20:49  chrismo
+
+	* src/tasks/FileTasks.pas: Delete task now has a DeleteReadOnly
+	property allowing read-only files to be deleted if set to true.
+	
+	I also removed the requirement for the Delete task to have either
+	the file or dir property set. If I want to delete all files in a
+	directory, I can include a FileSet and don't want to delete a
+	specific file or directory in that case. The task was already coded
+	to actually do this work, but the Init wouldn't allow it to be used
+	this way.
+
+2001-04-23 20:47  chrismo
+
+	* src/lib/WildPaths.pas: MoveFile calls Windows.MoveFile instead of
+	MoveFileEx since ...Ex isn't implemented on Win9x.
+	
+	Added to DeleteFile to allow DeleteReadOnly parameter.
+
+2001-04-23 20:45  chrismo
+
+	* src/lib/clutilfile.pas: Newer version of clUtilFile ... fixes bug
+	allowing file comparison of read-only files
+
+2001-04-23 20:08  chrismo
+
+	* test/data/file/move/: all/build.xml, all/final.zip (tags:
+	v_0_1_109, v_0_1_31, v_0_1_4, v_0_1_3, v_0_1_0_base), all/setup.zip
+	(tags: v_0_1_109, v_0_1_31, v_0_1_4, v_0_1_3, v_0_1_0_base),
+	overwrite/build.xml, overwrite/final.zip (tags: v_0_1_109,
+	v_0_1_31, v_0_1_4, v_0_1_3, v_0_1_0_base), overwrite/setup.zip
+	(tags: v_0_1_109, v_0_1_31, v_0_1_4, v_0_1_3, v_0_1_0_base),
+	overwrite_readonly/build.xml, overwrite_readonly/final.zip (tags:
+	v_0_1_109, v_0_1_31, v_0_1_4, v_0_1_3, v_0_1_0_base),
+	overwrite_readonly/setup.zip (tags: v_0_1_109, v_0_1_31, v_0_1_4,
+	v_0_1_3, v_0_1_0_base), recursive/build.xml, recursive/final.zip
+	(tags: v_0_1_109, v_0_1_31, v_0_1_4, v_0_1_3, v_0_1_0_base),
+	recursive/setup.zip (tags: v_0_1_109, v_0_1_31, v_0_1_4, v_0_1_3,
+	v_0_1_0_base), single/build.xml, single/final.zip (tags: v_0_1_109,
+	v_0_1_31, v_0_1_4, v_0_1_3, v_0_1_0_base), single/setup.zip (tags:
+	v_0_1_109, v_0_1_31, v_0_1_4, v_0_1_3, v_0_1_0_base): Re-organized
+	external move tests - new directory structure
+
+2001-04-23 15:41  chrismo
+
+	* want.xml, make/bootstrap.bat: Updated bootstrap and build.xml to
+	use conditional compile directives in test.dprs .
+
+2001-04-23 14:37  chrismo
+
+	* test/VssTasksTest.pas: Vss testing now will do purging and is
+	much cleaner. Tests for Checkout and Checkin task objects.
+
+2001-04-23 14:35  chrismo
+
+	* test/: DanteAcceptTest.dpr, DanteTest.dpr: Changed IsConsole with
+	conditional compile. Linker settings create a console for Dante to
+	be able to function with GUITestRunner -- and this sets IsConsole
+	to true which disables using GUITestRunner.
+	
+	Conditional compile allows Dante's build.xml to run the TextRunner
+	from the command line during a build while still keeping
+	GUITestRunner an option from the IDE.
+
+2001-04-23 14:34  chrismo
+
+	* test/WantClassesTest.pas: Added in an increment so MakeSampleFile
+	could be called multiple times creating new files.
+
+2001-04-23 14:33  chrismo
+
+	* src/tasks/vsstasks.pas: Added in Checkout and Chekin tasks for
+	Vss
+
+2001-04-21 02:14  juanco
+
+	* src/lib/LogMgr.pas: Merged log levels. Now vlQuiet=vlWarnings and
+	vlVeryQuiet=vlErrors.
+	
+	Removed '...' ellipses from TLogManager output because they were
+	overflowing the right margin.
+
+2001-04-21 02:05  juanco
+
+	* src/WantClasses.pas, src/dante.dpr, src/lib/LogMgr.pas,
+	src/tasks/WantTasks.pas, src/win32/CRT32.pas,
+	src/win32/ConsoleListener.pas, test/DanteAcceptTest.dof,
+	test/DelphiTasksTest.pas, test/RunnerTests.pas,
+	test/VersionInfoTasksTest.pas, test/VssTasksTest.pas,
+	test/WantClassesTest.pas (utags: added_color): Refactored logging
+	to use mtaylor's TLogManager class.
+	
+	Tweaked TLogManager and created a TConsoleLogManager descendant
+	that uses colored output.
+	
+	Dante now lives in color.
+
+2001-04-21 02:05  juanco
+
+	* src/: ScriptRunner.pas (tags: added_color), WantResources.pas
+	(tags: added_color), win32/ConsoleListener.pas: Made optional the
+	use of color on consoles. Default to false. Activate with -color
+	commandline switch
+
+2001-04-20 23:30  juanco
+
+	* want.xml, make/bootstrap.bat (utags: added_color): Added test
+	targets to Dante's build.xml and made use of patternsets on the
+	multiple <dcc> instances.
+
+2001-04-20 23:28  juanco
+
+	* src/ScriptRunner.pas, src/WantClasses.pas, src/dante.dof (tags:
+	added_color), test/DanteAcceptTest.dof, test/DanteAcceptTest.dpr
+	(tags: added_color), test/DanteTest.dof (tags: added_color),
+	test/DanteTest.dpr (tags: added_color), test/DelphiTasksTest.pas,
+	test/FileSetTests.pas (tags: added_color), test/RunnerTests.pas,
+	test/VersionInfoTasksTest.pas, test/VssTasksTest.pas,
+	test/WantClassesTest.pas: Moved final decision about where logs
+	should go out of TProject and into TDante. Now TProject outputs
+	nothing if its OnLog event is not handled.
+	
+	Made unit tests swallow dante output so they can be run in console
+	mode.
+
+2001-04-20 23:16  juanco
+
+	* test/clUtilFile.pas, src/lib/clutilfile.pas (tags: added_color),
+	src/lib/clversionrcunit.pas (tags: added_color),
+	src/tasks/clUtilFile.pas, src/tasks/clVersionRcUnit.pas: Removed
+	multiple copies of CLib files and placed single copy in ./src/lib
+	(they should probably go in ./lib/clib.zip).
+
+2001-04-20 23:11  juanco
+
+	* src/elements/PatternSets.pas (tags: added_color): Implemented
+	TDirSet, that works like TFileSet but returns directories only
+
+2001-04-20 23:09  juanco
+
+	* src/tasks/DelphiTasks.pas (tags: added_color): Implemented
+	patternset support in the <dcc> tas.
+
+2001-04-20 23:08  juanco
+
+	* test/RunnerTests.pas: BUG: TTestDanteMain would fail randomly
+	because it didn't guard against <shell> exit codes. Fixed.
+
+2001-04-20 20:46  juanco
+
+	* src/lib/WildPaths.pas (tags: added_color): WildPath wildcards can
+	now contain a comma-separated list of patterns.
+
+2001-04-20 20:26  juanco
+
+	* src/: dante.dof, dante.dpr: Moved build file name functionality
+	out of DanteClasses and into DanteMain and dante.dpr.
+	
+	A search for a build file is done only if the -buildfile option was
+	not used. This behavior is consistent with Ant.
+	
+	The default build file name is AppName.xml, where AppName is the
+	name of the .exe used to invoke the tool. This lets users that have
+	added custom tasks to the tool use a different file name just by
+	renaming the .exe.
+	
+	If the search for the AppName.xml fails, then the tool searches for
+	dante.xml. If that fails, then the tool searches for build.xml
+	(this is for backwards compatibility).
+
+2001-04-20 20:13  juanco
+
+	* src/: ScriptRunner.pas, WantClasses.pas, tasks/WantTasks.pas:
+	Moved build file name functionality out of DanteClasses and into
+	DanteMain and dante.dpr.
+	
+	A search for a build file is done only if the -buildfile option was
+	not used. This behavior is consistent with Ant.
+	
+	The default build file name is AppName.xml, where AppName is the
+	name of the .exe used to invoke the tool. This lets users that have
+	added custom tasks to the tool use a different file name just by
+	renaming the .exe.
+	
+	If the search for the AppName.xml fails, then the tool searches for
+	dante.xml. If that fails, then the tool searches for build.xml
+	(this is for backwards compatibility).
+
+2001-04-20 16:52  juanco
+
+	* src/tasks/DelphiTasks.pas: BUG: DelphiTask used incorrect dcc
+	option for include paths. Fixed.
+	
+	Made each unit path be specified with a separate -U option.
+
+2001-04-18 23:29  juanca
+
+	* doc/index.html: Fixed bugs in Dante page. Include .xml files in
+	.war
+
+2001-04-18 19:05  juanca
+
+	* doc/: dunit_want.xml, index.html: Added page for Dante
+
+2001-04-18 17:06  juanco
+
+	* src/tasks/ExecTasks.pas (tags: added_color): Implemented 'output'
+	property of TExecTask
+
+2001-04-17 21:21  juanco
+
+	* src/tasks/ZipTasks.pas (tags: added_color): BUG: <zip> would not
+	honor basedir of internal filesets. Fixed.
+
+2001-04-17 17:49  juanco
+
+	* src/WantClasses.pas, src/tasks/ExecTasks.pas,
+	test/DanteAcceptTest.dof, test/DanteTest.dof,
+	test/DelphiTasksTest.pas: Added basic support for running Dante
+	without a console (contributted by Mark Watts).
+
+2001-04-17 17:40  juanco
+
+	* src/: WantClasses.pas, tasks/DelphiTasks.pas, tasks/FileTasks.pas
+	(tags: added_color): Added "uselibrarypath" and "version"
+	attributes to <dcc>. Tests pending (will have to be external tests,
+	I think).
+
+2001-04-17 16:09  juanco
+
+	* src/WantClasses.pas: Added debug output for attributes.
+
+2001-04-17 16:00  juanco
+
+	* src/tasks/DelphiTasks.pas: Added console property to <dcc> task
+
+2001-04-17 14:26  chrismo
+
+	* test/: DanteAcceptTest.dof, DanteTest.dof: Updated test .dofs to
+	include path to ..\lib\dunit. Not required to exist to get a good
+	compile if DUnit resides elsewhere.
+
+2001-04-17 00:39  juanco
+
+	* make/bootstrap.bat: Updated bootstrap.bat to work with latest
+	directory structure changes.
+
+2001-04-16 23:55  juanco
+
+	* want.xml, src/ScriptRunner.pas, src/WantClasses.pas,
+	src/dante.dof, src/dante.dpr, src/elements/PatternSets.pas,
+	src/elements/Properties.pas (tags: added_color),
+	src/elements/RegexpElements.pas (tags: added_color),
+	src/elements/StandardElements.pas (tags: added_color),
+	src/lib/FileSets.pas, src/tasks/DelphiTasks.pas,
+	src/tasks/EchoTasks.pas (tags: added_color),
+	src/tasks/FileTasks.pas, src/tasks/LoggerTask.pas (tags:
+	added_color), src/tasks/WantTasks.pas, src/tasks/ZipTasks.pas,
+	test/DanteAcceptTest.dof, test/DanteTest.dof, test/DanteTest.dpr,
+	test/DelphiTasksTest.pas, test/FileSetTests.pas,
+	test/FileTasksTest.pas (tags: added_color),
+	test/RegexpElementsTest.pas (tags: added_color),
+	test/RunnerTests.pas, test/WantClassesTest.pas: Removed
+	dependencies from core classes to TComponent. Use new TTree
+	(OwnedTrees.pas) instead.
+	
+	Implemented element registry that allows, among other things,
+	changing build.xml syntax from user modules.
+	
+	Implemented the task registry using the element registry.
+	
+	Moved use of StandardTasks, CustomTasks, and StandardElements into
+	DanteMain.pas.
+	
+	Moved (thanks to the element registry) the implementation of
+	<patternset> and <property> elements out of DanteClasses and into
+	their own units, Patternsets.pas and Properties.pas
+	
+	Merged FileSets.pas into Patternsets.pas.
+	
+	Renamed TDanteElement.XMLTag to TagName.
+	
+	Added a <regexp> element using PerlRE 1.1. Added simple test case.
+	
+	All tests except those for VSS to 100%.
+
+2001-04-13 12:45  chrismo
+
+	* src/lib/.cvsignore (tags: added_color): no message
+
+2001-04-13 12:45  chrismo
+
+	* test/ExternalTests.pas (tags: added_color): Changed LoadTests now
+	that every external test has just a build.xml file name to just
+	display the dir name -- cleaner outline for GUITestRunner
+
+2001-04-13 12:34  chrismo
+
+	* test/: ExternalTests.pas, clUtilFile.pas, clUtilFileTest.pas
+	(tags: added_color): Latest clUtilFile to support
+	CompareByFileContent on dirs with subdirs, external tests now
+	compare contents.
+
+2001-04-12 21:05  chrismo
+
+	* src/tasks/VersionInfoTasks.pas (tags: added_color): Added juanco
+	as contributor
+
+2001-04-12 21:04  chrismo
+
+	* test/WildPathsTest.pas (tags: added_color): Added what ended up
+	being a lot of comments on why ToRelativePaths requires 2 absolute
+	paths and why ToRelativePaths works with relative paths but
+	probably shouldn't.
+
+2001-04-12 21:01  chrismo
+
+	* test/: ExternalTests.pas, clUtilFile.pas, clUtilFileTest.pas,
+	data/copyrecursive.final.zip, data/copyrecursive.setup.zip,
+	data/copyrecursive.xml, data/moveall.final.zip,
+	data/moveall.setup.zip, data/moveall.xml,
+	data/moverecursive.final.zip, data/moverecursive.setup.zip,
+	data/moverecursive.xml, data/movesingle.final.zip,
+	data/movesingle.setup.zip, data/movesingle.xml,
+	data/file/copyrecursive/build.xml (tags: added_color),
+	data/file/copyrecursive/final.zip (tags: v_0_1_109, v_0_1_31,
+	v_0_1_4, v_0_1_3, v_0_1_0_base, added_color),
+	data/file/copyrecursive/setup.zip (tags: v_0_1_109, v_0_1_31,
+	v_0_1_4, v_0_1_3, v_0_1_0_base, added_color): Updated external
+	testing to support a hierarchy folder structure. Also refactored
+	out directory comparison code to clUtilFile (with added content
+	comparison text or binary).
+
+2001-04-12 13:19  chrismo
+
+	* lib/jal/src/JALOwnedTrees.pas (tags: added_color): Added Juanco's
+	OwnedTrees.pas
+
+2001-04-12 00:07  juanco
+
+	* src/WantClasses.pas, src/dante.dof, src/lib/WildPaths.pas,
+	src/lib/zipStreams.pas (tags: added_color),
+	src/tasks/FileTasks.pas, test/DelphiTasksTest.pas,
+	test/ExternalTests.pas, test/FileSetTests.pas,
+	test/FileTasksTest.pas, test/data/copyrecursive.final.zip,
+	test/data/copyrecursive.setup.zip, test/data/copyrecursive.xml,
+	test/data/moverecursive.final.zip,
+	test/data/moverecursive.setup.zip, test/data/moverecursive.xml:
+	Changed names in WildPaths to make them clearer.  Added
+	moverecursive and copyrecursive external tests.  Added fixes to
+	WildPaths and FileTasks to make recursive file tests pass.  Patched
+	DanteExternalTests so it doesn't use JCL routines that hang.  Made
+	DanteExternaltests sort the file sets it will compare.
+
+2001-04-11 23:35  juanco
+
+	* src/lib/WildPaths.pas, src/tasks/FileTasks.pas,
+	test/DanteAcceptTest.dof, test/ExternalTests.pas,
+	test/data/moveall.xml: Added fixes that make the moveall external
+	test pass.
+
+2001-04-11 21:51  juanco
+
+	* src/lib/WildPaths.pas: Updated the todo list with a
+	SplitPath/PathConcat bug.
+
+2001-04-11 21:36  juanco
+
+	* src/lib/WildPaths.pas: BUG: SplitPath would not record absolute
+	paths. Fixed.
+
+2001-04-11 21:32  juanco
+
+	* want.xml, make/bootstrap.bat, src/dante.dof,
+	src/lib/FileSets.pas, src/lib/LogMgr.pas, src/lib/WildPaths.pas,
+	src/lib/zipStreams.pas, test/DanteAcceptTest.dof,
+	test/DanteTest.dof, test/DelphiTasksTest.pas,
+	test/FileSetTests.pas, test/GUITestRunner.dfm,
+	test/GUITestRunner.pas, test/TestExtensions.pas,
+	test/TestFramework.pas, test/TextTestRunner.pas: Moved files to
+	their corresponding place in the new directory structure
+
+2001-04-11 21:05  chrismo
+
+	* test/data/: move.final.zip, move.setup.zip, move.xml,
+	moveall.final.zip, moveall.setup.zip, moveall.xml,
+	movesingle.final.zip, movesingle.setup.zip, movesingle.xml: Renamed
+	move test to movesingle and added moveall external tests
+
+2001-04-11 21:04  juanco
+
+	* lib/perlre-1.1.zip (tags: added_color): Added the perl regular
+	expressions 1.1 distribution .zip to de CVS repository.
+
+2001-04-11 21:04  juanco
+
+	* lib/.cvsignore (tags: v_0_1_109, v_0_1_31, v_0_1_4, v_0_1_3,
+	v_0_1_0_base, added_color): cvsignore everything in the {dante}/lib
+	directory.
+
+2001-04-11 21:03  juanco
+
+	* lib/sax-xml-1.0.zip (tags: added_color): Placed Juanco's SAX XML
+	library in a distribution .zip.
+
+2001-04-11 21:01  juanco
+
+	* lib/dunit-3.2.7.1.zip (tags: added_color): Added the DUnit
+	distribution .zip to the CVS repository.
+
+2001-04-11 20:50  juanco
+
+	* lib/jcl-1.0.zip (tags: v_0_1_31, v_0_1_4, v_0_1_3, v_0_1_0_base,
+	added_color): Updated jcl.zip to include original versions of the
+	files, no CVS dirs, and just the changes requied to support dante
+	({$Q-} in JclDebug).
+
+2001-04-11 17:56  juanco
+
+	* doc/task_writers_guide.html (tags: added_color): Restored
+	accidentally deleted text to Task Writers Guide.
+
+2001-04-11 17:30  chrismo
+
+	* test/data/: move.final.zip, move.setup.zip, move.xml: Updated
+	move external test.
+
+2001-04-11 13:33  chrismo
+
+	* src/: ScriptRunner.pas, WantClasses.pas, WantResources.pas,
+	clUtilConsole.pas (tags: added_color), tasks/DelphiTasks.pas,
+	tasks/EchoTasks.pas, tasks/ExecTasks.pas, tasks/FileTasks.pas,
+	tasks/LoggerTask.pas, tasks/VersionInfoTasks.pas,
+	tasks/WantTasks.pas, tasks/ZipTasks.pas, tasks/clUtilFile.pas,
+	tasks/clVersionRcUnit.pas, tasks/vsstasks.pas (tags: added_color):
+	Updated boilerplates where necessary.
+
+2001-04-10 19:13  juanca
+
+	* lib/jal/src/JALCollections.pas: routine
+
+2001-04-10 19:01  juanca
+
+	* lib/jal/src/JALMiniDOM.pas: MinDom now records file line numbers
+
+2001-04-10 19:00  juanca
+
+	* lib/jal/src/JALSAX.pas: Check for nil attributes before trying to
+	get their value.
+
+2001-04-10 18:58  juanca
+
+	* lib/jal/src/JALXML.pas: Routine
+
+2001-04-10 18:58  juanca
+
+	* lib/jal/src/JALXMLParser.pas: Make XML parser be able to read
+	blank lines at start of file.
+
+2001-04-10 17:28  juanco
+
+	* src/: WantClasses.pas, tasks/DelphiTasks.pas,
+	tasks/WantTasks.pas, tasks/EchoTasks.pas, tasks/ExecTasks.pas,
+	tasks/FileTasks.pas, tasks/ZipTasks.pas: Merged FileOps into
+	WildPaths
+
+2001-04-10 17:19  juanco
+
+	* src/WantClasses.pas: BUG: Dante parses and builds did not restore
+	the current directory. Fixed.
+
+2001-04-09 20:38  chrismo
+
+	* test/: DanteAcceptTest.dpr, ExternalTests.pas,
+	data/move.final.zip, data/move.setup.zip, data/move.xml,
+	data/unzip.exe (tags: added_color): Added external testing harness.
+	There's a new directory off test called data. To add a new test,
+	include 3 new files, all with the same root: root.xml,
+	root.setup.zip, root.final.zip. DanteExternalTest (now executed in
+	DanteAcceptTest.zip) will read in all .xml files in the data
+	directory and create a TExternalTest instance for each.
+	
+	TExternalTest will setup a throwaway directory by extracting
+	root.setup.zip and placing root.xml in the root folder where
+	.setup.zip was extracted. Then it runs Dante with root.xml. Then
+	.final.zip is extracted in a sibling directory and the contents of
+	the setup and final folders are compared. If they match, the test
+	passes. If they fail, the contents of both are displayed.
+	
+	Currently, only folder and file names are compared, contents of
+	actual files are ignored.
+	
+	The first and only test in there now tests the move task (move.xml,
+	move.setup.xml, move.final.xml). I wasn't sure if I could use zlib
+	to extract these zips and keep directory structure intact, so
+	InfoZip's unzip.exe is included and used for now.
+
+2001-04-09 20:34  chrismo
+
+	* test/RunnerTests.pas: Changed formatting on MainTest xml file
+
+2001-04-09 16:19  chrismo
+
+	* test/DanteTest.dpr: Added WildPathsTest to .dpr
+
+2001-04-09 16:19  chrismo
+
+	* test/RunnerTests.pas: Added check (currently failing) for current
+	directory being changed. Something in the xml acceptance test is
+	changing the current directory unnecessarily.
+
+2001-04-09 16:18  chrismo
+
+	* src/tasks/vsstasks.pas: Changed from TDanteElement.ToSystemPath
+	which makes a call to ToRelativePath which was screwing something
+	up, to a call to WildPaths.ToSystemPath
+
+2001-04-09 15:45  chrismo
+
+	* test/WildPathsTest.pas: Added tests for ToRelativePath to flush
+	out a bug that Juanco fixed behind my back. Excellent.
+
+2001-04-08 17:57  juanco
+
+	* src/tasks/ExecTasks.pas: Added missing FileOps use.
+
+2001-04-08 17:53  juanco
+
+	* src/tasks/ExecTasks.pas: Added a <path> subelement to
+	TCustomExecTask, that works like <arg> but translates paths to
+	SystemPaths when building the command line.
+
+2001-04-08 00:17  juanco
+
+	* test/FileSetTests.pas: Added thorough tests for
+	WildPaths.PathConcat
+
+2001-04-07 19:41  juanco
+
+	* src/tasks/ExecTasks.pas: BUG: ExecTasks eat last bit of imput if
+	not ended in newline. Second attempt at fix.
+
+2001-04-06 18:51  juanco
+
+	* src/tasks/ExecTasks.pas: BUG: Exec tasks swallowed last bit of
+	output if it wasn't terminated by a newline. Fixed.
+
+2001-04-06 15:24  juanco
+
+	* src/WantClasses.pas, test/WantClassesTest.pas: Make Dante verify
+	that paths in scripts are valid. Added unit tests.
+
+2001-04-05 23:32  juanco
+
+	* src/WantClasses.pas: Declared TPath = type string; and declared
+	all TPath arguments in WildPaths and FileOps as const.
+
+2001-04-05 21:31  juanco
+
+	* src/tasks/DelphiTasks.pas, test/FileTasksTest.pas,
+	test/VersionInfoTasksTest.pas, test/WantClassesTest.pas: Added
+	assertions to routines in WildPaths so they check that paths are in
+	system-independent form.  Fixed unit tests that reported errors. 
+	Fixed tasks that reported errors.
+
+2001-04-05 20:36  juanco
+
+	* src/: WantClasses.pas, dante.dof, tasks/WantTasks.pas: Renamed
+	TProject.RunPath to RootPath so it better reflects its purpose.
+
+2001-04-05 20:32  juanco
+
+	* want.xml: Renamed FullChangeLog to just ChangeLog. Use 'dante
+	changelog' to find out what others have checked in.
+
+2001-04-05 20:31  juanco
+
+	* want.xml: Added a changelog target to Dante's build.xml
+
+2001-04-05 20:30  juanco
+
+	* tools/cvs2cl.pl (tags: v_0_1_109, v_0_1_31, v_0_1_4, v_0_1_3,
+	v_0_1_0_base, added_color): Added perl tool to generate ChangeLogs
+	to the ./tools directory
+
+2001-04-05 20:28  juanco
+
+	* src/ScriptRunner.pas: BUG: commandline -debug option was not
+	being picked up by TProject. Fixed.
+
+2001-04-05 20:27  juanco
+
+	* src/WantClasses.pas: BUG: RunPath was not being picked up from
+	path to build.xml. Fixed (again).
+
+2001-04-05 20:02  juanco
+
+	* test/WantClassesTest.pas: Fixed the TDanteElement paths test to
+	use the API correctly
+
+2001-04-05 19:55  chrismo
+
+	* want.xml: Changed version from 1.0.0 to 0.9.0
+
+2001-04-05 19:52  chrismo
+
+	* doc/readme.txt (tags: added_color): Tweaked readme.txt
+
+2001-04-05 19:51  chrismo
+
+	* test/FileTasksTest.pas: Added test revealing bug in MkDirTask
+	with absolute path
+
+2001-04-05 19:50  chrismo
+
+	* test/DanteAcceptTest.dof: Updated paths
+
+2001-04-05 19:49  chrismo
+
+	* test/RunnerTests.pas: Updated main acceptance test to include a
+	mkdir call and a copy task
+
+2001-04-05 19:44  chrismo
+
+	* test/WantClassesTest.pas: Added a TestDanteElement test showing a
+	problem in ToAbsolutePath
+
+2001-04-05 19:42  chrismo
+
+	* src/tasks/vsstasks.pas: VssGetTask is now registered and handles
+	windows style paths from the XML file.
+
+2001-04-05 15:48  chrismo
+
+	* test/DanteTest.dpr: Moved off version info task tests out to
+	their proper unit (new one)
+
+2001-04-05 15:48  chrismo
+
+	* test/: DelphiTasksTest.pas, VersionInfoTasksTest.pas: Moved off
+	version info task tests out to their proper unit.
+
+2001-04-05 15:47  chrismo
+
+	* test/VssTasksTest.pas: Added new test to flush out problem with
+	paths not being handled properly.
+
+2001-04-04 20:50  chrismo
+
+	* src/tasks/vsstasks.pas: Added -I- to VssGet task so prompts are
+	ignored
+
+2001-04-04 20:49  chrismo
+
+	* test/VssTasksTest.pas: Tweaked ss labeling test. Works now, but
+	needs a lot of manual intervention. Really needs a safe server to
+	work on where purge commands could be used without worry of a
+	fixture bug blowing away production data.
+
+2001-04-04 20:45  juanco
+
+	* want.xml: Cleaned up Dante's build.xml
+
+2001-04-04 20:29  juanco
+
+	* src/tasks/VersionInfoTasks.pas: Fixed <versioninfo> so it says it
+	will increment when it will
+
+2001-04-04 20:26  juanco
+
+	* src/dante.dpr: Removed (once more) explicit paths from dante.dpr
+
+2001-04-04 20:21  juanco
+
+	* want.xml, src/WantClasses.pas, src/dante.dof, src/dante.dpr,
+	src/tasks/DelphiTasks.pas: Added TResourceComplieTask <brcc> to
+	DelphiTasks.pas
+
+2001-04-04 19:56  juanco
+
+	* src/tasks/VersionInfoTasks.pas: Renamed TVerIncRCTask to
+	TVersionInfoTask and moved it to its own unit.
+
+2001-04-04 19:55  juanco
+
+	* src/: WantClasses.pas, dante.dof, dante.dpr,
+	tasks/DelphiTasks.pas, tasks/StandardTasks.pas (tags: added_color):
+	Renamed TIncVerRcTask to TVersionInfoTask and moved it to its own
+	unit.
+
+2001-04-04 19:32  juanco
+
+	* src/: WantClasses.pas, dante.dof: Fixed RunPath logic and added
+	debug logs to verify RunPath, BasePath, and BaseDir
+
+2001-04-04 19:15  juanco
+
+	* src/WantResources.pas: Patched DanteBase.pas to let it compile
+	under Delphi 4
+
+2001-04-04 19:07  chrismo
+
+	* test/DanteAcceptTest.dof: Flipped switch to generate console app.
+
+2001-04-04 19:05  chrismo
+
+	* test/VssTasksTest.pas: Currently hanging on the ChildProcess
+	stuff. Argh
+
+2001-04-04 18:39  juanco
+
+	* src/tasks/WantTasks.pas: Reimplemented DanteTasks using
+	local/scoped properties
+
+2001-04-04 18:10  juanco
+
+	* test/WantClassesTest.pas: Added test for local/scoped properties
+
+2001-04-04 17:51  juanco
+
+	* test/: DelphiTasksTest.pas, ExecTasksTest.pas (tags:
+	added_color): Updated test suite to use Init
+
+2001-04-04 17:44  juanco
+
+	* src/: WantClasses.pas, dante.dof: Implemented localized,
+	inheritable properties
+
+2001-04-04 17:17  juanco
+
+	* want.xml, doc/task_writers_guide.html, src/ScriptRunner.pas,
+	src/WantClasses.pas, src/dante.dof, src/tasks/ExecTasks.pas,
+	src/tasks/FileTasks.pas, src/tasks/LoggerTask.pas,
+	src/tasks/WantTasks.pas, src/tasks/ZipTasks.pas,
+	src/tasks/vsstasks.pas: Added support for commandline -Dprop=value
+	definition of properties
+
+2001-04-04 16:50  juanco
+
+	* want.xml: Set incrementing of build number to false by default,
+	so only official builds (Chris's) increment it (use datne
+	-Dincrement.build=true.
+
+2001-04-04 16:48  juanco
+
+	* src/tasks/DelphiTasks.pas: Gave TIncVerRcTask an
+	increment=boolean attribute
+
+2001-04-04 16:26  chrismo
+
+	* src/tasks/vsstasks.pas: Latest test -- now does label retrieval
+	-- although other problems have prevented me from running it to
+	completion to see if it passes yet. This is just a temporary
+	checkin.
+
+2001-04-04 16:26  chrismo
+
+	* test/VssTasksTest.pas: Latest test -- now tests for label
+	retrieval -- although other problems have prevented me from running
+	it to completion to see if it passes yet. This is just a temporary
+	checkin.
+
+2001-04-04 13:47  chrismo
+
+	* test/DanteAcceptTest.dof, test/DanteAcceptTest.dpr,
+	test/DanteTest.dof, test/DanteTest.dpr, src/dante.bpg (tags:
+	added_color): Moved acceptance tests into a separate project so
+	they don't break up the flow of the unit test suite.
+
+2001-04-04 13:29  chrismo
+
+	* doc/notes_juanco.html: Removed notes_juanco.html from doc as it's
+	now in private...
+
+2001-04-04 13:26  chrismo
+
+	* doc/readme.txt: added first shot readme.txt
+
+2001-04-04 02:25  juanco
+
+	* src/tasks/ExecTasks.pas: Added timeout property to
+	TCustomExecTask, no implementation yet
+
+2001-04-04 01:47  juanco
+
+	* src/tasks/ExecTasks.pas, test/ExecTasksTest.pas,
+	test/FileSetTests.pas, test/FileTasksTest.pas,
+	test/WantClassesTest.pas: Added support for faionerror and <arg>
+	TCustomExecTask
+
+2001-04-04 01:37  juanco
+
+	* src/WantClasses.pas: Added support for yes/no, on/off values to
+	boolean attributes/properties.
+
+2001-04-04 01:23  juanco
+
+	* src/tasks/vsstasks.pas: Updated VssTasks to latest version of
+	RequireAttribute.
+
+2001-04-03 23:31  juanco
+
+	* index.html (tags: added_color): Added default style sheet to home
+	page.
+
+2001-04-03 23:12  juanco
+
+	* index.html: Added home page, initial html page to project.
+
+2001-04-03 22:57  juanco
+
+	* private/juanco/.cvsignore: Routine.
+
+2001-04-03 21:09  chrismo
+
+	* test/: RunnerTests.pas, DanteTest.dpr, VssTasksTest.pas: Added
+	remmed out inline double-quote case to acceptance test
+
+2001-04-03 21:08  chrismo
+
+	* src/tasks/: vsstasks.pas, StandardTasks.pas: Added first shot (in
+	progress) of VssTasks. Compiles, but not registered yet, so it's
+	not really there.
+
+2001-04-03 20:16  juanco
+
+	* src/: WantClasses.pas, dante.dof, tasks/DelphiTasks.pas,
+	tasks/ExecTasks.pas, tasks/FileTasks.pas, tasks/LoggerTask.pas,
+	tasks/WantTasks.pas: Implemented late evaluation of attribute
+	values
+
+2001-04-03 20:08  juanco
+
+	* want.xml: Moved <incverrc> in build.xml to after compile so build
+	no. increments only if compile successful.
+
+2001-04-03 19:58  juanco
+
+	* src/tasks/ZipTasks.pas: Log fileset directory in TZipTask.
+
+2001-04-03 17:59  juanco
+
+	* src/.cvsignore (tags: added_color): Added dantever.res to the
+	list in .cvsignore
+
+2001-04-03 17:59  juanco
+
+	* src/WantClasses.pas: Simplified logic of the
+	TDanteElement.Project method.
+
+2001-04-03 15:18  juanco
+
+	* want.xml: Made the compile target depend once more on the prepare
+	target.
+
+2001-04-03 13:59  chrismo
+
+	* src/tasks/DelphiTasks.pas: Tweaked some missing parts to
+	TIncVerRcTask -- it logs now, converts path name with ToSystemPath
+	...
+
+2001-04-03 13:58  chrismo
+
+	* src/dante.dpr: dante.exe now displays the version number as read
+	out of the .exe itself.
+
+2001-04-03 13:58  chrismo
+
+	* doc/license.txt (tags: added_color): Updated license.txt to
+	include required notices for Jcl and my cLabs units.
+
+2001-04-03 13:57  chrismo
+
+	* want.xml, make/bootstrap.bat, make/zip.exe: Updated bootstrap.bat
+	and build.xml to use the incverrc file for auto-incrementing the
+	build number and then run brcc32 to update the dantever.res. Not in
+	a final state yet, but working right now.
+
+2001-04-03 12:46  chrismo
+
+	* src/WantClasses.pas, src/dante.dpr, test/DanteTest.dpr,
+	test/WantClassesTest.pas: Reverted dante.dpr, DanteClasses.pas,
+	DanteTest.dpr & DanteClassesTest.pas back one revision.
+
+2001-04-03 05:19  mrtaylor
+
+	* src/dante.dpr, src/WantClasses.pas, test/WantClassesTest.pas,
+	test/DanteTest.dpr: reworked to remove TComponant dependency, added
+	support for TLogManager, implemented TDanteList to manage internal
+	lists, and hopefully streamlined the class hierarchy
+
+2001-04-03 05:12  mrtaylor
+
+	* src/WantResources.pas: reworked to remove TComponant dependency
+	and also moved some items from project source and DanteMain into
+	this unit
+
+2001-04-03 03:30  chrismo
+
+	* test/DanteTest.dpr: Uses clause updated
+
+2001-04-03 03:30  chrismo
+
+	* test/RunnerTests.pas: Updated acceptance test with a property xml
+	element, mainly so I could step through it and see it in action. No
+	test actually on it right now.
+
+2001-04-03 03:29  chrismo
+
+	* test/WantClassesTest.pas: Fixed TestExecTask test.
+
+2001-04-03 03:29  chrismo
+
+	* test/: DelphiCompileTest.pas (tags: added_color),
+	DelphiTasksTest.pas, clVersionRcUnitTest.pas (tags: added_color):
+	Moved DelphiCompileTest to DelphiTasksTest. Added in tests for new
+	task TIncVerRcTask
+
+2001-04-03 03:27  chrismo
+
+	* src/tasks/: DelphiTasks.pas, clUtilFile.pas, clVersionRcUnit.pas:
+	Added TIncVerRcTask. Increments the build number in an .rc file and
+	sets the new value as the 'build' property within the project
+	object.
+
+2001-04-03 03:26  chrismo
+
+	* src/WantClasses.pas: Coding standard tweaks
+
+2001-04-03 03:23  chrismo
+
+	* src/dante.dpr: Updated license for display to include my personal
+	cLabs BSD license copyright since Dante uses a couple of my units
+
+2001-04-03 03:22  chrismo
+
+	* want.xml: Tweaked build.xml -- added ${basedir}/private to
+	exclude list for zip
+
+2001-04-03 01:41  chrismo
+
+	* test/: JCL.INC, JEDI.INC, JclBase.pas, JclDateTime.pas,
+	JclDebug.pas, JclFileUtils.pas, JclLogic.pas, JclPeImage.pas,
+	JclRegistry.pas, JclResources.pas, JclSecurity.pas, JclShell.pas,
+	JclStrings.pas, JclSysInfo.pas, JclSysUtils.pas, JclWin32.pas:
+	Removed duplicated jcl files from test dir
+
+2001-04-02 22:36  juanco
+
+	* private/juanco/URITests.dpr (tags: added_color),
+	private/juanco/URIs.pas (tags: v_0_1_109, v_0_1_31, v_0_1_4,
+	v_0_1_3, v_0_1_0_base, added_color), private/juanco/edit_build.xml
+	(tags: v_0_1_109, v_0_1_31, v_0_1_4, v_0_1_3, v_0_1_0_base,
+	added_color), private/juanco/notes_juanco.html (tags: added_color),
+	private/juanco/todo_juanco.html (tags: added_color),
+	private/juanco/uris_juanco.html (tags: added_color),
+	private/juanco/.cvsignore (tags: added_color),
+	test/FileSetTests.pas: routine
+
+2001-04-02 22:24  juanco
+
+	* want.xml, lib/paszlib-1.0.zip (tags: added_color),
+	src/WantClasses.pas, src/dante.dof, src/tasks/ExecTasks.pas,
+	src/tasks/FileTasks.pas, src/tasks/WantTasks.pas,
+	src/tasks/ZipTasks.pas: Added support for <patternset>
+
+2001-04-02 22:23  juanco
+
+	* src/tasks/DelphiTasks.pas: Allow a comma separated list of source
+	files in TDelphiCompileTask.source.
+
+2001-03-30 22:58  juanco
+
+	* test/: DanteTest.dpr, DelphiCompileTest.pas, WantClassesTest.pas:
+	Moved TDelphiCompileTests to its own unit.  Fixed typo in the
+	CompileTest test that prevented the compile from suceeding.  Made
+	TDelphiCompileTests use WildPaths everywhere.
+
+2001-03-30 06:58  juanco
+
+	* src/dante.dpr: Changes to make bootstrap work again (remove paths
+	from DPRs uses clasue).
+
+2001-03-30 06:51  juanco
+
+	* want.xml, src/WantClasses.pas, src/dante.dof,
+	src/tasks/DelphiTasks.pas, test/WantClassesTest.pas: Changes to
+	make the unit tests paths. The in-memory project with
+	TDelphiCompile still fails.
+
+2001-03-30 05:54  juanco
+
+	* src/: WantClasses.pas, dante.dof, dante.dpr,
+	tasks/DelphiTasks.pas, tasks/StandardTasks.pas, tasks/ZipTasks.pas:
+	Gave TDanteElement a Basedir, and refactored its path handling
+	functions to make task writers lifes easier. Now all paths are
+	resolved agains the current element's Basedir, recursively up the
+	ownership chain.
+
+2001-03-30 05:44  juanco
+
+	* src/tasks/: EchoTasks.pas, WantTasks.pas: Added TDanteTask and
+	TEchoTask.
+
+2001-03-30 03:46  chrismo
+
+	* doc/authors.txt (tags: added_color), doc/license.txt,
+	make/build.dfm, src/ScriptRunner.pas, src/WantClasses.pas,
+	src/WantResources.pas, src/dante.dpr, src/tasks/CustomTasks.pas
+	(tags: added_color), src/tasks/DelphiTasks.pas,
+	src/tasks/ExecTasks.pas, src/tasks/FileTasks.pas,
+	src/tasks/LoggerTask.pas, src/tasks/StandardTasks.pas,
+	src/tasks/ZipTasks.pas, test/DanteTest.dpr, test/ExecTasksTest.pas,
+	test/FileSetTests.pas, test/FileTasksTest.pas,
+	test/RunnerTests.pas, test/WantClassesTest.pas: Updated license
+	boilerplate in most source units. Added license.txt and authors.txt
+	to doc folder. Copyright now assigned to names in authors.txt.
+
+2001-03-30 03:44  chrismo
+
+	* want.xml: make\build.xml now moves in .txt files
+
+2001-03-30 00:07  juanco
+
+	* src/WantClasses.pas: Implement <property> elements as a
+	TPropertyElement. Simpler, and handy for implementing TDanteTask.
+
+2001-03-29 23:59  juanco
+
+	* want.xml, doc/task_writers_guide.html, src/WantClasses.pas,
+	src/tasks/DelphiTasks.pas, src/tasks/ExecTasks.pas,
+	src/tasks/FileTasks.pas, src/tasks/LoggerTask.pas,
+	src/tasks/ZipTasks.pas: Override Validate in defined tasks and
+	check for required attributes in each
+
+2001-03-29 23:23  juanco
+
+	* src/tasks/: LoggerTask.pas, ZipTasks.pas: Removed numerous bugs
+	from TZipStream.  Make TZipStream use WildPaths for platform
+	independent paths.  Make TZipStream add entries for directories.
+
+2001-03-29 23:12  juanco
+
+	* src/WantClasses.pas: Tweaks to make TDanteElement.ToSystemPath
+	return a relative path when possible.  Validate the attributes to
+	<property> elements.  TODO: Make <property> elements be handled
+	with a CreateProperty method.
+
+2001-03-29 23:09  juanco
+
+	* want.xml: Exclude anything in the dist directory from the
+	distribution zip file.	Log compiles.
+
+2001-03-29 03:53  juanco
+
+	* src/tasks/ZipTasks.pas: Added TZipTask
+
+2001-03-29 03:18  juanco
+
+	* want.xml: Build script now includes dante.exe in the distribution
+	zip file.
+
+2001-03-29 02:56  juanco
+
+	* want.xml, lib/paszlib-1.0.zip, make/bootstrap.bat, src/dante.dof,
+	src/tasks/FileTasks.pas, src/tasks/StandardTasks.pas,
+	test/DanteTest.dof: Added TZipStream and TZipTask
+
+2001-03-29 02:56  juanco
+
+	* src/WantClasses.pas: The parser calls TDanteElement.Validate when
+	finished parsing an element (Task).
+
+2001-03-29 02:47  juanco
+
+	* lib/jcl-1.0.zip: Added zip file with current version of the JCL
+	library.
+
+2001-03-29 00:49  juanco
+
+	* src/WantClasses.pas: Increased right margin for wrapping log
+	messages to 64.
+
+2001-03-29 00:34  juanco
+
+	* lib/paszlib-1.0.zip: Added PASZLIB 1.0, a library for managing
+	deflated, zipped, and gzipped files.
+
+2001-03-28 23:53  juanco
+
+	* doc/reference/Q190351 - HOWTO Spawn Console Processes with
+	Redirected Standard Handles.htm (tags: v_0_1_109, v_0_1_31,
+	v_0_1_4, v_0_1_3, v_0_1_0_base, added_color): Added the Microsoft
+	Knowledge Base article explaining how to spawn console processes
+	with redirected standard I/O to the doc/reference directory.
+
+2001-03-28 23:52  juanco
+
+	* test/: WantClassesTest.pas, DanteTest.dof, ExecTasksTest.pas,
+	FileSetTests.pas, FileTasksTest.pas, RunnerTests.pas: Updated unit
+	tests to match latest changes
+
+2001-03-28 22:35  juanco
+
+	* want.xml, make/bootstrap.bat, src/ScriptRunner.pas,
+	src/WantClasses.pas, src/dante.dof, src/dante.dpr,
+	src/tasks/DelphiTasks.pas, src/tasks/ExecTasks.pas,
+	src/tasks/FileTasks.pas: Added mapping of XML attributes to
+	published properties.
+	
+	Added apping XML nested elements (in Tasks) to published methods. 
+	See the Task Writers Guide for details.
+	
+	Added support for build.xml properties (<property name=...),
+	including ${} (property) and %{} (environment) macro expansion.
+	
+	Added the <delete>, <copy>, <move>, and <touch> tasks, including
+	support for filesets.
+	
+	Added reporting of line numbers for erros in build script parsing.
+
+2001-03-28 22:29  juanco
+
+	* src/WantResources.pas: Added DanteBase.pas as a place to put
+	functionality that must be available everywhere else.
+
+2001-03-28 22:28  juanco
+
+	* doc/style.css (tags: added_color): Added basic style sheet
+	(style.css) for Dante documentation.
+
+2001-03-28 22:26  juanco
+
+	* doc/notes_juanco.html: Adde Juanco's (a developer) notes to the
+	documentation.
+
+2001-03-28 22:25  juanco
+
+	* doc/task_writers_guide.html: Added first version of the Dante
+	Task Writers Guide.
+
+2001-03-28 22:24  juanco
+
+	* src/tasks/CustomTasks.pas: Added CustomTasks.pas as a place for
+	developers to add non-standard or experimental taks.
+
+2001-03-28 22:23  juanco
+
+	* src/tasks/LoggerTask.pas: Added basic logging facility in
+	TLoggerTask, as described in the Task Writers Guide.
+
+2001-03-28 14:23  chrismo
+
+	* want.xml, make/zip.exe: make\build.xml now removes the dist dir,
+	makes a new one, moves the .exe into it and .zips it up.
+
+2001-03-27 15:15  chrismo
+
+	* want.xml: Updated prepare target to use new delete task.
+
+2001-03-27 15:13  chrismo
+
+	* test/TestFramework.pas: Removed garbage text from the end of file
+
+2001-03-27 15:12  chrismo
+
+	* test/ExecTasksTest.pas: Added ShellExecTask BuildCmdLine test for
+	a refactoring I ended up not doing. Test is still good.
+
+2001-03-27 15:12  chrismo
+
+	* test/RunnerTests.pas: Spiffed up acceptance test to include new
+	delete task
+
+2001-03-27 15:09  chrismo
+
+	* src/tasks/FileTasks.pas, test/FileTasksTest.pas: Started
+	TDeleteTask. Works for Dir property on absolute path. Working on
+	test for relative path.
+
+2001-03-27 02:55  juanco
+
+	* src/.cvsignore, test/.cvsignore (tags: v_0_1_109, v_0_1_31,
+	v_0_1_4, v_0_1_3, v_0_1_0_base, added_color): cvsignore .cfg files
+
+2001-03-27 02:53  juanco
+
+	* want.xml: Fixed minor bugs in dante's build.xml
+
+2001-03-27 02:53  juanco
+
+	* src/WantClasses.pas: Indent Task output less.
+
+2001-03-27 02:51  juanco
+
+	* src/tasks/DelphiTasks.pas: Skip two initial compiler output lines
+	in TDelphiCompileTask.
+
+2001-03-27 02:51  juanco
+
+	* src/tasks/ExecTasks.pas: Expose SkipLines property in TExecTask
+
+2001-03-27 02:48  juanco
+
+	* src/tasks/ExecTasks.pas: Added process output redirection to
+	TCustomExecTask.
+
+2001-03-26 23:02  juanco
+
+	* want.xml, make/bootstrap.bat, src/ScriptRunner.pas,
+	src/WantClasses.pas, src/dante.dof, src/dante.dpr,
+	test/ExecTasksTest.pas, test/RunnerTests.pas,
+	test/TestFramework.pas, test/WantClassesTest.pas: Added support for
+	build scripts in XML
+
+2001-03-26 22:58  juanco
+
+	* src/tasks/DelphiTasks.pas: TDelphiCompile now has properties for:
+	 - target source file  - exe output dir  - dcu output dir  - quite
+	compile  - make and build compile  - unit search paths (nested)
+
+2001-03-26 22:56  juanco
+
+	* src/tasks/ExecTasks.pas: Added XML compatibility to ExecTasks
+
+2001-03-26 22:55  juanco
+
+	* src/tasks/FileTasks.pas: Use RegisterTasks instead of
+	RegisterClasses
+
+2001-03-26 18:58  juanco
+
+	* src/WantClasses.pas, src/tasks/ExecTasks.pas, test/DanteTest.dof,
+	test/RunnerTests.pas, test/WantClassesTest.pas: Added basic XML
+	parsing
+
+2001-03-26 17:23  juanco
+
+	* src/: WantClasses.pas, tasks/ExecTasks.pas: Changed
+	TProject.BeQuiet property into Verbosity and changed Log methods
+	accordingly.
+
+2001-03-26 17:00  juanco
+
+	* test/: DanteTest.dof, DanteTest.dpr, FileSetTests.pas: Added
+	tests for FileSets and path wildcard handling
+
+2001-03-26 14:36  chrismo
+
+	* src/: dante.dof, tasks/.cvsignore (tags: v_0_1_109, v_0_1_31,
+	v_0_1_4, v_0_1_3, v_0_1_0_base, added_color): Added .cvsignore
+	files
+
+2001-03-26 14:35  chrismo
+
+	* src/tasks/: FileTasks.pas, StandardTasks.pas: Added FileTasks
+	unit
+
+2001-03-26 14:34  chrismo
+
+	* test/DanteTest.dpr: Added new unit
+
+2001-03-26 14:34  chrismo
+
+	* test/RunnerTests.pas: Updated acceptance test to use new
+	ShellExecTask
+
+2001-03-26 14:33  chrismo
+
+	* test/FileTasksTest.pas: Added FileTasksTest unit for unit testing
+
+2001-03-26 14:33  chrismo
+
+	* src/dante.dpr: Fixed 'Ussage' typo
+
+2001-03-26 14:32  chrismo
+
+	* make/build.txt: Don't need this file anymore
+
+2001-03-26 14:32  chrismo
+
+	* make/build.dfm: Removed hardcoded path on juanco's machine to get
+	it to work. Started adding tasks for prepping a clean \dist
+	directory and moving in the .exe and .zipping it. Currently in need
+	of a Delete task to get this working.
+
+2001-03-23 20:20  juanco
+
+	* src/dante.dpr: Task units moved from the .dpr to the
+	StandarTasks.pas uses clause
+
+2001-03-23 20:19  juanco
+
+	* src/WantClasses.pas: Added default value to BeQuite property of
+	TProject
+
+2001-03-23 20:16  juanco
+
+	* test/: RunnerTests.pas, WantClassesTest.pas: Fixed build scripts
+	used in tests so they include a default target
+
+2001-03-23 20:06  juanco
+
+	* src/tasks/StandardTasks.pas: Added StandardTasks unit as a place
+	to use/include all task-related units.
+
+2001-03-23 20:05  chrismo
+
+	* src/dante.dof: no message
+
+2001-03-23 20:04  chrismo
+
+	* test/: DanteTest.dof, DanteTest.dpr: Added ExecTasksTest unit
+
+2001-03-23 20:04  chrismo
+
+	* test/WantClassesTest.pas: Added /U argument to Delphi Compile
+	test to ensure jcl units can be seen by compiler
+
+2001-03-23 20:03  chrismo
+
+	* test/RunnerTests.pas: Changed uses clause to use the right unit
+	after refactoring
+
+2001-03-23 20:01  juanco
+
+	* src/WantClasses.pas: Added basice support for properties to
+	TProject
+
+2001-03-23 19:58  chrismo
+
+	* src/tasks/ExecTasks.pas, test/ExecTasksTest.pas: In
+	TCustomExecTask.BuildCmdLine, removed Arguments.CommaText and
+	replaced with simple loop. CommaText interferes with strings with
+	spaces and what not. See the unit tests for details.
+
+2001-03-23 19:38  juanco
+
+	* src/WantClasses.pas: Added BasePath property to TProject == path
+	where build script was found.  Added RelativePath function to
+	TProject to let tasks find files with relative paths.
+
+2001-03-23 19:30  juanco
+
+	* src/: ScriptRunner.pas, WantClasses.pas, clUtilConsole.pas,
+	dante.dpr: Dante now builds itself from a build.dfm file using
+	TDelphiCompileTask
+
+2001-03-23 19:29  juanco
+
+	* test/GUITestRunner.dfm, lib/.cvsignore: routine
+
+2001-03-23 19:28  juanco
+
+	* make/: bootstrap.bat, build.dfm: build.dfm
+
+2001-03-23 18:54  juanco
+
+	* src/: JCL.INC, JEDI.INC: JCL files are now in the <dante>\src\jcl
+	directory
+
+2001-03-23 18:52  juanco
+
+	* src/: JclBase.pas, JclMiscel.pas, JclResources.pas,
+	JclSecurity.pas, JclStrings.pas, JclWin32.pas: JCL sources are now
+	in the <dante>/src/jcl directory
+
+2001-03-23 18:29  juanco
+
+	* test/: DanteTest.dof, DanteTest.dpr, DanteTestUtil.pas (tags:
+	added_color), WantClassesTest.pas: Moved TTestDirCase into
+	DanteClassesTest.pas and made it descend from TProjectBaseCase
+	because most everything in Dante requires that a TProject has been
+	created.  Added tests for TShellExecTask.  Added tests for
+	TDelphiCompileTask.
+
+2001-03-23 18:25  juanco
+
+	* src/tasks/DelphiTasks.pas: DelphiTasks now contains Delphi
+	related tasks.	Added and implemented TDelphiCompileTask.
+
+2001-03-23 18:24  juanco
+
+	* src/tasks/ExecTasks.pas: Implemented TExecTask (no output
+	redirection yet).  Implemented ExecTask functionality in
+	TCustomExecTask which does not expose any properties.  Added
+	TShellExecTask that routes commands through the standard command
+	processor.
+
+2001-03-23 18:22  juanco
+
+	* src/WantClasses.pas: Added Build and Schedule methods to Dante
+	classes.  Added basic support for logging.  Moved TExecTask into
+	its own src\tasks\ExecTasks.pas unit.
+
+2001-03-23 14:35  chrismo
+
+	* src/ScriptRunner.pas, src/WantClasses.pas,
+	test/WantClassesTest.pas, test/DanteTest.dof, test/DanteTest.dpr,
+	test/DanteTestUtil.pas, test/RunnerTests.pas: Have tests in place
+	(currently failing, both unit and acceptance) for TExecTask (doing
+	a simply copy command).
+
+2001-03-22 14:38  chrismo
+
+	* src/WantClasses.pas, test/WantClassesTest.pas: Coding standard
+	tweaks
+
+2001-03-22 14:18  chrismo
+
+	* src/: WantClasses.pas, dante.dpr: Oops ... forgot to do the uses
+	clause rename in dante.dpr for DanteMain
+
+2001-03-22 14:10  chrismo
+
+	* src/.cvsignore, src/JCL.INC, src/JEDI.INC, src/JclBase.pas,
+	src/JclMiscel.pas, src/JclResources.pas, src/JclSecurity.pas,
+	src/JclStrings.pas, src/JclWin32.pas, src/ScriptRunner.pas,
+	src/WantClasses.pas, src/clUtilConsole.pas, src/dante.bpg,
+	src/dante.dpr, test/DanteTest.dof, test/DanteTest.dpr,
+	test/DanteUnitTest.pas, test/RunnerTests.pas,
+	test/WantClassesTest.pas: Added source in src dir. Added in
+	Juanco's units with TProject/TTarget/TTask -- not incorporated yet.
+	Renamed DanteUnit to DanteMain, and renamed Juanco's Projects.pas
+	to DanteClasses.pas (unit test naming the same).
+
+2001-03-22 13:34  chrismo
+
+	* DanteUnit.pas, JCL.INC, JEDI.INC, JclBase.pas, JclMiscel.pas,
+	JclResources.pas, JclSecurity.pas, JclStrings.pas, JclWin32.pas,
+	clUtilConsole.pas, dante.bpg, dante.dpr, make/bootstrap.bat,
+	make/build.txt, test/DanteTest.dof: Moved all src files to src sub
+	dir (revision hist, what little there was, was not kept).
+	Re-pointed everything to work with new pathing.
+
+2001-03-21 14:32  chrismo
+
+	* clUtilConsole.pas, dante.dpr, make/bootstrap.bat, make/build.txt,
+	test/DanteTest.dof: Dante.exe now grabs build.txt and processes it.
+	-L actually spits out the license info (including Jcl license
+	reference), though it needs to be More-ed. Bootstrap.bat now calls
+	the dante.exe it builds to build the main dante.exe.
+
+2001-03-20 14:35  chrismo
+
+	* DanteUnit.pas, JCL.INC, JEDI.INC, JclBase.pas, JclResources.pas,
+	JclSecurity.pas, JclStrings.pas, JclWin32.pas, dante.dpr,
+	make/bootstrap.bat: Starting to build the bootstrap process to have
+	dante make itself
+
+2001-03-17 03:43  chrismo
+
+	* DanteUnit.pas, test/DanteUnitTest.pas: First test case passing --
+	just processes any ol' command line
+
+2001-03-17 03:11  chrismo
+
+	* JclMiscel.pas, clUtilConsole.pas: Replaced clUtilConsole with
+	JclMiscel
+
+2001-03-16 16:30  chrismo
+
+	* clUtilConsole.pas, test/DanteTest.dof, test/DanteUnitTest.pas:
+	Test fails now.
+
+2001-03-16 15:41  chrismo
+
+	* test/: GUITestRunner.dfm, GUITestRunner.pas, TestExtensions.pas,
+	TestFramework.pas, TextTestRunner.pas: Re-added DUnit files with
+	keyword expansion turned off (-ko)
+
+2001-03-16 15:37  chrismo
+
+	* test/: GUITestRunner.dfm, GUITestRunner.pas, TestExtensions.pas,
+	TestFramework.pas, TextTestRunner.pas: Removed original DUnit units
+	-- going to re-add with disabled keyword expansion
+
+2001-03-15 19:23  chrismo
+
+	* DanteUnit.pas, dante.bpg, dante.dpr, test/DanteTest.dpr,
+	test/DanteUnitTest.pas: First test structure in place -- passes,
+	but no functionality is written at all.
+
+2001-03-15 17:20  chrismo
+
+	* test/: .cvsignore, DanteTest.dof, GUITestRunner.dfm,
+	GUITestRunner.pas, TestExtensions.pas, TestFramework.pas,
+	TextTestRunner.pas: Added client side .cvsignore files. Added new
+	source and DUnit files
+
+2001-03-15 17:17  chrismo
+
+	* test/: DanteTest.~dpr, GUITestRunner.dfm, GUITestRunner.pas,
+	TestExtensions.pas, TestFramework.pas, TextTestRunner.pas,
+	WantClassesTest.pas: no message
+
+2001-03-15 17:17  chrismo
+
+	* test/DanteTest.~dpr: test of cvsignore, adding *.~dpr
+
+2001-03-15 13:30  chrismo
+
+	* test/: GUITestRunner.pas, JCL.INC, JclBase.pas,
+	TextTestRunner.pas, JclDateTime.pas, JclDebug.pas,
+	JclFileUtils.pas, JclLogic.pas, JclPeImage.pas, JclRegistry.pas,
+	JclResources.pas, JclSecurity.pas, JclShell.pas, JclStrings.pas,
+	JEDI.INC, JclSysInfo.pas, JclSysUtils.pas, JclWin32.pas,
+	TestExtensions.pas, GUITestRunner.dfm, TestFramework.pas: Initial
+	revision
+
+2001-03-11 18:20  juanca
+
+	* lib/jal/src/JALCollections.pas: Minor changes to suport old
+	applications (SEPA)
+
+2001-02-14 20:10  juanca
+
+	* lib/jal/src/: JALMiniDOM.pas, JALXMLParser.pas (utags:
+	rel_6_4_10): Added MiniDOM implementation, for easy and efficient
+	parsing of XML docs
+
+2001-02-14 20:07  juanca
+
+	* lib/jal/src/JALCollections.pas (tags: rel_6_4_10): Added
+	IObject.instanceOf(TGUID).
+
+2000-12-14 21:09  juanca
+
+	* lib/jal/src/: JALSAX.pas (tags: rel_6_4_10), JALXMLParser.pas:
+	Added experimental binary XML format (note: better use WBXML).
+
+2000-11-09 20:25  juanca
+
+	* lib/jal/src/JALCollections.pas: Removed memory leaks produced by
+	Delphi's buggy treatment of dynarrays of interfaces.  Made behavior
+	of THeap more overridable.
+
+2000-11-07 22:19  juanca
+
+	* lib/jal/src/JALCollections.pas: Added an almost O(log(N)) remove
+	routine to THeap.
+
+2000-11-06 19:11  juanca
+
+	* lib/jal/src/JALCollections.pas: Fixed bugs in path search
+
+2000-10-26 21:04  juanca
+
+	* lib/jal/src/JALCollections.pas: First attempt at implementing
+	variants with interfaces.
+
+2000-10-24 15:26  juanca
+
+	* lib/jal/src/: JALCollections.pas, JALSAX.pas, JALXML.pas (tags:
+	rel_6_4_10), JALXMLParser.pas: Optimizations for reading XML files
+	faster
+
+2000-10-19 18:47  juanca
+
+	* lib/jal/src/JALCollections.pas: BUG: Bugs in TTreeSet
+	implementation.  BUG: Some methods were defined in interfaces where
+	they made little sense.
+
+2000-10-19 18:46  juanca
+
+	* lib/jal/src/: JALSAX.pas, JALXML.pas, JALXMLParser.pas: Added
+	reading of exogenous trips
+
+2000-10-03 22:20  juanca
+
+	* lib/jal/src/: JALSAX.pas, JALXML.pas: XML Input done up to
+	sectors. Missing: transfers and economic data.	Also missing:
+	compression.
+
+2000-10-03 18:07  juanca
+
+	* lib/jal/src/JALXMLParser.pas: BUG: Minor parsing errors.
+
+2000-10-03 18:04  juanca
+
+	* lib/jal/src/JALSAX.pas: BUG: Provided some missing GUIDs.
+
+2000-08-28 18:32  juanca
+
+	* lib/jal/src/JALCollections.pas: IStack and related classes moved
+	to Collections unit.
+
+2000-08-15 18:03  juanca
+
+	* lib/jal/src/JALCollections.pas: Algorithms and Collections still
+	part of TRANUS/TUS.
+
+2000-03-28 21:37  juanca
+
+	* lib/jal/src/JALXMLParser.pas (tags: tou_base, rel_6_2_2,
+	cosin_base, rel_6_2_0, split_base, rel_6_0_1, aesthes,
+	rel_6_0_0_7_base, soja, rel_6_0_0_3_base): routine
+
+2000-01-19 19:48  juanca
+
+	* lib/jal/src/: JALSAX.pas (tags: tou_base, rel_6_2_2, cosin_base,
+	rel_6_2_0, split_base, rel_6_0_1, aesthes, rel_6_0_0_7_base, soja,
+	rel_6_0_0_3_base), JALXMLParser.pas: routine
+
+1999-07-27 18:55  juanca
+
+	* lib/jal/src/JALXML.pas (tags: tou_base, rel_6_2_2, cosin_base,
+	rel_6_2_0, split_base, rel_6_0_1, aesthes, rel_6_0_0_7_base, soja,
+	rel_6_0_0_3_base, rel_5_7_3_9_base, jam, rel_5_7_3_4_base): Added
+	XML file generation to XMLGEN and fixed bugs in related modules and
+	the DTD
+
+1999-07-16 20:23  juanca
+
+	* lib/jal/src/JALXML.pas: Optimized XML quoting
+
+1999-07-12 17:41  juanca
+
+	* lib/jal/src/JALXMLParser.pas (tags: rel_5_7_3_9_base, jam,
+	rel_5_7_3_4_base): Optimized using GpProfiler
+
+1999-06-29 21:17  juanca
+
+	* lib/jal/src/JALXMLParser.pas: Improved performance
+
+1999-06-29 16:49  juanca
+
+	* lib/jal/src/: JALSAX.pas (tags: rel_5_7_3_9_base, jam,
+	rel_5_7_3_4_base), JALXML.pas, JALXMLParser.pas: First version of
+	XML parser
+
+1998-10-20 15:56  juanca
+
+	* lib/jal/src/JALXML.pas (tags: t2k_last_merge, fat,
+	rel_5_7_1_9_base, square, rel_5_7_1_6_base, rubber,
+	rel_5_7_1_3_base, ata, rel_5_7_0_7_base, phoenix, rel_5_6_0_7_base,
+	enero, rel_1_0_50_base, peaches, rel_5_6_0_4_base, torcido,
+	rel_5_6_0_3_base, paella, rel_5_5_7_8_base, rel_5_5_7_4_base):
+	Implemented most of TRANUS.dtd. Verfied against several XML
+	compilers
+
+1998-10-05 22:42  juanca
+
+	* lib/jal/src/JALXML.pas: Finished implementing and testing DOMImpl
+
+1998-10-01 20:41  juanca
+
+	* lib/jal/src/JALXML.pas: A XML DOM Implementation. Almost done
+
+1998-09-22 18:41  juanca
+
+	* lib/jal/src/JALXML.pas: XML constants and general purpose
+	routines
+
