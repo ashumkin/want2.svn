@@ -281,7 +281,7 @@ element that contains the text that the task will log. Scripts that use the
 </pre>
 <p>To define nested XML elements for a task: </p>
 <ol>
-  <li>Define a class that descends from <code>TWantElement</code> for each kind 
+  <li>Define a class that descends from <code>TScriptElement</code> for each kind 
   of nested element. </li>
   <li>For each kind of nested element, Define a published <code>CreateXYZ</code> 
   function in the task class, where &quot;<code>XYZ</code>&quot; is the XML tag of the 
@@ -291,11 +291,11 @@ element that contains the text that the task will log. Scripts that use the
 <p>The rules that Want uses for synthesizing an XML tag out of the names of 
 nested elements classes are like the ones used for tasks, except that the &quot;<code>Element</code>&quot; 
 suffix is removed instead of the &quot;<code>Task</code>&quot; one. </p>
-<p>Instances of classes that descend from <code>TWantElement</code> and have a 
+<p>Instances of classes that descend from <code>TScriptElement</code> and have a 
 valid owner passed to their constructor are automatically managed by Want, so 
 you don't need to delete them (call <code>Free</code> on them). Valid owners are 
 instances of <code>TTask</code> and its descendants, and instances of classes 
-that descend from <code>TWantElement</code> and have themselves a valid owner.
+that descend from <code>TScriptElement</code> and have themselves a valid owner.
 </p>
 <p>Here's the complete logger example: </p>
 <blockquote>
@@ -309,7 +309,7 @@ uses
 type
   TLogFormat = (brief, normal, detailed);
 
-<b>TInfoElement = class(TWantElement)
+<b>TInfoElement = class(TScriptElement)
   protected
     FCode :Integer;
     FText :string;
@@ -324,7 +324,7 @@ type
     FFormat :TLogFormat;
     FInfos  :TList;
   public
-<b>  constructor Create(owner :TWantElement);
+<b>  constructor Create(owner :TScriptElement);
 </b><b>destructor Destroy; override;</b>
     class function TagName :string; override;
     procedure Execute; override;
@@ -342,7 +342,7 @@ begin
   Result := 'log';
 end;
 
-<b>constructor TLoggerTask.Create(owner :TWantElement);
+<b>constructor TLoggerTask.Create(owner :TScriptElement);
 begin
   inherited Create(Owner);
   FInfos := TList.Create;
