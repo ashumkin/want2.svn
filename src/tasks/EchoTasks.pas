@@ -29,6 +29,7 @@ type
     FFile    :string;
     FAppend  :boolean;
     FLevel   :TLogLevel;
+    FInput   :TPath;
 
   public
     constructor Create(Owner :TScriptElement); override;
@@ -42,6 +43,7 @@ type
     property _file    :string    read FFile    write FFile;
     property append   :boolean   read FAppend  write FAppend;
     property level    :TLogLevel read FLevel   write FLevel default vlNormal;
+    property input    :TPath     read FInput   write FInput;
   end;
 
 implementation
@@ -73,7 +75,7 @@ begin
     else
       System.Rewrite(EchoFile);
     try
-      Writeln( EchoFile, msg);
+      Write( EchoFile, msg);
     finally
       System.Close(EchoFile);
     end;
@@ -83,10 +85,10 @@ end;
 
 function TEchoTask.FormatText: string;
 var
-  S    :TStrings;
-  Lead :Integer;
-  i    :Integer;
-  p    :Integer;
+  S     :TStrings;
+  Lead  :Integer;
+  i     :Integer;
+  p     :Integer;
 begin
   S := TStringList.Create;
   try
@@ -122,6 +124,9 @@ begin
     end;
 
     Result := S.Text;
+
+    if input <> '' then
+      Result := Result + Evaluate( FileToString( ToSystemPath(input) ));
   finally
     FreeAndNil(S);
   end;

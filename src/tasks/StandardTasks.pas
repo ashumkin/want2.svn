@@ -18,7 +18,8 @@ uses
   ZipTasks,
   WantTasks,
   DUnitTasks,
-  EditTasks;
+  EditTasks,
+  IniFileTasks;
 
 
 implementation

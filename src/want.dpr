@@ -46,7 +46,8 @@ uses
   WantResources in 'WantResources.pas',
   ConsoleScriptRunner in 'win32\ConsoleScriptRunner.pas',
   BuildListeners in 'BuildListeners.pas',
-  WantUtils in 'WantUtils.pas';
+  WantUtils in 'WantUtils.pas',
+  IniFileTasks in 'tasks\IniFileTasks.pas';
 
 {$r wantver.res}
 {$r ..\bin\license.res }

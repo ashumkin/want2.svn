@@ -44,50 +44,58 @@ LRDockWidth=267
 Dockable=1
 
 [Closed Files]
-File_0=SourceModule,'C:\home\want\src\lib\WildPaths.pas',0,1,47,1,64,0,0
-File_1=SourceModule,'C:\home\want\src\tasks\DUnitTasks.pas',0,1,68,1,70,0,0
-File_2=SourceModule,'C:\home\want\src\lib\OwnedTrees.pas',0,1,47,20,63,0,0
-File_3=SourceModule,'c:\lib\pascal\jcl\source\JclStrings.pas',0,1,3179,1,3200,0,0
-File_4=SourceModule,'C:\home\want\src\WantUtils.pas',0,1,1,1,1,0,0
-File_5=SourceModule,'C:\home\want\src\win32\WIN32.pas',0,1,1,1,1,0,0
-File_6=SourceModule,'c:\lib\pascal\jcl\source\JclSysInfo.pas',0,1,30,1,30,0,0
+File_0=SourceModule,'C:\home\want\src\win32\ConsoleScriptRunner.pas',0,1,169,42,170,0,0
+File_1=SourceModule,'C:\home\want\src\tasks\ExecTasks.pas',0,1,201,1,213,0,0
+File_2=SourceModule,'C:\home\want\src\WantResources.pas',0,1,1,1,41,0,0
+File_3=SourceModule,'C:\home\want\src\lib\ScriptParser.pas',0,1,141,1,166,0,0
+File_4=SourceModule,'C:\home\want\src\ScriptRunner.pas',0,1,91,1,97,0,0
+File_5=SourceModule,'c:\lib\pascal\jcl\source\JclSysInfo.pas',0,1,2478,38,2504,0,0
+File_6=SourceModule,'c:\lib\pascal\jcl\source\JclSysUtils.pas',0,1,699,16,725,0,0
+File_7=SourceModule,'C:\home\want\src\lib\WildPaths.pas',0,1,47,1,64,0,0
+File_8=SourceModule,'C:\home\want\src\tasks\DUnitTasks.pas',0,1,68,1,70,0,0
 
 [Modules]
-Module0=C:\home\want\src\tasks\ExecTasks.pas
-Module1=C:\home\want\src\win32\ConsoleScriptRunner.pas
-Module2=C:\home\want\src\WantResources.pas
-Module3=C:\home\want\src\ScriptRunner.pas
-Module4=C:\home\want\src\lib\ScriptParser.pas
-Module5=C:\home\want\src\WantClasses.pas
-Count=6
+Module0=C:\home\want\test\ExternalTests.pas
+Module1=C:\home\want\src\tasks\EchoTasks.pas
+Module2=C:\home\want\src\WantClasses.pas
+Module3=c:\lib\pascal\jcl\source\JclStrings.pas
+Module4=C:\home\want\src\tasks\IniFileTasks.pas
+Module5=c:\lib\pascal\jcl\source\JclIniFiles.pas
+Module6=C:\home\want\src\tasks\StandardTasks.pas
+Count=7
 EditWindowCount=1
 
-[C:\home\want\src\tasks\ExecTasks.pas]
+[C:\home\want\test\ExternalTests.pas]
 ModuleType=SourceModule
 FormState=0
 FormOnTop=0
 
-[C:\home\want\src\win32\ConsoleScriptRunner.pas]
-ModuleType=SourceModule
-FormState=0
-FormOnTop=0
-
-[C:\home\want\src\WantResources.pas]
-ModuleType=SourceModule
-FormState=0
-FormOnTop=0
-
-[C:\home\want\src\ScriptRunner.pas]
-ModuleType=SourceModule
-FormState=0
-FormOnTop=0
-
-[C:\home\want\src\lib\ScriptParser.pas]
+[C:\home\want\src\tasks\EchoTasks.pas]
 ModuleType=SourceModule
 FormState=0
 FormOnTop=0
 
 [C:\home\want\src\WantClasses.pas]
+ModuleType=SourceModule
+FormState=0
+FormOnTop=0
+
+[c:\lib\pascal\jcl\source\JclStrings.pas]
+ModuleType=SourceModule
+FormState=0
+FormOnTop=0
+
+[C:\home\want\src\tasks\IniFileTasks.pas]
+ModuleType=SourceModule
+FormState=0
+FormOnTop=0
+
+[c:\lib\pascal\jcl\source\JclIniFiles.pas]
+ModuleType=SourceModule
+FormState=0
+FormOnTop=0
+
+[C:\home\want\src\tasks\StandardTasks.pas]
 ModuleType=SourceModule
 FormState=0
 FormOnTop=0
@@ -129,14 +137,15 @@ RightPanelSize=0
 BottomPanelSize=0
 BottomPanelClients=MessageView@EditWindow0
 BottomPanelData=00000400010000000B0000004D657373616765566965770000000000000000000000000000000000FFFFFFFF
-ViewCount=6
-CurrentView=1
+ViewCount=7
+CurrentView=2
 View0=0
 View1=1
 View2=2
 View3=3
 View4=4
 View5=5
+View6=6
 
 [CodeExplorer@EditWindow0]
 Create=1
@@ -171,45 +180,52 @@ LRDockWidth=443
 Dockable=1
 
 [View0]
-Module=C:\home\want\src\win32\ConsoleScriptRunner.pas
-CursorX=42
-CursorY=170
-TopLine=169
+Module=C:\home\want\src\tasks\IniFileTasks.pas
+CursorX=27
+CursorY=95
+TopLine=44
 LeftCol=1
 
 [View1]
-Module=C:\home\want\src\tasks\ExecTasks.pas
+Module=C:\home\want\src\WantClasses.pas
 CursorX=1
-CursorY=213
-TopLine=201
+CursorY=743
+TopLine=741
 LeftCol=1
 
 [View2]
-Module=C:\home\want\src\WantResources.pas
+Module=C:\home\want\test\ExternalTests.pas
 CursorX=1
-CursorY=41
-TopLine=1
+CursorY=256
+TopLine=230
 LeftCol=1
 
 [View3]
-Module=C:\home\want\src\WantClasses.pas
-CursorX=1
-CursorY=470
-TopLine=444
+Module=C:\home\want\src\tasks\EchoTasks.pas
+CursorX=12
+CursorY=78
+TopLine=47
 LeftCol=1
 
 [View4]
-Module=C:\home\want\src\lib\ScriptParser.pas
-CursorX=1
-CursorY=166
-TopLine=141
+Module=c:\lib\pascal\jcl\source\JclStrings.pas
+CursorX=14
+CursorY=280
+TopLine=254
 LeftCol=1
 
 [View5]
-Module=C:\home\want\src\ScriptRunner.pas
+Module=C:\home\want\src\tasks\StandardTasks.pas
+CursorX=16
+CursorY=22
+TopLine=1
+LeftCol=1
+
+[View6]
+Module=c:\lib\pascal\jcl\source\JclIniFiles.pas
 CursorX=1
-CursorY=97
-TopLine=91
+CursorY=99
+TopLine=87
 LeftCol=1
 
 [DockHosts]
@@ -224,9 +240,10 @@ Watch3='Matches[i]',256,0,18,1
 Watch4='FIncludes[i]',256,0,18,1
 
 [Breakpoints]
-Count=2
+Count=3
 Breakpoint0='C:\home\want\src\win32\ConsoleScriptRunner.pas',106,'',0,1
 Breakpoint1='C:\home\want\src\win32\ConsoleScriptRunner.pas',113,'',0,1
+Breakpoint2='C:\home\want\test\ExternalTests.pas',256,'',0,1
 
 [AddressBreakpoints]
 Count=0
