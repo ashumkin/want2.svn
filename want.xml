@@ -167,6 +167,7 @@ See http://www.suigeneris.org/want/ for details.
          <include name="${lib}/*.zip" />    <!-- include third party library .zips -->
          <exclude name="${lib}/*/**"   />   <!-- exclude subdirectories -->
          <exclude name="${basedir}/private/**" />
+         <exclude name="**/CVS/**" />
     </zip>
   </target>
 
