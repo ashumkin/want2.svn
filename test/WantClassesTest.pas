@@ -65,6 +65,7 @@ type
     FLongFNTestDir: string;
     FTestDir: string;
     FDanteTestDir: string;
+    FFileNameInc: Integer;
 
     function MakeSampleTextFile: string;
   public
@@ -167,7 +168,8 @@ function TTestDirCase.MakeSampleTextFile: string;
 var
   F: TextFile;
 begin
-  Result := FTestDir + '\sample.txt';
+  Inc(FFileNameInc);
+  Result := FTestDir + '\sample' + IntToStr(FFileNameInc) + '.txt';
   AssignFile(F, Result);
   Rewrite(F);
   WriteLn(F, 'this is a sample file');
@@ -177,6 +179,8 @@ end;
 procedure TTestDirCase.Setup;
 begin
   inherited;
+  FFileNameInc := 0;
+
   FTestDir := ExtractFilePath(ParamStr(0)) + 'test';
   FLongFNTestDir := ExtractFilePath(ParamStr(0)) + 'my test dir';
   JclFileUtils.ForceDirectories(FTestDir);
