@@ -141,6 +141,8 @@ end;
 procedure TTestIncVerRcTask.TestIncVerRcTask;
 begin
   FIncVerRcTask.RcFileName := FTestRcName;
+  FIncVerRcTask.Increment  := True;
+  FIncVerRcTask.Init;
   FIncVerRcTask.Execute;
   CheckEquals('53', FProject.PropertyValue('build'), 'build property');
 end;

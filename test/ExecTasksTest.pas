@@ -158,7 +158,6 @@ var
   ExecTask :THackedCustomExecTask;
 begin
   FProject.ParseXMLText(build_xml);
-  FProject.EvaluateAttributes(MaxInt);
 
   ExecTask := THackedCustomExecTask(FProject.Targets[0].Tasks[0] as TExecTask);
   CheckEquals('first second third', ExecTask.BuildArguments);
