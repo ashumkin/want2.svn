@@ -16,24 +16,7 @@ uses
   WantClasses;
 
 type
-  TIniElement = class(TScriptElement)
-  protected
-    FFile     :TPath;
-    FProperty :string;
-    FSection  :string;
-    FName     :string;
-    FDefault  :string;
-  public
-    procedure Init; override;
-  published
-    property name;
-    property _property :string read FProperty write FProperty;
-    property _file :TPath read FFile write FFile;
-    property section :string read FSection write FSection;
-    property _default  :string read FDefault  write FDefault;
-  end;
-
-  TIniFileTask = class(TTask)
+  TIniTask = class(TTask)
   protected
     FFile :TPath;
   public
@@ -44,24 +27,18 @@ type
     property _file :TPath read FFile write FFile;
   end;
 
-  TSectionElement = class(TScriptElement)
-  public
-    procedure Init; override;
-
-    procedure Perform;
-  published
-    property Name;
-  end;
-
   TEntryElement = class(TScriptElement)
   protected
     FFileName :string;
     FSection  :string;
+    FKey      :string;
   public
     procedure Init; override;
     procedure Perform; virtual;
   published
     property Name;
+    property section :string read FSection write FSection;
+    property key     :string read FKey     write FKey;
   end;
 
   TReadElement = class(TEntryElement)
@@ -90,49 +67,9 @@ type
 
 implementation
 
-{ TIniElement }
+{ TIniTask }
 
-procedure TIniElement.Init;
-var
-  Ini     :TIniFile;
-begin
-  inherited Init;
-  RequireAttributes(['property', 'section', 'name']);
-
-  Ini := TIniFile.Create(WildPaths.ToSystemPath(PathConcat(BasePath, _file)));
-  try
-    Owner.SetProperty(_property, Ini.ReadString(section, Self.Name, _default));
-  finally
-    Ini.Free;
-  end;
-end;
-
-{ TIniFileTask }
-
-procedure TIniFileTask.Execute;
-var
-  i :Integer;
-begin
-  for i := 0 to ChildCount-1 do
-    if Children[i] is TSectionElement then
-      TSectionElement(Children[i]).Perform;
-end;
-
-procedure TIniFileTask.Init;
-begin
-  inherited Init;
-  RequireAttribute('file');
-end;
-
-{ TSectionElement }
-
-procedure TSectionElement.Init;
-begin
-  inherited Init;
-  RequireAttribute('name');
-end;
-
-procedure TSectionElement.Perform;
+procedure TIniTask.Execute;
 var
   i :Integer;
 begin
@@ -141,19 +78,23 @@ begin
       TEntryElement(Children[i]).Perform;
 end;
 
+procedure TIniTask.Init;
+begin
+  inherited Init;
+  RequireAttribute('file');
+end;
+
 { TEntryElement }
 
 procedure TEntryElement.Init;
 begin
   inherited Init;
-  RequireAttribute('name');
+  RequireAttributes(['section', 'key']);
 
-  Assert(Owner is TSectionElement);
-  Assert(Owner.Owner is TIniFileTask);
-  Assert(Owner.Owner.Owner <> nil);
+  Assert(Owner is TIniTask);
+  Assert(Owner.Owner <> nil);
 
-  FFileName := PathConcat(BasePath, (Owner.Owner as TIniFileTask)._file);
-  FSection  := (Owner as TSectionElement).Name;
+  FFileName := PathConcat(BasePath, (Owner as TIniTask)._file);
 end;
 
 procedure TEntryElement.Perform;
@@ -164,17 +105,15 @@ end;
 { TReadElement }
 
 procedure TReadElement.Init;
-var
-  Ini     :TIniFile;
 begin
   inherited Init;
   RequireAttribute('property');
 
-  Ini := TIniFile.Create(WildPaths.ToSystemPath(FFileName));
+  with TIniFile.Create(WildPaths.ToSystemPath(FFileName)) do
   try
-    Owner.Owner.Owner.SetProperty(_property, Ini.ReadString(FSection, Self.Name, _default));
+    Owner.Owner.SetProperty(_property, ReadString(section, key, _default));
   finally
-    Ini.Free;
+    Free;
   end;
 end;
 
@@ -186,22 +125,18 @@ begin
 end;
 
 procedure TWriteElement.Perform;
-var
-  Ini     :TIniFile;
 begin
   inherited Init;
 
-  Ini := TIniFile.Create(WildPaths.ToSystemPath(FFileName));
+  with TIniFile.Create(WildPaths.ToSystemPath(FFileName)) do
   try
-    Ini.WriteString(FSection, Self.Name, value);
+    WriteString(section, key, value);
   finally
-    Ini.Free;
+    Free;
   end;
 end;
 
 initialization
-  RegisterElement(TIniElement); // note that it can be used anywhire for reading
-  RegisterTask(TIniFileTask);
-  RegisterElements(TIniFileTask, [TSectionElement]);
-  RegisterElements(TSectionElement, [TReadElement, TWriteElement]);
+  RegisterTask(TIniTask);
+  RegisterElements(TIniTask, [TReadElement, TWriteElement]);
 end.

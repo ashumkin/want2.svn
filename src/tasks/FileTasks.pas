@@ -104,8 +104,8 @@ type
     procedure DoFiles(Fileset: TFileSet; FromPath, ToPath: TPath);    virtual; abstract;
   public
     procedure Init; override;
+    procedure Execute; override;
   published
-    property basedir;
     property todir : string read FToDir  write FToDir;
   end;
 
@@ -210,17 +210,17 @@ end;
 
 procedure TMkDirTask.Execute;
 begin
-  Log(vlVerbose, Format('creating dir "%s"', [ToSystempath(ToAbsolutePath(dir))]) );
+  Log(vlVerbose, Format('creating dir %s', [ToSystempath(ToAbsolutePath(dir))]) );
   if dir = '' then
     TaskError('<dir> attribute not set');
   if not PathIsDir(dir) then
   begin
     if PathExists(dir) then
-      TaskFailure(Format('cannot create dir "%s". A file is in the way.', [dir]));
+      TaskFailure(Format('cannot create dir %s. A file is in the way.', [dir]));
     Log(ToRelativePath(dir));
     WildPaths.MakeDir(ToAbsolutePath(dir));
     if not PathIsDir(dir) then
-      TaskFailure(Format('cannot create dir "%s".', [dir]));
+      TaskFailure(Format('cannot create dir %s.', [dir]));
   end;
 end;
 
@@ -273,14 +273,14 @@ begin
   Paths := Fileset.Paths;
 
   if Paths = nil then
-    Log(vlVerbose, 'nothing to delete')
+    Log(vlWarnings, 'nothing to delete')
   else begin
     if _file <> '' then
-      Log(Format('delete %d files (%s)',    [Length(Paths), ToRelativePath(_file)]))
+      Log(ToRelativePath(_file))
     else if dir <> '' then
-      Log(Format('delete %d files from "%s"', [Length(Paths), ToRelativePath(dir)]))
+      Log(' %4d files from %s', [Length(Paths), ToRelativePath(dir)])
     else
-      Log(Format('delete %d files from "%s"', [Length(Paths), ToRelativePath(BasePath)]));
+      Log(' %4d files from %s', [Length(Paths), ToRelativePath(BasePath)]);
 
     for p := High(Paths) downto Low(Paths) do
     begin
@@ -288,7 +288,7 @@ begin
       AboutToScratchPath(Paths[p]);
       WildPaths.DeleteFile(Paths[p], FDeleteReadOnly);
       if PathExists(Paths[p]) then
-        TaskFailure(Format('Could not delete "%s"', [  Paths[p] ]) );
+        TaskFailure(Format('Could not delete %s', [  Paths[p] ]) );
     end;
   end;
 end;
@@ -303,7 +303,7 @@ procedure TDeleteTask.Init;
 begin
   inherited Init;
 (*  if (_file = '') and (dir = '') then
-    TaskError('either the "file" or the "dir" attribute must be set'); *)
+    TaskError('either the file or the dir attribute must be set'); *)
 end;
 
 { TMoveCopyTask }
@@ -337,27 +337,31 @@ begin
   RequireAttribute('todir');
 end;
 
+procedure TMoveCopyTask.Execute;
+begin
+  Log('to %s', [ToRelativePath(todir)]);
+  inherited Execute;
+end;
+
 { TCopyTask }
 
 procedure TCopyTask.DoFiles(Fileset: TFileSet; FromPath, ToPath: TPath);
 begin
-  Log(vlVerbose, Format('copy %s -> %s', [ToSystemPath(FromPath), ToSystemPath(ToPath)]));
+  Log(vlVerbose, ' %s -> %s', [ToSystemPath(FromPath), ToSystemPath(ToPath)]);
   AboutToScratchPath(ToPath);
   if not PathIsDir(FromPath) then
   begin
     MakeDir(SuperPath(ToPath));
     WildPaths.CopyFile(FromPath, ToPath);
     if not PathExists(ToPath) then
-      TaskFailure(Format('Could not copy"%s" to "%s', [ToRelativepath(FromPath), ToRelativepath(ToPath)]));
+      TaskFailure(Format('could not copy %s to %s', [ToRelativepath(FromPath), ToRelativepath(ToPath)]));
   end;
 end;
 
 procedure TCopyTask.DoPaths(Fileset: TFileSet; FromPaths, ToPaths: TPaths);
 begin
-  Log(Format('copy %d files from "%s" to "%s"', [
-         Length(FromPaths),
-         ToRelativePath(Fileset.BasePath),
-         ToRelativePath(todir)]));
+  if Length(FromPaths) > 0 then
+    Log(' %4d files from %s', [Length(FromPaths), ToRelativePath(Fileset.dir)]);
   inherited DoPaths(Fileset, FromPaths, ToPaths);
 end;
 
@@ -365,14 +369,14 @@ end;
 
 procedure TMoveTask.DoFiles(Fileset: TFileSet; FromPath, ToPath: TPath);
 begin
-  Log(vlVerbose, Format('move %s -> %s', [ToSystemPath(FromPath), ToSystemPath(ToPath)]));
+  Log(vlVerbose, '%s -> %s', [ToSystemPath(FromPath), ToSystemPath(ToPath)]);
   AboutToScratchPath(ToPath);
   if not PathIsDir(FromPath) then
   begin
     MakeDir(SuperPath(ToPath));
     WildPaths.MoveFile(FromPath, ToPath);
     if not PathExists(ToPath) then
-      TaskFailure(Format('Could not move "%s" to "%s', [ToRelativepath(FromPath), ToRelativepath(ToPath)]));
+      TaskFailure(Format('Could not move %s to %s', [ToRelativepath(FromPath), ToRelativepath(ToPath)]));
   end;
 end;
 
@@ -381,7 +385,8 @@ var
   i: Integer;
 begin
   Assert(Length(FromPaths) = Length(ToPaths));
-  Log(Format('moving %d files from %s to %s', [Length(FromPaths), FileSet.dir, todir]));
+  if Length(FromPaths) > 0 then
+    Log('%4d files from %s', [Length(FromPaths), ToRelativePath(FileSet.dir)]);
   inherited DoPaths(Fileset, FromPaths, ToPaths);
 
   for i := High(FromPaths) downto 0 do

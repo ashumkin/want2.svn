@@ -63,6 +63,7 @@ begin
   FSubProject := TProject.Create(Self);
   FSubProject.Listener := Self.Project.Listener;
   FSubProject.RootPath := ToAbsolutePath(Self.Project.RootPath);
+  FSubProject.BaseDir  := Self.BasePath;
 end;
 
 destructor TWantTask.Destroy;
@@ -74,8 +75,11 @@ end;
 
 procedure TWantTask.Init;
 begin
+  Log(vlDebug, 'dir=%s(%s)', [dir, ToAbsolutePath(dir)]);
+  Log(vlDebug, 'BasePath=%s(%s)', [BasePath, ToAbsolutePath(BasePath)]);
   if dir <> '' then
-    FSubProject.SetInitialBaseDir(dir);
+    FSubProject.SetInitialBaseDir(ToAbsolutePath(BasePath));
+  ChangeDir(BasePath);
   inherited Init;
 end;
 
@@ -83,6 +87,8 @@ procedure TWantTask.Execute;
 var
   FRunner :TScriptRunner;
 begin
+  Log(vlDebug, 'dir=%s(%s)', [dir, ToAbsolutePath(dir)]);
+  Log(vlDebug, 'BasePath=%s(%s)', [BasePath, ToAbsolutePath(BasePath)]);
   try
     FRunner := TScriptRunner.Create;
     try
@@ -113,4 +119,5 @@ end;
 
 initialization
  RegisterTasks([TWantTask]);
+ RegisterElements(TWantTask,[TSubProjectPropertyElement]);
 end.

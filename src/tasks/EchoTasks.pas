@@ -30,7 +30,7 @@ type
   protected
     FMessage :string;
     FText    :string;
-    FFile    :string;
+    FFile    :TPath;
     FAppend  :boolean;
     FLevel   :TLogLevel;
     FInput   :TPath;
@@ -44,7 +44,7 @@ type
   published
     property _message :string    read FMessage write FMessage;
     property _text    :string    read FText    write FText;
-    property _file    :string    read FFile    write FFile;
+    property _file    :TPath     read FFile    write FFile;
     property append   :boolean   read FAppend  write FAppend;
     property level    :TLogLevel read FLevel   write FLevel default vlNormal;
     property input    :TPath     read FInput   write FInput;
@@ -133,12 +133,16 @@ begin
     Result := S.Text;
 
     if input <> '' then
+    begin
+      if not FileExists(ToSystemPath(input)) then
+        TaskFailure(Format('file "%s" not found', [ToSystemPath(input)]));
       try
         Result := Result + Evaluate( FileToString( ToSystemPath(input) ));
       except
         on e :Exception do
           TaskFailure(Format('%s: %s', [input, e.Message]));
       end;
+    end;
   finally
     FreeAndNil(S);
   end;

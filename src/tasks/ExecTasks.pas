@@ -24,6 +24,8 @@ uses
   JclSysInfo,
   JclSecurity,
 
+  XPerlRE,
+
   WildPaths,
   WantUtils,
   WantClasses,
@@ -50,7 +52,7 @@ type
   TCustomExecTask = class(TTask)
   protected
     FOS          :string;
-    FExecutable  :string;
+    FExecutable  :TPath;
     FArguments   :TStrings;
     FSkipLines   :Integer;
     FFailOnError :boolean;
@@ -59,6 +61,14 @@ type
     FOutput      :string;
     FQuiet       :boolean;
 
+    FFilters        :TStrings;
+    FErrorFilters   :TStrings;
+    FWarningFilters :TStrings;
+
+    FDefaultFilters :boolean;
+
+    procedure Init; override;
+    
     function BuildExecutable :string; virtual;
     function BuildArguments  :string; virtual;
     function BuildCmdLine    :string; virtual;
@@ -66,6 +76,15 @@ type
     function  GetArguments :string;
     procedure SetArguments(Value :string);
     procedure SetArgumentList(Value :TStrings);
+
+    function  GetFilters: string;
+    procedure AddFilter(const Value: string);
+
+    function  GetErrorFilters: string;
+    procedure AddErrorFilter(const Value: string);
+
+    function  GetWarningFilters: string;
+    procedure AddWarningFilter(const Value: string);
 
     procedure Run(CmdLine: string);
     procedure HandleOutput(Child :TChildProcess);
@@ -79,15 +98,22 @@ type
   protected
     property Arguments:    string   read GetArguments write SetArguments;
     property ArgumentList: TStrings read FArguments   write SetArgumentList stored False;
-    property Executable:   string   read FExecutable  write FExecutable;
+    property Executable:   TPath    read FExecutable  write FExecutable;
     property SkipLines:    Integer  read FSkipLines   write FSkipLines;
     property OS:           string   read FOS          write FOS;
     property failonerror:  boolean  read FFailOnError write FFailOnError default True;
     property errorlevel:   Integer  read FErrorLevel  write FErrorLevel;
     property output:       string   read FOutput      write FOutput;
     property quiet:        boolean  read FQuiet       write FQuiet;
+
+    property filter:       string   read GetFilters    write AddFilter;
+    property errorfilter:  string   read GetErrorFilters    write AddErrorFilter;
+    property warningfilter:string   read GetWarningFilters  write AddWarningFilter;
+
+    property defaultfilters :boolean read FDefaultFilters write FDefaultFilters;
     {:@TODO Implement a TWaitableTimer class to implement timeouts.
       Use Windows.CreateWaitableTimer and Windows.SetWaitableTimer.
+      !!!
     }
     property timeout:      Longint  read FTimeout     write FTimeout;
   published
@@ -110,6 +136,10 @@ type
     property errorlevel;
     property output;
     property quiet;
+    property filter;
+    property errorfilter;
+    property warningfilter;
+    property defaultfilters;
   end;
 
   // this class will pass commands through the command processor
@@ -173,13 +203,19 @@ end;
 constructor TCustomExecTask.Create(Owner: TScriptElement);
 begin
   inherited Create(Owner);
-  FArguments   := TStringList.Create;
+  FArguments      := TStringList.Create;
+  FFilters        := TStringList.Create;
+  FErrorFilters   := TStringList.Create;
+  FWarningFilters := TStringList.Create;
   FFailOnError := True;
 end;
 
 destructor TCustomExecTask.Destroy;
 begin
   FreeAndNil(FArguments);
+  FreeAndNil(FFilters);
+  FreeAndNil(FErrorFilters);
+  FreeAndNil(FWarningFilters);
   inherited;
 end;
 
@@ -266,7 +302,7 @@ begin
       //!!! Inc(LineNo); // never used
       if output <> '' then
         Writeln(OutFile, Line)
-      else if not quiet then
+      else
         HandleOutputLine(Line);
     end;
   finally
@@ -287,8 +323,74 @@ begin
 end;
 
 procedure TCustomExecTask.HandleOutputLine(Line: string);
+  function MatchFilters(F :TStrings) :boolean;
+  var
+    i :Integer;
+  begin
+    Result := false;
+    for i := 0 to F.Count-1 do
+    begin
+      if XPerlre.regex.Match(F[i], Line) then
+      begin
+        Result := True;
+        break
+      end;
+    end;
+  end;
+
 begin
-  Log(Line);
+  if not quiet then
+    Log(Line)
+  else
+  begin
+    if MatchFilters(FErrorFilters) then
+      Log(vlErrors, Line)
+    else if MatchFilters(FWarningFilters) then
+      Log(vlWarnings, Line)
+    else if MatchFilters(FFilters) then
+      Log(Line)
+  end;
+end;
+
+function TCustomExecTask.GetFilters: string;
+begin
+  Result := FFilters.CommaText;
+end;
+
+procedure TCustomExecTask.AddFilter(const Value: string);
+begin
+  FFilters.Add(Value);
+end;
+
+procedure TCustomExecTask.AddErrorFilter(const Value: string);
+begin
+  FErrorFilters.Add(Value);
+end;
+
+function TCustomExecTask.GetErrorFilters: string;
+begin
+  Result := FErrorFilters.CommaText;
+end;
+
+procedure TCustomExecTask.AddWarningFilter(const Value: string);
+begin
+  FWarningFilters.Add(Value);
+end;
+
+function TCustomExecTask.GetWarningFilters: string;
+begin
+  Result := FWarningFilters.CommaText;
+end;
+
+procedure TCustomExecTask.Init;
+begin
+  inherited Init;
+  if defaultfilters then
+  begin
+    quiet         := true;
+    errorfilter   := '[Ee]rror';
+    warningfilter := '[Ww]arning';
+  end;
 end;
 
 { TArgElement }
