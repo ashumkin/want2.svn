@@ -69,11 +69,11 @@ type
     procedure SetIncludes(Value: TStrings);
     procedure SetExcludes(Value: TStrings);
 
-    procedure DoInclude(Files: TStrings; Pattern: TPath; Base: string);
-    procedure DoExclude(Files: TStrings; Pattern: TPath; Base: string);
+    procedure DoInclude(Files: TStrings; Pattern: TPath; Base: string); virtual;
+    procedure DoExclude(Files: TStrings; Pattern: TPath; Base: string); virtual;
 
-    procedure DoIncludes(Files: TStrings; Base: string);
-    procedure DoExcludes(Files: TStrings; Base: string);
+    procedure DoIncludes(Files: TStrings; Base: string); virtual;
+    procedure DoExcludes(Files: TStrings; Base: string); virtual;
 
   public
     constructor Create(Owner: TDanteElement); override;
@@ -98,17 +98,31 @@ type
   published
     function createInclude: TIncludeElement;
     function createExclude: TExcludeElement;
-    //function createPatternSet: TPatternSet;
+    function createPatternSet: TPatternSet;
 
     property id;
   end;
 
 
-  TFileSet  = class(TPatternSet)
+  TCustomFileSet  = class(TPatternSet)
   public
     procedure AddDefaultPatterns; virtual;
-  published
     property dir: TPath read GetBaseDir write SetBaseDir;
+  end;
+
+  TCustomDirSet  = class(TCustomFileSet)
+  protected
+    procedure DoExcludes(Files: TStrings; Base: string); override;
+  end;
+
+  TFileSet  = class(TCustomFileSet)
+  published
+    property dir;
+  end;
+
+  TDirSet = class(TCustomDirSet)
+  published
+    property dir;
   end;
 
 implementation
@@ -291,9 +305,15 @@ begin
 end;
 
 
-{ TFileSet }
+function TPatternSet.createPatternSet: TPatternSet;
+begin
+  Result := TPatternSet.Create(Self);
+  AddPatternSet(Result);
+end;
 
-procedure TFileSet.AddDefaultPatterns;
+{ TCustomFileSet }
+
+procedure TCustomFileSet.AddDefaultPatterns;
 begin
   // add the default Ant excludes
   Exclude('**/*~');
@@ -308,6 +328,19 @@ begin
   Exclude('**/*.bak');
   Exclude('**/dunit.ini');
 end;
+
+{ TCustomDirSet }
+
+procedure TCustomDirSet.DoExcludes(Files: TStrings; Base: string);
+var
+  f       : Integer;
+begin
+  inherited DoExcludes(Files, Base);
+  for f := Files.Count-1 downto 0 do
+    if not PathIsdir(PathConcat(Base, Files[f])) then
+      Files.Delete(f);
+end;
+
 
 initialization
   RegisterElement(TPatternSet);
