@@ -8,32 +8,45 @@
   resources were bound to the produced executable.
 */
 
-#define JclResources_RsIntelCacheDescr43 65392
-#define JclResources_RsIntelCacheDescr44 65393
-#define JclResources_RsIntelCacheDescr45 65394
-#define Consts_SNoCanvasHandle 65395
-#define ComConst_SOleError 65396
-#define ComConst_SNoMethod 65397
-#define ComConst_SVarNotObject 65398
-#define ComConst_STooManyParams 65399
-#define JalMessages_msg_Error 65400
-#define JalMessages_msg_OEMError 65401
+#define ComConst_SOleError 65376
+#define ComConst_SNoMethod 65377
+#define ComConst_SVarNotObject 65378
+#define ComConst_STooManyParams 65379
+#define JalMessages_msg_Error 65380
+#define JalMessages_msg_OEMError 65381
+#define WantResources_WantUsageText 65382
+#define JclResources_RsIntelCacheDescr03 65392
+#define JclResources_RsIntelCacheDescr04 65393
+#define JclResources_RsIntelCacheDescr06 65394
+#define JclResources_RsIntelCacheDescr08 65395
+#define JclResources_RsIntelCacheDescr0A 65396
+#define JclResources_RsIntelCacheDescr0C 65397
+#define JclResources_RsIntelCacheDescr40 65398
+#define JclResources_RsIntelCacheDescr41 65399
+#define JclResources_RsIntelCacheDescr42 65400
+#define JclResources_RsIntelCacheDescr43 65401
+#define JclResources_RsIntelCacheDescr44 65402
+#define JclResources_RsIntelCacheDescr45 65403
+#define JclResources_RsCannotWriteRefStream 65404
+#define JclResources_RsHasNotTD32Info 65405
+#define Consts_SCantWriteResourceStreamError 65406
+#define Consts_SNoCanvasHandle 65407
 #define RTLConsts_SRegSetDataFailed 65408
 #define RTLConsts_SSeekNotImplemented 65409
 #define RTLConsts_SSortedListError 65410
 #define RTLConsts_SWriteError 65411
-#define JclResources_RsCannotCreateDir 65412
-#define JclResources_RsIntelCacheDescr01 65413
-#define JclResources_RsIntelCacheDescr02 65414
-#define JclResources_RsIntelCacheDescr03 65415
-#define JclResources_RsIntelCacheDescr04 65416
-#define JclResources_RsIntelCacheDescr06 65417
-#define JclResources_RsIntelCacheDescr08 65418
-#define JclResources_RsIntelCacheDescr0A 65419
-#define JclResources_RsIntelCacheDescr0C 65420
-#define JclResources_RsIntelCacheDescr40 65421
-#define JclResources_RsIntelCacheDescr41 65422
-#define JclResources_RsIntelCacheDescr42 65423
+#define JclResources_RsWin32Prefix 65412
+#define JclResources_RsCannotCreateDir 65413
+#define JclResources_RsFileUtilsNoVersionInfo 65414
+#define JclResources_RsCreateFileMapping 65415
+#define JclResources_RsCreateFileMappingView 65416
+#define JclResources_RsFailedToObtainSize 65417
+#define JclResources_RsPeCantOpen 65418
+#define JclResources_RsPeNotPE 65419
+#define JclResources_RsPeNotResDir 65420
+#define JclResources_RsPeSectionNotFound 65421
+#define JclResources_RsIntelCacheDescr01 65422
+#define JclResources_RsIntelCacheDescr02 65423
 #define SysConst_SLongDayNameSat 65424
 #define RTLConsts_SAssignError 65425
 #define RTLConsts_SDuplicateItem 65426
@@ -148,23 +161,13 @@
 #define SysConst_SInvalidInput 65535
 STRINGTABLE
 BEGIN
-	JclResources_RsIntelCacheDescr43,	"Unified cache, 32 byte cache line, 4-way set associative, 512Kb"
-	JclResources_RsIntelCacheDescr44,	"Unified cache, 32 byte cache line, 4-way set associative, 1Mb"
-	JclResources_RsIntelCacheDescr45,	"Unified cache, 32 byte cache line, 4-way set associative, 2Mb"
-	Consts_SNoCanvasHandle,	"Canvas does not allow drawing"
 	ComConst_SOleError,	"OLE error %.8x"
 	ComConst_SNoMethod,	"Method '%s' not supported by automation object"
 	ComConst_SVarNotObject,	"Variant does not reference an automation object"
 	ComConst_STooManyParams,	"Dispatch methods do not support more than 64 parameters"
 	JalMessages_msg_Error,	"Internal Error %0:4.4s at %1:p"
 	JalMessages_msg_OEMError,	"Internal Error %0:4.4s at %1:p"
-	RTLConsts_SRegSetDataFailed,	"Failed to set data for '%s'"
-	RTLConsts_SSeekNotImplemented,	"%s.Seek not implemented"
-	RTLConsts_SSortedListError,	"Operation not allowed on sorted list"
-	RTLConsts_SWriteError,	"Stream write error"
-	JclResources_RsCannotCreateDir,	"Unable to create directory"
-	JclResources_RsIntelCacheDescr01,	"Instruction TLB, 4Kb pages, 4-way set associative, 32 entries"
-	JclResources_RsIntelCacheDescr02,	"Instruction TLB, 4Mb pages, fully associative, 2 entries"
+	WantResources_WantUsageText,	"Usage:\r\n  want [options] [target]\r\n\r\nOptions:\r\n  -h, -H, -?          Displays this help text.\r\n  -L                  Displays licensing information.\r\n  -buildfile <file>   Specifies the build file. Default is want.xml\r\n  -Dname=value        Define property \"name\".\r\n  -quiet              Be very quiet. \r\n  -verbose            Be extra verbose.\r\n  -debug              Print debugging information.\r\n  -nocolor            Do not use color in console output.\r\n"
 	JclResources_RsIntelCacheDescr03,	"Data TLB, 4Kb pages, 4-way set associative, 64 entries"
 	JclResources_RsIntelCacheDescr04,	"Data TLB, 4Mb pages, 4-way set associative, 8 entries"
 	JclResources_RsIntelCacheDescr06,	"8KB instruction cache, 4-way set associative, 32 byte line size"
@@ -174,6 +177,29 @@ BEGIN
 	JclResources_RsIntelCacheDescr40,	"No L2 cache"
 	JclResources_RsIntelCacheDescr41,	"Unified cache, 32 byte cache line, 4-way set associative, 128Kb"
 	JclResources_RsIntelCacheDescr42,	"Unified cache, 32 byte cache line, 4-way set associative, 256Kb"
+	JclResources_RsIntelCacheDescr43,	"Unified cache, 32 byte cache line, 4-way set associative, 512Kb"
+	JclResources_RsIntelCacheDescr44,	"Unified cache, 32 byte cache line, 4-way set associative, 1Mb"
+	JclResources_RsIntelCacheDescr45,	"Unified cache, 32 byte cache line, 4-way set associative, 2Mb"
+	JclResources_RsCannotWriteRefStream,	"Can not write to a read-only memory stream"
+	JclResources_RsHasNotTD32Info,	"File [%s] has not TD32 debug information!"
+	Consts_SCantWriteResourceStreamError,	"Can't write to a read-only resource stream"
+	Consts_SNoCanvasHandle,	"Canvas does not allow drawing"
+	RTLConsts_SRegSetDataFailed,	"Failed to set data for '%s'"
+	RTLConsts_SSeekNotImplemented,	"%s.Seek not implemented"
+	RTLConsts_SSortedListError,	"Operation not allowed on sorted list"
+	RTLConsts_SWriteError,	"Stream write error"
+	JclResources_RsWin32Prefix,	"Win32: %s (%u)"
+	JclResources_RsCannotCreateDir,	"Unable to create directory"
+	JclResources_RsFileUtilsNoVersionInfo,	"File contains no version information"
+	JclResources_RsCreateFileMapping,	"Failed to create FileMapping"
+	JclResources_RsCreateFileMappingView,	"Failed to create FileMappingView"
+	JclResources_RsFailedToObtainSize,	"Failed to obtain size of file"
+	JclResources_RsPeCantOpen,	"Cannot open file \"%s\""
+	JclResources_RsPeNotPE,	"This is not a PE format"
+	JclResources_RsPeNotResDir,	"Not a resource directory"
+	JclResources_RsPeSectionNotFound,	"Section \"%s\" not found"
+	JclResources_RsIntelCacheDescr01,	"Instruction TLB, 4Kb pages, 4-way set associative, 32 entries"
+	JclResources_RsIntelCacheDescr02,	"Instruction TLB, 4Mb pages, fully associative, 2 entries"
 	SysConst_SLongDayNameSat,	"Saturday"
 	RTLConsts_SAssignError,	"Cannot assign a %s to a %s"
 	RTLConsts_SDuplicateItem,	"List does not allow duplicates ($0%x)"
