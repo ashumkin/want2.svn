@@ -67,20 +67,17 @@ const
   +#10'        compression="3"'
   +#10'        cvsroot="' + CVSROOT + '"'
   +#10'        package="' + CVSMODULE + '"'
-  +#10'        date="2003-09-10"'
+  +#10'        date="2003-09-11"'
   +#10'        hideOutput="false"'
   +#10'       >'
   +#10'    </cvs>'
   +#10'  </target>'
   +#10'</project>'
   +'';
-var
-  bPackage : string;
 begin
   TScriptParser.ParseText(FProject, build_xml);
   RunProject;
-  bPackage := FProject.GetTargetByName(FProject.GetAttribute('default')).Tasks[0].GetAttribute('package');
-  if not FileExists(ToSystemPAth(fTestDirectory+SystemPathDelimiter+bPackage))
+  if not FileExists(ToSystemPath(fTestDirectory+SystemPathDelimiter+CVSFILE))
      then raise Exception.Create('Checkout test not passed');
 end;
 
