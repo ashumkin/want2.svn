@@ -37,7 +37,9 @@ unit DanteExternalTest;
 interface
 
 uses
-  TestFramework, clUtilFile;
+  TestFramework,
+  clUtilFile,
+  ZipStreams;
 
 type
   TExternalTest = class(TTestCase)
@@ -212,8 +214,6 @@ begin
 end;
 
 procedure TExternalTest.Unzip(ZipFileName, Directory: string);
-var
-  CurrentDir: string;
 
   procedure DoCopy(FileName: string);
   begin
@@ -224,20 +224,12 @@ var
   end;
 var
   ZipLocation  :string;
-  UnzipCmdLine :string;
 begin
   ChDir(ExtractFilePath(ParamStr(0)));
   JclFileUtils.ForceDirectories(Directory);
   DoCopy(BuildFileName);
   ZipLocation := FRootTestDataDir + FTestPath + ZipFileName;
-  CurrentDir := GetCurrentDir;
-  try
-    UnzipCmdLine := Format('%sunzip.exe -d %s %s', [FRootTestDataDir, Directory, ZipLocation]);
-    if WinExec32AndWait( UnzipCmdLine, 0) <> 0 then
-      fail('could not run unzip');
-  finally
-    ChDir(CurrentDir);
-  end;
+  ZipStreams.ExtractAll(ToPath(ZipLocation), ToPath(Directory));
 end;
 
 procedure TExternalTest.UnzipFinal;
