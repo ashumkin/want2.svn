@@ -10,12 +10,12 @@
 ======================================================================== 
 
 -->
-<project name="DUnit Extrem Testing Framework for Delphi"
+<project name="DUnit Extreme Testing Framework for Delphi"
   default="test" 
   basedir=".">
  
   <property name="app.name"       value="dunit" />
-  <property name="version"        value="3.2.7.2" />
+  <property name="version"        value="3.2.8.1" />
   <regexp   property="cvs.tag" text="build_${version}" pattern="\." subst="_" />
   
   <property name="src.dir"        value="${basedir}/src" />
@@ -25,6 +25,7 @@
   <property name="scratch.dir"    value="${basedir}/scratch"/>
   <property name="bin.dir"        value="${basedir}/bin"/>
   <property name="dist.dir"       value="${basedir}/dist"/>
+  <property name="contrib.dir"    value="${basedir}/contrib"/>
 
   <patternset id="source.code" >
     <include name="**/*.pas" />
@@ -39,6 +40,10 @@
     <include name="**/*.html" />
     <include name="**/*.htm" />
     <include name="**/*.txt" />
+    <include name="**/*.png" />
+    <include name="**/*.jpg" />
+    <include name="**/*.jpeg" />
+    <include name="**/*.gif" />
   </patternset>
 
   <patternset id="source.and.docs" >
@@ -46,7 +51,7 @@
     <patternset refid="docs" />
   </patternset>
 
-  <target name="prepare">
+  <target name="prepare" description="build directory structure" >
     <mkdir dir="${scratch.dir}" />
     <mkdir dir="${bin.dir}" />
   </target>
@@ -66,6 +71,7 @@
          debug="true"
          build="true"
     >
+      <define name="USE_JEDI_JCL" />
       <unit path="${src.dir}" />
       <resource path="${src.dir}" />
     </dcc>
@@ -78,8 +84,17 @@
   </target>
 
   <target name="examples"  
-          depends="registration,collection,registry,tlist,structure,cmdline" > 
-			 <!-- list all example dirs here -->
+          depends="
+                   xpgen,
+                   registration,
+                   collection,
+                   registry,
+                   tlist,
+                   structure,
+                   cmdline
+                   " 
+                   > 
+                   <!-- list all example dirs here -->
   </target>
 
   <target name="test" depends="test_dunit,examples" />
@@ -119,6 +134,10 @@
        Each has its own Dante build.xml file.
   -->
   
+  <target name="xpgen" depends="prepare" >
+    <dante dir="${contrib.dir}/xpgen" description="test compiler" />
+  </target>
+
   <target name="registration" depends="prepare" >
     <dante dir="${samp.dir}/registration" />
   </target>
