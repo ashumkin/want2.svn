@@ -140,8 +140,8 @@ begin
   for i := 0 to FParams.Count - 1 do
     with TParamElement(FParams[i]) do 
     begin
-      p[i] := Name;
-      p[i + 1] := expression;
+      p[(i*2)] := Name;
+      p[(i*2) + 1] := expression;
     end;
   if Fsinglefile then 
   begin

@@ -102,8 +102,8 @@ begin
   if length(Params) > 0 then
     for i := 0 to high(Params) div 2 do
     begin
-      xslp.addParameter(WideString(Params[i]),
-        WideString(Params[i + 1]), '');
+      xslp.addParameter(WideString(Params[i*2]),
+        WideString(Params[(i*2) + 1]), '');
     end;
   xslp.input := xmld;
   fs := TFileStream.Create(_out, fmCreate);
