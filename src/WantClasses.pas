@@ -207,8 +207,8 @@ type
     FTargets:       TList;
     FDefaultTarget: string;
     FVerbosity:     TVerbosityLevel;
-    FRunPath:       string;
-    FRunPathSet:    boolean;
+    FRootPath:       string;  // root for all path calculations
+    FRootPathSet:    boolean;
     FDescription:   string;
 
     FOnLog: TLogMethod;
@@ -223,7 +223,7 @@ type
     procedure SetBaseDir(Path: TPath);  override;
     function  GetBaseDir: TPath;        override;
 
-    procedure SetRunPath(Path :TPath);
+    procedure SetRootPath(Path :TPath);
 
   public
     constructor Create(Owner: TDanteElement = nil); override;
@@ -266,7 +266,7 @@ type
 
     procedure Log(Msg: string = ''; Verbosity: TVerbosityLevel = vlNormal); override;
 
-    property RunPath: string read FRunPath write SetRunPath;
+    property RootPath: string read FRootPath write SetRootPath;
 
     property Targets[i: Integer]: TTarget             read GetTarget; default;
     property TargetNames[TargetName: string]: TTarget read GetTargetByName;
@@ -1021,8 +1021,8 @@ begin
   FTargets    := TList.Create;
   FVerbosity  := vlNormal;
 
-  FRunPath    := CurrentDir;
-  FRunPathSet := False;
+  FRootPath    := CurrentDir;
+  FRootPathSet := False;
 end;
 
 destructor TProject.Destroy;
@@ -1205,7 +1205,7 @@ var
   i    : Integer;
   Sched: TTargetArray;
 begin
-  Log(vlDebug, 'runpath="%s"',  [RunPath]);
+  Log(vlDebug, 'runpath="%s"',  [RootPath]);
   Log(vlDebug, 'basepath="%s"', [BasePath]);
   Log(vlDebug, 'basedir="%s"',  [BaseDir]);
   Sched := nil;
@@ -1225,7 +1225,7 @@ begin
       try
         Sched[i].Build;
       finally
-        ChangeDir(FRunpath);
+        ChangeDir(BasePath);
       end;
     end;
   except
@@ -1284,9 +1284,9 @@ begin
   if FindFile then
     BuildFile := FindBuildFile(BuildFile);
   try
-    if not FRunPathSet then
-      RunPath := SuperPath(ToAbsolutePath(BuildFile));
-    Log(vlDebug, 'Runpath="%s"', [ RunPath ] );
+    if not FRootPathSet then
+      RootPath := SuperPath(ToAbsolutePath(BuildFile));
+    Log(vlDebug, 'Runpath="%s"', [ RootPath ] );
     ChangeDir(BasePath);
     Dom := MiniDom.ParseToDom(ToSystemPath(BuildFile));
     Self.DoParseXML(Dom.Root);
@@ -1338,30 +1338,30 @@ begin
   if PathIsAbsolute(BaseDir) then
     Result := BaseDir
   else
-    Result := PathConcat(RunPath, BaseDir);
+    Result := PathConcat(RootPath, BaseDir);
 end;
 
 procedure TProject.SetBaseDir(Path: TPath);
 begin
   inherited SetBaseDir(Path);
-  SetProperty('basedir', PathConcat(RunPath, Path));
+  SetProperty('basedir', PathConcat(RootPath, Path));
 end;
 
 function TProject.GetBaseDir: TPath;
 begin
-  Result := WildPaths.ToRelativePath(PropertyValue('basedir'), FRunPath);
+  Result := WildPaths.ToRelativePath(PropertyValue('basedir'), FRootPath);
 end;
 
-procedure TProject.SetRunPath(Path: TPath);
+procedure TProject.SetRootPath(Path: TPath);
 begin
-  FRunPath := Path;
-  FRunPathSet := True;
+  FRootPath := Path;
+  FRootPathSet := True;
 end;
 
 procedure TProject.SetInitialBaseDir(Path: TPath);
 begin
   SetBaseDir(Path);
-  Properties.Values['basedir'] := PathConcat(RunPath, Path);
+  Properties.Values['basedir'] := PathConcat(RootPath, Path);
 end;
 
 procedure TProject.Notification(AComponent: TComponent; Operation: TOperation);

@@ -93,7 +93,7 @@ constructor TDanteTask.Create(Owner: TDanteElement);
 begin
   inherited Create(Owner);
   FSubProject := TProject.Create(Self);
-  FSubProject.RunPath := ToAbsolutePath(Project.RunPath);
+  FSubProject.RootPath := ToAbsolutePath(Project.RootPath);
   FSubProject.OnLog := Self.Log;
 
   buildfile := DanteClasses.BuildFileName;
