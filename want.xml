@@ -180,7 +180,6 @@ See http://www.suigeneris.org/want/ for details.
          <include name="${test}/data/**" />
 
          <include name="${lib}/*.zip" />    <!-- include third party library .zips -->
-         <exclude name="${lib}/*/**/*"  />   <!-- exclude subdirectories -->
          <exclude name="${basedir}/private/**" />
     </zip>
   </target>
