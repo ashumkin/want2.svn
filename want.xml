@@ -191,13 +191,14 @@ See http://www.suigeneris.org/want/ for details.
   </target>
 
   <target name="changelog" >
-          <shell executable="tools/cvs2cl.pl" >
+     <exec executable="perl" >
+         <arg path="tools/cvs2cl.pl" />
          <arg value="--file ChangeLog" />
          <arg value="--tags" />
          <arg value="--utc" />
          <arg value="--window 604800" />
          <arg value="--prune" />
-     </shell>
+     </exec>
   </target>
 
 </project>
