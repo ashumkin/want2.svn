@@ -1015,7 +1015,6 @@ begin
   inherited Create(Owner);
   FTargets    := TList.Create;
   FVerbosity  := vlNormal;
-  FRunPath    := ToPath(GetCurrentDir);
 end;
 
 destructor TProject.Destroy;
@@ -1198,7 +1197,9 @@ var
   i    : Integer;
   Sched: TTargetArray;
 begin
-
+  Log(vlDebug, 'runpath="%s"',  [RunPath]);
+  Log(vlDebug, 'basepath="%s"', [BasePath]);
+  Log(vlDebug, 'basedir="%s"',  [BaseDir]);
   Sched := nil;
   try
     if Target = '' then
@@ -1275,7 +1276,8 @@ begin
   if FindFile then
     BuildFile := FindBuildFile(BuildFile);
   try
-    RunPath := SuperPath(BuildFile);
+    if RunPath = '' then
+      RunPath := SuperPath(ToAbsolutePath(BuildFile));
     ChangeDir(BasePath);
     Dom := MiniDom.ParseToDom(ToSystemPath(BuildFile));
     Self.DoParseXML(Dom.Root);
@@ -1344,6 +1346,7 @@ end;
 
 procedure TProject.SetInitialBaseDir(Path: TPath);
 begin
+  SetBaseDir(Path);
   Properties.Values['basedir'] := PathConcat(RunPath, Path);
 end;
 
@@ -1400,6 +1403,9 @@ var
 begin
   Project.Log;
   Log;
+
+  Log(vlDebug, 'basepath="%s"', [BasePath]);
+  Log(vlDebug, 'basedir="%s"',  [BaseDir]);
 
   for i := 0 to TaskCount-1 do
   begin
@@ -1489,6 +1495,8 @@ end;
 
 procedure TTask.DoExecute;
 begin
+  Log(vlDebug, 'basepath="%s"', [BasePath]);
+  Log(vlDebug, 'basedir="%s"',  [BaseDir]);
   try
     try
       ChangeDir(BasePath);
