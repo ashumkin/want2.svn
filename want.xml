@@ -170,6 +170,7 @@ See http://www.suigeneris.org/want/ for details.
 
          <include name="${bin}/want.exe" />
 
+         <include name="ChangeLog" />
          <include name="**/*.pas" />
          <include name="**/*.dpr" />
          <include name="**/*.inc" />
