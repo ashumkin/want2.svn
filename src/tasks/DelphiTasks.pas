@@ -175,7 +175,7 @@ type
     property warnings: boolean read FWarnings write FWarnings default true;
     property usecfg:   boolean read FUseCFG   write FUseCFG;
 
-    property longstrings :boolean read FLongStrings   write FLongStrings;
+    property longstrings :boolean read FLongStrings   write FLongStrings default true;
     
     property map       :TMapType read FMap write FMap;
 
@@ -366,7 +366,8 @@ begin
   FIncludePaths   := TIncludePathElement.Create(Self);
   FDefines        := TStringList.Create;
   FPackages       := TStringList.Create;
-  FWarnings       := True;
+  FWarnings       := true;
+  FLongStrings    := true;
 end;
 
 destructor TDelphiCompileTask.Destroy;
