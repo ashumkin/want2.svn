@@ -128,6 +128,7 @@ type
     property ToolPath  :string read FToolPath;
   published
     property versions: string read FVersions  write FVersions;
+    property failonerror;
   end;
 
 type
