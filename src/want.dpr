@@ -69,7 +69,7 @@ uses
   ConsoleListener in 'lib\ConsoleListener.pas';
 
 {$r wantver.res}
-{$r ..\bin\lincense.res }
+{$r ..\bin\license.res }
 
 const
   SwitchChars = ['-', '/'];
@@ -94,19 +94,6 @@ begin
 end;
 
 begin
-  if FindCmdLineSwitch('?', SwitchChars, true) or
-     FindCmdLineSwitch('h', SwitchChars, true) then
-  begin
-    WriteLn(WantHeader);
-    Usage;
-  end
-  else if FindCmdLineSwitch('L', SwitchChars, false) then
-  begin
-    // need to add More functionality ... going to add it in clUtilConsole
-    WriteLn(WantHeader);
-    WriteLn(License);
-  end
-  else
-    Run;
+  Run;
 end.
 
