@@ -105,11 +105,13 @@ begin
     on e: Exception do
     begin
       if e is ETaskException then
-        Log('BUILD FAILED','', vlErrors)
+        Log(vlErrors)
       else if e is EWantException then
-        Log('BUILD FAILED',e.Message, vlErrors)
+        Log(e.Message, vlErrors)
       else
-        Log('BUILD FAILED', E.ClassName + ': ' + E.Message, vlErrors);
+        Log(E.ClassName + ': ' + E.Message, vlErrors);
+      Log;
+      Log('BUILD FAILED','', vlErrors);
       raise;
     end;
   end;

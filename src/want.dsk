@@ -97,38 +97,49 @@ LRDockWidth=421
 Dockable=1
 
 [Closed Files]
-File_0=SourceModule,'C:\home\want\src\WantClasses.pas',0,1,1,1,1,0,0
-File_1=SourceModule,'C:\home\want\src\tasks\VssTasks.pas',0,1,1,1,1,0,0
-File_2=SourceModule,'C:\home\want\src\elements\TimeElements.pas',0,1,1,1,10,0,0
-File_3=SourceModule,'C:\home\want\src\tasks\StandardTasks.pas',0,1,1,1,10,0,0
-File_4=SourceModule,'C:\home\want\src\tasks\CustomTasks.pas',0,1,1,1,1,0,0
-File_5=SourceModule,'C:\home\want\src\elements\PatternSets.pas',0,1,1,1,1,0,0
-File_6=SourceModule,'C:\home\want\src\elements\Properties.pas',0,1,1,35,16,0,0
-File_7=SourceModule,'C:\home\want\src\lib\LogMgr.pas',0,1,1,1,1,0,0
-File_8=SourceModule,'C:\home\want\src\elements\StandardElements.pas',0,1,1,1,10,0,0
-File_9=SourceModule,'C:\home\want\src\tasks\VersionInfoTasks.pas',0,1,1,1,1,0,0
+File_0=SourceModule,'C:\home\want\src\tasks\VssTasks.pas',0,1,1,1,1,0,0
+File_1=SourceModule,'C:\home\want\src\elements\TimeElements.pas',0,1,1,1,10,0,0
+File_2=SourceModule,'C:\home\want\src\tasks\StandardTasks.pas',0,1,1,1,10,0,0
+File_3=SourceModule,'C:\home\want\src\tasks\CustomTasks.pas',0,1,1,1,1,0,0
+File_4=SourceModule,'C:\home\want\src\elements\PatternSets.pas',0,1,1,1,1,0,0
+File_5=SourceModule,'C:\home\want\src\elements\Properties.pas',0,1,1,35,16,0,0
+File_6=SourceModule,'C:\home\want\src\lib\LogMgr.pas',0,1,1,1,1,0,0
+File_7=SourceModule,'C:\home\want\src\elements\StandardElements.pas',0,1,1,1,10,0,0
+File_8=SourceModule,'C:\home\want\src\tasks\VersionInfoTasks.pas',0,1,1,1,1,0,0
 
 [Modules]
-Module0=C:\home\want\src\tasks\EditTasks.pas
-Module1=C:\home\want\src\want.dpr
+Module0=C:\home\want\src\want.dpr
+Module1=C:\home\want\src\WantClasses.pas
 Module2=C:\home\want\src\ScriptRunner.pas
-Module3=C:\home\want\src\tasks\WantTasks.pas
-Module4=C:\home\want\src\elements\RegexpElements.pas
-Module5=C:\home\want\src\tasks\DUnitTasks.pas
-Count=6
+Module3=C:\home\want\src\lib\ScriptParser.pas
+Module4=C:\home\want\src\tasks\EditTasks.pas
+Module5=C:\home\want\src\tasks\WantTasks.pas
+Module6=C:\home\want\src\elements\RegexpElements.pas
+Module7=C:\home\want\src\tasks\DUnitTasks.pas
+Count=8
 EditWindowCount=1
-
-[C:\home\want\src\tasks\EditTasks.pas]
-ModuleType=SourceModule
-FormState=0
-FormOnTop=0
 
 [C:\home\want\src\want.dpr]
 ModuleType=SourceModule
 FormState=0
 FormOnTop=0
 
+[C:\home\want\src\WantClasses.pas]
+ModuleType=SourceModule
+FormState=0
+FormOnTop=0
+
 [C:\home\want\src\ScriptRunner.pas]
+ModuleType=SourceModule
+FormState=0
+FormOnTop=0
+
+[C:\home\want\src\lib\ScriptParser.pas]
+ModuleType=SourceModule
+FormState=0
+FormOnTop=0
+
+[C:\home\want\src\tasks\EditTasks.pas]
 ModuleType=SourceModule
 FormState=0
 FormOnTop=0
@@ -175,14 +186,16 @@ RightPanelSize=0
 BottomPanelSize=0
 BottomPanelClients=MessageView@EditWindow0,CallStackWindow,LocalVarsWindow
 BottomPanelData=00000400030000000B0000004D657373616765566965770F00000043616C6C537461636B57696E646F770F0000004C6F63616C5661727357696E646F770004000000000000005D01000000000000FFFFFFFF
-ViewCount=6
-CurrentView=4
+ViewCount=8
+CurrentView=3
 View0=0
 View1=1
 View2=2
 View3=3
 View4=4
 View5=5
+View6=6
+View7=7
 
 [CodeExplorer@EditWindow0]
 Create=1
@@ -240,8 +253,8 @@ LeftCol=1
 [View3]
 Module=C:\home\want\src\want.dpr
 CursorX=1
-CursorY=1
-TopLine=1
+CursorY=88
+TopLine=87
 LeftCol=1
 
 [View4]
@@ -252,10 +265,24 @@ TopLine=239
 LeftCol=1
 
 [View5]
+Module=C:\home\want\src\WantClasses.pas
+CursorX=1
+CursorY=46
+TopLine=46
+LeftCol=1
+
+[View6]
+Module=C:\home\want\src\lib\ScriptParser.pas
+CursorX=1
+CursorY=91
+TopLine=75
+LeftCol=1
+
+[View7]
 Module=C:\home\want\src\ScriptRunner.pas
-CursorX=12
-CursorY=10
-TopLine=1
+CursorX=11
+CursorY=113
+TopLine=91
 LeftCol=1
 
 [DockHosts]
@@ -270,10 +297,11 @@ Watch3='Matches[i]',256,0,18,1
 Watch4='FIncludes[i]',256,0,18,1
 
 [Breakpoints]
-Count=3
+Count=4
 Breakpoint0='C:\home\dante\src\want.dpr',71,'',0,1
 Breakpoint1='C:\home\dante\src\tasks\DelphiTasks.pas',350,'',0,1
 Breakpoint2='C:\home\want\src\DanteMain.pas',251,'',0,1
+Breakpoint3='C:\home\want\src\want.dpr',88,'',0,1
 
 [AddressBreakpoints]
 Count=0

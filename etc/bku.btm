@@ -1,2 +1,2 @@
-bkudir
-bkudir \pub\rcs\c\home\want *
+call bkudir
+call bkudir \pub\rcs\c\home\want *

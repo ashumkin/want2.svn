@@ -81,13 +81,14 @@ var
 begin
   Atts := XMLAttsToStrings(Child);
   try
+    Elem := nil;
     try
       Elem   := Parent.SetupChild(Child.Name, Atts);
     except
       on e :EWantParseException do
         raise;
       on e :Exception do
-        raise; // ParseError(e, Child.Location.LineNumber, Child.Location.ColumnNumber);
+        ParseError(e.Message, Child.Location.LineNumber, Child.Location.ColumnNumber);
     end;
     if Elem <> nil then
       ParseXML(Elem, Child, Atts);
@@ -100,23 +101,15 @@ class procedure TScriptParser.ParseXML(Elem :TScriptElement; Node: IElement; Att
 var
   i     :IIterator;
   child :MiniDom.IElement;
-  L     :TLocation;
 begin
   i := nil;
   try
     Elem.SetUp(Node.Name, Atts);
   except
     on e :EWantParseException do
-    begin
-      Node := nil;
       raise;
-    end;
     on e :Exception do
-    begin
-      L := Node.Location;
-      Node := nil;
-      ParseError(e.Message, L.LineNumber, L.ColumnNumber);
-    end;
+      ParseError(e.Message, Node.Location.LineNumber, Node.Location.ColumnNumber);
   end;
   i := Node.Children.Iterator;
   while i.HasNext do
