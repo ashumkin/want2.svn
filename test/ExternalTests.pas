@@ -223,7 +223,7 @@ constructor TExternalTest.Create;
 begin
   Create('DoTest');
 
-  FRootPath := PathConcat(ToPath(ExtractFilePath(ParamStr(0))) ,'test');
+  FRootPath := PathConcat(ToPath(ExtractFilePath(ParamStr(0))) ,'test_tmp');
 end;
 
 procedure TExternalTest.DeleteSubFolders;
@@ -238,7 +238,12 @@ begin
   and  PathIsDir(FinalPath)
   and  PathIsFile(PathConcat(SetupPath, FBuildFileName))
   then
+  begin
     DeleteFiles('**', FRootPath);
+    RemoveDir(SetupPath);
+    RemoveDir(FinalPath);
+    RemoveDir(FRootPath);
+  end;
 end;
 
 procedure TExternalTest.DoTest;
