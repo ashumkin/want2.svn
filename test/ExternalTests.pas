@@ -76,6 +76,7 @@ implementation
 uses
   JclFileUtils,
   Classes,
+  Math,
   Windows,
   SysUtils,
   DanteMain,
@@ -130,15 +131,22 @@ var
 begin
   ADirComp := TclDirectoryCompare.Create(FTestExeSetupDir, FTestExeFinalDir);
   try
-     ADirComp.GetRelativeFiles;
      with ADirComp do
      begin
+       GetRelativeFiles;
        for p := 0 to AFiles.Count-1 do
-         Check(BFiles.IndexOf(AFiles[p]) >= 0, AFiles[p] + ' in A dir but not in B dir');
+         Check(BFiles.IndexOf(AFiles[p]) >= 0, Format('%s in setup but not in final', [AFiles[p]]));
        for p := 0 to BFiles.Count-1 do
-         Check(AFiles.IndexOf(BFiles[p]) >= 0, BFiles[p] + ' in B dir but not in A dir');
+         Check(AFiles.IndexOf(BFiles[p]) >= 0, Format('%s in final but not in setup', [BFiles[p]]));
+
+       GetFiles;
+       for p := 0 to Min(AFiles.Count, BFiles.Count)-1 do
+       begin
+         CheckEquals(IsDirectory(Afiles[p]), IsDirectory(Bfiles[p]), Format('%s files not both directories', [ExtractFileName(AFiles[p])]));;
+         if not IsDirectory(Afiles[p]) then
+           Check(TclFileCompare.CompareFiles(AFiles[p], BFiles[p]), Format('%s files are different', [ExtractFileName(AFiles[p])]));;
+       end;
      end;
-     Check(ADirComp.CompareByFileContent);
   finally
     ADirComp.Free;
   end;
@@ -226,12 +234,22 @@ procedure TExternalTest.Unzip(ZipFileName, Directory: string);
   end;
 var
   ZipLocation  :string;
+  DirLocation  :string;
 begin
   ChDir(ExtractFilePath(ParamStr(0)));
   JclFileUtils.ForceDirectories(Directory);
   DoCopy(BuildFileName);
   ZipLocation := FRootTestDataDir + FTestPath + ZipFileName;
-  ZipStreams.ExtractAll(ToPath(ZipLocation), ToPath(Directory));
+  if FileExists(ZipLocation) then
+    ZipStreams.ExtractAll(ToPath(ZipLocation), ToPath(Directory))
+  else
+  begin
+    DirLocation := ChangeFileExt(ZipLocation, '');
+    if DirectoryExists(DirLocation) then
+      CopyFiles('**', ToPath(DirLocation), ToPath(Directory))
+    else
+      Fail('Could not find ' + ZipLocation);
+  end;
 end;
 
 procedure TExternalTest.UnzipFinal;
@@ -241,7 +259,7 @@ end;
 
 procedure TExternalTest.UnzipSetup;
 begin
-  Unzip(SetupFileName, FTestExeSetupDir);
+  Unzip(SetupFileName, FTestExeSetupDir)
 end;
 
 procedure TExternalTest.VerifyFinal;
