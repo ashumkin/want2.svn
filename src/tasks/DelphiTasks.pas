@@ -18,12 +18,22 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA *
  ****************************************************************************)
 {
-    @brief 
+    @brief
 
     @author Juancarlo Añez
     @author Dan Hughes <dan@multiedit.com>
     @author Ignacio J. Ortega
 }
+{ TODO -oGJD -cTODO : 
+  Add handling of:
+  -A: Unit aliases
+  -$U: Pentium safe FDIV
+  -J: Generate an object file
+  -JP: Generate C++ object file
+  -K: Set image base address
+  -TX: Target file extension
+  -V: Turbo Debugger debug information
+  -VN: Generate namespace debugging information in Giant format (used by C++Builder) }
 
 unit DelphiTasks;
 
@@ -145,13 +155,28 @@ type
     FBuild          : boolean;
     FOptimize       : boolean;
     FDebug          : boolean;
+    FDebugInfo      : boolean;
+    FLocalSymbols   : boolean;
+    FDefinitionInfo : boolean;
+    FReferenceInfo  : boolean;
     FConsole        : boolean;
     FEnableWarnings : boolean;
+    FEnableHints    : boolean;
     FUseLibraryPath : boolean;
     FUseCFG         : boolean;
     FHugeStrings    : boolean;
-    FIochecks       : boolean;
+    FIoChecks       : boolean;
+    FOverFlowChecks : boolean;
+    FRangeChecks    : boolean;
+    FAssertions     : boolean;
+    FAllChecks      : boolean;
+    FBoolEval       : boolean;
+    FTypedAddress   : boolean;
+    FStackFrames    : boolean;
+    FWritableConst  : boolean;
     FMap            : TMapType;
+    FMinEnumSize    : integer;
+    FUseDebugDCUs   : boolean;
 
     FUnitPaths      : TUnitPathElement;
     FResourcePaths  : TResourcePathElement;
@@ -160,9 +185,11 @@ type
 
     FDefines        : TStrings;
     FPackages       : TStrings;
+    { TODO -oGJD -cTODO : Add handling of unit aliases (-A) }
+    FUnitAliases    : TStrings;
     FWarnings       : TWarnings;
 
-    FRenamedCFGs    :boolean;
+    FRenamedCFGs    : boolean;
 
     function BuildArguments: string; override;
 
@@ -186,7 +213,7 @@ type
     procedure AddUnitPath(Path: TPath);
     procedure AddResourcePath(Path: TPath);
     procedure AddIncludePath(Path: TPath);
-    procedure AddObjectPath(Path : TPath);
+    procedure AddObjectPath(Path: TPath);
     procedure AddDefine(Name, Value :string);
     procedure AddPackage(Name :string);
     procedure AddWarning(Name :TWarning; Value :boolean);
@@ -207,29 +234,43 @@ type
     property ArgumentList stored False;
     property SkipLines;
 
-    property exeoutput: TPath read FExesPath write FExesPath;
-    property dcuoutput: TPath read FDCUPath  write FDCUPath;
-    property bploutput: TPath read FBPLPath  write FBPLPath;
-    property dcpoutput: TPath read FDCPPath  write FDCPPath;
+    property exeoutput :TPath read FExesPath write FExesPath;
+    property dcuoutput :TPath read FDCUPath  write FDCUPath;
+    property bploutput :TPath read FBPLPath  write FBPLPath;
+    property dcpoutput :TPath read FDCPPath  write FDCPPath;
 
-    property quiet: boolean read FQuiet write FQuiet default true;
-    property make:  boolean read FMake  write FMake;
-    property build: boolean read FBuild write FBuild;
+    property quiet :boolean read FQuiet write FQuiet default true;
+    property make  :boolean read FMake  write FMake  default true;
+    property build :boolean read FBuild write FBuild default false;
 
-    property optimize: boolean read FOptimize write FOptimize;
-    property iochecks: boolean read Fiochecks write Fiochecks;
-    property debug:    boolean read FDebug    write FDebug;
-    property console:  boolean read FConsole  write FConsole;
-    property warnings: boolean read FEnableWarnings write FEnableWarnings default true;
-    property usecfg:   boolean read FUseCFG   write FUseCFG;
+    property assertions     :boolean read FAssertions     write FAssertions     default true;
+    property booleval       :boolean read FBoolEval       write FBoolEval       default false;
+    property optimize       :boolean read FOptimize       write FOptimize       default true;
+    property iochecks       :boolean read FIoChecks       write FIoChecks       default true;
+    property overflowchecks :boolean read FOverFlowChecks write FOverFlowChecks default false;
+    property rangechecks    :boolean read FRangeChecks    write FRangeChecks    default false;
+    property allchecks      :boolean read FAllChecks      write FAllChecks      default false;
+    property debug          :boolean read FDebug          write FDebug          default true;
+    property debuginfo      :boolean read FDebugInfo      write FDebugInfo      default true;
+    property localsymbols   :boolean read FLocalSymbols   write FLocalSymbols   default true;
+    property definitioninfo :boolean read FDefinitionInfo write FDefinitionInfo default true;
+    property referenceinfo  :boolean read FReferenceInfo  write FReferenceInfo  default false;
+    property console        :boolean read FConsole        write FConsole        default false;
+    property warnings       :boolean read FEnableWarnings write FEnableWarnings default true;
+    property hints          :boolean read FEnableHints    write FEnableHints    default false;
+    property usecfg         :boolean read FUseCFG         write FUseCFG         default false;
+    property hugestrings    :boolean read FHugeStrings    write FHugeStrings    default true;
+    property typedaddress   :boolean read FTypedAddress   write FTypedAddress   default false;
+    property stackframes    :boolean read FStackFrames    write FStackFrames    default false;
+    property writableconst  :boolean read FWritableConst  write FWritableConst  default false;
+    property usedebugdcu    :boolean read FUseDebugDCUs   write FUseDebugDCUs   default false;
+    property minenumsize    :integer read FMinEnumSize    write FMinEnumSize    default 1;
 
-    property hugestrings :boolean read FHugeStrings   write FHugeStrings default true;
+    property map            :TMapType read FMap write FMap default none;
 
-    property map       :TMapType read FMap write FMap;
+    property uselibrarypath :boolean read FUseLibraryPath write FUseLibraryPath;
 
-    property uselibrarypath : boolean read FUseLibraryPath write FUseLibraryPath;
-
-    property source : TPath read FSource  write FSource;
+    property source         :TPath read FSource write FSource;
   end;
 
   TResourceCompileTask = class(TCustomDelphiTask)
@@ -289,7 +330,6 @@ type
   protected
     FName  :TWarning;
     FValue :boolean;
-
   public
     procedure Init; override;
   published
@@ -460,14 +500,42 @@ begin
   FDefines        := TStringList.Create;
   FPackages       := TStringList.Create;
 
-  FEnableWarnings := true;
-  FHugeStrings    := true;
+  FQuiet := true;
+  FMake := true;
+  FBuild := false;
 
-  AddWarning(UNSAFE_CODE,       false);
-  AddWarning(SYMBOL_PLATFORM,   false);
-  AddWarning(SYMBOL_DEPRECATED, false);
-  AddWarning(UNIT_PLATFORM,     false);
-  AddWarning(UNIT_DEPRECATED,   false);
+  FAssertions := true;
+  FBoolEval := false;
+  FOptimize := true;
+  FIoChecks := true;
+  FOverFlowChecks := false;
+  FRangeChecks := false;
+  FDebug := true;
+  FLocalSymbols := true;
+  FDefinitionInfo := true;
+  FReferenceInfo := false;
+  FConsole := false;
+  FEnableWarnings := true;
+  FEnableHints := false;
+  FUseCFG := false;
+  FHugeStrings := true;
+  FTypedAddress := false;
+  FStackFrames := false;
+  FWritableConst := false;
+  FUseDebugDCUs := false;
+  FMinEnumSize := 1;
+  FDebugInfo := true;
+  FAllChecks := false;
+
+  FMap := none;
+
+  FUseLibraryPath := true;
+
+  AddWarning(UNSAFE_CODE,       true);
+  AddWarning(SYMBOL_PLATFORM,   true);
+  AddWarning(SYMBOL_DEPRECATED, true);
+  AddWarning(UNIT_PLATFORM,     true);
+  AddWarning(UNIT_DEPRECATED,   true);
 end;
 
 destructor TDelphiCompileTask.Destroy;
@@ -512,7 +580,7 @@ begin
   result := '';
   for path := Low(pathsToOutput) to High(pathsToOutput) do
   begin
-    Log(vlVerbose, '%s %s', [optionDescription,ToRelativePath(pathsToOutput[path])]);
+    Log(vlVerbose, '%s %s', [optionDescription, ToRelativePath(pathsToOutput[path])]);
     Result := Result + PathOpt(optionFlag, pathsToOutput[path]);
   end;
 end;
@@ -533,8 +601,6 @@ var
   cfg    : TPath;
   wname  : string;
 begin
-  Result := inherited BuildArguments + ' ';
-
   Log(vlVerbose, 'sources %s', [ToRelativePath(source)]);
   Sources := WildPaths.Wild(Source, BasePath);
 
@@ -549,10 +615,11 @@ begin
     try
       for s := Low(Sources) to High(Sources) do
       begin
-        if LowerCase(StrRight(Sources[s], 4)) = '.dpr' then
+        if (LowerCase(StrRight(Sources[s], 4)) = '.dpr') or
+           (LowerCase(StrRight(Sources[s], 4)) = '.dpk') then
         begin
           cfg := Sources[s];
-          cfg := StrLeft(cfg, Length(cfg)-4);
+          cfg := StrLeft(cfg, Length(cfg) - 4);
           if PathIsFile(cfg + '.cfg') then
           begin
             Log(vlVerbose, 'Renaming configuration file for %s', [ Sources[s] ]);
@@ -561,7 +628,7 @@ begin
         end;
       end;
     except
-      Log(vlWarnings, 'Could rename configuration file: %s', [cfg]);
+      Log(vlWarnings, 'Could not rename configuration file: %s', [cfg]);
     end;
   end
   else
@@ -591,63 +658,225 @@ begin
     Result := Result + PathOpt('LN', dcpoutput);
   end;
 
-  if console then
+  if (not usecfg) or HasAttribute('console') then
   begin
-    Log(vlVerbose, 'console=true');
-    Result := Result + ' -CC'
-  end
-  else
-    Result := Result + ' -CG';
-
-  if warnings then
-    Result := Result + ' -W'
-  else
-  begin
-    Log(vlVerbose, 'warnings=false');
-    Result := Result + ' -W-';
+    if console then
+    begin
+      Log(vlVerbose, 'console=true');
+      Result := Result + ' -CC'
+    end
+    else
+      Result := Result + ' -CG';
   end;
 
-  if quiet then
-    Result := Result + ' -Q'
-  else
-    Log(vlVerbose, 'verbose=true');
-
-  if build then
+  if (not usecfg) or HasAttribute('warnings') then
   begin
-    Log(vlVerbose, 'build=true');
-    Result := Result + ' -B'
-  end
-  else if make then
-  begin
-    Log(vlVerbose, 'make=true');
-    Result := Result + ' -M';
+    if warnings then
+      Result := Result + ' -W+'
+    else
+    begin
+      Log(vlVerbose, 'warnings=false');
+      Result := Result + ' -W-';
+    end;
   end;
 
-  if optimize then
+  if (not usecfg) or HasAttribute('hints') then
   begin
-    Log(vlVerbose, 'optimize=true');
-    Result := Result + ' -$O+'
-  end
-  else
-    Result := Result + ' -$O-';
+    if hints then
+    begin
+      Log(vlVerbose, 'hints=true');
+      Result := Result + ' -H+';
+    end
+    else
+    begin
+      Result := Result + ' -H-';
+    end;
+  end;
 
-  if debug then
+  if (not usecfg) or HasAttribute('quiet') then
   begin
-    Log(vlVerbose, 'debug=true');
-    Result := Result + ' -$D+ -$L+ -$R+ -$Q+ -$C+ -GD'
-  end
-  else if optimize then
-    Result := Result + ' -$D- -$L- -$R- -$Q- -$C-';
+    if quiet then
+      Result := Result + ' -Q'
+    else
+      Log(vlVerbose, 'verbose=true');
+  end;
 
-  if hugestrings then
-    Result := Result + ' -$H+'
-  else
-    Result := Result + ' -$H-';
+  if (not usecfg) or HasAttribute('build') then
+  begin
+    if build then
+    begin
+      Log(vlVerbose, 'build=true');
+      Result := Result + ' -B'
+    end
+    else if make then
+    begin
+      Log(vlVerbose, 'make=true');
+      Result := Result + ' -M';
+    end;
+  end;
 
-  if iochecks then
-    Result := Result + ' -$I+'
-  else
-    Result := Result + ' -$I-';
+  if (not usecfg) or HasAttribute('optimize') then
+  begin
+    if optimize then
+    begin
+      Log(vlVerbose, 'optimize=true');
+      Result := Result + ' -$O+'
+    end
+    else
+    begin
+      Log(vlVerbose, 'optimize=false');
+      Result := Result + ' -$O-';
+    end;
+  end;
+
+  if (not usecfg) or HasAttribute('debuginfo') then
+  begin
+    if debuginfo then
+    begin
+      Log(vlVerbose, 'debuginfo=true');
+      Result := Result + ' -$D+ -$L+ -$YD'
+    end
+    else
+    begin
+      Log(vlVerbose, 'debuginfo=false');
+      Result := Result + ' -$D- -$L- -$Y-'
+    end;
+  end;
+
+  if HasAttribute('debug') then
+  begin
+    if debug then
+    begin
+      Log(vlVerbose, 'debug=true');
+      Result := Result + ' -$D+'
+    end
+    else
+    begin
+      Log(vlVerbose, 'debug=false');
+      Result := Result + ' -$D-';
+    end;
+  end;
+
+  if HasAttribute('localsymbols') then
+  begin
+    if localsymbols then
+      Result := Result + ' -$L+'
+    else
+      Result := Result + ' -$L-';
+  end;
+
+  if HasAttribute('referenceinfo') or HasAttribute('definitioninfo') then
+  begin
+    if referenceinfo then
+      Result := Result + ' -$Y+'
+    else if definitioninfo then
+      Result := Result + ' -$YD'
+    else
+      Result := Result + ' -$Y-';
+  end;
+
+  if (not usecfg) or HasAttribute('allchecks') then
+  begin
+    if allchecks then
+    begin
+      Log(vlVerbose, 'allchecks=true');
+      Result := Result + ' -$C+ -$Q+ -$R+'
+    end
+    else
+    begin
+      Log(vlVerbose, 'allchecks=false');
+      Result := Result + ' -$C- -$Q- -$R-'
+    end;
+  end;
+
+  if HasAttribute('overflowchecks') then
+  begin
+    if overflowchecks then
+      Result := Result + ' -$Q+'
+    else
+      Result := Result + ' -$Q-';
+  end;
+
+  if HasAttribute('rangechecks') then
+  begin
+    if rangechecks then
+      Result := Result + ' -$R+'
+    else
+      Result := Result + ' -$R-';
+  end;
+
+  if HasAttribute('assertions') then
+  begin
+    if assertions then
+      Result := Result + ' -$C+'
+    else
+      Result := Result + ' -$C-';
+  end;
+
+  if (not usecfg) or HasAttribute('iochecks') then
+  begin
+    if iochecks then
+      Result := Result + ' -$I+'
+    else
+      Result := Result + ' -$I-';
+  end;
+
+  if (not usecfg) or HasAttribute('hugestrings') then
+  begin
+    if hugestrings then
+      Result := Result + ' -$H+'
+    else
+      Result := Result + ' -$H-';
+  end;
+
+  if (not usecfg) or HasAttribute('booleval') then
+  begin
+    if booleval then
+      Result := Result + ' -$B+'
+    else
+      Result := Result + ' -$B-';
+  end;
+
+  if (not usecfg) or HasAttribute('typedaddress') then
+  begin
+    if typedaddress then
+      Result := Result + ' -$T+'
+    else
+      Result := Result + ' -$T-';
+  end;
+
+  if (not usecfg) or HasAttribute('stackframes') then
+  begin
+    if stackframes then
+      Result := Result + ' -$W+'
+    else
+      Result := Result + ' -$W-';
+  end;
+
+  if (not usecfg) or HasAttribute('writableconst') then
+  begin
+    if writableconst then
+      Result := Result + ' -$J+'
+    else
+      Result := Result + ' -$J-';
+  end;
+
+//  if (not usecfg) or HasAttribute('pentiumsafefdiv') then
+//  begin
+//    if pentiumsafefdiv then
+//      Result := Result + ' -$U+'
+//    else
+//      Result := Result + ' -$U-';
+//  end;
+
+  if HasAttribute('minenumsize') then
+  begin
+    if minenumsize in [1,2,4] then
+      Result := Result + ' -$Z' + IntToStr(minenumsize)
+    else
+      Log(vlErrors, 'Invalid enum size value (not one of [1,2,4]): '
+                    + IntToStr(minenumsize));
+  end;
 
   case map of
     segments : Result := Result + ' -GS';
@@ -655,68 +884,94 @@ begin
     detailed : Result := Result + ' -GD';
   end;
 
-  for d := 0 to FDefines.Count-1 do
+  for d := 0 to FDefines.Count - 1 do
   begin
     Log(vlVerbose, 'define %s', [FDefines.Names[d]]);
     Result := Result + ' -D' + FDefines.Names[d];
   end;
 
-
-  for w := Low(TWarning) to High(TWarning) do
+  if (not usecfg) or HasAttribute('warnings') then
   begin
-    if  FVersionNumber >= WarningVersion[w] then
+    if warnings then
     begin
-      wname := GetEnumName(TypeInfo(TWarning), Ord(w));
-      if w in FWarnings then
-        Result := Result + ' -W+' + wname
-      else
-        Result := Result + ' -W-' + wname;
+      for w := Low(TWarning) to High(TWarning) do
+      begin
+        if  FVersionNumber >= WarningVersion[w] then
+        begin
+          wname := GetEnumName(TypeInfo(TWarning), Ord(w));
+          if w in FWarnings then
+            Result := Result + ' -W+' + wname
+          else
+            Result := Result + ' -W-' + wname;
+        end;
+      end;
     end;
   end;
 
-  for p := 0 to FPackages.Count-1 do
+  Result := Result + ' ' + inherited BuildArguments;
+  
+  for p := 0 to FPackages.Count - 1 do
   begin
     Log(vlVerbose, 'package %s', [FPackages[p]]);
     Result := Result + ' -LU' + FPackages[p];
   end;
 
   PS := nil;
-  if not useLibraryPath then
+  if (not usecfg) or HasAttribute('usedebugdcu') then
   begin
-    Result := Result + PathOpt('U', DelphiDir + '\Lib');
-    Result := Result + PathOpt('R', DelphiDir + '\Lib');
-  end
-  else
-  begin
-    Log(vlVerbose, 'uselibrarypath=true');
-    PS := StringToArray(ReadLibraryPaths, ';');
-    try
-      for p := 0 to High(PS) do
-      begin
-        PS[p] := Trim(PS[p]);
-        if PS[p] <> '' then
-        begin
-          PS[p] := StringReplace(PS[p], '$(DELPHI)', DelphiDir, [rfReplaceAll, rfIgnoreCase]);
-          Result := Result + PathOpt('U', PS[p]);
-          Result := Result + PathOpt('R', PS[p]);
-        end;
-      end;
-    finally
-      PS := nil;
+    if usedebugdcu then
+    begin
+      Result := Result + PathOpt('U', DelphiDir + '\Lib\Debug');
+      Result := Result + PathOpt('R', DelphiDir + '\Lib\Debug');
+      Result := Result + PathOpt('I', DelphiDir + '\Lib\Debug');
+    end
+    else if not useLibraryPath then
+    begin
+      Result := Result + PathOpt('U', DelphiDir + '\Lib');
+      Result := Result + PathOpt('R', DelphiDir + '\Lib');
+      Result := Result + PathOpt('I', DelphiDir + '\Lib');
     end;
   end;
 
-  result := result + OutputPathElements('unitpath','U',FUnitPaths.Paths);
+  if (not usecfg) or HasAttribute('uselibrarypath') then
+  begin
+    if useLibraryPath then
+    begin
+      Log(vlVerbose, 'uselibrarypath=true');
+      PS := StringToArray(ReadLibraryPaths, ';');
+      try
+        for p := 0 to High(PS) do
+        begin
+          PS[p] := Trim(PS[p]);
+          if PS[p] <> '' then
+          begin
+            PS[p] := StringReplace(PS[p], '$(DELPHI)', DelphiDir, [rfReplaceAll, rfIgnoreCase]);
+            Result := Result + PathOpt('U', PS[p]);
+            Result := Result + PathOpt('R', PS[p]);
+            Result := Result + PathOpt('I', PS[p]);
+          end;
+        end;
+      finally
+        PS := nil;
+      end;
+    end;
+  end;
+  
+  if (FUnitPaths.Includes.Count <> 0) or (FUnitPaths.Excludes.Count <> 0) or (Length(FUnitPaths.FPatternSets) <> 0) then
+    Result := Result + OutputPathElements('unitpath', 'U', FUnitPaths.Paths);
 
-  result := result + OutputPathElements('resourcepath','R',FResourcePaths.Paths);
+  if (FResourcePaths.Includes.Count <> 0) or (FResourcePaths.Excludes.Count <> 0) or (Length(FResourcePaths.FPatternSets) <> 0) then
+    Result := Result + OutputPathElements('resourcepath', 'R', FResourcePaths.Paths);
 
-  result := result + OutputPathElements('includepath','I',FIncludePaths.Paths);
+  if (FIncludePaths.Includes.Count <> 0) or (FIncludePaths.Excludes.Count <> 0) or (Length(FIncludePaths.FPatternSets) <> 0) then
+    Result := Result + OutputPathElements('includepath', 'I', FIncludePaths.Paths);
 
-  result := result + OutputPathElements('objectpath','O',FObjectPaths.Paths);
+  if (FObjectPaths.Includes.Count <> 0) or (FObjectPaths.Excludes.Count <> 0) or (Length(FObjectPaths.FPatternSets) <> 0) then
+    Result := Result + OutputPathElements('objectpath', 'O', FObjectPaths.Paths);
 
 
   if Length(Sources) = 0 then
-    TaskFailure(Format('could not find %s to compile', [ToSystemPath(PathConcat(BasePath, source))]));
+    TaskFailure(Format('Could not find %s to compile', [ToSystemPath(PathConcat(BasePath, source))]));
 end;
 
 procedure TDelphiCompileTask.AddUnitPath(Path: TPath);
@@ -788,14 +1043,15 @@ begin
   cfgs := nil;
   if not usecfg then
   begin
-    cfgs := Wild('*' +__RENAMED_CFG_EXT);
+    cfgs := Wild('*' + __RENAMED_CFG_EXT);
     try
       for c := Low(cfgs) to High(cfgs) do
       begin
         cfg := cfgs[c];
-        Delete(cfg, 1+Length(cfg) - Length(__RENAMED_CFG_EXT), Length(__RENAMED_CFG_EXT));
+        Delete(cfg, 1 + Length(cfg) - Length(__RENAMED_CFG_EXT), Length(__RENAMED_CFG_EXT));
         cfg := cfg + '.cfg';
-          WildPaths.MoveFile(cfgs[c], cfg);
+        Log(vlDebug, 'Restoring configuration file: %s', [ cfg ]);
+        WildPaths.MoveFile(cfgs[c], cfg);
       end;
     except
       Log(vlWarnings, 'Could not restore configuration file: %s', [cfg]);
