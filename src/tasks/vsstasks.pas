@@ -165,6 +165,8 @@ end;
 
 initialization
   RegisterTasks([TVssGetTask]);
+  RegisterTasks([TVssCheckoutTask]);
+  RegisterTasks([TVssCheckinTask]);
 
 end.
 
