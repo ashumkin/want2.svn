@@ -116,7 +116,7 @@ type
     FOptimize       : boolean;
     FDebug          : boolean;
     FConsole        : boolean;
-    FWarnings       : boolean;
+    FEnableWarnings : boolean;
     FUseLibraryPath : boolean;
     FUseCFG         : boolean;
     FLongStrings    : boolean;
@@ -130,6 +130,7 @@ type
 
     FDefines        : TStrings;
     FPackages       : TStrings;
+    FWarnings       : TStrings;
 
     FRenamedCFGs    :boolean;
 
@@ -141,8 +142,8 @@ type
 
     function OutputPathElements(const optionDescription,
           optionFlag : string;pathsToOutput : TPaths) : string;
-          
-    function PathOpt(Opt :string; Path :TPath) :string;          
+
+    function PathOpt(Opt :string; Path :TPath) :string;
   public
     constructor Create(Owner: TScriptElement); override;
     destructor  Destroy; override;
@@ -158,6 +159,7 @@ type
     procedure AddObjectPath(Path : TPath);
     procedure AddDefine(Name, Value :string);
     procedure AddPackage(Path :string);
+    procedure AddWarning(Name :string; Value :boolean);
 
     procedure RestoreCFGs;
 
@@ -187,7 +189,7 @@ type
     property optimize: boolean read FOptimize write FOptimize;
     property debug:    boolean read FDebug    write FDebug;
     property console:  boolean read FConsole  write FConsole;
-    property warnings: boolean read FWarnings write FWarnings default true;
+    property warnings: boolean read FEnableWarnings write FEnableWarnings default true;
     property usecfg:   boolean read FUseCFG   write FUseCFG;
 
     property longstrings :boolean read FLongStrings   write FLongStrings default true;
@@ -252,6 +254,18 @@ type
   published
     property value :TMapType read FValue write FValue;
   end;
+
+  TWarningElement = class(TOptionElement)
+  protected
+    FValue :boolean;
+
+  public
+    procedure Init; override;
+  published
+    property Name;
+    property Value :boolean read FValue write FValue;
+  end;
+
 
 implementation
 
@@ -390,14 +404,22 @@ begin
   
   FDefines        := TStringList.Create;
   FPackages       := TStringList.Create;
-  FWarnings       := true;
+  FWarnings       := TStringList.Create;
+  FEnableWarnings := true;
   FLongStrings    := true;
+
+  AddWarning('UNSAFE_CODE',       false);
+  AddWarning('SYMBOL_PLATFORM',   false);
+  AddWarning('SYMBOL_DEPRECATED', false);
+  AddWarning('UNIT_PLATFORM',     false);
+  AddWarning('UNIT_DEPRECATED',   false);
 end;
 
 destructor TDelphiCompileTask.Destroy;
 begin
   FreeAndNil(FDefines);
   FreeAndNil(FPackages);
+  FreeAndNil(FWarnings);
   inherited Destroy;
 end;
 
@@ -442,9 +464,9 @@ begin
 end;
 
 function TDelphiCompileTask.PathOpt(Opt :string; Path :TPath) :string;
-  begin
-    Result := Format(' -%s%s', [Opt, ToSystemPath(ToPath(Path))] );
-  end;
+begin
+  Result := Format(' -%s%s', [Opt, ToSystemPath(ToPath(Path))] );
+end;
 
 function TDelphiCompileTask.BuildArguments: string;
 var
@@ -452,6 +474,7 @@ var
   d      : Integer;
   s      : Integer;
   p      : Integer;
+  w      : Integer;
   PS     : TStringArray;
   cfg    : TPath;
 begin
@@ -578,6 +601,12 @@ begin
     Result := Result + ' -D' + FDefines.Names[d];
   end;
 
+
+  for w := 0 to FWarnings.Count-1 do
+  begin
+    Log(vlVerbose, 'warning %s', [FWarnings[w]]);
+    Result := Result + ' -W' + FWarnings[w];
+  end;
 
   for p := 0 to FPackages.Count-1 do
   begin
@@ -709,6 +738,14 @@ begin
 end;
 
 
+procedure TDelphiCompileTask.AddWarning(Name: string; Value :boolean);
+begin
+  if Value then
+    FWarnings.Add('+' + Name)
+  else
+    FWarnings.Add('-' + Name);
+end;
+
 { TResourceCompileTask }
 
 function TResourceCompileTask.BuildArguments: string;
@@ -798,11 +835,20 @@ end;
 
 { TMapElement }
 
+{ TWarningElement }
+
+procedure TWarningElement.Init;
+begin
+  inherited;
+  dcc.AddWarning(Name, Value);
+end;
+
 initialization
   RegisterTasks( [TDelphiCompileTask, TResourceCompileTask]);
   RegisterElements(TDelphiCompileTask, [
                          TDefineElement ,
-                         TUsePackageElement
+                         TUsePackageElement,
+                         TWarningElement
                          ]);
   with TDelphiCompileTask.FindDelphi do
   begin
