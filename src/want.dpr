@@ -22,7 +22,6 @@ uses
   Attributes in 'elements\Attributes.pas',
   DUnitTasks in 'tasks\DUnitTasks.pas',
   ZipStreams in 'lib\ZipStreams.pas',
-  OwnedTrees in 'lib\OwnedTrees.pas',
   WildPaths in 'lib\WildPaths.pas',
   ZipTasks in 'tasks\ZipTasks.pas',
   DelphiTasks in 'tasks\DelphiTasks.pas',

@@ -15,6 +15,8 @@ uses
   Classes,
   TypInfo,
 
+  JALStrings,
+
   WildPaths,
   WantUtils,
   OwnedTrees;
@@ -68,8 +70,6 @@ type
   ETaskException    = class(EWantException);
   ETaskError       = class(ETaskException);
   ETaskFailure     = class(ETaskException);
-
-  TStringArray = array of string;
 
   TScriptElementArray = array of TScriptElement;
 
@@ -307,8 +307,6 @@ procedure RegisterElement(AppliesTo, ElementClass :TScriptElementClass);        
 procedure RegisterElements(ElementClasses:array of TScriptElementClass);                                 overload;
 procedure RegisterElements(AppliesTo : TScriptElementClass; ElementClasses:array of TScriptElementClass); overload;
 
-function  TextToArray(const Text: string; const Delimiter :string = ','): TStringArray;
-
 procedure WantError(Msg: string = ''; Addr :Pointer = nil);
 procedure TaskError(Msg: string = ''; Addr :Pointer = nil);
 
@@ -413,23 +411,6 @@ begin
   for i := Low(TaskClasses) to High(TaskClasses) do
     RegisterTask(TaskClasses[i]);
 end;
-
-function TextToArray(const Text: string; const Delimiter :string): TStringArray;
-var
-  S: TStrings;
-  i: Integer;
-begin
-  S := TStringList.Create;
-  try
-    StrToStrings(Text, Delimiter, S);
-    SetLength(Result, S.Count);
-    for i := 0 to S.Count-1 do
-       Result[i] := Trim(S[i]);
-  finally
-    FreeAndNil(S);
-  end;
-end;
-
 
 function IsBadPointer(P: Pointer):boolean; register;
 begin
@@ -1101,7 +1082,7 @@ begin
     EXIT;
   end;
 
-  Deps := TextToArray(Target.Depends);
+  Deps := StringToArray(Target.Depends);
   for i := Low(Deps) to High(Deps) do
      BuildSchedule(Deps[i], Sched);
 

@@ -17,6 +17,8 @@ uses
 
   JclFileUtils,
 
+  JALStrings,
+
   WildPaths,
 
   WantUtils,

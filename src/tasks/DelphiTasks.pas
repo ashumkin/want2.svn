@@ -22,6 +22,8 @@ uses
   JclRegistry,
   JclStrings,
 
+  JalStrings,
+
   XPerlRe,
 
   WantClasses,
@@ -218,7 +220,7 @@ begin
   vers := nil;
   if versions <> '' then
   begin
-    vers := TextToArray(versions);
+    vers := StringToArray(versions);
     for i := 0 to High(vers) do
     begin
        Result := FindDelphiVersion(vers[i]);

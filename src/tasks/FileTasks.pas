@@ -15,6 +15,8 @@ uses
   SysUtils,
   Classes,
 
+  JALStrings,
+
   WantClasses,
   WildPaths,
   PatternSets;
@@ -152,7 +154,7 @@ var
   Paths: TStringArray;
   p    : Integer;
 begin
-  Paths := TextToArray(Value);
+  Paths := StringToArray(Value);
   for p := Low(Paths) to High(Paths) do
     FFileSets[0].Include(Paths[p]);
 end;
@@ -162,7 +164,7 @@ var
   Paths: TStringArray;
   p    : Integer;
 begin
-  Paths := TextToArray(Value);
+  Paths := StringToArray(Value);
   for p := Low(Paths) to High(Paths) do
     FFileSets[0].Exclude(Paths[p]);
 end;

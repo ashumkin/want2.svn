@@ -7,8 +7,8 @@ uses
 
   JclSysUtils,
 
-  Collections,
-  MiniDom,
+  JALCollections,
+  JALMiniDom,
 
   WildPaths,
   WantClasses;
@@ -25,9 +25,9 @@ type
     class procedure ParseError(Msg :string; Line, Col :Integer);
 
     class function  XMLAttsToStrings(Node :IElement) :TStrings;
-    class procedure ParseXML(Elem :TScriptElement; Node: MiniDom.IElement; Atts :TStrings);
-    class procedure ParseXMLChild(Parent :TScriptElement; Child: MiniDom.IElement);
-    class procedure ParseProject(Project :TProject; Dom : MiniDom.IDocument);
+    class procedure ParseXML(Elem :TScriptElement; Node: JALMiniDOM.IElement; Atts :TStrings);
+    class procedure ParseXMLChild(Parent :TScriptElement; Child: JALMiniDOM.IElement);
+    class procedure ParseProject(Project :TProject; Dom : JALMiniDOM.IDocument);
   public
     class procedure ParseText(Project :TProject; XML: string);
     class procedure Parse(Project :TProject; const Path: TPath = '');
@@ -50,8 +50,8 @@ end;
 class function TScriptParser.XMLAttsToStrings(Node: IElement): TStrings;
 var
   i :IIterator;
-  child: MiniDom.INode;
-  text : MiniDom.ITextNode;
+  child: JALMiniDOM.INode;
+  text : JALMiniDOM.ITextNode;
   s    : string;
 begin
   Result := TStringList.Create;
@@ -106,7 +106,7 @@ end;
 class procedure TScriptParser.ParseXML(Elem :TScriptElement; Node: IElement; Atts : TStrings);
 var
   i     :IIterator;
-  child :MiniDom.IElement;
+  child :JALMiniDOM.IElement;
 begin
   i := nil;
   try
@@ -126,7 +126,7 @@ begin
 end;
 
 
-class procedure TScriptParser.ParseProject(Project: TProject; Dom : MiniDom.IDocument);
+class procedure TScriptParser.ParseProject(Project: TProject; Dom : JALMiniDOM.IDocument);
 var
   Atts    :TStrings;
 begin
@@ -141,7 +141,7 @@ end;
 
 class procedure TScriptParser.ParseText(Project: TProject; XML: string);
 begin
-  ParseProject(Project, MiniDom.ParseTextToDom(XML));
+  ParseProject(Project, JALMiniDOM.ParseTextToDom(XML));
 end;
 
 
@@ -157,7 +157,7 @@ begin
 
   BuildFile := Project.ToAbsolutePath(BuildFile);
   Project.RootPath := SuperPath(BuildFile);
-  Dom := MiniDom.ParseToDom(ToSystemPath(BuildFile));
+  Dom := JALMiniDOM.ParseToDom(ToSystemPath(BuildFile));
   try
     ParseProject(Project, Dom);
   except

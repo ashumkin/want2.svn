@@ -12,7 +12,6 @@ unit PatternSets;
 interface
 uses
   Classes,
-  MiniDOM,
   WildPaths,
   WantUtils,
   WantClasses;

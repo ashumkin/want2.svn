@@ -15,6 +15,7 @@ uses
   Classes,
 
   JclStrings,
+  JalStrings,
 
   CRT32,
 
