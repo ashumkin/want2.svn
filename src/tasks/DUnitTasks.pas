@@ -88,14 +88,14 @@ begin
   Log(vlVerbose, '+ ' + test.Name);
 end;
 
-procedure TDUnitTask.EndTest(test: ITest);
-begin
-  Log(vlDebug, ' %s ends', [test.Name]);
-end;
-
 procedure TDUnitTask.StartTest(test: ITest);
 begin
-  Log(vlDebug, ' %s starts', [test.Name]);
+  Log(vlDebug, '[ %s', [test.Name]);
+end;
+
+procedure TDUnitTask.EndTest(test: ITest);
+begin
+  Log(vlDebug, '] %s', [test.Name]);
 end;
 
 procedure TDUnitTask.TestingStarts;
