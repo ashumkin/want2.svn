@@ -412,7 +412,7 @@ end;
 function TDelphiCompileTask.BuildArguments: string;
   function PathOpt(Opt :string; Path :TPath) :string;
   begin
-    Result := Format(' -%s"%s"', [Opt, ToSystemPath(Path)] );
+    Result := Format(' -%s"%s"', [Opt, ToSystemPath(ToPath(Path))] );
   end;
 
 var
@@ -555,8 +555,8 @@ begin
         if PS[p] <> '' then
         begin
           PS[p] := StringReplace(PS[p], '$(DELPHI)', DelphiDir, [rfReplaceAll, rfIgnoreCase]);
-          Result := Result + ' -U' + PS[p];
-          Result := Result + ' -R' + PS[p];
+          Result := Result + PathOpt('U', PS[p]);
+          Result := Result + PathOpt('R', PS[p]);
         end;
       end;
     finally
