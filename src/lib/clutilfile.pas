@@ -62,7 +62,7 @@ type
 
   TclFileCompare = class(TObject)
   public
-    function CompareFiles(AFileName, BFileName: string): boolean;
+    class function CompareFiles(AFileName, BFileName: string): boolean;
   end;
 
   TclDirectoryCompare = class(TObject)
@@ -170,7 +170,11 @@ begin
       begin
         if not IsDirectory(FAFiles[i]) then
           Result := AFileComp.CompareFiles(FAFiles[i], FBFiles[i]);
-        if not Result then break;
+        if not Result then
+        begin
+          Result := False; // just to have where to put a breakpoint
+          break;
+        end;
       end;
     finally
       AFileComp.Free;
@@ -238,8 +242,7 @@ end;
 
 { TclFileCompare }
 
-function TclFileCompare.CompareFiles(AFileName,
-  BFileName: string): boolean;
+class function TclFileCompare.CompareFiles(AFileName, BFileName: string): boolean;
 var
   A: file;
   B: file;
