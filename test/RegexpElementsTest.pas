@@ -14,7 +14,7 @@ list of conditions and the following disclaimer.
 this list of conditions and the following disclaimer in the documentation and/or
 other materials provided with the distribution.
 
-3. The name Juancarlo Añez and the names of contributors to this software
+3. The names Chris Morris, Dante and the names of contributors to this software
 may not be used to endorse or promote products derived from this software
 without specific prior written permission.
 
@@ -29,46 +29,44 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR
 TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
 THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 --------------------------------------------------------------------------------
-Original author: Juancarlo Añez
-Contributors   :
+(based on BSD Open Source License)
 }
-unit FileSets;
+unit RegexpElementsTest;
 
 interface
 uses
-  WildPaths,
+  TestFramework,
   DanteClasses,
-  //PatternSets,
-
-  SysUtils,
-  Classes;
+  DanteClassesTest,
+  RegexpElements;
 
 type
-  TFileSet  = class(TPatternSet)
-  public
-    procedure AddDefaultPatterns; virtual;
+  TPerlRETests = class(TProjectBaseCase)
   published
-    property dir: TPath read GetBaseDir write SetBaseDir;
+    procedure Test;
   end;
+
 
 implementation
 
-{ TFileSet }
+{ TPerlRETests }
 
-procedure TFileSet.AddDefaultPatterns;
+procedure TPerlRETests.Test;
+const
+  build_xml = ''
+  +#10'<project name="test" default="dotest" >'
+  +#10'  <target name="dotest">'
+  +#10'    <regexp property="subst" pattern="\." subst="_" text="1.2.3">'
+  +#10'    </regexp>'
+  +#10'  </target>'
+  +#10'</project>'
+  +'';
 begin
-  // add the default Ant excludes
-  Exclude('**/*~');
-  Exclude('**/#*#');
-  Exclude('**/%*%');
-  Exclude('**/CVS');
-  Exclude('**/CVS/*');
-  Exclude('**/.cvsignore');                                                                 
-
-  // Some additional excludes
-  Exclude('**/*.*~*');
-  Exclude('**/*.bak');
-  Exclude('**/dunit.ini');
+  FProject.ParseXMLText(build_xml);
+  FProject.Build;
+  CheckEquals('1_2_3', FProject.Targets[0].PropertyValue('subst'));
 end;
 
+initialization
+  RegisterTests('Regexp', [TPerlRETests.Suite]);
 end.

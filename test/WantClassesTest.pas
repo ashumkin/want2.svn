@@ -37,6 +37,7 @@ interface
 uses
   WildPaths,
   DanteClasses,
+  StandardElements,
   ExecTasks,
   DelphiTasks,
 
@@ -73,11 +74,9 @@ type
 
   TSaveProjectTests = class(TProjectBaseCase)
     procedure BuildTestProject;
-    procedure __TestParse;
   published
     procedure TestInMemoryConstruction;
     procedure TestParseXML;
-    procedure TestSaveLoad;
   end;
 
   TBuildTests = class(TProjectBaseCase)
@@ -111,19 +110,19 @@ type
 
   TDummyTask1 = class(TTask)
   public
-    class function XMLTag :string; override;
+    class function TagName :string; override;
     procedure Execute; override;
   end;
 
   TDummyTask2 = class(TDummyTask1)
-    class function XMLTag :string; override;
+    class function TagName :string; override;
   end;
 
   TDummyTask3 = class(TDummyTask1)
   protected
     FAProp: string;
   published
-    class function XMLTag :string; override;
+    class function TagName :string; override;
     property AProp: string read FAProp write FAProp;
   end;
 
@@ -132,7 +131,7 @@ type
     FExpected :string;
     FActual   :string;
   public
-    class function XMLTag :string; override;
+    class function TagName :string; override;
     procedure Init;    override;
     procedure Execute; override;
   published
@@ -254,35 +253,10 @@ begin
   CheckEquals('TDummyTask3', FProject[1][1].ClassName);
 end;
 
-procedure TSaveProjectTests.__TestParse;
-begin
-  FProject.Parse(Expected);
-  CheckEquals(Expected, FProject.AsString);
-end;
-
 procedure TSaveProjectTests.TestParseXML;
 begin
   FProject.ParseXMLText(ExpectedXML);
   CheckEquals(ExpectedXML, CR+FProject.AsXML);
-end;
-
-procedure TSaveProjectTests.TestSaveLoad;
-var
-  P: TProject;
-begin
-  BuildTestProject;
-  FProject.Save('build1.dfm');
-  P := TProject.Create;
-  try
-    P.Load('build1.dfm');
-    CheckEquals(FProject.AsString, P.AsString);
-    CheckEquals(2, P.TargetCount);
-    CheckEquals(1, P[0].TaskCount);
-    CheckEquals(2, P[1].TaskCount);
-    CheckEquals('TDummyTask3', P[1][1].ClassName);
-  finally
-    P.Free;
-  end;
 end;
 
 { TBuildTests }
@@ -371,27 +345,27 @@ procedure TDummyTask1.Execute;
 begin
 end;
 
-class function TDummyTask1.XMLTag: string;
+class function TDummyTask1.TagName: string;
 begin
   Result := 'dummy1';
 end;
 { TDummyTask2 }
 
-class function TDummyTask2.XMLTag: string;
+class function TDummyTask2.TagName: string;
 begin
   Result := 'dummy2';
 end;
 
 { TDummyTask3 }
 
-class function TDummyTask3.XMLTag: string;
+class function TDummyTask3.TagName: string;
 begin
   Result := 'dummy3';
 end;
 
 { TCompareValuesTask }
 
-class function TCompareValuesTask.XMLTag: string;
+class function TCompareValuesTask.TagName: string;
 begin
   Result := 'check';
 end;

@@ -52,6 +52,7 @@ See http://dante.sourceforge.net for details
   <property name="jcl"     value="${lib}/jcl" />
   <property name="xml"     value="${lib}/xml" />
   <property name="paszlib" value="${lib}/paszlib" />
+  <property name="regexp"  value="${lib}/perlre" />
 
 
   <target name="prepare" >
@@ -89,9 +90,11 @@ See http://dante.sourceforge.net for details
     >
       <unit path="${jcl}" />
       <unit path="${xml}" />
+      <unit path="${regexp}" />
 
       <unit path="${src}/lib" />
       <unit path="${src}/tasks" />
+      <unit path="${src}/elements" />
 
       <unit path="${paszlib}" />
       <unit path="${paszlib}/minizip" />

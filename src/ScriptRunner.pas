@@ -43,7 +43,11 @@ uses
   JclMiscel,
   JclStrings,
 
-  DanteClasses;
+  DanteClasses,
+  StandardElements,
+  StandardTasks,
+  CustomTasks;
+
 
 
 type

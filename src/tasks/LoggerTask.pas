@@ -60,7 +60,7 @@ type
     constructor Create(Owner :TDanteElement); override;
     destructor Destroy; override;
 
-    class function XMLTag :string; override;
+    class function TagName :string; override;
 
     procedure Init; override;
     procedure Execute;  override;
@@ -73,7 +73,7 @@ type
 
 implementation
 
-class function TLoggerTask.XMLTag :string;
+class function TLoggerTask.TagName :string;
 begin
   Result := 'log';
 end;

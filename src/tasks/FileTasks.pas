@@ -42,7 +42,7 @@ uses
 
   DanteClasses,
   WildPaths,
-  FileSets;
+  PatternSets;
 
 
 type

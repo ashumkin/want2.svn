@@ -35,7 +35,7 @@ unit FileSetTests;
 interface
 uses
   WildPaths,
-  FileSets,
+  PatternSets,
   TestFramework,
 
   SysUtils,

@@ -38,7 +38,7 @@ interface
 uses
   DanteClasses,
   WildPaths,
-  FileSets,
+  PatternSets,
 
   SysUtils,
   Classes;

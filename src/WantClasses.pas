@@ -47,14 +47,18 @@ uses
   MiniDom,
 
   JclSysInfo,
-  JclStrings;
+  JclStrings,
 
+  OwnedTrees;
+
+
+{$M+} { TURN ON RTTI (RunTime Type Information) }
 
 const
   BuildFileName = 'build.xml';
 
   SupportedPropertyTypes = [
-     //tkInteger,
+     tkInteger,
      tkEnumeration,
      tkString,
      tkLString,
@@ -65,12 +69,12 @@ const
 type
   TDanteElement = class;
   TDanteElementClass = class of TDanteElement;
+  TDanteElementClassArray = array of TDanteElementClass;
 
   TProject    = class;
   TTarget     = class;
   TTask       = class;
   TTaskClass  = class of TTask;
-  TPatternSet = class;
 
   EDanteException   = class(Exception);
   EDanteError       = class(EDanteException);
@@ -109,19 +113,17 @@ type
   TLogMethod = procedure(Msg: string; Verbosity: TVerbosityLevel) of object;
 
 
-
-  // for implementing <property> elements
-  TPropertyElement = class;
-
-  TDanteElement = class(TComponent)
+  TDanteElement = class(TTree)
   protected
-    FName   : string;      // ditch TComponent.Name
+    FName   : string;
     FId     : string;      // element Id
     FBaseDir: TPath;       // where paths for this object are based
 
     FProperties:  TStrings;
     FAttributes:  TStrings;
 
+
+    function GetChild(i :Integer):TDanteElement;
 
     function  GetBaseDir: TPath;              virtual;
     procedure SetBaseDir(const Value: TPath); virtual;
@@ -130,10 +132,7 @@ type
 
     function GetOwner: TDanteElement; reintroduce;
     function GetProject: TProject;
-    function NewName: string;
 
-    procedure GetChildren(Proc: TGetChildProc; Root: TComponent); override;
-    function  GetChildOwner: TComponent; override;
     function  GetChildrenTyped(AClass: TDanteElementClass = nil):  TDanteElementArray;
 
     procedure Log(Msg: string = ''; Verbosity: TVerbosityLevel = vlNormal);           overload; virtual;
@@ -146,17 +145,17 @@ type
 
     procedure RequireAttribute(Name: string);
     procedure AttributeRequiredError(AttName: string);
-  public
-    constructor Create(Owner: TComponent);    overload; override;
-    constructor Create(Owner: TDanteElement); reintroduce; overload; virtual;
-
-    destructor Destroy; override;
-
-    class function XMLTag: string; virtual;
 
     procedure ParseXML(Node: MiniDom.IElement);               virtual;
     function  ParseXMLChild(Child: MiniDom.IElement):boolean; virtual;
     procedure ParseError(Msg: string; Line: Integer);
+  public
+    constructor Create(Owner: TDanteElement); reintroduce; overload; virtual;
+
+    destructor Destroy; override;
+
+    class function TagName: string; virtual;
+
     procedure Init;                                       virtual;
 
     function  AsXML    : string;                virtual;
@@ -170,6 +169,7 @@ type
 
     procedure SetProperties(Value: TStrings);
 
+    function  HasAttribute(Name :string) : boolean;
     function  SetAttribute(Name, Value: string): boolean; virtual;
     function  GetAttribute(Name :string) : string;        virtual;
     procedure SetAttributes(Value :TStrings);
@@ -190,17 +190,19 @@ type
 
     property  Project: TProject      read GetProject;
     property  Owner :  TDanteElement read GetOwner;
-    property  Tag stored False;
 
     property id     :    string   read FId         write SetId;
     property basedir:    TPath    read GetBaseDir  write SetBaseDir;
     property Properties: TStrings read FProperties write SetProperties;
     property Attributes: TStrings read FAttributes write SetAttributes;
-  published
-    function CreateProperty   : TPropertyElement; virtual;
-
     property Name:  string read FName write FName stored True;
+
+    property Children[i :Integer] :TDanteElement read GetChild;
+  published
+    property Tag :  string read TagName stored False;
   end;
+
+
 
 
   TProject = class(TDanteElement)
@@ -214,7 +216,8 @@ type
 
     FOnLog: TLogMethod;
 
-    procedure Notification(AComponent: TComponent; Operation: TOperation); override;
+    procedure InsertNotification(Child :TTree); override;
+    procedure RemoveNotification(Child :TTree); override;
 
     function  GetTarget(Index: Integer):TTarget;
     procedure BuildSchedule(TargetName: string; Sched: TList);
@@ -232,29 +235,21 @@ type
 
     procedure SetInitialBaseDir(Path: TPath);
 
-    class function XMLTag: string; override;
+    class function TagName: string; override;
     function FindBuildFile(BuildFile: TPath = ''):string;
 
 
     function  ToXML(Dom: IDocument):  IElement; override;
-
-    procedure Parse(const Image: string);
     procedure ParseXMLText(const XML: string);
-
-    procedure Load(const Path: string);
     procedure LoadXML(const SystemPath: TSystemPath = ''; FindFile: boolean = true);
-    procedure Save(const Path: string);
-
 
     function  FindChild(Id: string; ChildClass: TClass = nil): TDanteElement;
-
 
     // use this to get the fully qualified base path
     function  BasePath: string; override;
     // use this function in Tasks to let the user specify relative
     // directories that work consistently
 
-    function  AsString:     string;
     function  AddTarget(Name: string): TTarget;
     function  TargetCount:  Integer;
 
@@ -275,7 +270,6 @@ type
     property OnLog: TLogMethod read FOnLog write FOnLog;
   published
     function CreateTarget    : TTarget;
-    function CreatePatternSet: TPatternSet;      virtual;
 
 
     property basedir;
@@ -297,14 +291,15 @@ type
     FTasks:   TList;
     FDepends: string;
 
-    procedure Notification(AComponent: TComponent; Operation: TOperation); override;
+    procedure InsertNotification(Child :TTree); override;
+    procedure RemoveNotification(Child :TTree); override;
+
     function GetTask(Index: Integer):TTask;
   public
     constructor Create(Owner: TDanteElement); override;
     destructor  Destroy; override;
 
-    class function XMLTag: string; override;
-    function  ParseXMLChild(Child: MiniDom.IElement):boolean; override;
+    class function TagName: string; override;
     function  ToXML(Dom: IDocument):  IElement; override;
 
     function TaskCount: Integer;
@@ -318,102 +313,32 @@ type
     property Depends: string read FDepends write FDepends;
   end;
 
+
+
   TTask = class(TDanteElement)
   protected
     procedure DoExecute;
   public
-    class function XMLTag: string; override;
+    class function TagName: string; override;
 
     function BasePath: string; override;
     function Target: TTarget;
 
-    procedure Execute; virtual; 
+    procedure Execute; virtual;
     procedure Log(Msg: string = ''; Verbosity: TVerbosityLevel = vlNormal); override;
 
     property Name stored False;
   published
   end;
 
-  TPropertyElement = class(TDanteElement)
-  protected
-    FName: string;
-    FValue: string;
-  public
-    procedure Init; override;
-  published
-    property name: string read FName  write FName;
-    property value: string read FValue write FValue;
-  end;
-
-
-  // implementation of <patternset> elements
-
-  TPatternPart = class(TDanteElement)
-  protected
-    procedure SetValue(Value: string); virtual; abstract;
-  published
-    property name: string write SetValue;
-  end;
-
-  TIncludeElement = class(TPatternPart)
-    procedure SetValue(Value: string); override;
-  end;
-
-  TExcludeElement = class(TPatternPart)
-    procedure SetValue(Value: string); override;
-  end;
-
-  TPatternSet = class(TDanteElement)
-  protected
-    FIncludes: TStrings;
-    FExcludes: TStrings;
-
-    FPatternSets: array of TPatternSet;
-
-    procedure AddPatternSet(APatternSet: TPatternSet);
-
-    procedure SetIncludes(Value: TStrings);
-    procedure SetExcludes(Value: TStrings);
-
-    procedure DoInclude(Files: TStrings; Pattern: TPath; Base: string);
-    procedure DoExclude(Files: TStrings; Pattern: TPath; Base: string);
-
-    procedure DoIncludes(Files: TStrings; Base: string);
-    procedure DoExcludes(Files: TStrings; Base: string);
-
-  public
-    constructor Create(Owner: TDanteElement); override;
-    destructor  Destroy; override;
-
-    function ParseXMLChild(Child: MiniDom.IElement):boolean; override;
-
-    procedure Include(Pattern: TPath);  overload;
-    procedure Exclude(Pattern: TPath);  overload;
-
-
-    function  Paths  : TPaths;
-    procedure GetPaths(Files: TStrings);
-    procedure AddPaths(Paths: TPaths);
-
-    function SystemPaths: TSystemPaths;
-    function RelativePaths: TPaths;
-    function MovePaths(ToBase: TPath): TPaths;
-
-    property Includes: TStrings read FIncludes;
-    property Excludes: TStrings read FExcludes;
-  published
-    function createInclude: TIncludeElement;
-    function createExclude: TExcludeElement;
-    function createPatternSet: TPatternSet;
-
-    property id;
-  end;
-
-
 
 function  FindTask(Tag: string): TTaskClass;
 procedure RegisterTask(TaskClass: TTaskClass);
 procedure RegisterTasks(TaskClasses: array of TTaskClass);
+
+function  FindElement(Tag :string; AppliedTo :TClass = nil) :TDanteElementClass;
+procedure RegisterElement(ElementClass :TDanteElementClass; AppliesTo : TDanteElementClass = nil); overload;
+procedure RegisterElement(ElementClass :TDanteElementClass; AppliesTo : TDanteElementClassArray); overload;
 
 function CommaTextToArray(Text: string): TStringArray;
 
@@ -424,9 +349,100 @@ procedure TaskFailure(Msg: string = '');
 
 implementation
 
-var
-  __TaskRegistry: TStringList = nil;
+type
+  TElementRecord = record
+    ElementClass :TDanteElementClass;
+    AppliesTo    :TDanteElementClassArray;
+  end;
 
+var
+  __ElementRegistry :array of TElementRecord;
+
+
+function  FindElement(Tag :string; AppliedTo :TClass) :TDanteElementClass;
+var
+  i :Integer;
+  c :Integer;
+begin
+  Assert(Tag <> '');
+
+  Tag := LowerCase(Tag);
+  Result := nil;
+  // going from High to Low lets customizer override existing elements 
+  for i := High(__ElementRegistry) downto Low(__ElementRegistry) do
+    with __ElementRegistry[i] do
+    begin
+      if (ElementClass.TagName <> Tag) then
+        continue;
+      if AppliedTo = nil then
+      begin
+          Result := ElementClass;
+          Break;
+      end;
+      for c := Low(AppliesTo) to High(AppliesTo) do
+      begin
+        if AppliedTo.InheritsFrom(AppliesTo[c]) then
+        begin
+          Result := ElementClass;
+          Break;
+        end;
+      end;
+    end;
+end;
+
+procedure RegisterElement(ElementClass :TDanteElementClass; AppliesTo :TDanteElementClassArray);
+var
+  pos :Integer;
+begin
+  Assert(ElementClass <> nil);
+  Assert(Length(AppliesTo) > 0);
+
+  pos := Length(__ElementRegistry);
+  SetLength(__ElementRegistry, 1 + pos);
+
+  __ElementRegistry[pos].ElementClass := ElementClass;
+  __ElementRegistry[pos].AppliesTo    := AppliesTo;
+end;
+
+procedure RegisterElement(ElementClass :TDanteElementClass; AppliesTo : TDanteElementClass);
+var
+  Applies :TDanteElementClassArray;
+begin
+  Assert(ElementClass <> nil);
+
+  if AppliesTo = nil then
+    AppliesTo := TDanteElement;
+
+  SetLength(Applies, 1);
+  Applies[0] := AppliesTo;
+  RegisterElement(ElementClass, Applies);
+end;
+
+function FindTask(Tag: string): TTaskClass;
+var
+  C :TDanteElementClass;
+begin
+  Result := nil;
+  C := FindElement(Tag, TTarget);
+  if (C = nil) or not C.InheritsFrom(TTask) then
+    TaskError(Format('Task class <%s> not found', [Tag]) )
+  else
+    Result := TTaskClass(C);
+end;
+
+
+procedure RegisterTask(TaskClass: TTaskClass);
+begin
+  RegisterElement(TaskClass, TTarget);
+end;
+
+procedure RegisterTasks(TaskClasses: array of TTaskClass);
+var
+  i: Integer;
+begin
+  for i := Low(TaskClasses) to High(TaskClasses) do
+    RegisterTask(TaskClasses[i]);
+end;
 
 procedure RaiseLastSystemError(Msg: string = '');
 begin
@@ -440,7 +456,7 @@ var
 begin
   S := TStringList.Create;
   try
-    S.CommaText := Text;
+    StrToStrings(Text, ',', S);
     SetLength(Result, S.Count);
     for i := 0 to S.Count-1 do
        Result[i] := Trim(S[i]);
@@ -474,11 +490,6 @@ begin
   FAttributes := TStringList.Create;
 end;
 
-constructor TDanteElement.Create(Owner: TComponent);
-begin
-  Self.Create(Owner as TDanteElement);
-end;
-
 destructor TDanteElement.Destroy;
 begin
   FAttributes.Free;
@@ -486,26 +497,14 @@ begin
   inherited Destroy;
 end;
 
-function TDanteElement.GetChildOwner: TComponent;
+function TDanteElement.GetChild(i: Integer): TDanteElement;
 begin
-  Result := self;
+  Result := inherited GetChild(i) as TDanteElement;
 end;
-
-procedure TDanteElement.GetChildren(Proc: TGetChildProc; Root: TComponent);
-var
-  I: Integer;
-begin
-  inherited GetChildren(Proc, Root);
-  for I := 0 to ComponentCount - 1 do
-  begin
-    Proc(Components[I]);
-  end;
-end;
-
 
 function TDanteElement.GetOwner: TDanteElement;
 begin
-  Result := inherited GetOwner as TDanteElement;
+  Result := Parent as TDanteElement;
 end;
 
 function TDanteElement.GetProject: TProject;
@@ -518,31 +517,16 @@ begin
     Result := Owner.Project;
 end;
 
-class function TDanteElement.XMLTag: string;
+class function TDanteElement.TagName: string;
 const
-  Comp = 'component';
   Elem = 'element';
 begin
   Result := copy(ClassName, 2, 255);
   Result := LowerCase(Result);
-  if Pos(Comp, Result) = (1 + Length(Result) - Length(Comp)) then
-    Result := StringReplace(Result, Comp, '', [])
-  else if Pos(Elem, Result) = (1 + Length(Result) - Length(Elem)) then
+  if Pos(Elem, Result) = (1 + Length(Result) - Length(Elem)) then
     Result := StringReplace(Result, Elem, '', []);
 end;
 
-
-function TDanteElement.NewName: string;
-var
-  i:   Integer;
-begin
-  for i := 0 to MaxInt do
-  begin
-    Result := Format('%s_%d', [ClassName, i]);
-    if (Owner = nil) or (Owner.FindComponent(Result) = nil) then
-      break;
-  end;
-end;
 
 procedure TDanteElement.Init;
 begin
@@ -558,9 +542,9 @@ var
   text : MiniDom.ITextNode;
 begin
   Log(vlDebug, 'Parsing %s', [Node.Name]);
-  if Node.Name <> Self.XMLTag then
+  if Node.Name <> Self.TagName then
     ParseError(Format('XML tag of class <%s> is <%s> but found <%s>',
-                      [ClassName, XMLTag, NOde.Name]
+                      [ClassName, TagName, NOde.Name]
                       ), Node.LineNo);
 
   i := Node.Attributes.Iterator;
@@ -576,7 +560,7 @@ begin
           ParseError(e.Message, Node.LineNo);
       end;
       if not valid then
-        ParseError(Format('Unknown attribute <%s>.%s', [XMLTag, Name]), Node.LineNo);
+        ParseError(Format('Unknown attribute <%s>.%s', [TagName, Name]), Node.LineNo);
     end;
   end;
 
@@ -591,21 +575,29 @@ begin
     if 0 = child.QueryInterface(IElement, elem)  then
     begin
       if not ParseXMLChild(elem) then
-        ParseError(Format('Unknown element <%s><%s>', [XMLTag, elem.Name] ), Child.LineNo);
+        ParseError(Format('Unknown element <%s><%s>', [TagName, elem.Name] ), Child.LineNo);
     end
     else if 0 = child.QueryInterface(ITextNode, text)  then
     begin
       if not SetAttribute('text', trim(text.text)) then
-        ParseError(Format('Element <%s> does not accept text', [XMLTag]), Child.LineNo);
+        ParseError(Format('Element <%s> does not accept text', [TagName]), Child.LineNo);
     end;
   end;
 end;
+
+
+function TDanteElement.HasAttribute(Name: string): boolean;
+begin
+  Result := FAttributes.IndexOf(Name) >= 0;
+end;
+
 
 function TDanteElement.SetAttribute(Name, Value: string): boolean;
 begin
   FAttributes.Values[Name] := Value;
   Result := SetDelphiProperty(Name, ExpandMacros(Value));
 end;
+
 
 function TDanteElement.GetAttribute(Name: string): string;
 begin
@@ -625,23 +617,30 @@ function TDanteElement.ParseXMLChild(Child: IElement): boolean;
 var
   MethodName: string;
   Method    : TMethod;
-  Comp      : TDanteElement;
+  ElemClass : TDanteElementClass;
+  Elem      : TDanteElement;
 begin
   Result := true;
+
+  Elem := nil;
 
   Method.Data  := Self;
   MethodName   := 'Create' + Child.Name;
   Method.Code  := MethodAddress(MethodName);
 
-  if Method.Code = nil then
-    Result := False
-  else begin
-    Comp := TCreateElementMethod(Method)();
-    if Comp <> nil then
-      Comp.ParseXML(Child)
-    else
-      Result := false;
+  if Method.Code <> nil then
+    Elem := TCreateElementMethod(Method)()
+  else
+  begin
+    ElemClass := FindElement(Child.Name, Self.ClassType);
+    if ElemClass <> nil then
+      Elem := ElemClass.Create(Self);
   end;
+
+  if Elem <> nil then
+    Elem.ParseXML(Child)
+  else
+    Result := false;
 end;
 
 procedure TDanteElement.ParseError(Msg: string; Line: Integer);
@@ -664,7 +663,7 @@ var
   PropName:  string;
   PropValue: string;
 begin
-  Result := Dom.NewElement(XMLTag);
+  Result := Dom.NewElement(TagName);
 
   TypeInfo  := Self.ClassInfo;
   PropCount := GetTypeData(TypeInfo).PropCount;
@@ -755,16 +754,16 @@ end;
 function TDanteElement.GetChildrenTyped(AClass: TDanteElementClass): TDanteElementArray;
 var
   List: TList;
-  C   : TComponent;
+  E   : TDanteElement;
   i   : Integer;
 begin
   List := TList.Create;
   try
-    for i := 0 to ComponentCount-1 do
+    for i := 0 to ChildCount-1 do
     begin
-      C := Components[i];
-      if (AClass = nil) or C.InheritsFrom(AClass) then
-        List.Add(C);
+      E := Children[i];
+      if (AClass = nil) or E.InheritsFrom(AClass) then
+        List.Add(E);
     end;
     SetLength(Result, List.Count);
     for i := 0 to List.Count-1 do
@@ -789,6 +788,7 @@ var
   Lines: TStrings;
   i    : Integer;
 begin
+  Msg := Msg + ' ';
   Msg := StringReplace(Msg, #13#10,'@@', [rfReplaceAll]);
   Msg := StringReplace(Msg, #10#13,'@@', [rfReplaceAll]);
   Msg := StringReplace(Msg, #13,'@@',    [rfReplaceAll]);
@@ -858,11 +858,6 @@ begin
 end;
 
 
-
-function TDanteElement.CreateProperty: TPropertyElement;
-begin
-  Result := TPropertyElement.Create(Self);
-end;
 
 procedure TDanteElement.SetProperties(Value: TStrings);
 begin
@@ -1034,51 +1029,11 @@ end;
 
 destructor TProject.Destroy;
 begin
-  FTargets.Free;
+  FTargets.Clear;
   inherited Destroy;
+  FTargets.Free;
+  FTargets := nil;
 end;
-
-function TProject.AsString: string;
-var
-  MemStream: TMemoryStream;
-  StrStream: TStringStream;
-begin
-  MemStream  := TMemoryStream.Create;
-  try
-    MemStream.WriteComponent(self);
-    MemStream.Position := 0;
-    StrStream := TStringStream.Create('');
-    try
-      ObjectBinaryToText(MemStream, StrStream);
-      Result := StrStream.DataString;
-    finally
-       StrStream.Free
-    end;
-  finally
-    MemStream.Free;
-  end;
-end;
-
-procedure TProject.Parse(const Image: string);
-var
-  MemStream: TMemoryStream;
-  StrStream: TStringStream;
-begin
-  MemStream := TMemoryStream.Create;
-  try
-    StrStream := TStringStream.Create(Image);
-    try
-      ObjectTextToBinary(StrStream, MemStream);
-    finally
-      StrStream.Free;
-    end;
-    MemStream.Position := 0;
-    MemStream.ReadComponent(self);
-  finally
-    MemStream.Free
-  end;
-end;
-
 
 function TProject.CreateTarget: TTarget;
 begin
@@ -1101,42 +1056,15 @@ begin
   Result := FTargets.Count;
 end;
 
-procedure TProject.Load(const Path: string);
-var
-  S: TStrings;
-begin
-  S := TStringList.Create;
-  try
-    S.LoadFromFile(Path);
-    Parse(S.Text);
-  finally
-    S.Free;
-  end;
-end;
-
-procedure TProject.Save(const Path: string);
-var
-  S: TStrings;
-begin
-  S := TStringList.Create;
-  try
-    S.Text := self.AsString;
-    S.SaveToFile(Path);
-  finally
-    S.Free;
-  end;
-end;
-
-
 function TProject.FindChild(Id: string; ChildClass: TClass): TDanteElement;
 var
   E   : TDanteElement;
   i   : Integer;
 begin
   Result := nil;
-  for i := 0 to ComponentCount-1 do
+  for i := 0 to ChildCount-1 do
   begin
-    E := Components[i] as TDanteElement;
+    E := Children[i];
     if (E.Id = Id) and ((ChildClass = nil) or E.InheritsFrom(ChildClass)) then
     begin
       Result := E;
@@ -1209,8 +1137,8 @@ end;
 
 procedure TProject.Build(Target: string);
 var
-  i    :  Integer;
-  Sched:  TTargetArray;
+  i    : Integer;
+  Sched: TTargetArray;
   LastDir: TPath;
 begin
   Log(vlDebug, 'runpath="%s"',  [RootPath]);
@@ -1226,6 +1154,7 @@ begin
         Target := Default;
     end;
 
+    Sched := Schedule(Target);
 
     LastDir := CurrentDir;
     Sched := Schedule(Target);
@@ -1286,9 +1215,9 @@ end;
 
 procedure TProject.LoadXML(const SystemPath: string; FindFile: boolean);
 var
-  Dom      : IDocument;
+  Dom:       IDocument;
   BuildFile: TPath;
-  LastDir:    TPath;
+  LastDir:   TPath;
 begin
   BuildFile := ToPath(SystemPath);
   if FindFile then
@@ -1320,7 +1249,7 @@ begin
   end;
 end;
 
-class function TProject.XMLTag: string;
+class function TProject.TagName: string;
 begin
   Result := 'project';
 end;
@@ -1380,16 +1309,18 @@ begin
   Properties.Values['basedir'] := PathConcat(RootPath, Path);
 end;
 
-procedure TProject.Notification(AComponent: TComponent; Operation: TOperation);
+procedure TTarget.InsertNotification(Child: TTree);
 begin
-  inherited Notification(AComponent, Operation);
-  if AComponent is TTarget then
-  begin
-    if Operation = opInsert then
-      FTargets.Add(AComponent)
-    else
-      FTargets.Remove(AComponent)
-  end;
+  inherited InsertNotification(Child);
+  if Child is TTask then
+      FTasks.Add(Child)
+end;
+
+procedure TTarget.RemoveNotification(Child: TTree);
+begin
+  inherited RemoveNotification(Child);
+  if Child is TTask then
+      FTasks.Remove(Child)
 end;
 
 function TProject.FindBuildFile(BuildFile: TPath): string;
@@ -1418,14 +1349,6 @@ begin
 end;
 
 
-
-function TProject.CreatePatternSet: TPatternSet;
-begin
-  Result := TPatternSet.Create(Self);
-end;
-
-
-
 { TTarget }
 
 procedure TTarget.Build;
@@ -1452,12 +1375,14 @@ end;
 
 destructor TTarget.Destroy;
 begin
-  FTasks.Free;
+  FTasks.Clear;
   inherited Destroy;
+  FTasks.Free;
+  FTasks := nil;
 end;
 
 
-class function TTarget.XMLTag: string;
+class function TTarget.TagName: string;
 begin
   Result := 'target';
 end;
@@ -1478,19 +1403,6 @@ begin
 end;
 
 
-function TTarget.ParseXMLChild(Child: IElement): boolean;
-var
-  Task: TTask;
-begin
-  Result := inherited ParseXMLChild(Child);
-  if not Result then
-  begin
-    Task := FindTask(Child.Name).Create(Self);
-    Task.ParseXML(child);
-    Result := true;
-  end;
-end;
-
 function TTarget.ToXML(Dom: IDocument): IElement;
 var
   i: Integer;
@@ -1500,23 +1412,25 @@ begin
     Result.Add(Tasks[i].toXML(Dom));
 end;
 
-procedure TTarget.Notification(AComponent: TComponent; Operation: TOperation);
+procedure TProject.InsertNotification(Child: TTree);
 begin
-  inherited Notification(AComponent, Operation);
-  if AComponent is TTask then
-  begin
-    if Operation = opInsert then
-      FTasks.Add(AComponent)
-    else
-      FTasks.Remove(AComponent)
-  end;
+  inherited InsertNotification(Child);
+  if Child is TTarget then
+    FTargets.Add(Child)
+end;
+
+procedure TProject.RemoveNotification(Child: TTree);
+begin
+  inherited RemoveNotification(Child);
+  if Child is TTarget then
+    FTargets.Remove(Child)
 end;
 
 { TTask }
 
 procedure TTask.Log(Msg: string; Verbosity: TVerbosityLevel);
 begin
-  Log(XMLTag, Msg, Verbosity);
+  Log(TagName, Msg, Verbosity);
 end;
 
 function TTask.Target: TTarget;
@@ -1530,6 +1444,7 @@ var
 begin
   Log(vlDebug, 'basepath="%s"', [BasePath]);
   Log(vlDebug, 'basedir="%s"',  [BaseDir]);
+
   LastDir := CurrentDir;
   try
     try
@@ -1552,7 +1467,7 @@ begin
   end;
 end;
 
-class function TTask.XMLTag: string;
+class function TTask.TagName: string;
 begin
   Result := copy(ClassName, 2, 255);
   Result := LowerCase(Result);
@@ -1561,42 +1476,6 @@ end;
 
 
 { TaskRegistry }
-
-function FindTask(Tag: string): TTaskClass;
-var
-  Index: Integer;
-begin
-  Result := nil;
-  Index := __TaskRegistry.IndexOf(Tag);
-  if Index < 0 then
-    TaskError(Format('Task class <%s> not found', [Tag]) )
-  else
-    Result := Pointer(__TaskRegistry.Objects[Index])
-end;
-
-
-procedure RegisterTask(TaskClass: TTaskClass);
-var
-  Index: Integer;
-begin
-  Index :=__TaskRegistry.IndexOf(TaskClass.XMLTag);
-  if Index >= 0 then
-    TaskError(Format('Duplicate task tag <%s> in class <%s>', [TaskClass.XMLTag, TaskClass.ClassName]))
-  else
-  begin
-    __TaskRegistry.AddObject(TaskClass.XMLTag, Pointer(TaskClass));
-    if GetClass(TaskClass.ClassName) = nil then
-      RegisterClass(TaskClass);
-  end;
-end;
-
-procedure RegisterTasks(TaskClasses: array of TTaskClass);
-var
-  i: Integer;
-begin
-  for i := Low(TaskClasses) to High(TaskClasses) do
-    RegisterTask(TaskClasses[i]);
-end;
 
 function TTask.BasePath: string;
 begin
@@ -1613,212 +1492,9 @@ begin
   // do nothing
 end;
 
-{ TPropertyElement }
-
-procedure TPropertyElement.Init;
-begin
-  inherited Init;
-  RequireAttribute('name');
-  RequireAttribute('value');
-
-  Assert(Owner <> nil);
-  Owner.SetProperty(name, value);
-end;
-
-
-
-
-{ TIncludeElement }
-
-procedure TIncludeElement.SetValue(Value: string);
-begin
- (Owner as TPatternSet).Include(Value);
-end;
-
-{ TExcludeElement }
-
-procedure TExcludeElement.SetValue(Value: string);
-begin
- (Owner as TPatternSet).Exclude(Value);
-end;
-
-{ TPatternSet }
-
-constructor TPatternSet.Create(Owner: TDanteElement);
-begin
-  inherited Create(Owner);
-  FIncludes := TStringList.Create;
-  FExcludes := TStringList.Create;
-end;
-
-destructor TPatternSet.Destroy;
-begin
-  FIncludes.Free;
-  FExcludes.Free;
-  inherited Destroy;
-end;
-
-procedure TPatternSet.SetIncludes(Value: TStrings);
-begin
-  FIncludes.Assign(Value);
-end;
-
-procedure TPatternSet.SetExcludes(Value: TStrings);
-begin
-  FExcludes.Assign(Value);
-end;
-
-procedure TPatternSet.Include(Pattern: TPath);
-begin
-  FIncludes.Add(Pattern);
-end;
-
-procedure TPatternSet.Exclude(Pattern: TPath);
-begin
-  FExcludes.Add(Pattern);
-end;
-
-procedure TPatternSet.DoInclude(Files: TStrings; Pattern: TPath; Base: string);
-begin
-  Wild(Files, Pattern, Base);
-end;
-
-procedure TPatternSet.DoExclude(Files: TStrings; Pattern: TPath; Base: string);
-var
-  Excluded: TPaths;
-  f       : Integer;
-begin
-  Excluded := SplitPath(PathConcat(Base, Pattern));
-  for f := Files.Count-1 downto 0 do
-    if IsMatch(SplitPath(Files[f]), Excluded) then
-      Files.Delete(f);
-end;
-
-function TPatternSet.createInclude: TIncludeElement;
-begin
-  Result := TIncludeElement.Create(Self);
-end;
-
-function TPatternSet.createExclude: TExcludeElement;
-begin
-  Result := TExcludeElement.Create(Self);
-end;
-
-procedure TPatternSet.DoIncludes(Files: TStrings; Base: string);
-var
-  i: Integer;
-begin
-  for i := 0 to FIncludes.Count-1 do
-    DoInclude(Files, FIncludes[i], Base);
-
-  for i := Low(FPatternSets) to High(FPatternSets) do
-    FPatternSets[i].DoIncludes(Files, Base);
-end;
-
-
-procedure TPatternSet.DoExcludes(Files: TStrings; Base: string);
-var
-  i: Integer;
-begin
-  for i := 0 to FExcludes.Count-1 do
-    DoExclude(Files, FExcludes[i], Base);
-
-  for i := Low(FPatternSets) to High(FPatternSets) do
-    FPatternSets[i].DoExcludes(Files, Base);
-end;
-
-procedure TPatternSet.AddPatternSet(APatternSet: TPatternSet);
-begin
-  SetLength(FPatternSets, 1+Length(FPatternSets));
-  FPatternSets[High(FPatternSets)] := APatternSet;
-end;
-
-function TPatternSet.ParseXMLChild(Child: IElement): boolean;
-begin
-  if (Child.Name = 'patternset')
-  and (Child.attribute('refid') <> nil) then
-  begin
-    AddPatternSet(Project.FindChild(Child.attributeValue('refid'), TPatternSet) as TPatternSet);
-    Result := true;
-  end
-  else
-    Result := inherited ParseXMLChild(Child);
-end;
-
-function TPatternSet.createPatternSet: TPatternSet;
-begin
-  Result := TPatternSet.Create(Self);
-  AddPatternSet(Result);
-end;
-
-function TPatternSet.Paths: TPaths;
-var
-  Files   : TStringList;
-begin
-  Files := TStringList.Create;
-  try
-    Files.Sorted := True;
-
-    Log(vlDebug, Format('fileset basedir="%s"', [basedir]) );
-    GetPaths(Files);
-
-    Result := StringsToPaths(Files);
-  finally
-    Files.Free;
-  end;
-end;
-
-
-procedure TPatternSet.AddPaths(Paths: TPaths);
-var
-  Files   : TStringList;
-  i, n    : Integer;
-begin
-  Files := TStringList.Create;
-  try
-    Files.Sorted := True;
-
-    GetPaths(Files);
-
-    n := Length(Paths);
-    SetLength(Paths, n + Files.Count);
-    for i := 0 to Files.Count-1 do
-      Paths[i+n] := Files[i];
-  finally
-    Files.Free;
-  end;
-end;
-
-
-procedure TPatternSet.GetPaths(Files: TStrings);
-begin
-  DoIncludes(Files, BasePath);
-  DoExcludes(Files, BasePath);
-end;
-
-function TPatternSet.MovePaths(ToBase: TPath): TPaths;
-begin
-  Result := WildPaths.MovePaths(Paths, BasePath, ToBase);
-end;
-
-function TPatternSet.RelativePaths: TPaths;
-begin
-  Result := ToRelativePaths(Paths, BasePath);
-end;
-
-function TPatternSet.SystemPaths: TSystemPaths;
-begin
-   Result := ToSystemPaths(Paths);
-end;
-
-
 initialization
-  __TaskRegistry := TStringList.Create;
-  __TaskRegistry.Sorted := true;
-  __TaskRegistry.Duplicates := dupIgnore;
-
-  RegisterClasses([TProject, TTarget, TTask]);
+  __ElementRegistry := nil;
 finalization
-  __TaskRegistry.Free;
+  __ElementRegistry := nil;
 end.
 

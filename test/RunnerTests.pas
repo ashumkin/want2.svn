@@ -41,6 +41,7 @@ uses
   DanteMain,
   DanteTestUtil,
   DanteClassesTest,
+  StandardElements,
   StandardTasks;
 
 type

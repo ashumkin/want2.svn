@@ -38,7 +38,7 @@ interface
 uses
   DanteClasses,
   WildPaths,
-  FileSets,
+  PatternSets,
 
   SysUtils,
   Classes;
@@ -46,7 +46,7 @@ uses
 type
   TSubProjectPropertyElement = class(TDanteElement)
   public
-    class function XMLTag :string;              override;
+    class function TagName :string;              override;
     procedure SetProperty(Name, Value :string); override;
   end;
 
@@ -129,7 +129,7 @@ end;
 
 { TSubProjectPropertyElement }
 
-class function TSubProjectPropertyElement.XMLTag: string;
+class function TSubProjectPropertyElement.TagName: string;
 begin
   Result := 'property';
 end;

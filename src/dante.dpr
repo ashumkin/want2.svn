@@ -39,8 +39,6 @@ uses
   JclStrings,
   clUtilConsole,
   DanteClasses,
-  StandardTasks,
-  CustomTasks,
   DanteMain,
   JclFileUtils;
 

@@ -109,7 +109,7 @@ type
     constructor Create(Owner: TDanteElement); override;
     destructor  Destroy; override;
 
-    class function XMLTag: string; override;
+    class function TagName: string; override;
 
     procedure Init; override;
     procedure Execute;  override;
@@ -155,7 +155,7 @@ type
 
     function FindBRCC :string;
   public
-    class function XMLTag: string; override;
+    class function TagName: string; override;
 
     constructor Create(Owner: TDanteElement); override;
 
@@ -244,7 +244,7 @@ begin
      raise ECompilerNotFoundError.Create(Result);
 end;
 
-class function TDelphiCompileTask.XMLTag: string;
+class function TDelphiCompileTask.TagName: string;
 begin
   Result := 'dcc';
 end;
@@ -396,7 +396,7 @@ begin
   RequireAttribute('file');
 end;
 
-class function TResourceCompileTask.XMLTag: string;
+class function TResourceCompileTask.TagName: string;
 begin
   Result := 'brcc';
 end;

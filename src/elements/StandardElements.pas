@@ -29,93 +29,17 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR
 TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
 THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 --------------------------------------------------------------------------------
+Original Author: Juancarlo Añez
+Contributors   : 
 }
-unit DelphiTasksTest;
+unit StandardElements;
 
 interface
 
-uses
-  WildPaths,
-  DanteClasses,
-  DelphiTasks,
-  TestFramework,
-  DanteClassesTest;
-
-type
-  TDelphiCompileTests = class(TProjectBaseCase)
-    FDelphiTask: TDelphiCompileTask;
-  protected
-    procedure BuildProject;
-    procedure SetUp;    override;
-    procedure TearDown; override;
-  published
-    procedure TestCompile;
-  end;
-
 implementation
+uses
+  Properties,
+  PatternSets,
+  RegexpElements;
 
-{ TDelphiCompileTests }
-
-procedure TDelphiCompileTests.BuildProject;
-var
-  T: TTarget;
-begin
-  with FProject do
-  begin
-    BaseDir := PathConcat(SuperPath(ToPath(ParamStr(0))), '..');
-    Name := 'delphi_compile';
-    Verbosity := vlDebug;
-
-    T := AddTarget('compile');
-    FDelphiTask := TDelphiCompileTask.Create(T);
-    with FDelphiTask do
-    begin
-      basedir := PathConcat(FProject.BasePath, 'src');
-      writeln(ToSystemPath(basedir));
-      writeln(CurrentDir);
-      source  := 'dante.dpr';
-      exes    := '/tmp';
-      dcus    := '/tmp';
-      build   := true;
-      quiet   := true;
-
-      AddUnitPath('lib');
-      AddUnitPath('tasks');
-      AddUnitPath('elements');
-
-      AddUnitPath('../lib/jcl');
-      AddUnitPath('../lib/xml');
-      AddUnitPath('../lib/paszlib');
-      AddUnitPath('../lib/paszlib/minizip');
-      AddUnitPath('../lib/perlre');
-    end;
-  end;
-end;
-
-procedure TDelphiCompileTests.SetUp;
-begin
-  inherited SetUp;
-  BuildProject;
-end;
-
-procedure TDelphiCompileTests.TearDown;
-begin
-  FDelphiTask := nil;
-end;
-
-procedure TDelphiCompileTests.TestCompile;
-var
-  exe:  string;
-begin
-  exe := PathConcat(FDelphiTask.exes, 'dante.exe');
-  if PathIsFile(exe) then
-    DeleteFile(exe);
-  FProject.Build('compile');
-  Check(PathIsFile(exe), 'dante exe not found');
-end;
-
-{ TTestIncVerRcTask }
-
-initialization
-  RegisterTests('Delphi Tasks', [TDelphiCompileTests.Suite]);
 end.

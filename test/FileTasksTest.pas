@@ -82,7 +82,7 @@ end;
 procedure TTestDeleteTask.TestDeleteDir;
 begin
 
-  CheckEquals('delete', TDeleteTask.XMLTag, 'XMLTag is wrong');
+  CheckEquals('delete', TDeleteTask.TagName, 'TagName is wrong');
   MakeSampleTextFile;
   Check(DirectoryExists(FTestDir), 'no directory to start with');
 
