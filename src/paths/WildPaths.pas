@@ -46,13 +46,18 @@ unit WildPaths;
        Do not make these changes until specific user stories prove them
        necessary.
 
-@TODO: Factor out stuff that JCL already handles well.       
+@TODO: Factor out stuff that JCL already handles well.
 }
 
 interface
 uses
+  Windows,
   SysUtils,
-  Classes;
+  Math,
+  Classes,
+
+  JclBase,
+  JclStrings;
 
 
 const
@@ -74,8 +79,21 @@ type
   TSystemPath  = string;
   TSystemPaths = array of TSystemPath;
 
-  EWildPathsException = class(Exception);
-  EWildPathsError     = class(EWildPathsException);
+  EPathException = class(Exception);
+  EFileOpException    = class(EPathException);
+
+  TFileAttribute = (
+    ReadOnly,  {= $00000001 }
+    Hidden,    {= $00000002 }
+    SysFile,   {= $00000004 }
+    VolumeID,  {= $00000008 }
+    Directory, {= $00000010 }
+    Archive    {= $00000020 }
+  );
+  TFileAttributes = set of TFileAttribute;
+
+const
+  AnyFileAttribute = [ReadOnly..Archive];
 
 function  IsSystemIndependentPath(const Path :TPath) :boolean;
 procedure AssertIsSystemIndependentPath(const Path :TPath);
@@ -123,10 +141,43 @@ function  IsFile(const Path :TPath):boolean;
 function  SuperPath(const Path :TPath) :TPath;
 
 
+// file operations
+
+procedure MakeDir(const Path :TPath);
+procedure ChangeDir(const Path :TPath);
+function  CurrentDir :TPath;
+
+procedure CopyFile(const Src, Dst :TPath);
+procedure CopyFiles(const Sources, Dests :TPaths);  overload;
+procedure CopyFiles(const Files :TPaths; FromPath, ToPath :TPath);  overload;
+procedure CopyFiles(const Pattern :TPattern; const FromPath, ToPath :TPath); overload;
+
+procedure MoveFile(const Src, Dst :TPath);
+procedure MoveFiles(const Sources, Dests :TPaths);  overload;
+procedure MoveFiles(const Files :TPaths; const FromPath, ToPath :TPath);  overload;
+procedure MoveFiles(const Pattern :TPattern; const FromPath, ToPath :TPath); overload;
+
+procedure DeleteFile(const Path :TPath);
+procedure DeleteFiles(const Files :TPaths);  overload;
+procedure DeleteFiles(const Pattern :TPath; const BasePath :TPath= '');  overload;
+
+procedure TouchFile(const Path :TPath; When :TDateTime = 0); overload;
+procedure TouchFile(const Path :TPath; When :string); overload;
+
+function  FileAttributes(const Path :TPath):TFileAttributes;
+procedure SetFileAttributes(const Path :TPath; const Attr :TFileAttributes);
+
+function  FileTime(const Path :TPath) :TDateTime;
+
+function  SystemFileAttributes(const Path :TPath) :Byte;
+function  SystemFileTime(const Path :TPath) :Longint;
+
+function  TimeToSystemFileTime(const Time :TDateTime):Integer;
+function  FileAttributesToSystemAttributes(const Attr :TFileAttributes):Byte;
+
+
 implementation
 
-uses
-  JclStrings;
 
 procedure Wild(Files :TStrings; const Patterns :TPatterns; const BasePath: TPath = ''; Index :Integer = 0);
   overload; forward;
@@ -153,7 +204,7 @@ end;
 procedure AssertIsSystemIndependentPath(const Path :TPath);
 begin
   if Pos(SystemPathDelimiter, Path) <> 0 then
-    raise EWildPathsError.Create( Format( '"%s" looks like a system path. Expected a system independent one.',
+    raise EPathException.Create( Format( '"%s" looks like a system path. Expected a system independent one.',
                                   [Path])
                             );
 end;
@@ -197,7 +248,7 @@ end;
 function ToPath(SystemPath: TSystemPath; const BasePath :TPath): TPath;
 begin
   if Pos(InvalidPathChars, SystemPath) <> 0 then
-    raise EWildPathsException.Create('invalid path chars in ' + SystemPath)
+    raise EPathException.Create('invalid path chars in ' + SystemPath)
   else
   begin
     Result := SystemPath;
@@ -212,7 +263,7 @@ begin
       and (Result[3] = SystemPathDelimiter) then
         Result := SystemPathDelimiter + Result
       else
-        raise EWildPathsException.Create('invalid absolute path ' + SystemPath)
+        raise EPathException.Create('invalid absolute path ' + SystemPath)
     end;
     Result := StringReplace(Result, SystemPathDelimiter, '/', [rfReplaceAll]);
   end;
@@ -451,7 +502,10 @@ begin
   AssertIsSystemIndependentPath(BasePath);
 
   //ForceRelativePath(Pattern, BasePath);
-  Wild(Files, SplitPath(Pattern), BasePath);
+  if PathIsAbsolute(Pattern) then
+    Wild(Files, SplitPath(Pattern), '')
+  else
+    Wild(Files, SplitPath(Pattern), BasePath);
 end;
 
 procedure Wild(Files :TStrings; const Patterns: TPatterns; const BasePath: TPath; Index: Integer);
@@ -583,9 +637,201 @@ var
   p    :Integer;
 begin
   AssertIsSystemIndependentPath(Path);
-  
-  p := LastDelimiter('/', path);
-  Result := Copy(Path, 1, p-1);
+
+  if (Path = '.') or (Path = '') then
+    Result := '..'
+  else
+  begin
+    Result := Path;
+    p := LastDelimiter('/', Result);
+    if p = Length(Path) then
+    begin
+      Result := Copy(Path, 1, p-1);
+      p := LastDelimiter('/', Result);
+    end;
+    Result := Copy(Path, 1, p-1);
+  end;
 end;
+
+
+
+// file operations
+
+
+procedure MakeDir(const Path :TPath);
+begin
+  if (Length(Path) > 0)
+  and (Path[Length(Path)] <> ':')  // Oops! Windows specific!
+  and not IsDir(Path) then
+  begin
+    MakeDir(SuperPath(Path));
+    SysUtils.CreateDir(ToSystemPath(Path));
+  end;
+end;
+
+procedure ChangeDir(const Path :TPath);
+begin
+  if Path <> '' then
+    SetCurrentDir(ToSystemPath(Path));
+end;
+
+function  CurrentDir :TPath;
+begin
+  Result := ToPath(SysUtils.GetCurrentDir);
+end;
+
+
+procedure CopyFile(const Src, Dst :TPath);
+begin
+   MakeDir(SuperPath(Dst));
+   if IsDir(Src) then
+     MakeDir(Dst)
+   else if not Windows.CopyFile( PChar(ToSystemPath(Src)),
+                                 PChar(ToSystemPath(Dst)),
+                                 False)
+     then
+       raise EFileOpException.Create(SysErrorMessage(GetLastError));
+end;
+
+procedure CopyFiles(const Pattern :TPattern; const FromPath, ToPath :TPath);
+begin
+  CopyFiles(Wild(Pattern, FromPath), FromPath, ToPath);
+end;
+
+procedure CopyFiles(const Files :TPaths; FromPath, ToPath :TPath);
+begin
+  CopyFiles(Files, MovePaths(Files, FromPath, ToPath));
+end;
+
+procedure CopyFiles(const Sources, Dests :TPaths);
+var
+  f   :Integer;
+begin
+  for f := Max(Low(Sources), Low(Dests)) to Min(High(Sources), High(Dests)) do
+  begin
+    CopyFile(Sources[f], Dests[f]);
+  end;
+end;
+
+procedure MoveFile(const Src, Dst :TPath);
+begin
+   MakeDir(SuperPath(Dst));
+   writeln('move ',ToSystemPath(Src), '->', ToSystemPath(Dst));
+end;
+
+procedure MoveFiles(const Pattern :TPattern; const FromPath, ToPath :TPath);
+begin
+  MoveFiles(Wild(Pattern, FromPath), FromPath, ToPath);
+end;
+
+procedure MoveFiles(const Files :TPaths; const FromPath, ToPath :TPath);
+begin
+  MoveFiles(Files, MovePaths(Files, FromPath, ToPath));
+end;
+
+procedure MoveFiles(const Sources, Dests :TPaths);
+var
+  f   :Integer;
+begin
+  for f := Max(Low(Sources), Low(Dests)) to Min(High(Sources), High(Dests)) do
+  begin
+    MoveFile(Sources[f], Dests[f]);
+  end;
+end;
+
+procedure DeleteFile(const Path :TPath);
+begin
+  if not IsDir(Path) then
+    SysUtils.DeleteFile(ToSystemPath(Path))
+  else
+    SysUtils.RemoveDir(ToSystemPath(Path));
+end;
+
+procedure DeleteFiles(const Pattern :TPath; const BasePath :TPath);
+begin
+  DeleteFiles(Wild(Pattern, BasePath));
+end;
+
+procedure DeleteFiles(const Files :TPaths);
+var
+  f :Integer;
+begin
+  for f := Low(Files) to High(Files) do
+    if not IsDir(Files[f]) then
+      DeleteFile(Files[f]);
+  for f := Low(Files) to High(Files) do
+    if IsDir(Files[f]) then
+      DeleteFile(Files[f]);
+end;
+
+procedure TouchFile(const Path :TPath; When :string);
+begin
+  //!!! StrToDateTime changes with locale and platform!!
+  TouchFile(Path, StrToDateTime(When));
+end;
+
+
+procedure TouchFile(const Path :TPath; When :TDateTime);
+var
+  Handle :Integer;
+begin
+   if When = 0 then
+     When := Now;
+
+   MakeDir(SuperPath(Path));
+   
+   Handle := FileOpen(ToSystemPath(Path), fmOpenWrite or fmShareDenyNone);
+   if Handle < 0 then
+     Handle := FileCreate(ToSystemPath(Path));
+   try
+     FileSetDate(Handle, DateTimeToFileDate(When))
+   finally
+     FileClose(Handle);
+   end;
+end;
+
+function FileAttributes(const Path :TPath):TFileAttributes;
+begin
+  Result := TFileAttributes(SystemFileAttributes(Path));
+end;
+
+procedure SetFileAttributes(const Path :TPath; const Attr :TFileAttributes);
+begin
+  SysUtils.FileSetAttr(ToSystemPath(Path), FileAttributesToSystemAttributes(Attr));
+end;
+
+function  FileTime(const Path :TPath) :TDateTime;
+var
+  SystemTime :Longint;
+begin
+  SystemTime := SystemFileTime(Path);
+  if SystemTime <= 0 then
+    Result := 0
+  else
+    Result := FileDateToDateTime(SystemTime);
+end;
+
+function  SystemFileAttributes(const Path :TPath) :Byte;
+begin
+  Result := Byte(SysUtils.FileGetAttr(ToSystemPath(Path)));
+end;
+
+function  SystemFileTime(const Path :TPath)     :Longint;
+begin
+  Result := SysUtils.FileAge(ToSystemPath(Path));
+  if Result < 0 then
+    Result := 0;
+end;
+
+function  TimeToSystemFileTime(const Time :TDateTime):Integer;
+begin
+  Result := DateTimeToFileDate(Time);
+end;
+
+function  FileAttributesToSystemAttributes(const Attr :TFileAttributes):Byte;
+begin
+  Result := Byte(Attr);
+end;
+
 
 end.
