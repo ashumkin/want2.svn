@@ -1,6 +1,6 @@
 This file contains the list of Dante authors who own the copyrights to Dante.
 See license.txt for full license.
 
-Chris Morris, Denton, TX, USA.
-Juancarlo Añez, Caracas, Venezuela.
+Chris Morris,     Denton,  TX, USA.       
+Juancarlo Añez,   Caracas, DF, Venezuela.   mailto:juanco@suigeneris.org
 Mike Taylor, 
