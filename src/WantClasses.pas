@@ -145,6 +145,7 @@ type
     procedure Log(Tag: string; Msg: string; Level: TLogLevel = vlNormal);  overload; virtual;
 
     procedure RequireAttribute(Name: string);
+    procedure RequireAttributes(Names: array of string);
     procedure AttributeRequiredError(AttName: string);
 
     procedure ParseXML(Node: MiniDom.IElement);               virtual;
@@ -358,6 +359,7 @@ implementation
 
 type
   TElementRecord = record
+    TagName      :string;
     ElementClass :TDanteElementClass;
     AppliesTo    :TDanteElementClassArray;
   end;
@@ -375,11 +377,11 @@ begin
 
   Tag := LowerCase(Tag);
   Result := nil;
-  // going from High to Low lets customizer override existing elements 
+  // going from High to Low lets customizer override existing elements
   for i := High(__ElementRegistry) downto Low(__ElementRegistry) do
     with __ElementRegistry[i] do
     begin
-      if (ElementClass.TagName <> Tag) then
+      if (TagName <> Tag) then
         continue;
       if AppliedTo = nil then
       begin
@@ -408,6 +410,7 @@ begin
   SetLength(__ElementRegistry, 1 + pos);
 
   __ElementRegistry[pos].ElementClass := ElementClass;
+  __ElementRegistry[pos].TagName      := ElementClass.TagName;
   __ElementRegistry[pos].AppliesTo    := AppliesTo;
 end;
 
@@ -837,6 +840,13 @@ begin
     AttributeRequiredError(Name);
 end;
 
+procedure TDanteElement.RequireAttributes(Names: array of string);
+var
+  i :Integer;
+begin
+  for i := Low(Names) to High(Names) do
+    RequireAttribute(Names[i]);
+end;
 
 function TDanteElement.GetBaseDir: TPath;
 begin
@@ -1011,6 +1021,7 @@ begin
     end;
   end;
 end;
+
 
 
 

@@ -32,15 +32,72 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 Original Author: Juancarlo Añez
 Contributors   : 
 }
-unit StandardElements;
+unit TimeElements;
 
 interface
+uses
+  SysUtils,
+  DanteClasses;
+
+type
+  TFormatElement = class(TDanteElement)
+  protected
+    FProperty :string;
+    FPattern  :string;
+  public
+    procedure Init; override;
+  published
+    property _property :string read FProperty write FProperty;
+    property pattern   :string read FPattern  write FPattern;
+  end;
+
+  TTStampElement = class(TDanteElement)
+  protected
+    FTime :TDateTime;
+  public
+    procedure Init; override;
+
+    property Time :TDateTime read FTime;
+  end;
+
 
 implementation
-uses
-  Properties,
-  PatternSets,
-  TimeElements,
-  RegexpElements;
 
+{ TTStampElement }
+
+
+procedure TTStampElement.Init;
+begin
+  inherited Init;
+
+  FTime := Now;
+  Owner.SetProperty('dstamp', FormatDateTime('yyyymmdd',       Time));
+  Owner.SetProperty('tstamp', FormatDateTime('hhnn',           Time));
+  Owner.SetProperty('today',  FormatDateTime('mmm ddd d yyyy', Time));
+
+  Owner.SetProperty('year',   FormatDateTime('yyyy',     Time));
+  Owner.SetProperty('month',  FormatDateTime('mm',       Time));
+  Owner.SetProperty('day',    FormatDateTime('dd',       Time));
+
+  Owner.SetProperty('hour',   FormatDateTime('hh',       Time));
+  Owner.SetProperty('minute', FormatDateTime('nn',       Time));
+  Owner.SetProperty('second', FormatDateTime('ss',       Time));
+
+  Owner.SetProperty('ticks',  Format('%8.8d', [Round(24*60*60*1000*Frac(Time))]));
+end;
+
+{ TFormatElement }
+
+procedure TFormatElement.Init;
+begin
+  inherited Init;
+  RequireAttributes(['property', 'pattern']);
+
+  with Owner as TTStampElement do
+    Owner.SetProperty(_property, FormatDateTime(pattern, Time));
+end;
+
+initialization
+  RegisterElement(TTStampElement);
+  RegisterElement(TFormatElement, TTStampElement);
 end.
