@@ -1,3 +1,246 @@
+2003-03-10 01:11  juanco
+
+	* doc/: dunit_want.xml, want_want.xml: updated sample want.xml
+	scripts
+
+2003-03-10 01:10  juanco
+
+	* want.xml: updated some copyright years and added xml tag
+
+2003-03-10 01:01  juanco
+
+	* doc/history.html: made fixes and updates to history page
+
+2003-03-10 00:51  juanco
+
+	* doc/: dunit_want.xml, index.html, want_want.xml,
+	elements/index.html: moved downloads to sourceforge
+
+2003-03-10 00:25  juanco
+
+	* doc/: style.css, task_writers_guide.html, elements/echo.html:
+	added missing 'input' attribute to <echo> task docs
+
+2003-03-10 00:14  juanco
+
+	* doc/task_writers_guide.html, doc/elements/echo.html,
+	src/WantResources.pas: updated some copyright years
+
+2003-03-10 00:10  juanco
+
+	* release.ini, want.xml, src/WantResources.pas, src/want.dof,
+	src/wantver.res, src/win32/ConsoleScriptRunner.pas: added -warnings
+	and -help aliases for -quiet and -h commandline options
+
+2003-03-10 00:03  juanco
+
+	* doc/: style.css, elements/echo.html: documented the <echo> task
+
+2003-03-09 23:34  juanco
+
+	* doc/task_writers_guide.html: corrected and updated the task
+	writers guide
+
+2003-03-09 23:13  juanco
+
+	* src/tasks/DelphiTasks.pas: make warning names be fron an
+	enumeration
+
+2003-03-09 23:13  juanco
+
+	* src/WantClasses.pas: it is now an error to use an invalid value
+	for an anumeration attribute/property
+
+2003-03-09 19:50  juanco
+
+	* src/WantClasses.pas: BUG: range check error checking for
+	attributes. Also,improved attribute error message.
+
+2003-03-09 19:48  juanco
+
+	* src/tasks/FileTasks.pas: should not require dir or file
+	attributes for <delete> task
+
+2003-03-09 19:47  juanco
+
+	* test/ExternalTests.pas: search for test data up to two
+	directories up
+
+2003-03-09 19:37  juanco
+
+	* test/FileTasksTest.pas: should call TTask.Configure and not
+	TTask.Init
+
+2003-03-09 19:22  juanco
+
+	* release.ini, src/want.dof, src/wantver.res,
+	src/tasks/FileTasks.pas: BUG: overriding fileset.basedir screwd up
+	the copy and move tasks. silly!
+
+2003-03-09 19:08  juanco
+
+	* src/WantClasses.pas: BUG: starting search for macros at position
+	1 would make evaluation fail for strings that start with a {. The
+	search must start at position 2.
+
+2003-03-09 18:56  juanco
+
+	* src/tasks/EchoTasks.pas: TTask.Execute should call inherited
+
+2003-03-09 18:50  juanco
+
+	* src/tasks/DelphiTasks.pas: BUG: <dcc> task was ignoring the
+	include paths and using the resource paths for -I option
+
+2003-03-09 18:30  juanco
+
+	* src/wantver.res: finished with this batch of changes
+
+2003-03-09 18:25  juanco
+
+	* src/want.dof, test/WantTests.dof: remove portability warnings
+
+2003-03-09 18:24  juanco
+
+	* test/WantClassesTest.pas: request an absolute path in test for
+	invalid paths
+
+2003-03-09 18:23  juanco
+
+	* src/WantClasses.pas: Made AboutToScratch path work with lowercase
+	files. Warning: this is not portable.  Probably WildPaths or
+	JalPaths should be taking care of the comparison.
+	
+	Added TTask.DoExecute which does the required directory changes so
+	tests can use it.
+	
+	Made TPath attributes/properties use relativa paths.
+
+2003-03-09 18:19  juanco
+
+	* src/ScriptRunner.pas: moved directory changing for taskts into
+	TTask.DoExecute so tests can use it without much hassle
+
+2003-03-09 18:18  juanco
+
+	* src/tasks/FileTasks.pas: cleaned up file tasks behavior once more
+
+2003-03-09 18:18  juanco
+
+	* test/RunnerTests.pas: made test failure output more specific
+
+2003-03-09 18:17  juanco
+
+	* test/FileTasksTest.pas: BUG: tests were not initializing tasks
+
+2003-03-09 18:16  juanco
+
+	* test/DelphiTasksTest.pas: made test a bit more independent of
+	.exe location
+
+2003-03-09 18:15  juanco
+
+	* src/tasks/ExecTasks.pas: BUG: having the executable attribute be
+	a TPath caused too many problems. People wanting path mangling
+	there can use the @{} macro.
+
+2003-03-09 18:13  juanco
+
+	* src/tasks/DelphiTasks.pas: added options to turn off specific
+	portability warnings and set those warnings to off by default
+
+2003-03-08 19:18  hippoman
+
+	* test/WantClassesTest.pas: * changed test directory name, to be
+	able to run test from root dir..
+
+2003-03-08 19:13  hippoman
+
+	* test/: WantAcceptTestLib.drc, WantTestLib.drc: * drc files are
+	not needed to build, they are a by product of compiling resources
+
+2003-03-08 19:01  juanco
+
+	* src/WantClasses.pas, src/want.dof, src/wantver.res,
+	src/elements/PatternSets.pas, src/tasks/FileTasks.pas,
+	src/win32/ConsoleScriptRunner.pas, test/WantTestLib.drc: BUG:
+	<delete> task would not delete directories if dir was used as an
+	alias of basedir
+	
+	WARNING: WANT still not stable!!! Use at your own risk.
+
+2003-03-08 17:45  juanco
+
+	* release.ini, src/WantClasses.pas, src/wantver.res,
+	test/WantClassesTest.pas: upgraded property tests to new element
+	initialization sequence
+
+2003-03-08 17:16  juanco
+
+	* test/: WantTestLib.drc, WantAcceptTestLib.dof: routine
+
+2003-03-08 16:26  juanco
+
+	* release.ini, src/WantClasses.pas, src/want.dof, src/wantver.res,
+	test/WantAcceptTestLib.dof, test/WantTestLib.dof,
+	test/WantTestLib.drc, test/WantTests.dof: BUG: had left
+	TAttributeElement setting of owner property out of the
+	initialization sequence
+
+2003-03-08 16:24  juanco
+
+	* want.xml: made the clean task be consistent with new config for
+	IDE compiles
+
+2003-03-08 15:53  hippoman
+
+	* test/data/: parsing/conditionals/setup/should_1.txt,
+	logger/setup/test.log, parsing/conditionals/setup/should_2.txt,
+	parsing/conditionals/setup/should_3.txt: * Naive fix to the Setup
+	problems in Dunit tests, please review..!!
+
+2003-03-07 14:53  hippoman
+
+	* src/jal/test/JalDXFTests.cfg, src/jal/test/JALTestLib.cfg,
+	src/want.cfg, test/WantAcceptTestLib.cfg, test/WantTestLib.cfg: *
+	removed *.cfg files they are generated by the IDE also.
+
+2003-03-06 17:52  juanco
+
+	* src/tasks/FileTasks.pas: Oops! Turned deletions back on
+
+2003-03-06 17:50  juanco
+
+	* src/: ScriptRunner.pas, WantClasses.pas, want.cfg, want.dof,
+	wantver.res, jal/src/JALExpressions.pas, lib/WildPaths.pas: BUG:
+	expression evaluation order was broken
+
+2003-03-06 17:49  juanco
+
+	* src/: tasks/FileTasks.pas, elements/PatternSets.pas: BUG: delete
+	task would delete whole directories when it should not
+
+2003-03-06 15:30  juanco
+
+	* src/: wantver.res, license.res: readed .res files required to
+	compile from the IDE
+
+2003-03-06 15:16  juanco
+
+	* lib/: dunit-7.0.3.zip, jcl-1.12.zip, perlre-1.1.zip: made library
+	.zips expand to directories used in the IDE project options
+
+2003-03-06 15:09  juanco
+
+	* lib/dunit-7.0.3.zip: removed dunit files from CVS repository and
+	made dunit .zip expand to dunit directory
+
+2003-03-06 14:48  juanco
+
+	* .cvsignore, ChangeLog, release.ini, want.xml, bin/.cvsignore,
+	bin/ide/.cvsignore, dcu/.cvsignore: include bin and dcu dirs in
+	repository for easy building from IDE
+
 2003-03-01 21:06  hippoman
 
 	* src/want.dof, test/WantAcceptTestLib.dof, test/WantTestLib.dof,
@@ -6,9 +249,9 @@
 
 2003-03-01 03:13  juanco
 
-	* src/: .cvsignore, jal/test/.cvsignore: include bin\ide and
-	dcu\ide directories so they can be used for generic Delphi .dof
-	files
+	* dcu/ide/.cvsignore, src/.cvsignore, src/jal/test/.cvsignore:
+	include bin\ide and dcu\ide directories so they can be used for
+	generic Delphi .dof files
 
 2003-03-01 03:11  juanco
 
@@ -276,10 +519,8 @@
 	* ChangeLog (tags: build_0_1_149, build_0_1_148, build_0_1_147),
 	release.ini, doc/.cvsignore (tags: build_0_1_149, build_0_1_148,
 	build_0_1_147), doc/index.html (tags: build_0_1_149, build_0_1_148,
-	build_0_1_147), doc/images/failure.png (tags: build_0_1_149,
-	build_0_1_148, build_0_1_147), doc/images/success.png (tags:
-	build_0_1_149, build_0_1_148, build_0_1_147), lib/jal-0.1.4.zip,
-	lib/jcl-1.12.zip, lib/paszlib-1.0-want-1.zip, lib/perlre-1.1.zip,
+	build_0_1_147), lib/jal-0.1.4.zip, lib/jcl-1.12.zip,
+	lib/paszlib-1.0-want-1.zip, lib/perlre-1.1.zip,
 	src/elements/.cvsignore (tags: build_0_1_149, build_0_1_148,
 	build_0_1_147), test/WantAcceptTestLib.cfg,
 	test/WantAcceptTestLib.drc, test/WantAcceptTestLib.dsk (tags:
@@ -1799,9 +2040,11 @@
 
 2001-05-03 15:38  juanca
 
-	* etc/bku.btm (tags: v_0_1_3, v_0_1_0_base), src/ScriptRunner.pas,
-	src/want.dof, src/want.dsk, src/lib/ScriptParser.pas: BUG: Some
-	parse errors were not being logged to the console. Fixed
+	* etc/bku.btm (tags: build_0_1_149, build_0_1_148, build_0_1_147,
+	build_0_1_149, build_0_1_148, build_0_1_147, v_0_1_3,
+	v_0_1_0_base), src/ScriptRunner.pas, src/want.dof, src/want.dsk,
+	src/lib/ScriptParser.pas: BUG: Some parse errors were not being
+	logged to the console. Fixed
 
 2001-05-03 15:28  juanca
 

@@ -31,9 +31,9 @@ ShowHints=1
 ShowWarnings=1
 UnitAliases=WinTypes=Windows;WinProcs=Windows;DbiTypes=BDE;DbiProcs=BDE;DbiErrs=BDE;
 NamespacePrefix=
-SymbolDeprecated=1
+SymbolDeprecated=0
 SymbolLibrary=1
-SymbolPlatform=1
+SymbolPlatform=0
 UnitLibrary=1
 UnitPlatform=1
 UnitDeprecated=1
@@ -100,7 +100,7 @@ Conditionals=USE_JEDI_JCL;DUNIT_DLL
 DebugSourceDirs=
 UsePackages=0
 [Parameters]
-RunParams=test -buildfile c:\home\want\want.xml
+RunParams=test -buildfile c:\home\dunit\want.xml
 HostApplication=
 Launcher=
 UseLauncher=0
