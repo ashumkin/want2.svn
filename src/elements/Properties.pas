@@ -39,6 +39,8 @@ uses
 
 type
   TPropertyElement = class(TScriptElement)
+  private
+    procedure ExpandProperties;
   protected
     FName: string;
     FValue: string;
@@ -46,7 +48,8 @@ type
     FSection: string;
     procedure ProcessFile;
   public
-    procedure Init; override;
+    procedure Init;    override;
+    procedure Execute; override;
   published
     property name: string read FName  write FName;
     property value: string read FValue write FValue;
@@ -58,23 +61,35 @@ implementation
 
 { TPropertyElement }
 
+procedure TPropertyElement.Execute;
+begin
+  inherited Execute;
+  if Enabled then
+  begin
+    ExpandProperties;
+  end;
+end;
+
+procedure TPropertyElement.ExpandProperties;
+begin
+  Assert(Owner <> nil);
+  if ( _file <> '' ) then
+  begin
+    ProcessFile;
+  end
+  else
+  begin
+    Owner.SetProperty(name, value);
+  end;
+end;
+
 procedure TPropertyElement.Init;
 begin
   inherited Init;
   if Enabled then
   begin
     RequireAttributes(['name|file', 'value|file']);
-//    RequireAttributes(['name|file']);
-
-    Assert(Owner <> nil);
-    if ( _file <> '' ) then
-    begin
-      ProcessFile;
-    end
-    else
-    begin
-      Owner.SetProperty(name, value);
-    end;
+    ExpandProperties;
   end;
 end;
 

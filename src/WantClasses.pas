@@ -173,7 +173,8 @@ type
     procedure RequireAttributes(Names: array of string);
     procedure AttributeRequiredError(AttName: string);
 
-    procedure Init;   virtual;
+    procedure Init;    virtual;
+    procedure Execute; virtual;
 
     function GetNoChanges :boolean; virtual;
   public
@@ -341,7 +342,6 @@ type
     procedure TaskError(Msg: string = ''; Addr :Pointer = nil);
     procedure WantError(Msg: string = ''; Addr :Pointer = nil); override;
 
-    procedure Execute; virtual;
   public
     class function TagName: string; override;
 
@@ -1138,6 +1138,12 @@ begin
   Result := (Owner <> nil) and Owner.NoChanges;
 end;
 
+procedure TScriptElement.Execute;
+begin
+  if Description <> '' then
+    Log(Description);
+end;
+
 { TProject }
 
 constructor TProject.Create(Owner: TScriptElement);
@@ -1265,14 +1271,14 @@ end;
 procedure TTarget.InsertNotification(Child: TTree);
 begin
   inherited InsertNotification(Child);
-  if Child is TTask then
+  if Child is TScriptElement then
       FTasks.Add(Child)
 end;
 
 procedure TTarget.RemoveNotification(Child: TTree);
 begin
   inherited RemoveNotification(Child);
-  if Child is TTask then
+  if Child is TScriptElement then
       FTasks.Remove(Child)
 end;
 
@@ -1399,13 +1405,6 @@ end;
 class function TTask.TagName: string;
 begin
   Result := SynthesizeTagName('Task');
-end;
-
-
-procedure TTask.Execute;
-begin
-  if Description <> '' then
-    Log(Description);
 end;
 
 procedure TTask.TaskFailure(const Msg: string; Addr :Pointer);
