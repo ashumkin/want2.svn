@@ -106,6 +106,7 @@ type
 
   TCustomFileSet  = class(TPatternSet)
   public
+    function  SetAttribute(Name, Value: string): boolean; override;
     procedure AddDefaultPatterns; virtual;
     property dir: TPath read GetBaseDir write SetBaseDir;
   end;
@@ -234,7 +235,7 @@ end;
 
 function TPatternSet.ParseXMLChild(Child: IElement): boolean;
 begin
-  if (Child.Name = 'patternset')
+  if  (Child.Name = 'patternset')
   and (Child.attribute('refid') <> nil) then
   begin
     AddPatternSet(Project.FindChild(Child.attributeValue('refid'), TPatternSet) as TPatternSet);
@@ -327,6 +328,17 @@ begin
   Exclude('**/*.*~*');
   Exclude('**/*.bak');
   Exclude('**/dunit.ini');
+end;
+
+function TCustomFileSet.SetAttribute(Name, Value: string): boolean;
+begin
+  if Name <> 'refid' then
+    Result := inherited SetAttribute(name, Value)
+  else
+  begin
+    AddPatternSet(Project.FindChild(Value, TPatternSet) as TPatternSet);
+    Result := true;
+  end;
 end;
 
 { TCustomDirSet }
