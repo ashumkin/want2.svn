@@ -1,5 +1,5 @@
 <!DOCTYPE html PUBLIC "-//IETF//DTD HTML 2.0//EN">
-
+<!-- $Id$ -->
 <html>
   <head>
     <meta name="generator" content="HTML Tidy, see www.w3.org">
@@ -29,14 +29,15 @@
     <p>To create a new Dante task:</p>
 
     <ol>
-      <li>Create a new unit, and add DanteClasses to the uses
-      clause.</li>
+      <li>Create a new unit, add DanteClasses and DanteBase to 
+      the uses clause.</li>
 
       <li>Define a new class that descends from
       DanteClasses.TTask.</li>
 
 		<li>Override the Init procedure, to verify that 
-		attributes have valid values after the task has been parsed.</li>
+		attributes have valid values after the task has 
+                been parsed.</li>
 
       <li>Override the Execute procedure to define the task's
       actions.</li>
@@ -60,6 +61,8 @@ uses
 
 type
   TLoggerTask = class(TTask)
+  protected
+    class function TagName: String; override;
   public
     procedure Init; override;
     procedure Execute;  override;
@@ -77,6 +80,11 @@ procedure TLoggerTask.Execute;
 begin
   Log('writing log info');
   // do nothing more for now
+end;
+
+function TLoggerTask.TagName: String;
+begin
+  result := 'logger';
 end;
 
 initialization
@@ -100,8 +108,13 @@ end.
 </pre>
     </blockquote>
 <h3>Choosing the Task's XML tag</h3>
-    <p>Dante synthesizes an XML tag for your task from its class
-    name using these rules:</p>
+    <p>The class method TagName informs Dante what your task's
+    unique name is.  As the XML is parsed, a reference to your
+    TagName will cause Dante to create an instance of your task,
+    parse any child elements within your task and call the Init
+    method.</p>
+
+    <p>Use these rules to create your task's TagName:</p>
 
     <ul>
       <li>Remove the initial 'T' from the class name, if
@@ -130,33 +143,6 @@ end.
 </pre>
     </blockquote>
 
-    <p>To use an XML tag different from the automatically generated
-    one, override the XMLTag class function in your task class:</p>
-
-    <blockquote>
-<pre>
-  TLoggerTask = class(TTask)
-  public
-    class function XMLTag :string; override;
-    procedure Execute; override;
-  end;
-  //...
-  class function TLoggerTask.XMLTag :string;
-  begin
-    Result := '<b>log</b>';
-  end;
-</pre>
-    </blockquote>
-
-    <blockquote>
-<pre>
-&lt;project name="myproject" default="main" &gt;
-  &lt;target name="main" &gt;
- <b>  &lt;log /&gt;
-</b>  &lt;/target&gt;
-&lt;/project&gt;
-</pre>
-    </blockquote>
 <h3>Handling XML attributes</h3>
     <p>Dante interprets the published properties of task classes as
     XML element attributes, and automatically manages them using
@@ -190,7 +176,7 @@ type
  <b>  FFile   :string;
     FFormat :TLogFormat;
 </b>  public
-    class function XMLTag :string; override;
+    class function TagName :string; override;
     procedure Execute; override;
   published
  <b>  property _file  :string     read FFile   write FFile;
@@ -368,7 +354,7 @@ type
   public
  <b>  constructor Create(owner :TDanteElement);
 </b>    <b>destructor Destroy; override;</b>
-    class function XMLTag :string; override;
+    class function TagName :string; override;
     procedure Execute; override;
   published
  <b>  function CreateInfo :TInfoElement;
@@ -379,7 +365,7 @@ type
 
 implementation
 
-class function TLoggerTask.XMLTag :string;
+class function TLoggerTask.TagName :string;
 begin
   Result := 'log';
 end;
