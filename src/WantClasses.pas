@@ -497,12 +497,10 @@ function TDanteElement.GetProject: TProject;
 begin
   if self is TProject then
      Result := TProject(self)
-  else if Owner is TProject then
-    Result := TProject(Owner)
-  else if Owner is TDanteElement then
-    Result := TDanteElement(Owner).Project
+  else if Owner = nil then
+    Result := nil
   else
-    Result := nil;
+    Result := Owner.Project;
 end;
 
 class function TDanteElement.XMLTag: string;
