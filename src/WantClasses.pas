@@ -20,6 +20,9 @@ uses
   Classes,
   TypInfo,
   INIFiles,
+  {$IFDEF VER140}
+  Variants,
+  {$ENDIF}
 
   JALStrings,
   JalPaths,
@@ -170,6 +173,7 @@ type
     function  EnvironmentValue(Name: string): string;    virtual;
     function  ExpressionValue(Expre: string): string;    virtual;
     function  INIValue(Expre: string): string;           virtual;
+    function  PathValue(Expre: string): string;          virtual;
     function  Evaluate(Value: string): string;           virtual;
 
     procedure SetProperties(Value: TStrings);
@@ -660,7 +664,7 @@ end;
 function TScriptElement.GetAttribute(Name: string): string;
 begin
   Result := FAttributes.Values[Name];
-  if Result = '' then
+  if (Result = '') and HasDelphiProperty(Name) then
     Result := GetDelphiProperty(Name);
 end;
 
@@ -719,7 +723,7 @@ end;
 procedure TScriptElement.AboutToScratchPath(const Path: TPath);
 begin
   if  PathExists(Path)
-  and PathIsAbsolute(ToRelativePath(Path))
+  and not PathIsAbsolute(Path) !!
   then
     TaskError(Format('Will not scratch %s outside of %s',
                          [ToSystemPath(Path), ToSystemPath(BasePath)]
@@ -894,6 +898,11 @@ begin
     end;
 end;
 
+function TScriptElement.PathValue(Expre: string): string;
+begin
+  Result := ToSystemPath(ToPath(Expre));
+end;
+
 function TScriptElement.Evaluate(Value: string): string;
 type
   TMacroExpansion = function(Name: string): string of object;
@@ -927,6 +936,7 @@ begin
   Result := Expand('${', '}', Result, PropertyValue);
   Result := Expand('={', '}', Result, ExpressionValue);
   Result := Expand('?{', '}', Result, INIValue);
+  Result := Expand('@{', '}', Result, PathValue);
 end;
 
 function TScriptElement.HasDelphiProperty(Name: string): boolean;
@@ -1199,6 +1209,7 @@ var
   i     :  Integer;
   Deps  :  TStringArray;
 begin
+  Deps := nil;
   Target := Project.GetTargetByName(TargetName);
   if Sched.IndexOf(Target) >= 0 then
     EXIT; // done
