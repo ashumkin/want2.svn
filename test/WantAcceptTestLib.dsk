@@ -65,8 +65,7 @@ File_9=SourceModule,'C:\home\want\src\tasks\EchoTasks.pas',0,1,1,1,1,0,0
 Module0=C:\home\want\test\ExternalTests.pas
 Module1=C:\home\want\test\RunnerTests.pas
 Module2=C:\home\want\src\lib\WildPaths.pas
-Module3=C:\home\want\src\lib\clUtilFile.pas
-Count=4
+Count=3
 EditWindowCount=1
 
 [C:\home\want\test\ExternalTests.pas]
@@ -80,11 +79,6 @@ FormState=0
 FormOnTop=0
 
 [C:\home\want\src\lib\WildPaths.pas]
-ModuleType=SourceModule
-FormState=0
-FormOnTop=0
-
-[C:\home\want\src\lib\clUtilFile.pas]
 ModuleType=SourceModule
 FormState=0
 FormOnTop=0
@@ -118,12 +112,11 @@ RightPanelSize=0
 BottomPanelSize=0
 BottomPanelClients=MessageView@EditWindow0
 BottomPanelData=00000400010000000B0000004D657373616765566965770000000000000000000000000000000000FFFFFFFF
-ViewCount=4
+ViewCount=3
 CurrentView=0
 View0=0
 View1=1
 View2=2
-View3=3
 
 [CodeExplorer@EditWindow0]
 Create=1
@@ -160,8 +153,8 @@ Dockable=1
 [View0]
 Module=C:\home\want\test\ExternalTests.pas
 CursorX=1
-CursorY=1
-TopLine=1
+CursorY=283
+TopLine=259
 LeftCol=1
 
 [View1]
@@ -172,13 +165,6 @@ TopLine=145
 LeftCol=1
 
 [View2]
-Module=C:\home\want\src\lib\clUtilFile.pas
-CursorX=1
-CursorY=275
-TopLine=241
-LeftCol=1
-
-[View3]
 Module=C:\home\want\test\RunnerTests.pas
 CursorX=27
 CursorY=89
@@ -193,7 +179,8 @@ Count=1
 Watch0='FromPaths[i]',256,0,18,1
 
 [Breakpoints]
-Count=0
+Count=1
+Breakpoint0='C:\home\want\test\ExternalTests.pas',283,'',0,1
 
 [AddressBreakpoints]
 Count=0

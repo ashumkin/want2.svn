@@ -31,7 +31,7 @@ UnitAliases=WinTypes=Windows;WinProcs=Windows;DbiTypes=BDE;DbiProcs=BDE;DbiErrs=
 [Linker]
 MapFile=3
 OutputObjs=0
-ConsoleApp=0
+ConsoleApp=1
 DebugInfo=0
 RemoteSymbols=0
 MinStackSize=16384
@@ -39,7 +39,7 @@ MaxStackSize=1048576
 ImageBase=4194304
 ExeDescription=
 [Directories]
-OutputDir=..\bin
+OutputDir=c:\home\want\bin
 UnitOutputDir=..\dcu
 PackageDLLOutputDir=
 PackageDCPOutputDir=
@@ -49,8 +49,8 @@ Conditionals=RUN_VSS_TESTS;USE_JEDI_JCL
 DebugSourceDirs=$(DELPHI)\Lib;..\src\;..\src\tasks;..\src\elements;..\src\lib;..\lib\xml;..\lib\jcl;..\lib\perlre;..\lib\dunit
 UsePackages=0
 [Parameters]
-RunParams=
-HostApplication=
+RunParams=WantTestLib
+HostApplication=c:\home\dunit\bin\dunit.exe
 [Version Info]
 IncludeVerInfo=0
 AutoIncBuild=0
@@ -118,5 +118,12 @@ Item19=..
 Count=1
 Item0=..\dcu
 [HistoryLists\hlOutputDirectorry]
+Count=2
+Item0=c:\home\want\bin
+Item1=..\bin
+[HistoryLists\hlHostApplication]
 Count=1
-Item0=..\bin
+Item0=c:\home\dunit\bin\dunit.exe
+[HistoryLists\hlRunParameters]
+Count=1
+Item0=WantTestLib
