@@ -68,15 +68,17 @@ begin
   CheckEquals('delete', TDeleteTask.TagName, 'TagName is wrong');
   MakeSampleTextFile;
   Check(DirectoryExists(FTestDir), 'no directory to start with');
-
   FDeleteTask.Dir := FTestDir;
-  FDeleteTask.Execute;
+
+  FDeleteTask.Init;
+
+  FDeleteTask.DoExecute;
 
   // the following test was reversed in the previous version
   Check(not DirectoryExists(FTestDir), 'directory not deleted');
 
   // ensure it doesn't blow up trying to delete a directory that's gone
-  FDeleteTask.Execute;
+  FDeleteTask.DoExecute;
 end;
 
 procedure TTestDeleteTask.TestDeleteDirRelative;
