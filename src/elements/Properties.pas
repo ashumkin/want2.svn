@@ -32,11 +32,14 @@ implementation
 procedure TPropertyElement.Init;
 begin
   inherited Init;
-  RequireAttribute('name');
-  RequireAttribute('value');
+  if Enabled then
+  begin
+    RequireAttribute('name');
+    RequireAttribute('value');
 
-  Assert(Owner <> nil);
-  Owner.SetProperty(name, value);
+    Assert(Owner <> nil);
+    Owner.SetProperty(name, value);
+  end;
 end;
 
 

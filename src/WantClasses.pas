@@ -823,7 +823,7 @@ end;
 function TScriptElement.PropertyDefined(Name: string): boolean;
 begin
   Assert(Name <> '');
-  Result :=   (Properties.IndexOfName(Name) >= 0)
+  Result :=   (Properties.IndexOfName(Name) >= 0) and (Trim(Properties.Values[Name]) <> '')
            or (Owner <> nil) and (Owner.PropertyDefined(Name));
 end;
 
@@ -1342,12 +1342,15 @@ var
   Val :string;
 begin
   inherited Init;
-  RequireAttribute(ValueName);
+  if Enabled then
+  begin
+    RequireAttribute(ValueName);
 
-  Val := Evaluate(FStrValue);
-  Log(vlDebug, '%s=%s', [Self.AttribName, Val]);
-  if not Owner.SetAttribute(Self.AttribName, Val) then
-    WantError(Format('Could not set "%s" property to "%s"', [ AttribName, Val]));
+    Val := Evaluate(FStrValue);
+    Log(vlDebug, '%s=%s', [Self.AttribName, Val]);
+    if not Owner.SetAttribute(Self.AttribName, Val) then
+      WantError(Format('Could not set "%s" property to "%s"', [ AttribName, Val]));
+  end;
 end;
 
 function TCustomAttributeElement.ValueName: string;

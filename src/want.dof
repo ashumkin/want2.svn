@@ -51,7 +51,7 @@ Conditionals=USE_JEDI_JCL
 DebugSourceDirs=
 UsePackages=0
 [Parameters]
-RunParams=-buildfile c:\home\dunit\want.xml dist
+RunParams=-buildfile c:\home\want\want.xml compile
 HostApplication=
 Launcher=
 UseLauncher=0
