@@ -375,7 +375,7 @@ begin
     Result := FindBuildFile(SearchUp)
   else
   begin
-    Log(vlDebug, Format('Findind buildfile %s', [BuildFile]));
+    Log(vlDebug, Format('Finding buildfile %s', [BuildFile]));
     Result := PathConcat(CurrentDir, BuildFile);
     Dir    := SuperPath(Result);
 
