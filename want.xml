@@ -191,7 +191,7 @@ See http://www.suigeneris.org/want/ for details.
   </target>
 
   <target name="changelog" >
-     <shell executable="perl tools/cvs2cl.pl" >
+          <shell executable="tools/cvs2cl.pl" >
          <arg value="--file ChangeLog" />
          <arg value="--tags" />
          <arg value="--utc" />

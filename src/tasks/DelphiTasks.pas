@@ -412,7 +412,7 @@ end;
 function TDelphiCompileTask.BuildArguments: string;
   function PathOpt(Opt :string; Path :TPath) :string;
   begin
-    Result := Format(' -%s"%s"', [Opt, ToSystemPath(ToPath(Path))] );
+    Result := Format(' -%s%s', [Opt, ToSystemPath(ToPath(Path))] );
   end;
 
 var
@@ -432,7 +432,7 @@ begin
   for s := Low(Sources) to High(Sources) do
   begin
     Log(vlVerbose, 'source %s', [ToRelativePath(Sources[s])]);
-    Result := Result + ' "' + ToSystemPath(Sources[s]) +  '"';
+    Result := Result + ToSystemPath(Sources[s]);
   end;
 
   if not usecfg then

@@ -351,6 +351,8 @@ begin
    Result := StringReplace(Result, '/', SystemPathDelimiter, [rfReplaceAll]);
    if PathIsAbsolute(Path) then
      Result := ExpandFileName(Result);
+   if Pos(' ', Result) > 0 then
+     Result := '"' + Trim(Result) + '"';
 end;
 
 function ToSystemPaths(const Paths: TPaths; const BasePath: TPath = ''): TSystemPaths;
