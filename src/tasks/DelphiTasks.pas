@@ -254,7 +254,7 @@ begin
   if versions = '' then
     WantUtils.GetEnvironmentVar('delphi_version', FVersions, true);
   if versions = '' then
-     versions := '6,5,4';
+     versions := '8,7,6,5,4';
 
   vers := StringToArray(versions);
   for i := 0 to High(vers) do
