@@ -22,9 +22,8 @@ uses
   JclRegistry,
   JclStrings,
 
-  Collections,
-  MiniDom,
-  WantBase,
+  XPerlRe,
+
   WantClasses,
   ExecTasks,
   WildPaths,
@@ -61,6 +60,8 @@ type
     FVersions : string;
 
     FVersionFound :string;
+
+    procedure Log(Msg: string = ''; Level: TLogLevel = vlNormal); overload; override;
 
     function RootForVersion(version: string): string;
     function FindDelphiVersion(ver :string) :string;
@@ -253,6 +254,16 @@ begin
   if Pos('.', version) = 0 then
     version := version + '.0';
   Result := Format('%s\%s', [DelphiRegRoot, version]);
+end;
+
+procedure TCustomDelphiTask.Log(Msg: string; Level: TLogLevel);
+begin
+ if not match('([0-9]+) +[A-Z][a-z]+', Msg) then
+   inherited Log(Msg, Level)
+ else if Pos('Fatal', Msg) <> 0 then
+   inherited Log(Msg, vlErrors)
+ else
+   inherited Log(Msg, vlWarnings);
 end;
 
 { TDelphiCompileTask }
