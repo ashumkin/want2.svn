@@ -7,6 +7,7 @@ uses
   Classes,
 
   JclStrings,
+  WildPaths,
 
   CRT32,
   WantClasses,
@@ -162,7 +163,7 @@ end;
 procedure TConsoleListener.BuildFileLoaded(Project: TProject; FileName: string);
 begin
   inherited BuildFileLoaded(Project, FileName);
-  Log(vlNormal, 'buildfile: ' + FileName);
+  Log(vlNormal, 'buildfile: ' + NormalizePath(FileName));
 end;
 
 procedure TConsoleListener.ProjectStarted(Project: TProject);

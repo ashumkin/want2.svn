@@ -15,15 +15,19 @@ unit WantClasses;
 
 interface
 uses
+  Windows,
   SysUtils,
   Classes,
   TypInfo,
+  INIFiles,
 
   JALStrings,
+  JalPaths,
+  JALOwnedTrees,
+  JALExpressions,
 
   WildPaths,
-  WantUtils,
-  JALOwnedTrees;
+  WantUtils;
 
 
 {$M+} { TURN ON RTTI (RunTime Type Information) }
@@ -36,7 +40,8 @@ const
      tkEnumeration,
      tkString,
      tkLString,
-     tkWString];
+     tkWString,
+     tkClass];
 
   LabeledMsgFormat = '%14s %s';
 
@@ -163,6 +168,8 @@ type
     function  PropertyDefined(Name: string): boolean;    virtual;
     function  PropertyValue(Name: string): string;       virtual;
     function  EnvironmentValue(Name: string): string;    virtual;
+    function  ExpressionValue(Expre: string): string;    virtual;
+    function  INIValue(Expre: string): string;           virtual;
     function  Evaluate(Value: string): string;           virtual;
 
     procedure SetProperties(Value: TStrings);
@@ -173,6 +180,7 @@ type
 
     function  GetDelphiProperty(Name :string) :Variant;
     function  SetDelphiProperty(Name, Value :string) :boolean;
+    function  HasDelphiProperty(Name :string):boolean;
 
     // use this to get the fully qualified base path
     function  BasePath: string; virtual;
@@ -306,6 +314,28 @@ type
     procedure Execute; virtual;
     property Name stored False;
   published
+  end;
+
+  TCustomAttributeElement = class(TScriptElement)
+  protected
+    FStrValue    :string;
+    FAttribName  :string;
+
+    function  ValueName :string; virtual;
+  public
+    constructor Create(Owner :TScriptElement); override;
+
+    procedure Init; override;
+    function  SetAttribute(Name, Value :string) :boolean; override;
+
+    property AttribName :string read FAttribName write FAttribName;
+  end;
+
+  TAttributeElement = class(TCustomAttributeElement)
+  protected
+    FValue :string;
+  published
+    property value :string read FValue write FValue;
   end;
 
 
@@ -604,10 +634,12 @@ var
 begin
   Log(vlDebug, 'SetUp %s', [Name]);
 
+  (*!!!
   if Name <> Self.TagName then
     WantError(Format('XML tag of class <%s> is <%s> but found <%s>',
                       [ClassName, TagName, Name]
                       ));
+  *)
 
   for i := 0 to Atts.Count-1 do
   begin
@@ -657,6 +689,12 @@ begin
     ElemClass := FindElement(ChildName, Self.ClassType);
     if ElemClass <> nil then
       Result := ElemClass.Create(Self)
+    else if HasDelphiProperty(ChildName) then
+    begin
+      Log(vlDebug, 'found attribute-property "%s"', [ChildName]);
+      Result := TAttributeElement.Create(Self);
+      (Result as TAttributeElement).AttribName := ChildName;
+    end
     else
       WantError(Format('Unknown element <%s><%s>', [TagName, ChildName]));
   end;
@@ -792,7 +830,10 @@ end;
 
 procedure TScriptElement.SetProperty(Name, Value: string);
 begin
-  Assert(Name <> '');
+  if Name = '' then
+    WantError('property name missing');
+  if Value = '' then
+    Value := #0;
   if not PropertyDefined(Name) then
     Properties.Values[Name] := Value;
 end;
@@ -806,9 +847,10 @@ end;
 
 function TScriptElement.PropertyValue(Name: string): string;
 begin
-  Assert(Name <> '');
-  if Properties.IndexOfName(Name) >= 0 then
-    Result := Evaluate(Properties.Values[Name])
+  if Name = '' then
+    Result := ''
+  else if Properties.IndexOfName(Name) >= 0 then
+    Result := TrimRight(Evaluate(Properties.Values[Name]))
   else if Owner <> nil then
     Result := Owner.PropertyValue(Name)
   else
@@ -822,6 +864,40 @@ begin
   Result := PChar(Result); // so no nulls sneak in
 end;
 
+function TScriptElement.ExpressionValue(Expre: string): string;
+begin
+  try
+    Result := FloatToStr(JALExpressions.evaluate(Expre));
+  except
+    Result := '#error!';
+  end;
+end;
+
+
+function TScriptElement.INIValue(Expre: string): string;
+var
+  INIPart,
+  FileName,
+  Section,
+  Key,
+  Def       :string;
+begin
+  INIPart := StrToken(Expre, '|');
+  Def      := Expre;
+
+  FileName := ToAbsolutePath(StrToken(INIPart, ':'));
+  Section  := StrToken(INIPart, ':');
+  Key      := INIPart;
+  if not PathExists(FileName) or (Section = '') or (Key = '') then
+    Result := ''
+  else
+    with TIniFile.Create(ToSystemPath(FileName)) do
+    try
+      Result := ReadString(Section, Key, Def);
+    finally
+      Free;
+    end;
+end;
 
 function TScriptElement.Evaluate(Value: string): string;
 type
@@ -854,12 +930,20 @@ begin
   Result := Value;
   Result := Expand('%{', '}', Result, EnvironmentValue);
   Result := Expand('${', '}', Result, PropertyValue);
+  Result := Expand('={', '}', Result, ExpressionValue);
+  Result := Expand('?{', '}', Result, INIValue);
+end;
+
+function TScriptElement.HasDelphiProperty(Name: string): boolean;
+begin
+  Result := not VarIsNull(GetDelphiProperty(Name));
 end;
 
 function TScriptElement.GetDelphiProperty(Name: string): Variant;
 var
   TypeInfo :PTypeInfo;
   PropInfo :PPropInfo;
+  O        :TObject;
 begin
   Result := Null;
   TypeInfo := Self.ClassInfo;
@@ -883,6 +967,14 @@ begin
           Result := IntToStr(GetOrdProp(Self, PropInfo))
         else if Kind in [tkEnumeration] then
           Result := GetEnumName(PropType^, GetOrdProp(Self, PropInfo))
+        else if Kind = tkClass then
+        begin
+          O := Pointer(GetOrdProp(Self, PropInfo));
+          if O is TStrings then
+            Result := (O as TStrings).CommaText
+          else
+            Result := False;
+        end
         else
         begin
           // do nothing
@@ -896,6 +988,8 @@ function TScriptElement.SetDelphiProperty(Name, Value: string) :boolean;
 var
   TypeInfo: PTypeInfo;
   PropInfo: PPropInfo;
+  O       : TObject;
+  S       : TStrings;
 begin
   Result := True;
 
@@ -914,8 +1008,7 @@ begin
       if Kind in [tkString, tkLString, tkWString] then
       begin
         if (Name = 'TPath') then
-          if not WildPaths.IsSystemIndependentPath(Value) then
-            Value := WildPaths.ToPath(Value);
+           Value := ToWantPath(Value);
         SetStrProp(Self, PropInfo, Value);
       end
       else if Kind in [tkInteger] then
@@ -924,7 +1017,7 @@ begin
       begin
         if Name = 'TLogLevel' then
           Value := 'vl' + Value;
-          
+
         if Name <> 'Boolean' then
           SetOrdProp(Self, PropInfo, GetEnumValue(PropType^, Value))
         else
@@ -935,6 +1028,17 @@ begin
           else
             SetOrdProp(Self, PropInfo, GetEnumValue(PropType^, 'false'));
         end
+      end
+      else if Kind = tkClass then
+      begin
+        O := Pointer(GetOrdProp(Self, PropInfo));
+        if O is TStrings then
+        begin
+          S := O as TStrings;
+          S.CommaText := Value;
+        end
+        else
+          Result := False;
       end
       else
         Result := False;
@@ -1098,10 +1202,15 @@ begin
 
   Deps := StringToArray(Target.Depends,',', ttBoth);
   for i := Low(Deps) to High(Deps) do
-     BuildSchedule(Deps[i], Sched);
+  begin
+     if Deps[i] = TargetName then
+       raise ECircularTargetDependency.CreateFmt('circular dependency with target "%s"', [TargetName])
+     else
+       BuildSchedule(Deps[i], Sched);
+  end;
 
   if Sched.IndexOf(Target) >= 0 then
-     raise ECircularTargetDependency.Create(TargetName);
+       raise ECircularTargetDependency.CreateFmt('circular dependency with target "%s"', [TargetName]);
   Sched.Add(Target);
 end;
 
@@ -1184,7 +1293,8 @@ end;
 
 procedure TTask.Execute;
 begin
-  // do nothing
+  if Description <> '' then
+    Log(Description);
 end;
 
 procedure TTask.TaskFailure(Msg: string; Addr :Pointer);
@@ -1194,6 +1304,45 @@ begin
   else
     raise ETaskFailure.Create(Msg) at CallerAddr;
 end;
+
+{ TCustomAttributeElement }
+
+{ TCustomAttributeElement }
+
+constructor TCustomAttributeElement.Create(Owner: TScriptElement);
+begin
+  inherited Create(Owner);
+  FAttribName := TagName;
+end;
+
+procedure TCustomAttributeElement.Init;
+var
+  Val :string;
+begin
+  inherited Init;
+  RequireAttribute(ValueName);
+
+  Val := Evaluate(FStrValue);
+  Log(vlDebug, '%s=%s', [Self.AttribName, Val]);
+  if not Owner.SetAttribute(Self.AttribName, Val) then
+    WantError(Format('Could not set "%s" property to "%s"', [ AttribName, Val]));
+end;
+
+function TCustomAttributeElement.ValueName: string;
+begin
+  Result := 'value';
+end;
+
+function TCustomAttributeElement.SetAttribute(Name, Value: string) :boolean;
+begin
+  Result := inherited SetAttribute(Name, Value);
+  if Result and (Name = ValueName) then
+  begin
+    FStrValue := Value;
+    Result := (Owner <> nil) and Owner.HasDelphiProperty(Self.AttribName);
+  end;
+end;
+
 
 initialization
   __ElementRegistry := nil;

@@ -91,7 +91,7 @@ end;
 
 procedure TScriptRunner.LoadProject(Project :TProject; BuildFile: TPath; SearchUp :boolean);
 begin
-  if not IsSystemIndependentPath(BuildFile) then
+  if not IsLocalPath(BuildFile) then
     BuildFile := ToPath(BuildFile);
   BuildFile := FindBuildFile(BuildFile, SearchUp);
 
@@ -189,9 +189,9 @@ begin
       Sched := nil;
       Project.Listener := Listener;
 
-      Log(vlVerbose, Format('basedir="%s"',   [Project.RootPath]));
-      Log(vlVerbose, Format('basedir="%s"',   [Project.BaseDir]));
-      Log(vlVerbose, Format('basepath="%s"',  [Project.BasePath]));
+      Log(vlDebug, Format('basedir="%s"',   [Project.RootPath]));
+      Log(vlDebug, Format('basedir="%s"',   [Project.BaseDir]));
+      Log(vlDebug, Format('basepath="%s"',  [Project.BasePath]));
 
       if Target = '' then
       begin
@@ -246,8 +246,8 @@ begin
 
   Listener.TargetStarted(Target);
 
-  Log(vlVerbose, Format('basedir="%s"',   [Target.BaseDir]));
-  Log(vlVerbose, Format('basepath="%s"',  [Target.BasePath]));
+  Log(vlDebug, Format('basedir="%s"',   [Target.BaseDir]));
+  Log(vlDebug, Format('basepath="%s"',  [Target.BasePath]));
 
   LastDir := CurrentDir;
   try
