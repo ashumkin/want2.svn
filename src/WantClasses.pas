@@ -127,7 +127,7 @@ type
 
   published
     property DefaultTarget :string read FDefaultTarget write FDefaultTarget;
-    property BeQuiet: boolean read FBeQuiet write FBeQuiet;
+    property BeQuiet: boolean read FBeQuiet write FBeQuiet default false;
     property Properties :TStrings read FProperties write SetProperties;
   end;
 
