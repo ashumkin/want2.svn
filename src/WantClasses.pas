@@ -1015,6 +1015,7 @@ begin
   inherited Create(Owner);
   FTargets    := TList.Create;
   FVerbosity  := vlNormal;
+  FRunPath    := CurrentDir;
 end;
 
 destructor TProject.Destroy;

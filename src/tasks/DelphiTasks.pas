@@ -47,8 +47,6 @@ uses
   JclSysInfo,
   JclRegistry,
 
-  clVersionRcUnit,
-
   Windows,
   SysUtils,
   Classes;
@@ -140,19 +138,6 @@ type
     property debug: boolean read FDebug write FDebug;
 
     property source : string read FSource     write FSource;
-  end;
-
-  TIncVerRcTask = class(TTask)
-  private
-    FRcFileName: string;
-    FIncrement:  boolean;
-  public
-    procedure Execute; override;
-    procedure Init; override;
-    class function XMLTag: string; override;
-  published
-    property rcfilename: string  read FRcFileName write FRcFileName;
-    property increment:  boolean read FIncrement  write FIncrement;
   end;
 
 implementation
@@ -340,47 +325,7 @@ begin
   (Owner as TDelphiCompileTask).AddIncludePath(Value);
 end;
 
-{ TIncVerRcTask }
-
-procedure TIncVerRcTask.Execute;
-var
-  FclVerRc: TclVersionRc;
-begin
-  Log('Incrementing build in ' + ToRelativePath(FRcFileName));
-  FclVerRc := TclVersionRc.Create(ToSystemPath(FRcFileName));
-  try
-    if increment then
-      FclVerRc.IncBuild;
-  finally
-    FclVerRc.Free;
-  end;
-end;
-
-procedure TIncVerRcTask.Init;
-var
-  FclVerRc: TclVersionRc;
-  BuildNo:  Integer;
-begin
-  inherited Init;
-
-  RequireAttribute('rcfilename');
-
-  FclVerRc := TclVersionRc.Create(ToSystemPath(FRcFileName));
-  try
-    BuildNo := FclVerRc.VersionInfo.Build;
-    if increment then
-      Inc(BuildNo);
-    Project.SetProperty('build', IntToStr(BuildNo));
-  finally
-    FclVerRc.Free;
-  end;
-end;
-
-class function TIncVerRcTask.XMLTag: string;
-begin
-  Result := 'incverrc';
-end;
 
 initialization
-  RegisterTasks([TDelphiCompileTask, TIncVerRcTask]);
+  RegisterTasks([TDelphiCompileTask]);
 end.

@@ -49,7 +49,7 @@ Conditionals=
 DebugSourceDirs=
 UsePackages=0
 [Parameters]
-RunParams=-buildfile \home\dunit\build.xml examples -debug
+RunParams=-buildfile ..\make\build.xml  dist -Dparam="hello, dude!"
 HostApplication=
 [Version Info]
 IncludeVerInfo=0
@@ -123,9 +123,9 @@ Count=1
 Item0=..\bin
 [HistoryLists\hlRunParameters]
 Count=30
-Item0=-buildfile \home\dunit\build.xml examples -debug
-Item1=-buildfile \home\dunit\build.xml examples
-Item2=-buildfile ..\make\build.xml  dist -Dparam="hello, dude!"
+Item0=-buildfile ..\make\build.xml  dist -Dparam="hello, dude!"
+Item1=-buildfile \home\dunit\build.xml examples -debug
+Item2=-buildfile \home\dunit\build.xml examples
 Item3=-buildfile ..\make\build.xml  dist
 Item4=-buildfile ..\make\build.xml 
 Item5=-buildfile \home\dunit\examples\registry\build.xml

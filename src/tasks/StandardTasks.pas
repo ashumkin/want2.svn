@@ -40,6 +40,7 @@ uses
   FileTasks,
   ZipTasks,
   DanteTasks,
+  VersionInfoTasks,
   VssTasks;
 
 implementation

@@ -42,7 +42,8 @@ uses
   StandardTasks,
   CustomTasks,
   DanteMain,
-  JclFileUtils;
+  JclFileUtils,
+  VersionInfoTasks in 'tasks\VersionInfoTasks.pas';
 
 {$R dantever.res}
 
