@@ -237,7 +237,7 @@ type
 
     procedure SetRootPath(const Path :TPath);
 
-    procedure BuildSchedule(TargetName: string; Sched: TList);
+    procedure BuildSchedule(TargetName: string; Seen, Sched: TList);
   public
     constructor Create(Owner: TScriptElement = nil); override;
     destructor  Destroy; override;
@@ -1185,7 +1185,7 @@ begin
 end;
 
 
-procedure TProject.BuildSchedule(TargetName: string; Sched: TList);
+procedure TProject.BuildSchedule(TargetName: string; Seen, Sched: TList);
 var
   Target:  TTarget;
   i     :  Integer;
@@ -1200,29 +1200,30 @@ begin
     EXIT;
   end;
 
+  if Seen.IndexOf(Target) >= 0 then
+    raise ECircularTargetDependency.CreateFmt('circular dependency with target "%s"', [TargetName]);
+  Seen.Add(Target);
+
   Deps := StringToArray(Target.Depends,',', ttBoth);
   for i := Low(Deps) to High(Deps) do
-  begin
-     if Deps[i] = TargetName then
-       raise ECircularTargetDependency.CreateFmt('circular dependency with target "%s"', [TargetName])
-     else
-       BuildSchedule(Deps[i], Sched);
-  end;
+    BuildSchedule(Deps[i], Seen, Sched);
 
   if Sched.IndexOf(Target) >= 0 then
-       raise ECircularTargetDependency.CreateFmt('circular dependency with target "%s"', [TargetName]);
+    raise ECircularTargetDependency.CreateFmt('circular dependency with target "%s"', [TargetName]);
   Sched.Add(Target);
 end;
 
 
 function TProject.Schedule(Target: string): TTargetArray;
 var
-  Sched: TList;
+  Sched,
+  Seen   : TList;
   i    : Integer;
 begin
   Sched := TList.Create;
+  Seen  := TList.Create;
   try
-    BuildSchedule(Target, Sched);
+    BuildSchedule(Target, Seen, Sched);
     SetLength(Result, Sched.Count);
     Log(vlDebug, 'schedule:');
     for i := 0 to Sched.Count-1 do
@@ -1232,6 +1233,7 @@ begin
     end;
   finally
     FreeAndNil(Sched);
+    FreeAndNil(Seen);
   end;
 end;
 

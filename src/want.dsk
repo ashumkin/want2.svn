@@ -92,31 +92,16 @@ File_8=SourceModule,'C:\home\want\src\win32\ConsoleListener.pas',0,1,1,3,10,0,0
 File_9=SourceModule,'C:\home\want\src\tasks\IniFileTasks.pas',0,1,117,28,141,0,0
 
 [Modules]
-Module0=C:\home\want\src\ScriptRunner.pas
-Module1=C:\home\want\src\tasks\FileTasks.pas
-Module2=C:\home\want\src\want.dpr
-Module3=C:\home\want\src\tasks\ExecTasks.pas
-Module4=C:\home\want\src\tasks\DelphiTasks.pas
-Module5=C:\home\want\src\WantClasses.pas
+Module0=C:\home\want\src\WantClasses.pas
+Module1=C:\home\want\src\tasks\DelphiTasks.pas
+Module2=C:\home\want\src\tasks\ExecTasks.pas
+Module3=C:\home\want\src\want.dpr
+Module4=C:\home\want\src\tasks\FileTasks.pas
+Module5=C:\home\want\src\ScriptRunner.pas
 Count=6
 EditWindowCount=1
 
-[C:\home\want\src\ScriptRunner.pas]
-ModuleType=SourceModule
-FormState=0
-FormOnTop=0
-
-[C:\home\want\src\tasks\FileTasks.pas]
-ModuleType=SourceModule
-FormState=0
-FormOnTop=0
-
-[C:\home\want\src\want.dpr]
-ModuleType=SourceModule
-FormState=0
-FormOnTop=0
-
-[C:\home\want\src\tasks\ExecTasks.pas]
+[C:\home\want\src\WantClasses.pas]
 ModuleType=SourceModule
 FormState=0
 FormOnTop=0
@@ -126,7 +111,22 @@ ModuleType=SourceModule
 FormState=0
 FormOnTop=0
 
-[C:\home\want\src\WantClasses.pas]
+[C:\home\want\src\tasks\ExecTasks.pas]
+ModuleType=SourceModule
+FormState=0
+FormOnTop=0
+
+[C:\home\want\src\want.dpr]
+ModuleType=SourceModule
+FormState=0
+FormOnTop=0
+
+[C:\home\want\src\tasks\FileTasks.pas]
+ModuleType=SourceModule
+FormState=0
+FormOnTop=0
+
+[C:\home\want\src\ScriptRunner.pas]
 ModuleType=SourceModule
 FormState=0
 FormOnTop=0
@@ -165,7 +165,7 @@ BottomPanelSize=173
 BottomPanelClients=MessageView@EditWindow0,DockSite0
 BottomPanelData=00000400010000000B0000004D65737361676556696577AD00000000000000019F030000000000000100000000AD00000009000000446F636B5369746530FFFFFFFF
 ViewCount=6
-CurrentView=4
+CurrentView=0
 View0=0
 View1=1
 View2=2
@@ -207,9 +207,9 @@ Dockable=1
 
 [View0]
 Module=C:\home\want\src\WantClasses.pas
-CursorX=26
-CursorY=1231
-TopLine=1217
+CursorX=1
+CursorY=1204
+TopLine=1188
 LeftCol=1
 
 [View1]
@@ -221,9 +221,9 @@ LeftCol=1
 
 [View2]
 Module=C:\home\want\src\tasks\ExecTasks.pas
-CursorX=16
-CursorY=228
-TopLine=210
+CursorX=5
+CursorY=402
+TopLine=372
 LeftCol=1
 
 [View3]
@@ -235,8 +235,8 @@ LeftCol=1
 
 [View4]
 Module=C:\home\want\src\ScriptRunner.pas
-CursorX=26
-CursorY=296
+CursorX=20
+CursorY=292
 TopLine=275
 LeftCol=1
 
@@ -244,7 +244,7 @@ LeftCol=1
 Module=C:\home\want\src\tasks\FileTasks.pas
 CursorX=1
 CursorY=291
-TopLine=264
+TopLine=275
 LeftCol=1
 
 [DockHosts]

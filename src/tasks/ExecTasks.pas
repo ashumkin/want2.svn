@@ -389,7 +389,11 @@ begin
   begin
     quiet         := true;
     errorfilter   := '[Ee]rror';
+    errorfilter   := 'ERROR';
+    errorfilter   := '[Ff]atal';
+    errorfilter   := 'FATAL';
     warningfilter := '[Ww]arning';
+    warningfilter := 'WARNING';
   end;
 end;
 
