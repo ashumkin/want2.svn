@@ -42,6 +42,7 @@ uses
   JclBase,
   JclMiscel,
   JclSysInfo,
+  JclSecurity,
 
   Windows,
   SysUtils,
@@ -49,17 +50,23 @@ uses
 
 
 type
+  TChildProcess = class;
+
   TCustomExecTask = class(TTask)
   protected
     FOS: string;
     FExecutable: string;
-    FArguments: TStrings;
+    FArguments : TStrings;
+    FSkipLines : Integer;
 
     function BuildCmdLine: string; virtual;
 
     function  GetArguments :string;
     procedure SetArguments(Value :string);
     procedure SetArgumentList(Value :TStrings);
+
+    procedure Run(CmdLine: string);
+    procedure HandleOutput(Child :TChildProcess);
   public
     constructor Create(Owner: TComponent); override;
     destructor Destroy; override;
@@ -70,6 +77,7 @@ type
     property Arguments: string      read GetArguments write SetArguments;
     property ArgumentList: TStrings read FArguments   write SetArgumentList stored False;
     property Executable: string     read FExecutable  write FExecutable;
+    property SkipLines :Integer     read FSkipLines   write FSkipLines;
     property OS: string read FOS    write FOS;
   end;
 
@@ -91,8 +99,54 @@ type
     class function XMLTag :string; override;
   end;
 
+  TChildProcess = class
+  protected
+    function  Launch(const CmdLine: string; hInput, hOutput, hError: THandle): THandle;
+  public
+    hChild,
+    hOutputRead :THandle;
+    FExitCode   :Cardinal;
+  public
+    destructor Destroy; override;
+
+    procedure Run(CmdLine: string);
+
+    function ExitCode :Cardinal;
+
+    function Read :string;
+  end;
+
 
 implementation
+
+procedure SystemError(Msg :string = '');
+begin
+  raise ETaskError.Create(SysErrorMessage(GetLastError) + Msg)
+end;
+
+{ TExecTask }
+
+class function TExecTask.XMLTag: string;
+begin
+  result := 'exec';
+end;
+
+
+{ TShellExecTask }
+
+function TShellExecTask.BuildCmdLine: string;
+begin
+  Result := inherited BuildCmdLine;
+  if IsWinNT then
+    Result := 'cmd.exe /c ' + Result
+  else
+    Result := 'command.com /c ' + Result;
+end;
+
+class function TShellExecTask.XMLTag: string;
+begin
+  Result := 'shell';
+end;
 
 { TCustomExecTask }
 
@@ -120,19 +174,11 @@ end;
 
 procedure TCustomExecTask.Execute;
 var
-  CmdLine : string;
-  ExitCode: Cardinal;
+  CmdLine :string;
 begin
   CmdLine := BuildCmdLine;
   Log(CmdLine, vlVerbose);
-
-  ExitCode := WinExec32AndWait(CmdLine, 0);
-
-  if ExitCode = Cardinal(-1) then
-    raise ETaskError.Create(SysErrorMessage(GetLastError))
-  else if ExitCode <> 0 then
-    raise ETaskFailure.Create('Execution failed (' + CmdLine + '). ExitCode: ' +
-      IntToStr(ExitCode));
+  Run(CmdLine);
 end;
 
 
@@ -156,29 +202,187 @@ begin
   result := 'custom_exec';
 end;
 
-{ TExecTask }
-
-class function TExecTask.XMLTag: string;
+procedure TCustomExecTask.Run(CmdLine :string);
+var
+  Child :TChildProcess;
 begin
-  result := 'exec';
+  Child := TChildProcess.Create;
+  try
+    Child.Run(CmdLine);
+    HandleOutput(Child);
+    if Child.ExitCode <> 0 then
+      raise ETaskFailure.Create('failed');
+  finally
+    Child.Free;
+  end;
 end;
 
 
-{ TShellExecTask }
-
-function TShellExecTask.BuildCmdLine: string;
+procedure TCustomExecTask.HandleOutput(Child :TChildProcess);
+const
+  TimeOutMillis = 100;
+var
+  Line          :String;
+  Buffer        :string;
+  p             :Integer;
+  LineNo        :Integer;
 begin
-  Result := inherited BuildCmdLine;
-  if IsWinNT then
-    Result := 'cmd.exe /c ' + Result
-  else
-    Result := 'command.com /c ' + Result;
+  LineNo := 0;
+  Line   := '';
+  Buffer := Child.Read;
+  while Buffer <> '' do
+  begin
+    for p := 1 to Length(Buffer) do
+    begin
+      if not (Buffer[p] in [#10, #13])  then
+        Line := Line + Buffer[p]
+      else begin
+        Inc(LineNo);
+        if LineNo > SkipLines then
+          if Buffer[p] = #13 then
+            Log(Line + #13)
+          else
+            Log(Line);
+        Line := '';
+      end;
+    end;
+    Buffer := Child.Read;
+  end;
+  if (Line <> '') and (LineNo >= SkipLines) then
+    Log(Line);
 end;
 
-class function TShellExecTask.XMLTag: string;
+{ TChildProcess }
+
+destructor TChildProcess.Destroy;
 begin
-  Result := 'shell';
+  if (hOutputRead <> 0)
+  and not CloseHandle(hOutputRead) then
+    SystemError('CloseHandle');
+  if (hChild <> 0) and not CloseHandle(hChild) then
+    SystemError('CloseHandle');
+  inherited Destroy;
 end;
+
+
+function TChildProcess.ExitCode: Cardinal;
+begin
+  if WaitForSingleObject(hChild, INFINITE) = WAIT_OBJECT_0 then
+  begin
+    if not GetExitCodeProcess(hChild, Result) then
+      SystemError
+  end;
+end;
+
+function TChildProcess.Launch(const CmdLine: string; hInput, hOutput, hError: THandle): THandle;
+var
+  StartupInfo: TStartupInfo;
+  ProcessInfo: TProcessInformation;
+  Success:     boolean;
+begin
+  Result := 0;
+  FillChar(StartupInfo, SizeOf(StartupInfo), #0);
+  StartupInfo.cb := SizeOf(StartupInfo);
+  StartupInfo.dwFlags := STARTF_USESTDHANDLES;
+  StartupInfo.wShowWindow := SW_HIDE;
+
+  StartupInfo.hStdInput   := hInput;
+  StartupInfo.hStdOutput  := hOutput;
+  StartupInfo.hStdError   := hError;
+
+  Success := CreateProcess(nil, PChar(CmdLine), nil, nil, True,
+    NORMAL_PRIORITY_CLASS, nil, nil, StartupInfo,
+    ProcessInfo);
+  if not Success then
+    SystemError
+  else begin
+    WaitForInputIdle(ProcessInfo.hProcess, INFINITE);
+    CloseHandle(ProcessInfo.hThread);
+    Result := ProcessInfo.hProcess;
+  end
+end;
+
+function TChildProcess.Read: string;
+var
+  BytesRead     :DWORD;
+begin
+  repeat
+    SetLength(Result, 80);
+    if not ReadFile(hOutputRead, Result[1], Length(Result), BytesRead, nil)
+    or (BytesRead = 0) then
+    begin
+      if GetLastError = ERROR_BROKEN_PIPE then
+         break // pipe done - normal exit path.
+      else
+         SystemError('ReadFile'); // Something bad happened.
+    end
+  until BytesRead > 0;
+  SetLength(Result, BytesRead);
+end;
+
+
+procedure TChildProcess.Run(CmdLine: string);
+var
+  hCurrentProcess,
+  hOutputReadTmp,
+  hOutputWrite,
+  hInputRead,
+  hErrorWrite  :THandle;
+  sa            :TSecurityAttributes;
+begin
+  hCurrentProcess := GetCurrentProcess;
+  FillChar(sa, SizeOf(sa), 0);
+  sa.nLength  := SizeOf(sa);
+  sa.bInheritHandle := true;
+
+
+  // Create the child output pipe.
+  if not CreatePipe(hOutputReadTmp, hOutputWrite, @sa, 0) then
+     SystemError('CreatePipe');
+
+  // Create child input handle
+  if not DuplicateHandle(hCurrentProcess, GetStdHandle(STD_INPUT_HANDLE),
+                         hCurrentProcess, @hInputRead,0,
+                       TRUE,DUPLICATE_SAME_ACCESS) then
+     SystemError('DuplicateHandle');
+
+  // Create a duplicate of the output write handle for the std error
+  // write handle. This is necessary in case the child application
+  // closes one of its std output handles.
+  if not DuplicateHandle(hCurrentProcess,hOutputWrite,
+                       hCurrentProcess,  @hErrorWrite,0,
+                       TRUE,DUPLICATE_SAME_ACCESS) then
+     SystemError('DuplicateHandle');
+
+
+  // Create new output read handle. Set
+  // the Properties to FALSE. Otherwise, the child inherits the
+  // properties and, as a result, non-closeable handles to the pipes
+  // are created.
+  if not DuplicateHandle(hCurrentProcess,hOutputReadTmp,
+                       hCurrentProcess,
+                       @hOutputRead, // Address of new handle.
+                       0,FALSE, // Make it uninheritable.
+                       DUPLICATE_SAME_ACCESS) then
+     SystemError('DupliateHandle');
+
+
+  // Close inheritable copies of the handles you do not want to be
+  // inherited.
+  if not CloseHandle(hOutputReadTmp) then SystemError('CloseHandle');
+
+  hChild := Launch(CmdLine, hInputRead, hOutputWrite, hErrorWrite);
+
+
+  // Close pipe handles (do not continue to modify the parent).
+  // You need to make sure that no handles to the write end of the
+  // output pipe are maintained in this process or else the pipe will
+  // not close when the child process exits and the ReadFile will hang.
+  if not CloseHandle(hOutputWrite) then SystemError('CloseHandle');
+  if not CloseHandle(hInputRead )  then SystemError('CloseHandle');
+  if not CloseHandle(hErrorWrite)  then SystemError('CloseHandle');
+end;
+
 
 initialization
   RegisterTasks([TCustomExecTask, TExecTask, TShellExecTask]);
