@@ -29,15 +29,15 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR
 TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
 THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 --------------------------------------------------------------------------------
-Major author: Chris Morris
-Contributors: 
+Original author: Chris Morris
+Contributors   : Juancarlo Añez 
 }
 unit DanteExternalTest;
 
 interface
 
 uses
-  TestFramework;
+  TestFramework, clUtilFile;
 
 type
   TExternalTest = class(TTestCase)
@@ -47,7 +47,10 @@ type
     FRootTestExeDir: string;
     FTestExeFinalDir: string;
     FTestExeSetupDir: string;
+    FTestPath: string;
     procedure SetRootName(const Value: string);
+    procedure SetTestName;
+    procedure SetTestPath(const Value: string);
   protected
     function BuildFileName: string;
     procedure CompareActualToFinal;
@@ -65,6 +68,7 @@ type
   published
     procedure DoTest;
 
+    property TestPath: string read FTestPath write SetTestPath;
     property TestRootName: string read FRootName write SetRootName;
   end;
 
@@ -85,15 +89,23 @@ var
   Files: TStringList;
   i: Integer;
   ATest: TExternalTest;
+  BasePath: string;
 begin
+  BasePath := '../test/data';
   Files := TStringList.Create;
   try
-    JclFileUtils.BuildFileList('..\test\data\*.xml', 0, Files);
+    WildPaths.Wild(Files, '**/*.xml', BasePath);
     for i := 0 to Files.Count - 1 do
     begin
+      { TODO: it'd be nice in GUITestRunner to have the test name be the
+        last directory in the test path. Right now it's always 'build' and
+        adds an unecessary child node in the test tree. Original design
+        had unique test name in TESTNAME.xml. Now it's a unique folder
+        with a build.xml file in it. }
       ATest := TExternalTest.Create;
-      ATest.TestRootName := JclFileUtils.PathExtractFileNameNoExt(Files[i]);
-      RegisterTest('Acceptance Suite.External Tests', ATest);
+      ATest.TestPath := ExtractFilePath(ToSystemPath(Files[i]));
+      ATest.TestRootName := JclFileUtils.PathExtractFileNameNoExt(ToSystemPath(Files[i]));
+      RegisterTest('Acceptance Suite.External Tests.' + ATest.TestPath, ATest);
     end;
   finally
     Files.Free;
@@ -104,55 +116,19 @@ end;
 
 function TExternalTest.BuildFileName: string;
 begin
-  Result := FRootName + '.xml';
+  Result := 'build.xml';
 end;
 
 procedure TExternalTest.CompareActualToFinal;
 var
-  SetupList: TStringList;
-  FinalList: TStringList;
-
-  procedure RemoveBaseFromFullNames(Strings: TStringList; Base: string);
-  var
-    i: Integer;
-  begin
-    for i := 0 to Strings.Count - 1 do
-      Strings[i] := StringReplace(Strings[i], Base, '', [rfIgnoreCase]);
-  end;
+  ADirComp: TclDirectoryCompare;
 begin
-  { this would be a good start for a contribution to DUnit }
-  SetupList := TStringList.Create;
-  FinalList := TStringList.Create;
+  ADirComp := TclDirectoryCompare.Create(FTestExeSetupDir, FTestExeFinalDir);
   try
-    (* these calls hang under my setup -- Juanco
-    JclFileUtils.AdvBuildFileList(FTestExeSetupDir + '*.*', faAnyFile,
-      SetupList, [flRecursive, flFullNames]);
-    JclFileUtils.AdvBuildFileList(FTestExeFinalDir + '*.*', faAnyFile,
-      FinalList, [flRecursive, flFullNames]);
-    *)
-
-    SetupList.Sorted := True;
-    FinalList.Sorted := True;
-    WildPaths.Wild(SetupList, '**', ToPath(FTestExeSetupDir));
-    WildPaths.Wild(FinalList, '**', ToPath(FTestExeFinalDir));
-
-    SetupList.Sorted := False;
-    FinalList.Sorted := False;
-    ToSystemPaths(SetupList, ToPath(FTestExeSetupDir));
-    ToSystemPaths(FinalList, ToPath(FTestExeFinalDir));
-
-    { need flFullNames to make sure directory structure is also checked, but
-      we need to chop off the different bases }
-    RemoveBaseFromFullNames(SetupList, FTestExeSetupDir);
-    RemoveBaseFromFullNames(FinalList, FTestExeFinalDir);
-
-    Check(SetupList.Equals(FinalList),
-      'setup file structure does not match final structure: ' + #13#10 +
-      'SetupFiles: ' + SetupList.CommaText + #13#10 +
-      'FinalFiles: ' + FinalList.CommaText);
+    // Check(ADirComp.CompareByFileContent); this method is currently choking on subdirs
+    Check(ADirComp.CompareByFileName);
   finally
-    SetupList.Free;
-    FinalList.Free;
+    ADirComp.Free;
   end;
 end;
 
@@ -189,13 +165,25 @@ end;
 
 function TExternalTest.FinalFileName: string;
 begin
-  Result := FRootName + '.final.zip';
+  Result := 'final.zip';
 end;
 
 procedure TExternalTest.SetRootName(const Value: string);
 begin
   FRootName := Value;
-  FTestName := FRootName;
+  SetTestName;
+end;
+
+procedure TExternalTest.SetTestName;
+begin
+  { FTestPath is now used in the Suite hierarchy. See LoadTests }
+  FTestName := {FTestPath + }FRootName;
+end;
+
+procedure TExternalTest.SetTestPath(const Value: string);
+begin
+  FTestPath := StringReplace(Value, FRootTestDataDir, '', []);
+  SetTestName;
 end;
 
 procedure TExternalTest.Setup;
@@ -206,7 +194,7 @@ end;
 
 function TExternalTest.SetupFileName: string;
 begin
-  Result := FRootName + '.setup.zip';
+  Result := 'setup.zip';
 end;
 
 procedure TExternalTest.TearDown;
@@ -221,9 +209,10 @@ var
 
   procedure DoCopy(FileName: string);
   begin
-    Windows.CopyFile(
-      PChar(FRootTestDataDir + FileName),
-      PChar(Directory + FileName), false);
+    if not Windows.CopyFile(
+      PChar(FRootTestDataDir + FTestPath + FileName),
+      PChar(Directory + FileName), false) then
+      RaiseLastWin32Error;
   end;
 begin
   ChDir(ExtractFilePath(ParamStr(0)));
@@ -232,19 +221,20 @@ begin
   DoCopy(ZipFileName);
   CurrentDir := GetCurrentDir;
   ChDir(Directory);
-  WinExec32AndWait('..\..\..\test\data\unzip.exe ' + ZipFileName, 0);
-  DeleteFile(ZipFileName);
+  WinExec32AndWait(
+    '..\..\..\test\data\unzip.exe ' + ZipFileName, 0);
+  SysUtils.DeleteFile(ZipFileName);
   ChDir(CurrentDir);
 end;
 
 procedure TExternalTest.UnzipFinal;
 begin
-  Unzip(FRootName + '.final.zip', FTestExeFinalDir);
+  Unzip(FinalFileName, FTestExeFinalDir);
 end;
 
 procedure TExternalTest.UnzipSetup;
 begin
-  Unzip(FRootName + '.setup.zip', FTestExeSetupDir);
+  Unzip(SetupFileName, FTestExeSetupDir);
 end;
 
 procedure TExternalTest.VerifyFinal;
