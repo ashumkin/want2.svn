@@ -406,16 +406,28 @@ const
   +#10'</project>'
   +'';
 var
-  P :TPropertyElement;
+  P0, P1 :TPropertyElement;
 begin
   TScriptParser.ParseText(FProject, build_xml);
-  P := (FProject.Children[1] as TPropertyElement);
+  P0  := (FProject.Children[0] as TPropertyElement);
+  P1 := (FProject.Children[1] as TPropertyElement);
 
-  CheckEquals('_${global}_', P.Value);
+  CheckEquals('0', P0.Attributes.Values['value']);
+  CheckEquals('_${global}_', P1.Attributes.Values['value']);
+  CheckEquals('', P0.Value);
+  CheckEquals('', P1.Value);
+  CheckEquals('${global}',  FProject.PropertyValue('global'));
+  CheckEquals('${derived}', FProject.PropertyValue('derived'));
   FProject.Configure;
-  CheckEquals('_0_', P.Value);
+  CheckEquals('0',   P0.Value);
+  CheckEquals('_0_', P1.Value);
+  CheckEquals('0',   FProject.PropertyValue('global'));
+  CheckEquals('_0_', FProject.PropertyValue('derived'));
   RunProject;
-  CheckEquals('_0_', P.Value);
+  CheckEquals('0',   P0.Value);
+  CheckEquals('_0_', P1.Value);
+  CheckEquals('0',   FProject.PropertyValue('global'));
+  CheckEquals('_0_', FProject.PropertyValue('derived'));
 end;
 
 procedure TPropertyTests.TestValidPath;

@@ -721,7 +721,7 @@ end;
 procedure TScriptElement.AboutToScratchPath(const Path: TPath);
 begin
   if  PathExists(Path)
-  and (Pos(BasePath, ToAbsolutePath(Path)) <> 1)
+  and (Pos(ToAbsolutePath(BasePath), ToAbsolutePath(Path)) <> 1)
   then
     WantError(Format('Will not scratch %s outside of %s',
                          [ToSystemPath(Path), ToSystemPath(BasePath)]
