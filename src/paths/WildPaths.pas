@@ -66,54 +66,57 @@ const
   {$ENDIF}
 
 type
-  TPath  = string;
+  TPath  = type string;
   TPattern  = TPath;
   TPaths = array of TPath;
   TPatterns = TPaths;
 
+  TSystemPath  = string;
+  TSystemPaths = array of TSystemPath;
+
   EWildPathsException = class(Exception);
   EWildPathsError     = class(EWildPathsException);
 
-procedure AssertIsSystemIndependentPath(Path :string);
+procedure AssertIsSystemIndependentPath(const Path :TPath);
 
-function PathConcat(P1, P2 :TPath) :TPath;
+function PathConcat(const Path1, Path2 :TPath) :TPath;
 
-function ToSystemPath(Path :TPath; BasePath :string = ''):string;
-function ToPath(SystemPath :string; BasePath :string = ''):TPath;
+function ToSystemPath(const Path :TPath; const BasePath :TPath = ''):TSystemPath;
+function ToPath(SystemPath :TSystemPath;  const BasePath :TPath = ''):TPath;
 
-function ToSystemPaths(Paths :TPaths; BasePath :string = '') :TPaths;
-function ToPaths(OSPaths :TPaths; BasePath :string = '') :TPaths;
+function ToSystemPaths(const Paths :TPaths; const BasePath :TPath = '') :TSystemPaths;
+function ToPaths(OSPaths :TSystemPaths; const BasePath :TPath = '') :TPaths;
 
 
 
 function StringsToPaths(S :TStrings):TPaths;
-function SplitPath(Path :TPath) :TPaths;
+function SplitPath(const Path :TPath) :TPaths;
 
-function  MovePath(Path :TPath; FromBase :TPath; ToBase :TPath = '') :TPath;
-function  MovePaths(Paths :TPaths; FromBase :TPath; ToBase :TPath = '') :TPaths;
-function  ToRelativePath(Path, BasePath :TPath):TPath;
-function  ToRelativePaths(Paths :TPaths; BasePath :TPath):TPaths;
-function  PathIsAbsolute(Path :TPath) :boolean;
+function  MovePath(const Path :TPath; const FromBase :TPath; const ToBase :TPath = '') :TPath;
+function  MovePaths(const Paths :TPaths; const FromBase :TPath; const ToBase :TPath = '') :TPaths;
+function  ToRelativePath(const Path, BasePath :TPath):TPath;
+function  ToRelativePaths(const Paths :TPaths; const BasePath :TPath):TPaths;
+function  PathIsAbsolute(const Path :TPath) :boolean;
 procedure ForceRelativePath(var Path, BasePath :TPath);
 
 // use JCL for this
-function FindPaths(Path: TPath; BasePath: string = '';
+function FindPaths(const Path: TPath; const BasePath: TPath = '';
                    IncludeAttr :Integer = faAnyFile;
                    ExcludeAttr :Integer = 0): TPaths;
-function FindFiles(Path: TPath; BasePath: string = ''): TPaths;
-function FindDirs(Path: TPath; BasePath: string  = ''): TPaths;
+function FindFiles(const Path: TPath; const BasePath: TPath = ''): TPaths;
+function FindDirs(const  Path: TPath; const BasePath: TPath  = ''): TPaths;
 
-function  Wild(Pattern :TPath; BasePath :string = ''):TPaths; overload;
-procedure Wild(Files :TStrings; Pattern :TPath; BasePath :string = ''); overload;
+function  Wild(const Pattern :TPath; const BasePath :TPath = ''):TPaths; overload;
+procedure Wild(Files :TStrings; const Pattern :TPath; const BasePath :TPath = ''); overload;
 
 
-function IsMatch(Path, Pattern :TPath):boolean; overload;
-function IsMatch(Paths :TPaths; Patterns :TPatterns; p :Integer = 0; s :Integer = 0):boolean; overload;
+function IsMatch(const Path, Pattern :TPath):boolean; overload;
+function IsMatch(const Paths :TPaths; const Patterns :TPatterns; p :Integer = 0; s :Integer = 0):boolean; overload;
 
-function  PathExists(Path :TPath):boolean;
-function  IsDir(Path :TPath):boolean;
-function  IsFile(Path :TPath):boolean;
-function  SuperPath(Path :TPath) :TPath;
+function  PathExists(const Path :TPath):boolean;
+function  IsDir(const Path :TPath):boolean;
+function  IsFile(const Path :TPath):boolean;
+function  SuperPath(const Path :TPath) :TPath;
 
 
 implementation
@@ -121,11 +124,11 @@ implementation
 uses
   JclStrings;
 
-procedure Wild(Files :TStrings; Patterns :TPatterns; BasePath: TPath = ''; Index :Integer = 0);
+procedure Wild(Files :TStrings; const Patterns :TPatterns; const BasePath: TPath = ''; Index :Integer = 0);
   overload; forward;
 
 
-procedure AssertIsSystemIndependentPath(Path :string);
+procedure AssertIsSystemIndependentPath(const Path :TPath);
 begin
   if Pos(SystemPathDelimiter, Path) <> 0 then
     raise EWildPathsError.Create( Format( '"%s" looks like a system path. Expected a system independent one.',
@@ -133,39 +136,43 @@ begin
                             );
 end;
 
-function PathConcat(P1, P2 :TPath) :TPath;
+function PathConcat(const Path1, Path2 :TPath) :TPath;
 var
   Parts :TPaths;
   i     :Integer;
+  P1    :TPath;
+  P2    :TPath;
 begin
-   AssertIsSystemIndependentPath(P1);
-   AssertIsSystemIndependentPath(P2);
+  AssertIsSystemIndependentPath(Path1);
+  AssertIsSystemIndependentPath(Path2);
 
-   Parts := nil;
-   if (Length(P1) = 0)
-   //or (P1 = '.')
-   or PathIsAbsolute(P2) then
-     Result := P2
-   else if Length(P2) = 0 then
-     Result := P1
-   else begin
-      if P1[Length(P1)] = '/' then
-        Delete(P1, Length(P1), 1);
-      Result := P1;
-      Parts := SplitPath(P2);
-      for i := Low(Parts) to High(Parts) do
-      begin
-        if Parts[i] = '..' then
-          Result := SuperPath(Result)
-        else if Parts[i] = '.' then
-          // do nothing
-        else
-          Result := Result + '/' + Parts[i];
-      end;
-   end;
+  Parts := nil;
+  if (Length(Path1) = 0)
+  //or (P1 = '.')
+  or PathIsAbsolute(Path2) then
+    Result := Path2
+  else if Length(Path2) = 0 then
+    Result := Path1
+  else begin
+    P1 := Path1;
+    P2 := Path2;
+    if P1[Length(P1)] = '/' then
+      Delete(P1, Length(P1), 1);
+    Result := P1;
+    Parts := SplitPath(P2);
+    for i := Low(Parts) to High(Parts) do
+    begin
+      if Parts[i] = '..' then
+        Result := SuperPath(Result)
+      else if Parts[i] = '.' then
+        // do nothing
+      else
+        Result := Result + '/' + Parts[i];
+    end;
+  end;
 end;
 
-function ToPath(SystemPath: string; BasePath :string): TPath;
+function ToPath(SystemPath: TSystemPath; const BasePath :TPath): TPath;
 begin
   if Pos(InvalidPathChars, SystemPath) <> 0 then
     raise EWildPathsException.Create('invalid path chars in ' + SystemPath)
@@ -189,10 +196,10 @@ begin
   end;
 end;
 
-function ToSystemPath(Path: TPath; BasePath :string): string;
+function ToSystemPath(const Path :TPath; const BasePath :TPath): string;
 begin
    AssertIsSystemIndependentPath(Path);
-   AssertIsSystemIndependentPath(BasePath);
+   //!!!AssertIsSystemIndependentPath(BasePath);
 
    Result := MovePath(Path, '', BasePath);
    if (Length(Result) >= 1) and (Result[Length(Result)] = '/') then
@@ -202,7 +209,7 @@ begin
      Delete(Result,1, 1);
 end;
 
-function ToSystemPaths(Paths :TPaths; BasePath :string = '') :TPaths;
+function ToSystemPaths(const Paths :TPaths; const BasePath :TPath = '') :TSystemPaths;
 var
   i :Integer;
 begin
@@ -211,17 +218,17 @@ begin
     Result[i] := ToSystemPath(Paths[i], BasePath);
 end;
 
-function ToPaths(OSPaths :TPaths; BasePath :string = '') :TPaths;
+function ToPaths(OSPaths :TSystemPaths; const BasePath :TPath = '') :TPaths;
 var
   i :Integer;
 begin
   SetLength(Result, Length(OSPaths));
   for i := 0 to High(Result) do
-    Result[i] := ToSystemPath(OSPaths[i], BasePath);
+    Result[i] := ToPath(OSPaths[i], BasePath);
 end;
 
 
-function FindPaths( Path: TPath; BasePath :string;
+function FindPaths( const Path: TPath; const BasePath :TPath;
                     IncludeAttr :Integer;
                     ExcludeAttr :Integer):TPaths;
 var
@@ -255,17 +262,17 @@ begin
   end;
 end;
 
-function FindDirs(Path: TPath; BasePath: string): TPaths;
+function FindDirs(const Path: TPath; const BasePath: TPath): TPaths;
 begin
    Result := FindPaths(Path, BasePath, faDirectory, 0);
 end;
 
-function FindFiles(Path: TPath; BasePath: string): TPaths;
+function FindFiles(const Path: TPath; const BasePath: TPath): TPaths;
 begin
    Result := FindPaths(Path, BasePath, faAnyFile, faDirectory);
 end;
 
-function SplitPath(Path: TPath): TPaths;
+function SplitPath(const Path: TPath): TPaths;
 var
   S :TStrings;
 begin
@@ -291,11 +298,11 @@ begin
     Result[i] := S[i];
 end;
 
-function MovePath(Path :TPath; FromBase :TPath; ToBase :TPath) :TPath;
+function MovePath(const Path :TPath; const FromBase :TPath; const ToBase :TPath) :TPath;
 begin
   AssertIsSystemIndependentPath(Path);
-  AssertIsSystemIndependentPath(FromBase);
-  AssertIsSystemIndependentPath(ToBase);
+  //!!!AssertIsSystemIndependentPath(FromBase);
+  //!!!AssertIsSystemIndependentPath(ToBase);
 
   if (FromBase <> '') and (Pos(FromBase+'/', Path) = 1) then
     Result := PathConcat(ToBase, Copy(Path, 2+Length(FromBase), Length(Path)))
@@ -306,7 +313,7 @@ begin
 end;
 
 
-function MovePaths(Paths :TPaths; FromBase :TPath; ToBase :TPath) :TPaths;
+function MovePaths(const Paths :TPaths; const FromBase :TPath; const ToBase :TPath) :TPaths;
 var
   i :Integer;
 begin
@@ -315,7 +322,7 @@ begin
      Result[i] := MovePath(Paths[i], FromBase, ToBase);
 end;
 
-function  ToRelativePath(Path, BasePath :TPath):TPath;
+function  ToRelativePath(const Path, BasePath :TPath):TPath;
 var
   P, B   :TPaths;
   i, j :Integer;
@@ -362,18 +369,17 @@ begin
     Result := '.';
 end;
 
-function  ToRelativePaths(Paths :TPaths; BasePath :TPath):TPaths;
+function  ToRelativePaths(const Paths :TPaths; const BasePath :TPath):TPaths;
 begin
   Result := MovePaths(Paths, BasePath, '');
 end;
 
-function  PathIsAbsolute(Path :TPath) :boolean;
+function  PathIsAbsolute(const Path :TPath) :boolean;
 begin
   AssertIsSystemIndependentPath(Path);
 
   Result :=    (Length(Path) > 0) and (Path[1] = '/')
-             or (Length(Path) >= 3) and (Path[2] = ':') and (Path[3] = '/')
-             and (Path[1] <> '.')
+             or (Length(Path) >= 3) and (Path[2] = ':') and (Path[3] = '/');
 end;
 
 procedure ForceRelativePath(var Path, BasePath :TPath);
@@ -398,7 +404,7 @@ begin
   end;
 end;
 
-function Wild(Pattern: TPath; BasePath: string):TPaths;
+function Wild(const Pattern: TPath; const BasePath: TPath):TPaths;
 var
   Files :TStringList;
 begin
@@ -415,57 +421,60 @@ begin
   end;
 end;
 
-procedure Wild(Files :TStrings; Pattern :TPath; BasePath :string = '');
+procedure Wild(Files :TStrings; const Pattern :TPath; const BasePath :TPath = '');
 begin
   AssertIsSystemIndependentPath(Pattern);
   AssertIsSystemIndependentPath(BasePath);
 
-  ForceRelativePath(Pattern, BasePath);
+  //ForceRelativePath(Pattern, BasePath);
   Wild(Files, SplitPath(Pattern), BasePath);
 end;
 
-procedure Wild(Files :TStrings; Patterns: TPatterns; BasePath: TPath; Index: Integer);
+procedure Wild(Files :TStrings; const Patterns: TPatterns; const BasePath: TPath; Index: Integer);
 var
   i       :Integer;
   Matches :TPaths;
+  NewBase :TPath;
 begin
   AssertIsSystemIndependentPath(BasePath);
 
   if Index > High(Patterns) then
     EXIT;
+
+  NewBase := BasePath;
   // absorb all non-wildcard patterns
   while (Index < High(Patterns))
   and (LastDelimiter(WildChars, Patterns[Index]) = 0) do
   begin
-    BasePath := PathConcat(BasePath, Patterns[Index]);
+    NewBase := PathConcat(NewBase, Patterns[Index]);
     Inc(Index);
   end;
   Assert(Index <= High(Patterns));
   if Index = High(Patterns) then
   begin // add files (works for '**' too)
-    Matches := FindPaths(Patterns[Index], BasePath);
+    Matches := FindPaths(Patterns[Index], NewBase);
     for i := Low(Matches) to High(Matches) do
-      Files.Add(PathConcat(BasePath, Matches[i]))
+      Files.Add(PathConcat(NewBase, Matches[i]))
   end;
   Matches := nil;
   // handle wildcards
   if Patterns[Index] = '**' then
   begin // match anything and recurse
-    Wild(Files, Patterns, BasePath, Index+1);
-    Matches := FindDirs('*', BasePath);
+    Wild(Files, Patterns, NewBase, Index+1);
+    Matches := FindDirs('*', NewBase);
     // use same Index ('**') to recurse
     for i := Low(Matches) to High(Matches) do
-      Wild(Files, Patterns, PathConcat(BasePath, Matches[i]), Index);
+      Wild(Files, Patterns, PathConcat(NewBase, Matches[i]), Index);
   end
   else if Index < High(Patterns) then
   begin // match directories
-    Matches := FindDirs(Patterns[Index], BasePath);
+    Matches := FindDirs(Patterns[Index], NewBase);
     for i := Low(Matches) to High(Matches) do
-      Wild(Files, Patterns, PathConcat(BasePath, Matches[i]), Index+1);
+      Wild(Files, Patterns, PathConcat(NewBase, Matches[i]), Index+1);
   end;
 end;
 
-function Matches(A, B :string; i :Integer = 1; j :Integer = 1):boolean;
+function Matches(A, B :TPath; i :Integer = 1; j :Integer = 1):boolean;
 begin
   while (i <= Length(A))
   and   (j <= Length(B))
@@ -488,7 +497,7 @@ begin
     Result := False;
 end;
 
-function IsMatch(Paths :TPaths; Patterns :TPatterns; p :Integer = 0; s :Integer = 0):boolean;
+function IsMatch(const Paths :TPaths; const Patterns :TPatterns; p :Integer = 0; s :Integer = 0):boolean;
 
 begin
   while (p <= High(Paths))
@@ -511,7 +520,7 @@ begin
     Result := False;
 end;
 
-function IsMatch(Path, Pattern :TPath):boolean;
+function IsMatch(const Path, Pattern :TPath):boolean;
 begin
   AssertIsSystemIndependentPath(Path);
   AssertIsSystemIndependentPath(Pattern);
@@ -519,28 +528,28 @@ begin
   Result := IsMatch(SplitPath(Path), SplitPath(Pattern));
 end;
 
-function  PathExists(Path :TPath):boolean;
+function  PathExists(const Path :TPath):boolean;
 begin
   AssertIsSystemIndependentPath(Path);
 
   Result := Length(FindPaths(Path)) >= 1;
 end;
 
-function  IsDir(Path :TPath):boolean;
+function  IsDir(const Path :TPath):boolean;
 begin
   AssertIsSystemIndependentPath(Path);
 
   Result := Length(FindDirs(Path)) = 1;
 end;
 
-function  IsFile(Path :TPath):boolean;
+function  IsFile(const Path :TPath):boolean;
 begin
    AssertIsSystemIndependentPath(Path);
 
   Result := Length(FindFiles(Path)) = 1;
 end;
 
-function  SuperPath(Path :TPath) :TPath;
+function  SuperPath(const Path :TPath) :TPath;
 var
   p    :Integer;
 begin

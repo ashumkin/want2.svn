@@ -59,39 +59,39 @@ type
 const
   AnyFileAttribute = [ReadOnly..Archive];
 
-procedure MakeDir(Path :TPath);
-procedure ChangeDir(Path :TPath);
+procedure MakeDir(const Path :TPath);
+procedure ChangeDir(const Path :TPath);
 function  CurrentDir :TPath;
 
-procedure CopyFile(Src, Dst :TPath);
+procedure CopyFile(const Src, Dst :TPath);
 procedure CopyFiles(const Sources, Dests :TPaths);  overload;
 procedure CopyFiles(const Files :TPaths; FromPath, ToPath :TPath);  overload;
-procedure CopyFiles(Pattern :TPattern; FromPath, ToPath :TPath); overload;
+procedure CopyFiles(const Pattern :TPattern; const FromPath, ToPath :TPath); overload;
 
-procedure MoveFile(Src, Dst :TPath);
+procedure MoveFile(const Src, Dst :TPath);
 procedure MoveFiles(const Sources, Dests :TPaths);  overload;
-procedure MoveFiles(const Files :TPaths; FromPath, ToPath :TPath);  overload;
-procedure MoveFiles(Pattern :TPattern; FromPath, ToPath :TPath); overload;
+procedure MoveFiles(const Files :TPaths; const FromPath, ToPath :TPath);  overload;
+procedure MoveFiles(const Pattern :TPattern; const FromPath, ToPath :TPath); overload;
 
-procedure DeleteFile(Path :TPath);
+procedure DeleteFile(const Path :TPath);
 procedure DeleteFiles(const Files :TPaths);  overload;
-procedure DeleteFiles(Pattern :TPath; BasePath :TPath= '');  overload;
+procedure DeleteFiles(const Pattern :TPath; const BasePath :TPath= '');  overload;
 
-procedure TouchFile(Path :TPath; When :TDateTime = 0); overload;
-procedure TouchFile(Path :TPath; When :string); overload;
+procedure TouchFile(const Path :TPath; When :TDateTime = 0); overload;
+procedure TouchFile(const Path :TPath; When :string); overload;
 
-function  FileAttributes(Path :TPath):TFileAttributes;
-function  FileTime(Path :TPath) :TDateTime;
+function  FileAttributes(const Path :TPath):TFileAttributes;
+function  FileTime(const Path :TPath) :TDateTime;
 
-function  SystemFileAttributes(Path :TPath) :Byte;
-function  SystemFileTime(Path :TPath) :Longint;
+function  SystemFileAttributes(const Path :TPath) :Byte;
+function  SystemFileTime(const Path :TPath) :Longint;
 
 function  TimeToSystemFileTime(const Time :TDateTime):Integer;
 function  FileAttributesToSystemAttributes(const Attr :TFileAttributes):Byte;
 
 implementation
 
-procedure MakeDir(Path :TPath);
+procedure MakeDir(const Path :TPath);
 begin
   if (Length(Path) > 0)
   and (Path[Length(Path)] <> ':')  // Oops! Windows specific!
@@ -102,7 +102,7 @@ begin
   end;
 end;
 
-procedure ChangeDir(Path :TPath);
+procedure ChangeDir(const Path :TPath);
 begin
   if Path <> '' then
     SetCurrentDir(ToSystemPath(Path));
@@ -114,7 +114,7 @@ begin
 end;
 
 
-procedure CopyFile(Src, Dst :TPath);
+procedure CopyFile(const Src, Dst :TPath);
 begin
    MakeDir(SuperPath(Dst));
    if not Windows.CopyFile( PChar(ToSystemPath(Src)),
@@ -124,7 +124,7 @@ begin
      raise EFileOpException.Create(SysErrorMessage(GetLastError));
 end;
 
-procedure CopyFiles(Pattern :TPattern; FromPath, ToPath :TPath);
+procedure CopyFiles(const Pattern :TPattern; const FromPath, ToPath :TPath);
 begin
   CopyFiles(Wild(Pattern, FromPath), FromPath, ToPath);
 end;
@@ -144,18 +144,18 @@ begin
   end;
 end;
 
-procedure MoveFile(Src, Dst :TPath);
+procedure MoveFile(const Src, Dst :TPath);
 begin
    MakeDir(SuperPath(Dst));
    writeln('move ',ToSystemPath(Src), '->', ToSystemPath(Dst));
 end;
 
-procedure MoveFiles(Pattern :TPattern; FromPath, ToPath :TPath);
+procedure MoveFiles(const Pattern :TPattern; const FromPath, ToPath :TPath);
 begin
   MoveFiles(Wild(Pattern, FromPath), FromPath, ToPath);
 end;
 
-procedure MoveFiles(const Files :TPaths; FromPath, ToPath :TPath);
+procedure MoveFiles(const Files :TPaths; const FromPath, ToPath :TPath);
 begin
   MoveFiles(Files, MovePaths(Files, FromPath, ToPath));
 end;
@@ -170,7 +170,7 @@ begin
   end;
 end;
 
-procedure DeleteFile(Path :TPath);
+procedure DeleteFile(const Path :TPath);
 begin
   if not IsDir(Path) then
     SysUtils.DeleteFile(ToSystemPath(Path))
@@ -178,7 +178,7 @@ begin
     SysUtils.RemoveDir(ToSystemPath(Path));
 end;
 
-procedure DeleteFiles(Pattern :TPath; BasePath :TPath);
+procedure DeleteFiles(const Pattern :TPath; const BasePath :TPath);
 begin
   DeleteFiles(Wild(Pattern, BasePath));
 end;
@@ -195,14 +195,14 @@ begin
       DeleteFile(Files[f]);
 end;
 
-procedure TouchFile(Path :TPath; When :string);
+procedure TouchFile(const Path :TPath; When :string);
 begin
   //!!! StrToDateTime changes with locale and platform!!
   TouchFile(Path, StrToDateTime(When));
 end;
 
 
-procedure TouchFile(Path :TPath; When :TDateTime);
+procedure TouchFile(const Path :TPath; When :TDateTime);
 var
   Handle :Integer;
 begin
@@ -221,12 +221,12 @@ begin
    end;
 end;
 
-function FileAttributes(Path :TPath):TFileAttributes;
+function FileAttributes(const Path :TPath):TFileAttributes;
 begin
   Result := TFileAttributes(SystemFileAttributes(Path));
 end;
 
-function  FileTime(Path :TPath) :TDateTime;
+function  FileTime(const Path :TPath) :TDateTime;
 var
   SystemTime :Longint;
 begin
@@ -237,12 +237,12 @@ begin
     Result := FileDateToDateTime(SystemTime);
 end;
 
-function  SystemFileAttributes(Path :TPath) :Byte;
+function  SystemFileAttributes(const Path :TPath) :Byte;
 begin
   Result := Byte(SysUtils.FileGetAttr(ToSystemPath(Path)));
 end;
 
-function  SystemFileTime(Path :TPath)     :Longint;
+function  SystemFileTime(const Path :TPath)     :Longint;
 begin
   Result := SysUtils.FileAge(ToSystemPath(Path));
   if Result < 0 then

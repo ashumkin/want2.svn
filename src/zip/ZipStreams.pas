@@ -57,8 +57,8 @@ type
   TZipStream = class(TStream)
   private
   protected
-    FZipFileName :string;
-    FEntryName   :string;
+    FZipFileName :TPath;
+    FEntryName   :TPath;
     FEntryOpen   :boolean;
     FComment     :string;
 
@@ -72,10 +72,10 @@ type
     procedure Error(Msg :string);
     procedure NotImplementedError(Msg :string);
 
-    function CheckFileTime(FileName :string; Time :TDateTime = 0) :TDateTime;
+    function CheckFileTime(const FileName :TPath; Time :TDateTime = 0) :TDateTime;
 
   public
-    constructor Create( ZipFileName :TPath);
+    constructor Create(const ZipFileName :TPath);
     destructor  Destroy; override;
 
     function Read(var Buffer; Count: Longint): Longint;    override;
@@ -100,8 +100,8 @@ type
     procedure WriteFile( FileName :TPath;  Comment :string = '');
 
   public
-    property ZipFileName      :TPath   read FZipFileName write FZipFileName;
-    property EntryName        :TPath   read FEntryName   write FEntryName;
+    property ZipFileName      :TPath    read FZipFileName write FZipFileName;
+    property EntryName        :TPath    read FEntryName   write FEntryName;
     property EntryOpen        :boolean  read FEntryOpen   write FEntryOpen;
     property Comment          :string   read FComment     write FComment;
 
@@ -123,7 +123,7 @@ const
 
 { TZipStream }
 
-constructor TZipStream.Create( ZipFileName: TPath);
+constructor TZipStream.Create(const ZipFileName: TPath);
 begin
   inherited Create;
   FPaths := TStringList.Create;
@@ -163,7 +163,7 @@ begin
 end;
 
 
-function TZipStream.CheckFileTime(FileName :string; Time :TDateTime = 0) :TDateTime;
+function TZipStream.CheckFileTime(const FileName :TPath; Time :TDateTime = 0) :TDateTime;
 begin
   if Time <= 0 then
     Result := FileTime(FileName)

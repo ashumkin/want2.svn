@@ -115,15 +115,15 @@ type
   TDanteElement = class(TComponent)
   protected
     FName   : string;      // ditch TComponent.Name
-    FBaseDir: string;      // wher paths for this object are based
     FId     : string;      // element Id
+    FBaseDir: TPath;       // where paths for this object are based
 
     FProperties:  TStrings;
     FAttributes:  TStrings;
 
 
-    function  GetBaseDir: string;          virtual;
-    procedure SetBaseDir(Value: string);   virtual;
+    function  GetBaseDir: TPath;              virtual;
+    procedure SetBaseDir(const Value: TPath); virtual;
 
     procedure SetID(Value: string); virtual;
 
@@ -180,19 +180,19 @@ type
     function  BasePath: string; virtual;
     // use this function in Tasks to let the user specify relative
     // directories that work consistently
-    function  ToSystemPath(Path: string; Base: string = ''):string;
-    function  ToDantePath(Path: string): string;
-    function  ToAbsolutePath(Path: string): string; virtual;
-    function  ToRelativePath(Path: string; Base: string = ''): string; virtual;
-    function  StringsToSystemPathList(List: TStrings; Base: string = ''): string;
-    procedure AboutToScratchPath(Path: TPath);
+    function  ToSystemPath(const Path: TPath; const Base: TPath = ''):string;
+    function  ToDantePath(Path: TSystemPath): TPath;
+    function  ToAbsolutePath(const Path: TPath): TPath; virtual;
+    function  ToRelativePath(const Path: TPath; const Base: TPath = ''): TPath; virtual;
+    function  StringsToSystemPathList(List: TStrings; const Base: TPath = ''): TSystemPath;
+    procedure AboutToScratchPath(const Path: TPath);
 
     property  Project: TProject      read GetProject;
     property  Owner :  TDanteElement read GetOwner;
     property  Tag stored False;
 
     property id     :    string   read FId         write SetId;
-    property basedir:    string   read GetBaseDir  write SetBaseDir;
+    property basedir:    TPath    read GetBaseDir  write SetBaseDir;
     property Properties: TStrings read FProperties write SetProperties;
     property Attributes: TStrings read FAttributes write SetAttributes;
   published
@@ -207,8 +207,8 @@ type
     FTargets:       TList;
     FDefaultTarget: string;
     FVerbosity:     TVerbosityLevel;
-    FRootPath:       string;  // root for all path calculations
-    FRootPathSet:    boolean;
+    FRootPath:      TPath;  // root for all path calculations
+    FRootPathSet:   boolean;
     FDescription:   string;
 
     FOnLog: TLogMethod;
@@ -220,10 +220,10 @@ type
 
     procedure DoParseXML(Node: MiniDom.IElement);
 
-    procedure SetBaseDir(Path: TPath);  override;
-    function  GetBaseDir: TPath;        override;
+    procedure SetBaseDir(const Path: TPath);  override;
+    function  GetBaseDir: TPath;              override;
 
-    procedure SetRootPath(Path :TPath);
+    procedure SetRootPath(const Path :TPath);
 
   public
     constructor Create(Owner: TDanteElement = nil); override;
@@ -232,7 +232,7 @@ type
     procedure SetInitialBaseDir(Path: TPath);
 
     class function XMLTag: string; override;
-    function FindBuildFile(BuildFile: string = ''):string;
+    function FindBuildFile(BuildFile: TPath = ''):string;
 
 
     function  ToXML(Dom: IDocument):  IElement; override;
@@ -241,7 +241,7 @@ type
     procedure ParseXMLText(const XML: string);
 
     procedure Load(const Path: string);
-    procedure LoadXML(const SystemPath: string = ''; FindFile: boolean = true);
+    procedure LoadXML(const SystemPath: TSystemPath = ''; FindFile: boolean = true);
     procedure Save(const Path: string);
 
 
@@ -266,7 +266,7 @@ type
 
     procedure Log(Msg: string = ''; Verbosity: TVerbosityLevel = vlNormal); override;
 
-    property RootPath: string read FRootPath write SetRootPath;
+    property RootPath: TPath read FRootPath write SetRootPath;
 
     property Targets[i: Integer]: TTarget             read GetTarget; default;
     property TargetNames[TargetName: string]: TTarget read GetTargetByName;
@@ -394,7 +394,7 @@ type
     procedure GetPaths(Files: TStrings);
     procedure AddPaths(Paths: TPaths);
 
-    function SystemPaths: TPaths;
+    function SystemPaths: TSystemPaths;
     function RelativePaths: TPaths;
     function MovePaths(ToBase: TPath): TPaths;
 
@@ -712,19 +712,20 @@ begin
     Result := PathConcat((Owner as TDanteElement).BasePath, FBaseDir);
 end;
 
-function TDanteElement.ToAbsolutePath(Path: string): string;
+function TDanteElement.ToAbsolutePath(const Path: TPath): TPath;
 begin
   Result := PathConcat(BasePath, Path);
 end;
 
-function TDanteElement.ToRelativePath(Path: string; Base: string): string;
+function TDanteElement.ToRelativePath(const Path: TPath; const Base: TPath): TPath;
 begin
   if Base = '' then
-    Base := BasePath;
-  Result := WildPaths.ToRelativePath(Path, Base);
+    Result := WildPaths.ToRelativePath(Path, Self.BasePath)
+  else
+    Result := WildPaths.ToRelativePath(Path, Base);
 end;
 
-function TDanteElement.StringsToSystemPathList(List: TStrings; Base: string): string;
+function TDanteElement.StringsToSystemPathList(List: TStrings; const Base: TPath): TSystemPath;
 var
   i, p : Integer;
   Paths: TStringArray;
@@ -740,7 +741,7 @@ begin
 end;
 
 
-procedure TDanteElement.AboutToScratchPath(Path: TPath);
+procedure TDanteElement.AboutToScratchPath(const Path: TPath);
 begin
   if  PathExists(Path)
   and PathIsAbsolute(ToRelativePath(Path))
@@ -814,12 +815,12 @@ begin
 end;
 
 
-function TDanteElement.ToDantePath(Path: string): string;
+function TDanteElement.ToDantePath(Path: TSystemPath): TPath;
 begin
   Result := WildPaths.ToPath(Path, BasePath);
 end;
 
-function TDanteElement.ToSystemPath(Path: string; Base: string): string;
+function TDanteElement.ToSystemPath(const Path: TPath; const Base: TPath): TSystemPath;
 begin
   Result := ToRelativePath(Path, ToAbsolutePath(Base));
   Result := WildPaths.ToSystemPath(Result);
@@ -837,7 +838,7 @@ begin
 end;
 
 
-function TDanteElement.GetBaseDir: string;
+function TDanteElement.GetBaseDir: TPath;
 begin
   if Owner <> nil then
     Result := Owner.ToRelativePath(FBaseDir)
@@ -845,7 +846,7 @@ begin
     Result := FBaseDir;
 end;
 
-procedure TDanteElement.SetBaseDir(Value: string);
+procedure TDanteElement.SetBaseDir(const Value: TPath);
 begin
   FBaseDir := Value;
 end;
@@ -1341,7 +1342,7 @@ begin
     Result := PathConcat(RootPath, BaseDir);
 end;
 
-procedure TProject.SetBaseDir(Path: TPath);
+procedure TProject.SetBaseDir(const Path: TPath);
 begin
   inherited SetBaseDir(Path);
   SetProperty('basedir', PathConcat(RootPath, Path));
@@ -1352,7 +1353,7 @@ begin
   Result := WildPaths.ToRelativePath(PropertyValue('basedir'), FRootPath);
 end;
 
-procedure TProject.SetRootPath(Path: TPath);
+procedure TProject.SetRootPath(const Path: TPath);
 begin
   FRootPath := Path;
   FRootPathSet := True;
@@ -1376,7 +1377,7 @@ begin
   end;
 end;
 
-function TProject.FindBuildFile(BuildFile: string): string;
+function TProject.FindBuildFile(BuildFile: TPath): string;
 var
   Dir: string;
 begin
@@ -1782,7 +1783,7 @@ begin
   Result := ToRelativePaths(Paths, BasePath);
 end;
 
-function TPatternSet.SystemPaths: TPaths;
+function TPatternSet.SystemPaths: TSystemPaths;
 begin
    Result := ToSystemPaths(Paths);
 end;
