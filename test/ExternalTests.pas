@@ -125,8 +125,7 @@ var
 begin
   ADirComp := TclDirectoryCompare.Create(FTestExeSetupDir, FTestExeFinalDir);
   try
-    // Check(ADirComp.CompareByFileContent); this method is currently choking on subdirs
-    Check(ADirComp.CompareByFileName);
+     Check(ADirComp.CompareByFileContent);
   finally
     ADirComp.Free;
   end;

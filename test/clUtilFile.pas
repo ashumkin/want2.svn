@@ -162,7 +162,8 @@ begin
       GetFiles;
       for i := 0 to FAFiles.Count - 1 do
       begin
-        Result := AFileComp.CompareFiles(FAFiles[i], FBFiles[i]);
+        if not IsDirectory(FAFiles[i]) then
+          Result := AFileComp.CompareFiles(FAFiles[i], FBFiles[i]);
         if not Result then break;
       end;
     finally

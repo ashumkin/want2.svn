@@ -36,6 +36,7 @@ type
     procedure TestDirCompareByFileContents;
     procedure TestDirCompareByLargeFileContents;
     procedure TestDirCompareByBinFileContents;
+    procedure TestDirCompareWithSubDirs;
   end;
 
 implementation
@@ -190,6 +191,19 @@ begin
   WriteSampleFile(DirA, 'z.txt', 'this is a test ', 3000);
   WriteSampleFile(DirB, 'z.txt', 'this is a test ', 3000);
   Check(FDirComp.CompareByFileContent);
+end;
+
+procedure TTestDirCompare.TestDirCompareWithSubDirs;
+begin
+  ForceDirectories(DirA + 'sub');
+  ForceDirectories(DirB + 'sub');
+  WriteSampleFile(DirA + 'sub\', 'z.txt');
+  WriteSampleFile(DirB + 'sub\', 'z.txt');
+  Check(FDirComp.CompareByFileContent);
+  WriteSampleFile(DirA + 'sub\', 'zz.txt', 'blargh');
+  Check(not FDirComp.CompareByFileContent);
+  WriteSampleFile(DirB + 'sub\', 'zz.txt', 'blergh');
+  Check(not FDirComp.CompareByFileContent);
 end;
 
 procedure TTestDirCompare.WriteSampleFile(Dir, FileName, Contents: string;
