@@ -54,6 +54,7 @@ type
 
     procedure BuildStarted;                        override;
     procedure BuildFinished;                       override;
+    procedure BuildFailed(Project :TProject; Msg :string = '');     override;
 
     procedure ProjectStarted(Project :TProject);   override;
     procedure ProjectFinished(Project :TProject);  override;
@@ -224,6 +225,12 @@ begin
     Log(vlNormal);
     Log(vlNormal, 'Build complete.');
   end;
+end;
+
+procedure TConsoleListener.BuildFailed(Project: TProject; Msg: string);
+begin
+  inherited BuildFailed(Project, Msg);
+  Log(vlErrors, Msg);
 end;
 
 end.
