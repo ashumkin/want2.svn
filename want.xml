@@ -4,7 +4,7 @@
          basedir=".."
          default="dist" >
 
-  <property name="version" value="0.0.1-beta-1" />
+  <property name="version" value="1.0.0" />
 
   <property name="src"       value="${basedir}/src" />
   <property name="dist"      value="${basedir}/dist" />
@@ -56,6 +56,14 @@
     <!-- Delete dante.cfg first to get a reproducible build.
          (Should this be automated?)
     -->
+    <incverrc rcfilename="${src}/dantever.rc" />
+
+    <!-- should use a brcc task, not written yet -->
+    <!-- ToSystemPath in shell task doesn't work on embedded paths,
+         so I hardcoded the path for the moment instead of using
+         ${src} -->
+    <shell executable="brcc32.exe .\src\dantever.rc" />
+
     <touch  file="${src}/dante.cfg"  />
     <delete file="${src}/dante.cfg" />
     <dcc basedir="${src}"
@@ -100,7 +108,9 @@
 
   <target name="dist" depends="prepare,compile" >
     <mkdir dir="${dist}" />
-    <property name="zipfile" value="${dist}/dante-${version}.zip" />
+    <!-- ${build} is supposed to be set internally by incverrc, but it
+         ain't workin' at the moment -->
+    <property name="zipfile" value="${dist}/dante-${version}.${build}.zip" />
     <delete file="${zipfile}" />
     <zip zipfile="${zipfile}" >
          <exclude name="${dist}/**" />
