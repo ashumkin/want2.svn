@@ -24,11 +24,12 @@ uses
   JclMiscel,
   JclShell,
 
+  JalZipStreams,
+
   WildPaths,
   WantClasses,
   ScriptRunner,
   ConsoleScriptRunner,
-  ZipStreams,
 
   TestFramework;
 
@@ -197,9 +198,13 @@ end;
 
 procedure TExternalTest.DeleteSubFolders;
 begin
-  ChDir(ExtractFilePath(ParamStr(0)));
+  ChDir(ExtractFileDir(ParamStr(0)));
   { make sure we haven't got off on the root dir or something heinous }
-  if  PathIsDir(SetupPath)
+  if ExtractFileDir(ParamStr(0)) <> GetCurrentDir then
+    EXIT;
+  if   (FRootPath <> '')
+  and  PathIsDir(FRootPath)
+  and  PathIsDir(SetupPath)
   and  PathIsDir(FinalPath)
   and  PathIsFile(PathConcat(SetupPath, FBuildFileName))
   then
@@ -267,6 +272,7 @@ var
   ZipLocation  :TPath;
   DirLocation  :TPath;
 begin
+  MakeDir(FRootPath);
   ChangeDir(FRootPath);
 
   MakeDir(Directory);
@@ -275,7 +281,7 @@ begin
 
   ZipLocation := PathConcat(FTestPath, ZipFileName);
   if PathIsFile(ZipLocation) then
-    ZipStreams.ExtractAll(ZipLocation, Directory)
+    JalZipStreams.ExtractAll(ZipLocation, Directory)
   else
   begin
     DirLocation := ChangeFileExt(ZipLocation, '');
