@@ -11,16 +11,12 @@ program want;
 
 uses
   SysUtils,
-
-  {$IFDEF WIN32}
   WIN32 in 'win32\WIN32.pas',
   crt32 in 'win32\CRT32.pas',
-  Win32ChildProcesses  in 'win32\Win32ChildProcesses.pas',
-  ConsoleListener      in 'win32\ConsoleListener.pas',
+  Win32ChildProcesses in 'win32\Win32ChildProcesses.pas',
+  ConsoleListener in 'win32\ConsoleListener.pas',
   Win32Implementations in 'win32\Win32Implementations.pas',
   Resources in 'win32\Resources.pas',
-  {$ENDIF}
-
   EditTasks in 'tasks\EditTasks.pas',
   WantStandardTasks in 'tasks\WantStandardTasks.pas',
   Attributes in 'elements\Attributes.pas',
@@ -35,7 +31,6 @@ uses
   FileTasks in 'tasks\FileTasks.pas',
   LoggerTask in 'tasks\LoggerTask.pas',
   StandardTasks in 'tasks\StandardTasks.pas',
-  VssTasks in 'tasks\VssTasks.pas',
   CustomTasks in 'tasks\CustomTasks.pas',
   TimeElements in 'elements\TimeElements.pas',
   PatternSets in 'elements\PatternSets.pas',
@@ -45,11 +40,11 @@ uses
   ScriptParser in 'lib\ScriptParser.pas',
   ScriptFrm in 'forms\ScriptFrm.pas' {ScriptForm},
   ScriptRunner in 'ScriptRunner.pas',
-  WantBase in 'WantBase.pas',
   WantClasses in 'WantClasses.pas',
   WantTasks in 'tasks\WantTasks.pas',
   XPerlRE in 'lib\XPerlRE.pas',
-  ChildProcesses in 'lib\ChildProcesses.pas';
+  ChildProcesses in 'lib\ChildProcesses.pas',
+  WantResources in 'WantResources.pas';
 
 {$r wantver.res}
 {$r ..\bin\license.res }

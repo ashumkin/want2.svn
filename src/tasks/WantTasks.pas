@@ -16,7 +16,6 @@ uses
 
   JclSysUtils,
 
-  WantBase,
   WantClasses,
   ScriptParser,
   WildPaths,

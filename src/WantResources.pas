@@ -7,7 +7,7 @@
 
 { $Id$ }
 
-unit WantBase;
+unit WantResources;
 
 interface
 

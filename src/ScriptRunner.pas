@@ -27,7 +27,7 @@ uses
   ConsoleListener,
   WildPaths,
 
-  WantBase,
+  WantResources,
   WantClasses,
   ScriptParser,
 

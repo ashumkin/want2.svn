@@ -17,7 +17,6 @@ uses
   {$ENDIF}
 
   RunnerTests,
-  VssTasksTest,
   ExternalTests in 'ExternalTests.pas';
 
 {$R *.RES}

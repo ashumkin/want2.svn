@@ -17,7 +17,6 @@ uses
   FileTasks,
   ZipTasks,
   WantTasks,
-  VssTasks,
   DUnitTasks,
   EditTasks;
 
