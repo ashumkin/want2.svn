@@ -49,7 +49,12 @@ uses
   WantUtils in 'WantUtils.pas',
   IniFileTasks in 'tasks\IniFileTasks.pas',
   StyleTasks in 'tasks\StyleTasks.pas',
-  MSXMLEngineImpl in 'win32\MSXMLEngineImpl.pas';
+  MSXMLEngineImpl in 'win32\MSXMLEngineImpl.pas',
+  CVSTasks in 'tasks\CVSTasks.pas',
+  GZipTasks in 'tasks\GZipTasks.pas',
+  LoadFileTasks in 'tasks\LoadFileTasks.pas',
+  TempFileTasks in 'tasks\TempFileTasks.pas',
+  XmlPropertyTasks in 'tasks\XmlPropertyTasks.pas';
 
 {$APPTYPE CONSOLE}
 
