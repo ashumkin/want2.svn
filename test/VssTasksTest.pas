@@ -242,7 +242,7 @@ begin
     FTestPathFileNames := TStringList.Create;
     AddTestFile;
 
-    FProject.Level := vlDebug;
+    FProject.Verbosity := vlDebug;
   {$ENDIF}
 end;
 
