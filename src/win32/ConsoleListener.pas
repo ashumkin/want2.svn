@@ -97,10 +97,10 @@ procedure TConsoleListener.LogLine(Msg: string; Level: TLogLevel);
 var
   n         :Integer;
 begin
-
-  if (Length(Msg) = 0) or (Msg[Length(Msg)] = #13) then
+  Msg:=StringReplace(Msg,#13,'',[rfReplaceAll]);
+  if (Length(Msg) = 0) then
     EXIT;
-    
+
   Msg := WrapText(Msg, '@@', [' ',#10,#9], RightMargin - Length(FPrefix));
   if Pos('@@', Msg) = 0 then
     LogMessage(FPrefix, Msg, Level)
