@@ -8,6 +8,11 @@ unit CVSTasksTests;
 
 { $Id$ }
 
+{
+  Contributors:
+    Radim Novotny <radimnov@seznam.cz>
+}
+
 interface
 
 uses
@@ -34,7 +39,7 @@ type
   TCvsTests = class(TProjectBaseCase)
     private
     protected
-      fTestDirectory : string;
+      FTestDirectory : string;
       procedure SetUp; override;
     published
       procedure TestLogin;

@@ -7,6 +7,11 @@
 
 { $Id$ }
 
+{
+  Contributors:
+    Radim Novotny <radimnov@seznam.cz>
+}
+
 { Notes:
     Code idea (and fragments) are taken from Ant java classes
 
@@ -64,127 +69,135 @@ uses
 type
   // used in CvsChangelog
   TRCSFile = class
-    private
-       fFile : string;
-       fRevision : string;
-       fPrevRevision : string;
-    public
-       constructor Create(aName, aRevision : string); overload;
-       constructor Create(aName, aRevision, aPrevRevision : string); overload;
+  private
+    FFile         :string;
+    FRevision     :string;
+    FPrevRevision :string;
+  public
+    constructor Create(AName, ARevision: string);                overload;
+    constructor Create(AName, ARevision, APrevRevision: string); overload;
 
-       property FileName : string read fFile write fFile;
-       property Revision : string read fRevision write fRevision;
-       property PrevRevision : string read fPrevRevision write fPrevRevision;
+    property FileName     :string  read FFile         write FFile;
+    property Revision     :string  read FRevision     write FRevision;
+    property PrevRevision :string  read FPrevRevision write FPrevRevision;
   end;
 
   // used in CvsChangelog
   TCvsEntry = class
-     private
-       fDate : TDateTime;
-       fAuthor : string;
-       fComment : string;
-       fFiles : TObjectList;
-     public
-       constructor Create(aDate : TDateTime; aAuthor, aComment : string);
-       destructor  Destroy; override;
-       procedure  AddFile(aFile, aRevision : string); overload;
-       procedure  AddFile(aFile, aRevision, aPreviousRevision : string); overload;
-       function   OutAsXML(aDateFormat, aTimeFormat : string) : string;
+  private
+    FDate     :TDateTime;
+    FAuthor   :string;
+    FComment  :string;
+    FFiles    :TObjectList;
+  public
+    constructor Create(ADate: TDateTime; AAuthor, AComment: string);
+    destructor  Destroy; override;
+
+    procedure AddFile(AFile, ARevision: string);                    overload;
+    procedure AddFile(AFile, ARevision, APreviousRevision: string); overload;
+    
+    function  OutAsXML(ADateFormat, ATimeFormat: string): string;
   end;
 
   // used in CvsTagDiff
   TCvsTagEntry = class
-     private
-        fFileName : TFileName;
-        fPrevRevision : string;
-        fRevision: string;
-     public
-        constructor Create(aFileName: TFileName); overload;
-        constructor Create(aFileName: TFileName; aRevision : string); overload;
-        constructor Create(aFileName: TFileName; aRevision : string; aPrevRevision : string); overload;
-        property FileName : TFileName read fFileName write fFileName;
-        property PrevRevision : string read fPrevRevision write fPrevRevision;
-        property Revision : string read fRevision write fRevision;
-        function ToString : string;
+  private
+    FFileName     :string;
+    FPrevRevision :string;
+    FRevision     :string;
+  public
+    constructor Create(AFileName: string);                           overload;
+    constructor Create(AFileName, ARevision: string);                overload;
+    constructor Create(AFileName, ARevision, APrevRevision: string); overload;
+
+    function ToString : string;
+
+    property FileName      :string read FFileName      write FFileName;
+    property PrevRevision  :string read FPrevRevision  write FPrevRevision;
+    property Revision      :string read FRevision      write FRevision;
   end;
 
   // used in CvsChangelog
   TCvsChangeLogParser = class
-     private
-       fFile : string;
-       fDate : string;
-       fAuthor : string;
-       fComment : string;
-       fRevision : string;
-       fPreviousRevision : string;
+  private
+    FFile              :string;
+    FDate              :string;
+    FAuthor            :string;
+    FComment           :string;
+    FRevision          :string;
+    FPreviousRevision  :string;
 
-       fEntries : THashedStringList;
+    FEntries :THashedStringList;
+    FStatus  :integer;
 
-       fStatus  : integer;
-       procedure processComment(aLine : string);
-       procedure processFile(aLine : string);
-       procedure processDate(aLine : string);
-       procedure processGetPreviousRevision(aLine : string);
-       procedure processRevision(aLine : string);
-       procedure SaveEntry;
-       procedure Reset;
-     public
-       constructor Create;
-       destructor Destroy; override;
-       procedure ProcessInputFile(aFile : string);
-       class function Parse(aInputFile : string) : THashedStringList;
-       class procedure OutputEntriesToXML(aOutputFile : string; aEntries : THashedStringList; aDateFormat, aTimeFormat : string);
+    procedure ProcessComment(ALine: string);
+    procedure ProcessFile(ALine: string);
+    procedure ProcessDate(ALine: string);
+    procedure ProcessGetPreviousRevision(ALine: string);
+    procedure ProcessRevision(ALine: string);
+    procedure SaveEntry;
+    procedure Reset;
+  public
+    constructor Create;
+    destructor  Destroy; override;
+
+    procedure ProcessInputFile(AFile: string);
+
+    class function  Parse(AInputFile: string): THashedStringList;
+    class procedure OutputEntriesToXML(AOutputFile: string;
+      AEntries: THashedStringList; ADateFormat, ATimeFormat: string);
   end;
 
 
   // used in CvsChangelog
   TCvsChangeLogUserElement = class(TScriptElement)
-    protected
-      FUserId :string;
-      FDisplayName :string;
-    published
-      property userid :string  read FUserID write FUserID;
-      property displayname :string  read FDisplayName write FDisplayName;
-    public
-      class function TagName :string; override;
-      procedure Init; override;
-    end;
+  protected
+    FUserId       :string;
+    FDisplayName  :string;
+  published
+    property userid      :string read FUserID      write FUserID;
+    property displayname :string read FDisplayName write FDisplayName;
+  public
+    procedure Init;                 override;
+    class function TagName: string; override;
+  end;
 
   // Custom CVS Task - base class for other Cvs Tasks
   TCustomCVSTask = class(TCustomExecTask)
   protected
-    fCompression: boolean;
-    fCompressionLevel: integer;
-    ftag: string;
-    fcvsRoot: string;
-    fcvsRsh: string;
-    fdate: string;
-    fpackage: string;
-    fCommand: string;
-    fdest: string;
-    fnoexec: boolean;
-    fquiet: boolean;
+    FCompression      :boolean;
+    FCompressionLevel :integer;
+    FTag              :string;
+    FCvsRoot          :string;
+    FCvsRsh           :string;
+    FDate             :string;
+    FPackage          :string;
+    FCommand          :string;
+    FDest             :string;
+    FNoexec           :boolean;
+    FQuiet            :boolean;
 
-    function AddOption(aOption : string; aValue : string =''; aForceQuote : boolean = false) : string;
-    function BuildArguments  :string; override;
+    function AddOption(AOption: string; AValue: string = '';
+      AForceQuote: boolean = False): string;
+    function BuildArguments: string; override;
 
-    function BuildArgumentsGlobal : string; virtual;
-    function BuildArgumentsCommand : string; virtual; abstract;
-    function BuildArgumentsSpecific : string; virtual;
+    function BuildArgumentsGlobal   :string; virtual;
+    function BuildArgumentsCommand  :string; virtual; abstract;
+    function BuildArgumentsSpecific :string; virtual;
   public
     procedure Init; override;
   protected
-    property command : string read fCommand write fCommand;
-    property compression : boolean read fCompression write fCompression;
-    property compressionlevel : integer read fCompressionLevel write fCompressionLevel;
-    property cvsRoot : string read fcvsRoot write fcvsRoot;
-    property cvsRsh : string read fcvsRsh write fcvsRsh;
-    property dest : string read fdest write fdest;
-    property package : string read fpackage write fpackage;
-    property tag : string read ftag write ftag;
-    property date : string read fdate write fdate;
-    property quiet : boolean read fquiet write fquiet;
-    property noexec : boolean read fnoexec write fnoexec;
+    property command          :string  read FCommand          write FCommand;
+    property compression      :boolean read FCompression      write FCompression;
+    property compressionlevel :integer read FCompressionLevel write FCompressionLevel;
+    property cvsroot          :string  read FCvsRoot          write FCvsRoot;
+    property cvsrsh           :string  read FCvsRsh           write FCvsRsh;
+    property dest             :string  read FDest             write FDest;
+    property package          :string  read FPackage          write FPackage;
+    property tag              :string  read FTag              write FTag;
+    property date             :string  read FDate             write FDate;
+    property quiet            :boolean read FQuiet            write FQuiet;
+    property noexec           :boolean read FNoexec           write FNoexec;
     property output;
     property failonerror;
   end;
@@ -192,280 +205,293 @@ type
   // this class is used internally to log most recent module tag
   // it is not globally visible Task (not registered task)
   TCvsMostRecentTag = class(TCustomCvsTask)
-    private
-      fMostRecentTag : string;
-      fModuleName: string;
-    public
-      procedure Execute; override;
-      procedure Init; override;
+  private
+    FMostRecentTag  :string;
+    FModuleName     :string;
+  protected
+    function BuildArgumentsCommand  :string; override;
+    function BuildArgumentsSpecific :string; override;
+  public
+    procedure Execute; override;
 
-      property ModuleName : string read fModuleName write fModuleName;
-      property MostRecentTag : string read fMostRecentTag;
-    protected
-      function  BuildArgumentsCommand : string; override;
-      function  BuildArgumentsSpecific : string; override;
+    property modulename    :string read FModuleName     write FModuleName;
+    property mostrecenttag :string read FMostRecentTag;
   end;
 
   TCvsTask = class(TCustomCvsTask)
-    public
-      procedure Execute; override;
-      function  BuildArgumentsCommand : string; override;
-    published
-      property command;
-      property compression;
-      property compressionlevel;
-      property cvsRoot;
-      property cvsRsh;
-      property dest;
-      property package;
-      property tag;
-      property date;
-      property quiet;
-      property noexec;
-      property output;
-      property failonerror;
+  public
+    procedure Execute; override;
+    function  BuildArgumentsCommand: string; override;
+  published
+    property command;
+    property compression;
+    property compressionlevel;
+    property cvsroot;
+    property cvsrsh;
+    property dest;
+    property package;
+    property tag;
+    property date;
+    property quiet;
+    property noexec;
+    property output;
+    property failonerror;
   end;
 
   TCvsTagDiffTask = class(TCustomCvsTask)
-    private
-      fstartTag : string;
-      fstartDate : string;
-      fendTag : string;
-      fendDate : string;
-      fdestfile : string;
-      fMostRecentModule: string;
+  private
+    FStartTag             :string;
+    FStartDate            :string;
+    FEndTag               :string;
+    FEndDate              :string;
+    FDestFile             :string;
+    FMostRecentModuleName :string;
 
-      function CopyToEnd(aString : string; aFrom : integer) : string;
-      function ParseRDiffOutput(aOutput : string; var aParsedOutput : TObjectList) : boolean;
-      procedure WriteTagDiff(const aParsedOutput : TObjectList);
-      function WriteTagEntry(const aEntry : TCvsTagEntry) : string;
-      function FindMostRecentTag : string;
-    public
-      procedure Execute; override;
-      procedure Init; override;
-    protected
-      function  BuildArgumentsCommand : string; override;
-      function  BuildArgumentsSpecific : string; override;
-    published
-      property compression;
-      property compressionlevel;
-      property cvsRoot;
-      property cvsRsh;
-      property package;
-      property quiet;
-      property failonerror;
+    function  CopyToEnd(AString: string; AFrom: integer): string;
+    function  ParseRDiffOutput(AOutput: string;
+       var AParsedOutput: TObjectList): boolean;
+    procedure WriteTagDiff (const AParsedOutput: TObjectList);
+    function  WriteTagEntry(const AEntry: TCvsTagEntry): string;
+    function  FindMostRecentTag: string;
+  public
+    procedure Execute; override;
+    procedure Init;    override;
+  protected
+    function  BuildArgumentsCommand  :string; override;
+    function  BuildArgumentsSpecific :string; override;
+  published
+    property compression;
+    property compressionlevel;
+    property cvsroot;
+    property cvsrsh;
+    property package;
+    property quiet;
+    property failonerror;
 
-      property startTag : string read fstartTag write fstartTag;
-      property startDate : string read fstartDate write fstartDate;
-      property endTag : string read fendTag write fendTag;
-      property endDate : string read fendDate write fendDate;
-      property destfile : string read fdestfile write fdestfile;
-      // this property is required only when starttag or endtag contains
-      // text "MOST RECENT", because of I don't know how to find most recent tag
-      // across all modules. This shoul be set to module (filename) which is
-      // in repository from project start (for example DPR file)
-      property mostrecentmodulename : string read fMostRecentModule write fMostRecentModule;
+    property starttag  :string read FStartTag  write FStartTag;
+    property startdate :string read FStartDate write FStartDate;
+    property endtag    :string read FEndTag    write FEndTag;
+    property enddate   :string read FEndDate   write FEndDate;
+    property destfile  :string read FDestFile  write FDestFile;
+    {
+      this property is required only when starttag or endtag contains
+      text "MOST RECENT", because of I don't know how to find most recent tag
+      across all modules. This shoul be set to module (filename) which is
+      in repository from project start (for example DPR file)
+    }
+    property mostrecentmodulename: string read fMostRecentModuleName
+                                          write fMostRecentModuleName;
   end;
 
   TCvsPassTask = class(TCustomCvsTask)
-    private
-      fPassword: string;
-      fEmptyPassword: boolean;
-      procedure ChangeCvsPassInHome;
-      function ScrambleCvsPassword(const aPassword : string) : string;
-      procedure WritePasswordTo(aFileName : string);
-      {$IFDEF MSWINDOWS}
-      procedure ChangeCvsPassInRegistry;
-      {$ENDIF}
-    public
-      procedure Init; override;
-      procedure Execute; override;
-    published
-      property cvsRoot;
-      property password : string read fPassword write fPassword;
-      property emptypassword : boolean read fEmptyPassword write fEmptyPassword;
+  private
+    FPassword      :string;
+    FEmptyPassword :boolean;
+
+    procedure ChangeCvsPassInHome;
+    function  ScrambleCvsPassword(const APassword: string): string;
+    procedure WritePasswordTo(aFileName: string);
+    {$IFDEF MSWINDOWS}
+    procedure ChangeCvsPassInRegistry;
+    {$ENDIF MSWINDOWS}
+  public
+    procedure Init;    override;
+    procedure Execute; override;
+  published
+    property cvsroot;
+    property password      :string  read FPassword      write FPassword;
+    property emptypassword :boolean read FEmptyPassword write FEmptyPassword;
   end;
 
   TCvsChangeLogTask = class(TCustomCvsTask)
-    private
-      fUserList : TList;
-      fstart: string;
-      fusersfile: string;
-      fdaysinpast: string;
-      fdir: string;
-      fdestfile: string;
-      fend: string;
-      fDateFormat: string;
-      fTimeFormat: string;
-    public
-      constructor Create(aOwner : TScriptElement); override;
-      destructor Destroy; override;
-      procedure Init; override;
-      procedure Execute; override;
-      function CreateUser(aUserID, aDisplayName : string) : TCvsChangeLogUserElement; overload;
-    protected
-      function  BuildArgumentsCommand : string; override;
-      function  BuildArgumentsSpecific : string; override;
-    published
-      function CreateUser : TCvsChangeLogUserElement; overload;
+  private
+    FUserList   :TList;
+    FStart      :string;
+    FUsersFile  :string;
+    FDaysInPast :string;
+    FDir        :string;
+    FDestFile   :string;
+    FEnd        :string;
+    FDateFormat :string;
+    FTimeFormat :string;
+  public
+    constructor Create(AOwner: TScriptElement); override;
+    destructor  Destroy;                        override;
 
-      property dest : string read fdest write fdest;
-      property dir : string read fdir write fdir;
-      property destfile : string read fdestfile write fdestfile;
-      property usersfile : string read fusersfile write fusersfile;
-      property daysinpast : string read fdaysinpast write fdaysinpast;
-      property start : string read fstart write fstart;
-      property _end : string read fend write fend;
-      // following properties are not included in Ant
-      property dateformat : string read fDateFormat write fDateFormat;
-      property timeformat : string read fTimeFormat write fTimeFormat;
+    procedure Init;    override;
+    procedure Execute; override;
+    function  CreateUser(AUserID, ADisplayName: string): TCvsChangeLogUserElement;
+      overload;
+  protected
+    function  BuildArgumentsCommand  :string; override;
+    function  BuildArgumentsSpecific :string; override;
+  published
+    function CreateUser: TCvsChangeLogUserElement; overload;
+
+    property dest       :string read FDest       write FDest;
+    property dir        :string read FDir        write FDir;
+    property destfile   :string read FDestFile   write FDestFile;
+    property usersfile  :string read FUsersFile  write FUsersFile;
+    property daysinpast :string read FDaysInPast write FDaysInPast;
+    property start      :string read FStart      write FStart;
+    property _end       :string read FEnd        write FEnd;
+    // following properties are not included in Ant
+    property dateformat :string read FDateFormat write FDateFormat;
+    property timeformat :string read FTimeFormat write FTimeFormat;
   end;
 
 
 implementation
 
 const
-    FILE_IS_NEW = ' is new; current revision ';
-    FILE_HAS_CHANGED = ' changed from revision ';
-    FILE_WAS_REMOVED = ' is removed';
-    GET_FILE = 1;
-    GET_DATE = 2;
-    GET_COMMENT = 3;
-    GET_REVISION = 4;
-    GET_PREVIOUS_REV = 5;
+  FILE_IS_NEW = ' is new; current revision ';
+  FILE_HAS_CHANGED = ' changed from revision ';
+  FILE_WAS_REMOVED = ' is removed';
+  GET_FILE = 1;
+  GET_DATE = 2;
+  GET_COMMENT = 3;
+  GET_REVISION = 4;
+  GET_PREVIOUS_REV = 5;
 
 var
-    // for scramble cvs password
-    shifts : array [0..255] of byte = (
-          0,   1,   2,   3,   4,   5,   6,   7,   8,   9,  10,  11,  12,  13,  14,  15,
-         16,  17,  18,  19,  20,  21,  22,  23,  24,  25,  26,  27,  28,  29,  30,  31,
-        114, 120,  53,  79,  96, 109,  72, 108,  70,  64,  76,  67, 116,  74,  68,  87,
-        111,  52,  75, 119,  49,  34,  82,  81,  95,  65, 112,  86, 118, 110, 122, 105,
-         41,  57,  83,  43,  46, 102,  40,  89,  38, 103,  45,  50,  42, 123,  91,  35,
-        125,  55,  54,  66, 124, 126,  59,  47,  92,  71, 115,  78,  88, 107, 106,  56,
-         36, 121, 117, 104, 101, 100,  69,  73,  99,  63,  94,  93,  39,  37,  61,  48,
-         58, 113,  32,  90,  44,  98,  60,  51,  33,  97,  62,  77,  84,  80,  85, 223,
-        225, 216, 187, 166, 229, 189, 222, 188, 141, 249, 148, 200, 184, 136, 248, 190,
-        199, 170, 181, 204, 138, 232, 218, 183, 255, 234, 220, 247, 213, 203, 226, 193,
-        174, 172, 228, 252, 217, 201, 131, 230, 197, 211, 145, 238, 161, 179, 160, 212,
-        207, 221, 254, 173, 202, 146, 224, 151, 140, 196, 205, 130, 135, 133, 143, 246,
-        192, 159, 244, 239, 185, 168, 215, 144, 139, 165, 180, 157, 147, 186, 214, 176,
-        227, 231, 219, 169, 175, 156, 206, 198, 129, 164, 150, 210, 154, 177, 134, 127,
-        182, 128, 158, 208, 162, 132, 167, 209, 149, 241, 153, 251, 237, 236, 171, 195,
-        243, 233, 253, 240, 194, 250, 191, 155, 142, 137, 245, 235, 163, 242, 178, 152
-    );
+  // for scramble cvs password
+  PSW_SHIFTS: array [0..255] of byte =
+   ( 0,   1,   2,   3,   4,   5,   6,   7,   8,   9,  10,  11,  12,  13,  14,  15,
+    16,  17,  18,  19,  20,  21,  22,  23,  24,  25,  26,  27,  28,  29,  30,  31,
+   114, 120,  53,  79,  96, 109,  72, 108,  70,  64,  76,  67, 116,  74,  68,  87,
+   111,  52,  75, 119,  49,  34,  82,  81,  95,  65, 112,  86, 118, 110, 122, 105,
+    41,  57,  83,  43,  46, 102,  40,  89,  38, 103,  45,  50,  42, 123,  91,  35,
+   125,  55,  54,  66, 124, 126,  59,  47,  92,  71, 115,  78,  88, 107, 106,  56,
+    36, 121, 117, 104, 101, 100,  69,  73,  99,  63,  94,  93,  39,  37,  61,  48,
+    58, 113,  32,  90,  44,  98,  60,  51,  33,  97,  62,  77,  84,  80,  85, 223,
+   225, 216, 187, 166, 229, 189, 222, 188, 141, 249, 148, 200, 184, 136, 248, 190,
+   199, 170, 181, 204, 138, 232, 218, 183, 255, 234, 220, 247, 213, 203, 226, 193,
+   174, 172, 228, 252, 217, 201, 131, 230, 197, 211, 145, 238, 161, 179, 160, 212,
+   207, 221, 254, 173, 202, 146, 224, 151, 140, 196, 205, 130, 135, 133, 143, 246,
+   192, 159, 244, 239, 185, 168, 215, 144, 139, 165, 180, 157, 147, 186, 214, 176,
+   227, 231, 219, 169, 175, 156, 206, 198, 129, 164, 150, 210, 154, 177, 134, 127,
+   182, 128, 158, 208, 162, 132, 167, 209, 149, 241, 153, 251, 237, 236, 171, 195,
+   243, 233, 253, 240, 194, 250, 191, 155, 142, 137, 245, 235, 163, 242, 178, 152
+   );
 
-{ Local function }
-function ParseCVSDate(aDate : string) : TDateTime;
+  { Local function }
+function ParseCVSDate(ADate: string): TDateTime;
 var
-   bConverted : boolean;
-   bMonth : word;
+  bConverted: boolean;
+  bMonth: word;
 begin
-   Result := Now;
-   // try to create TDateTime from string date in different format
-   // Supported formats:
-   // format used in system by current locale
-   // [d]d.mm.yyyy            (24.9.2001)
-   // yyyy-[m]m-[d]d [h]h:[m]m:[s]s   (2001-09-24 10:15:45)
-   // yyyy/[m]m/[d]d [h]h:[m]m:[s]s   (2001/09/24 10:15:45)
-   // yyyy-[m]m-[d]d            (2001-09-24)
-   // yyyy/[m]m/[d]d            (2001/09/24)
-   // [d]d MMM yyyy           (24 Sep 2001)
+  Result := Now;
+  // try to create TDateTime from string date in different format
+  // Supported formats:
+  // format used in system by current locale
+  // [d]d.mm.yyyy            (24.9.2001)
+  // yyyy-[m]m-[d]d [h]h:[m]m:[s]s   (2001-09-24 10:15:45)
+  // yyyy/[m]m/[d]d [h]h:[m]m:[s]s   (2001/09/24 10:15:45)
+  // yyyy-[m]m-[d]d            (2001-09-24)
+  // yyyy/[m]m/[d]d            (2001/09/24)
+  // [d]d MMM yyyy           (24 Sep 2001)
 
-   bConverted := False;
-   try { current Locale settings }
-     Result := StrToDate(aDate);
-     bConverted := True;
-   except end;
+  bConverted := False;
+  try { current Locale settings }
+    Result     := StrToDate(ADate);
+    bConverted := True;
+  except
+  end;
 
-   if not bConverted then begin { dd.mm.yyyy }
-      try
-        if regex.Match('(\d?\d)\.(\d?\d)\.(\d\d\d\d)', aDate) then begin
-           Result := EncodeDate(StrToInt(regex.SubExp[3].Text), StrToInt(regex.SubExp[2].Text), StrToInt(regex.SubExp[1].Text));
-           bConverted := True;
-        end;
-      except
+  if not bConverted then
+  begin { dd.mm.yyyy }
+    try
+      if regex.Match('(\d?\d)\.(\d?\d)\.(\d\d\d\d)', ADate) then
+      begin
+        Result := EncodeDate(
+                      StrToInt(regex.SubExp[3].Text),   {year}
+                      StrToInt(regex.SubExp[2].Text),   {month}
+                      StrToInt(regex.SubExp[1].Text));  {day}
+        bConverted := True;
       end;
-   end;
+    except
+    end;
+  end;
 
-   if not bConverted then begin { yyyy/mm/dd hh:mm:ss }
-      try
-        if regex.Match('(\d\d\d\d)/(\d?\d)/(\d?\d) (\d?\d):(\d?\d):(\d?\d)', aDate) then begin
-           Result := EncodeDate(StrToInt(regex.SubExp[1].Text), StrToInt(regex.SubExp[2].Text), StrToInt(regex.SubExp[3].Text));
-           Result := Result + EncodeTime(StrToInt(regex.SubExp[4].Text), StrToInt(regex.SubExp[5].Text), StrToInt(regex.SubExp[6].Text), 0);
-           bConverted := True;
-        end;
-      except
+  if not bConverted then
+  begin { yyyy/mm/dd hh:mm:ss } { yyyy-mm-dd hh:mm:ss }
+    try
+      if regex.Match('(\d\d\d\d)[/-](\d?\d)[/-](\d?\d) (\d?\d):(\d?\d):(\d?\d)', ADate) then
+      begin
+        Result := EncodeDate(
+                    StrToInt(regex.SubExp[1].Text),   {year}
+                    StrToInt(regex.SubExp[2].Text),   {month}
+                    StrToInt(regex.SubExp[3].Text));  {day}
+        Result := Result + EncodeTime(
+                    StrToInt(regex.SubExp[4].Text),   {hour}
+                    StrToInt(regex.SubExp[5].Text),   {min}
+                    StrToInt(regex.SubExp[6].Text),   {sec}
+                    0);                               {msec}
+        bConverted := True;
       end;
-   end;
+    except
+    end;
+  end;
 
-   if not bConverted then begin { yyyy-mm-dd hh:mm:ss }
-      try
-        if regex.Match('(\d\d\d\d)-(\d?\d)-(\d?\d) (\d?\d):(\d?\d):(\d?\d)', aDate) then begin
-           Result := EncodeDate(StrToInt(regex.SubExp[1].Text), StrToInt(regex.SubExp[2].Text), StrToInt(regex.SubExp[3].Text));
-           Result := Result + EncodeTime(StrToInt(regex.SubExp[4].Text), StrToInt(regex.SubExp[5].Text), StrToInt(regex.SubExp[6].Text), 0);
-           bConverted := True;
-        end;
-      except
+  if not bConverted then
+  begin { yyyy-mm-dd } { yyyy/mm/dd }
+    try
+      if regex.Match('(\d\d\d\d)[/-](\d?\d)[/-](\d?\d)', ADate) then
+      begin
+        Result := EncodeDate(
+                    StrToInt(regex.SubExp[1].Text),  {year}
+                    StrToInt(regex.SubExp[2].Text),  {month}
+                    StrToInt(regex.SubExp[3].Text)); {day}
+        bConverted := True;
       end;
-   end;
+    except
+    end;
+  end;
 
-   if not bConverted then begin { yyyy-mm-dd }
-      try
-        if regex.Match('(\d\d\d\d)-(\d?\d)-(\d?\d)', aDate) then begin
-           Result := EncodeDate(StrToInt(regex.SubExp[1].Text), StrToInt(regex.SubExp[2].Text), StrToInt(regex.SubExp[3].Text));
-           bConverted := True;
+  if not bConverted then
+  begin { dd MMM yyyy}
+    try
+      if regex.Match('(\d?\d) ([A-Z][a-z][a-z]) (\d\d\d\d)', ADate) then
+      begin
+        bMonth := 0;
+        if regex.SubExp[2].Text = 'Jan' then bMonth := 1;
+        if regex.SubExp[2].Text = 'Feb' then bMonth := 2;
+        if regex.SubExp[2].Text = 'Mar' then bMonth := 3;
+        if regex.SubExp[2].Text = 'Apr' then bMonth := 4;
+        if regex.SubExp[2].Text = 'May' then bMonth := 5;
+        if regex.SubExp[2].Text = 'Jun' then bMonth := 6;
+        if regex.SubExp[2].Text = 'Jul' then bMonth := 7;
+        if regex.SubExp[2].Text = 'Aug' then bMonth := 8;
+        if regex.SubExp[2].Text = 'Sep' then bMonth := 9;
+        if regex.SubExp[2].Text = 'Oct' then bMonth := 10;
+        if regex.SubExp[2].Text = 'Nov' then bMonth := 11;
+        if regex.SubExp[2].Text = 'Dec' then bMonth := 12;
+        if bMonth <> 0 then
+        begin
+          Result := EncodeDate(
+                       StrToInt(regex.SubExp[3].Text),   {year}
+                       bMonth,                           {month}
+                       StrToInt(regex.SubExp[1].Text));  {day}
+          bConverted := True;
         end;
-      except
       end;
-   end;
-
-   if not bConverted then begin { yyyy/mm/dd }
-      try
-        if regex.Match('(\d\d\d\d)/(\d?\d)/(\d?\d)', aDate) then begin
-           Result := EncodeDate(StrToInt(regex.SubExp[1].Text), StrToInt(regex.SubExp[2].Text), StrToInt(regex.SubExp[3].Text));
-           bConverted := True;
-        end;
-      except
-      end;
-   end;
-
-   if not bConverted then begin { dd MMM yyyy}
-      try
-        if regex.Match('(\d?\d) ([A-Z][a-z][a-z]) (\d\d\d\d)', aDate) then begin
-           bMonth := 0;
-           if regex.SubExp[2].Text = 'Jan' then bMonth := 1;
-           if regex.SubExp[2].Text = 'Feb' then bMonth := 2;
-           if regex.SubExp[2].Text = 'Mar' then bMonth := 3;
-           if regex.SubExp[2].Text = 'Apr' then bMonth := 4;
-           if regex.SubExp[2].Text = 'May' then bMonth := 5;
-           if regex.SubExp[2].Text = 'Jun' then bMonth := 6;
-           if regex.SubExp[2].Text = 'Jul' then bMonth := 7;
-           if regex.SubExp[2].Text = 'Aug' then bMonth := 8;
-           if regex.SubExp[2].Text = 'Sep' then bMonth := 9;
-           if regex.SubExp[2].Text = 'Oct' then bMonth := 10;
-           if regex.SubExp[2].Text = 'Nov' then bMonth := 11;
-           if regex.SubExp[2].Text = 'Dec' then bMonth := 12;
-           if bMonth <> 0 then begin
-             Result := EncodeDate(StrToInt(regex.SubExp[3].Text), bMonth, StrToInt(regex.SubExp[1].Text));
-             bConverted := True;
-           end;
-        end;
-      except
-      end;
-   end;
-   if not bConverted then Result := Now;
+    except
+    end;
+  end;
+  if not bConverted then Result := Now;
 end;
 
 { TCustomCvsTask }
 
-function TCustomCvsTask.AddOption(aOption, aValue: string; aForceQuote : boolean): string;
+function TCustomCvsTask.AddOption(AOption, AValue: string; AForceQuote: boolean): string;
 begin
-   Result :=' ' + aOption;
-   if aValue <> '' then begin
-      if (Pos(' ', aValue) > 0) or aForceQuote  then Result := Result + '"' + aValue + '"'
-                                                else Result := Result + aValue;
-   end;
+  Result := ' ' + AOption;
+  if AValue <> '' then
+  begin
+    if (Pos(' ', AValue) > 0) or AForceQuote
+       then Result := Result + '"' + AValue + '"'
+       else Result := Result + AValue;
+  end;
 end;
 
 function TCustomCvsTask.BuildArguments: string;
@@ -480,53 +506,70 @@ end;
 function TCustomCVSTask.BuildArgumentsGlobal: string;
 begin
   // first add global CVS options
-  if fquiet then begin
+  if FQuiet then
+  begin
     Log(vlVerbose, 'quiet=true');
     ArgumentList.Add('-q');
   end;
-  if fnoexec then begin
+  if FNoexec then
+  begin
     Log(vlVerbose, 'noexec=true');
     ArgumentList.Add('-n');
   end;
-  if fCompression then begin
-     if HasAttribute('compressionlevel') then begin
-        if fCompressionLevel in [1..9] then begin
-           Log(vlVerbose, 'compression=true');
-           Log(vlVerbose, 'compressionlevel='+IntToStr(fCompressionLevel));
-           ArgumentList.Add(AddOption('-z', IntToStr(fCompressionLevel)));
-        end else begin
-           Log(vlWarnings, 'Invalid compressionlevel value (not in range 1-9): '+IntToStr(fCompressionLevel));
-        end;
-     end else begin
+  if FCompression then
+  begin
+    if HasAttribute('compressionlevel') then
+    begin
+      if FCompressionLevel in [1..9] then
+      begin
         Log(vlVerbose, 'compression=true');
-        ArgumentList.Add(AddOption('-z', '3'));
-     end;
+        Log(vlVerbose, 'compressionlevel=' + IntToStr(FCompressionLevel));
+        ArgumentList.Add(AddOption('-z', IntToStr(FCompressionLevel)));
+      end
+      else
+      begin
+        Log(vlWarnings, 'Invalid compressionlevel value (not in range 1-9): '
+                        + IntToStr(FCompressionLevel));
+      end;
+    end
+    else
+    begin
+      Log(vlVerbose, 'compression=true');
+      ArgumentList.Add(AddOption('-z', '3'));
+    end;
   end;
-  if fcvsRoot <> '' then begin
-     Log(vlVerbose, 'CVSROOT='+fcvsRoot);
-     ArgumentList.Add(AddOption('-d', fcvsRoot));
+  if FCvsRoot <> '' then
+  begin
+    Log(vlVerbose, 'CVSROOT=' + FCvsRoot);
+    ArgumentList.Add(AddOption('-d', FCvsRoot));
   end;
-  if fcvsRsh <> '' then begin
-     Log(vlVerbose, 'CVS_RSH='+fcvsRsh);
-     JclSysInfo.SetEnvironmentVar('CVS_RSH', fcvsRsh);
-  end else begin
-     JclSysInfo.SetEnvironmentVar('CVS_RSH', '');
+  if FCvsRsh <> '' then
+  begin
+    Log(vlVerbose, 'CVS_RSH=' + FCvsRsh);
+    JclSysInfo.SetEnvironmentVar('CVS_RSH', FCvsRsh);
+  end
+  else
+  begin
+    JclSysInfo.SetEnvironmentVar('CVS_RSH', '');
   end;
 end;
 
 function TCustomCVSTask.BuildArgumentsSpecific: string;
 begin
-  if ftag <> '' then begin
-     Log(vlVerbose, 'tag='+ftag);
-     ArgumentList.Add(AddOption('-r', ftag, true));
+  if FTag <> '' then
+  begin
+    Log(vlVerbose, 'tag=' + FTag);
+    ArgumentList.Add(AddOption('-r', FTag, True));
   end;
-  if fdate <> '' then begin
-     Log(vlVerbose, 'date='+fdate);
-     ArgumentList.Add(AddOption('-D', fdate, true));
+  if fdate <> '' then
+  begin
+    Log(vlVerbose, 'date=' + FDate);
+    ArgumentList.Add(AddOption('-D', FDate, True));
   end;
-  if fpackage <> '' then begin
-     Log(vlVerbose, 'package='+fpackage);
-     ArgumentList.Add(AddOption(fpackage));
+  if FPackage <> '' then
+  begin
+    Log(vlVerbose, 'package=' + FPackage);
+    ArgumentList.Add(AddOption(FPackage));
   end;
 end;
 
@@ -544,22 +587,26 @@ end;
 
 function TCvsTask.BuildArgumentsCommand: string;
 begin
-  if fCommand <> '' then begin
-     Log(vlVerbose, 'command='+fCommand);
-     ArgumentList.Add(AddOption(fCommand));
-  end else begin
-     Log(vlVerbose, 'command=checkout');
-     ArgumentList.Add(AddOption('checkout'));
+  if FCommand <> '' then
+  begin
+    Log(vlVerbose, 'command=' + FCommand);
+    ArgumentList.Add(AddOption(FCommand));
+  end
+  else
+  begin
+    Log(vlVerbose, 'command=checkout');
+    ArgumentList.Add(AddOption('checkout'));
   end;
 end;
 
 procedure TCvsTask.Execute;
 var
-   bOldDir : TPath;
+  bOldDir: TPath;
 begin
   bOldDir := CurrentDir;
-  if fdest <> '' then begin
-     ChangeDir(fdest, true);
+  if FDest <> '' then
+  begin
+    ChangeDir(FDest, True);
   end;
   inherited;
   ChangeDir(bOldDir);
@@ -576,74 +623,82 @@ end;
 function TCvsTagDiffTask.BuildArgumentsSpecific: string;
 begin
   ArgumentList.Add(AddOption('-s')); // short listing
-  if fstartTag <> '' then begin
-     if fstartTag='MOST RECENT' then begin
-       Log(vlVerbose, 'trying to find most recent tag');
-       fstartTag := FindMostRecentTag;
-     end;
-     Log(vlVerbose, 'starttag='+fstartTag);
-     ArgumentList.Add(AddOption('-r', fstartTag,true));
-  end else if fstartDate <> '' then begin
-     Log(vlVerbose, 'startdate='+fstartDate);
-     ArgumentList.Add(AddOption('-D', fstartDate,true));
+  if FStartTag <> '' then
+  begin
+    if FStartTag = 'MOST RECENT' then
+    begin
+      Log(vlVerbose, 'trying to find most recent tag');
+      FStartTag := FindMostRecentTag;
+    end;
+    Log(vlVerbose, 'starttag=' + FStartTag);
+    ArgumentList.Add(AddOption('-r', FStartTag, True));
+  end
+  else if FStartDate <> '' then
+  begin
+    Log(vlVerbose, 'startdate=' + FStartDate);
+    ArgumentList.Add(AddOption('-D', FStartDate, True));
   end;
-  if fendTag <> '' then begin
-     if fendTag='MOST RECENT' then begin
-        Log(vlVerbose, 'trying to find most recent tag');
-        fendTag := FindMostRecentTag;
-     end;
-     Log(vlVerbose, 'endtag='+fendTag);
-     ArgumentList.Add(AddOption('-r', fendTag,true));
-  end else if fendDate <> '' then begin
-     Log(vlVerbose, 'enddate='+fendDate);
-     ArgumentList.Add(AddOption('-D', fendDate,true));
+  if FEndTag <> '' then
+  begin
+    if FEndTag = 'MOST RECENT' then
+    begin
+      Log(vlVerbose, 'trying to find most recent tag');
+      FEndTag := FindMostRecentTag;
+    end;
+    Log(vlVerbose, 'endtag=' + FEndTag);
+    ArgumentList.Add(AddOption('-r', FEndTag, True));
+  end
+  else if fendDate <> '' then
+  begin
+    Log(vlVerbose, 'enddate=' + FEndDate);
+    ArgumentList.Add(AddOption('-D', FEndDate, True));
   end;
   inherited BuildArgumentsSpecific;
 end;
 
-function TCvsTagDiffTask.CopyToEnd(aString: string;
-  aFrom: integer): string;
+function TCvsTagDiffTask.CopyToEnd(AString: string;
+  AFrom: integer): string;
 begin
-  Result := Copy(aString, aFrom, Length(aString));
+  Result := Copy(AString, AFrom, Length(AString));
 end;
 
 procedure TCvsTagDiffTask.Execute;
 var
-   bRDiffOutput : TObjectList;
+  bRDiffOutput: TObjectList;
 begin
   output := FileGetTempName('cvs');
   inherited;
   bRDiffOutput := TObjectList.Create;
   try
-     if ParseRDiffOutput(output, bRDiffOutput) then WriteTagDiff(bRDiffOutput);
+    if ParseRDiffOutput(output, bRDiffOutput) then WriteTagDiff(bRDiffOutput);
   finally
-     SysUtils.DeleteFile(output);
-     bRDiffOutput.Free;
+    SysUtils.DeleteFile(output);
+    bRDiffOutput.Free;
   end;
 end;
 
 function TCvsTagDiffTask.FindMostRecentTag: string;
 var
-   bMRT : TCvsMostRecentTag;
+  bMRT: TCvsMostRecentTag;
 begin
-   bMRT := TCvsMostRecentTag.Create(self);
-   try
-     bMRT.Init;
-     // copy attribute values from CvsTagDiffTask
-     bMRT.compression := fcompression;
-     bMRT.compressionlevel := fcompressionlevel;
-     bMRT.cvsRoot := fcvsRoot;
-     bMRT.cvsRsh := fcvsRsh;
-     bMRT.package := fpackage;
-     bMRT.quiet := fquiet;
-     bMRT.failonerror := ffailonerror;
-     bMRT.ModuleName := fMostRecentModule;
+  bMRT := TCvsMostRecentTag.Create(self);
+  try
+    bMRT.Init;
+    // copy attribute values from CvsTagDiffTask
+    bMRT.compression      := FCompression;
+    bMRT.compressionlevel := FCompressionlevel;
+    bMRT.cvsroot          := FCvsRoot;
+    bMRT.cvsrsh           := FCvsRsh;
+    bMRT.package          := FPackage;
+    bMRT.quiet            := FQuiet;
+    bMRT.failonerror      := FFailOnError;
+    bMRT.modulename       := FMostRecentModuleName;
 
-     bMRT.Execute;
-     Result := bMRT.MostRecentTag;
-   finally
-     bMRT.Free;
-   end;
+    bMRT.Execute;
+    Result := bMRT.mostrecenttag;
+  finally
+    bMRT.Free;
+  end;
 end;
 
 procedure TCvsTagDiffTask.Init;
@@ -651,142 +706,163 @@ begin
   inherited;
   RequireAttribute('destfile');
   RequireAttribute('package');
-  if (fstartTag = 'MOST RECENT') or (fendtag = 'MOST RECENT') then
-     RequireAttribute('mostrecentmodulename'); 
   RequireAttribute('starttag|startdate');
   RequireAttribute('endtag|enddate');
-
+  if (FStartTag = 'MOST RECENT') or (FEndtag = 'MOST RECENT') then
+     RequireAttribute('mostrecentmodulename');
 end;
 
-function TCvsTagDiffTask.ParseRDiffOutput(aOutput: string; var aParsedOutput : TObjectList): boolean;
+function TCvsTagDiffTask.ParseRDiffOutput(AOutput: string;
+  var AParsedOutput: TObjectList): boolean;
 var
-   i, index, new_index, headerLength : integer;
-   revSeparator : integer;
-   SL : TStringList;
-   revision, prevRevision, line, fname : string;
+  i             : integer;
+  bIndex        : integer;
+  bNewIndex     : integer;
+  bHeaderLength : integer;
+  bRevSeparator : integer;
+  bSL           : TStringList;
+  bRevision     : string;
+  bPrevRevision : string;
+  bLine         : string;
+  bFileName     : string;
 begin
-   Result := False;
-   if Assigned(aParsedOutput) then begin
-     headerLength := 5 + Length(package) + 2;
-     SL := TStringList.Create;
-     try
-       SL.LoadFromFile(aOutput);
-       for i := 0 to SL.Count - 1 do begin
-         line := CopyToEnd(SL[i], headerLength-1);
-         index := Pos(FILE_IS_NEW, line);
-         if index <> 0 then begin
-            // it is a new file
-            new_index := aParsedOutput.Add(TCvsTagEntry.Create(Copy(line, 1, index-1), CopyToEnd(line, index+Length(FILE_IS_NEW))));
-            Log(vlVerbose, TCvsTagEntry(aParsedOutput[new_index]).ToString);
-         end else begin
-            index := Pos(FILE_HAS_CHANGED, line);
-            if index <> 0 then begin
-              // it is modified file
-              fname := Copy(line, 1, index-1);
-              revSeparator := Pos(' to ', line);
-              prevRevision := Copy(line, index + Length(FILE_HAS_CHANGED), revSeparator-(index + Length(FILE_HAS_CHANGED)));
-              // 4 is " to " length
-              revision := CopyToEnd(line, revSeparator + 4);
-              new_index := aParsedOutput.Add(TCvsTagEntry.Create(fname, revision, prevRevision));
-              Log(vlVerbose, TCvsTagEntry(aParsedOutput[new_index]).ToString);
-            end else begin
-              index := Pos(FILE_WAS_REMOVED, line);
-              if index <> 0 then begin
-                // it is a removed file
-                fname := Copy(line, 1, index-1);
-                new_index := aParsedOutput.Add(TCvsTagEntry.Create(fname));
-                Log(vlVerbose, TCvsTagEntry(aParsedOutput[new_index]).ToString);
-              end;
+  Result := False;
+  if Assigned(AParsedOutput) then
+  begin
+    bHeaderLength := 5 + Length(FPackage) + 2;
+    bSL := TStringList.Create;
+    try
+      bSL.LoadFromFile(AOutput);
+      for i := 0 to bSL.Count - 1 do
+      begin
+        bLine := CopyToEnd(bSL[i], bHeaderLength - 1);
+        bIndex := Pos(FILE_IS_NEW, bLine);
+        if bIndex <> 0 then
+        begin
+          // it is a new file
+          bFileName := Copy(bLine, 1, bIndex - 1);
+          bRevision := CopyToEnd(bLine, bIndex + Length(FILE_IS_NEW));
+          bNewIndex := AParsedOutput.Add(TCvsTagEntry.Create(bFileName, bRevision));
+          Log(vlVerbose, TCvsTagEntry(AParsedOutput[bNewIndex]).ToString);
+        end
+        else
+        begin
+          bIndex := Pos(FILE_HAS_CHANGED, bLine);
+          if bIndex <> 0 then
+          begin
+            // it is modified file
+            bFileName := Copy(bLine, 1, bIndex - 1);
+            bRevSeparator := Pos(' to ', bLine);
+            bPrevRevision := Copy(bLine, bIndex + Length(FILE_HAS_CHANGED),
+                                  bRevSeparator - (bIndex +Length(FILE_HAS_CHANGED)));
+            // 4 is " to " length
+            bRevision := CopyToEnd(bLine, bRevSeparator + 4);
+            bNewIndex := AParsedOutput.Add(TCvsTagEntry.Create(bFileName,
+                                                               bRevision,
+                                                               bPrevRevision));
+            Log(vlVerbose, TCvsTagEntry(AParsedOutput[bNewIndex]).ToString);
+          end
+          else
+          begin
+            bIndex := Pos(FILE_WAS_REMOVED, bLine);
+            if bIndex <> 0 then
+            begin
+              // it is a removed file
+              bFileName := Copy(bLine, 1, bIndex - 1);
+              bNewIndex  := AParsedOutput.Add(TCvsTagEntry.Create(bFileName));
+              Log(vlVerbose, TCvsTagEntry(AParsedOutput[bNewIndex]).ToString);
             end;
-         end;
-       end;
-       Result := True;
-     finally
-       SL.Free;
-     end;
+          end;
+        end;
+      end;
+      Result := True;
+    finally
+      bSL.Free;
+    end;
   end;
 end;
 
-procedure TCvsTagDiffTask.WriteTagDiff(
-  const aParsedOutput: TObjectList);
+procedure TCvsTagDiffTask.WriteTagDiff(const AParsedOutput: TObjectList);
 var
-   FS : TFileStream;
-   i : integer;
+  bFS :TFileStream;
+  i   :integer;
 
-   procedure StreamWriteString(const aString : string);
-   var
-      s : string;
-   begin
-      s := WideStringToUTF8(aString);
-      FS.WriteBuffer(s[1], Length(s));
-   end;
+  procedure StreamWriteString(const AString: string);
+  var
+    s: string;
+  begin
+    s := WideStringToUTF8(AString);
+    bFS.WriteBuffer(s[1], Length(s));
+  end;
 begin
-   FS := TFileStream.Create(destfile, fmCreate);
-   try
-     StreamWriteString('<?xml version="1.0" encoding="UTF-8"?>'#13#10);
-     StreamWriteString('<tagdiff ');
-     if fstartTag <> '' then StreamWriteString('starttag="'+fstartTag+'" ')
-                        else StreamWriteString('startdate="'+fstartDate+'" ');
-     if fendTag <> ''   then StreamWriteString('endtag="'+fendTag+'" ')
-                        else StreamWriteString('enddate="'+fendDate+'" ');
-     StreamWriteString('>'#13#10);
-     for i := 0 to aParsedOutput.Count - 1 do begin
-        StreamWriteString(WriteTagEntry(TCvsTagEntry(aParsedOutput[i])));
-     end;
-     StreamWriteString('</tagdiff>'#13#10);
-   finally
-     FS.Free;
-   end;
+  bFS := TFileStream.Create(FDestfile, fmCreate);
+  try
+    StreamWriteString('<?xml version="1.0" encoding="UTF-8"?>'#13#10);
+    StreamWriteString('<tagdiff ');
+    if FStartTag <> '' then StreamWriteString('starttag="' + FStartTag + '" ')
+    else
+      StreamWriteString('startdate="' + FStartDate + '" ');
+    if FEndTag <> '' then StreamWriteString('endtag="' + FEndTag + '" ')
+    else
+      StreamWriteString('enddate="' + FEndDate + '" ');
+    StreamWriteString('>'#13#10);
+    for i := 0 to AParsedOutput.Count - 1 do
+    begin
+      StreamWriteString(WriteTagEntry(TCvsTagEntry(AParsedOutput[i])));
+    end;
+    StreamWriteString('</tagdiff>'#13#10);
+  finally
+    bFS.Free;
+  end;
 end;
 
-function TCvsTagDiffTask.WriteTagEntry(const aEntry: TCvsTagEntry): string;
+function TCvsTagDiffTask.WriteTagEntry(const AEntry: TCvsTagEntry): string;
 begin
-   Result := #9'<entry>'#13#10;
-   Result := Result + #9#9'<file>'#13#10;
-   Result := Result + #9#9#9'<name>'+aEntry.FileName+'</name>'#13#10;
-   if aEntry.Revision <> '' then
-      Result := Result + #9#9#9'<revision>'+aEntry.Revision+'</revision>'#13#10;
-   if aEntry.PrevRevision <> '' then
-      Result := Result + #9#9#9'<prevrevision>'+aEntry.PrevRevision+'</prevrevision>'#13#10;
-   Result := Result + #9#9'</file>'#13#10;
-   Result := Result + #9'</entry>'#13#10;
+  Result := #9'<entry>'#13#10;
+  Result := Result + #9#9'<file>'#13#10;
+  Result := Result + #9#9#9'<name>' + AEntry.FileName + '</name>'#13#10;
+  if AEntry.Revision <> '' then
+    Result := Result + #9#9#9'<revision>' + AEntry.Revision + '</revision>'#13#10;
+  if AEntry.PrevRevision <> '' then
+    Result := Result + #9#9#9'<prevrevision>' + AEntry.PrevRevision
+                     + '</prevrevision>'#13#10;
+  Result := Result + #9#9'</file>'#13#10;
+  Result := Result + #9'</entry>'#13#10;
 end;
 
 { TCvsTagEntry }
 
-constructor TCvsTagEntry.Create(aFileName: TFileName);
+constructor TCvsTagEntry.Create(AFileName: string);
 begin
-  fFileName := aFileName;
-  fPrevRevision := '';
-  fRevision := '';
+  FFileName     := AFileName;
+  FPrevRevision := '';
+  FRevision     := '';
 end;
 
-constructor TCvsTagEntry.Create(aFileName: TFileName;
-  aRevision: string);
+constructor TCvsTagEntry.Create(AFileName, ARevision: string);
 begin
-  fFileName := aFileName;
-  fRevision := aRevision;
-  fPrevRevision := '';
+  FFileName     := AFileName;
+  FRevision     := ARevision;
+  FPrevRevision := '';
 end;
 
-constructor TCvsTagEntry.Create(aFileName: TFileName; aRevision,
-  aPrevRevision: string);
+constructor TCvsTagEntry.Create(AFileName, ARevision, APrevRevision: string);
 begin
-  fFileName := aFileName;
-  fPrevRevision := aPrevRevision;
-  fRevision := aRevision;
+  FFileName     := AFileName;
+  FPrevRevision := APrevRevision;
+  FRevision     := ARevision;
 end;
 
 function TCvsTagEntry.ToString: string;
 begin
-   Result := '';
-   Result := Result + fFileName;
-   if (fRevision = '') and (fPrevRevision = '') then
-      Result := Result + ' was removed'
-   else if (fRevision <> '') and (fPrevRevision = '') then
-      Result := Result + ' is new; current revision is ' + fRevision
-   else if (fRevision <> '') and (fPrevRevision <> '') then
-      Result := Result + ' has changed from ' + fPrevRevision + ' to ' + fRevision;
+  Result := '';
+  Result := Result + FFileName;
+  if (FRevision = '') and (FPrevRevision = '') 
+         then Result := Result + ' was removed'
+  else if (FRevision <> '') and (FPrevRevision = '')
+         then Result := Result + ' is new; current revision is ' + FRevision
+  else if (FRevision <> '') and (FPrevRevision <> '')
+         then Result := Result + ' has changed from ' + FPrevRevision + ' to ' + FRevision;
 end;
 
 { TCvsPassTask }
@@ -794,22 +870,31 @@ end;
 // used in both, MsWindows and Linux
 procedure TCvsPassTask.ChangeCvsPassInHome;
 var
-   bHomeDir : string;
+  bHomeDir: string;
 begin
-  if JclSysInfo.GetEnvironmentVar('HOME', bHomeDir, true)
-     then WritePasswordTo(PathAddSeparator(bHomeDir)+'.cvspass')
-     else Log(vlErrors, 'Cannot determine $HOME direcotry');
+  if JclSysInfo.GetEnvironmentVar('HOME', bHomeDir, True) then
+    WritePasswordTo(PathAddSeparator(bHomeDir) + '.cvspass')
+  else
+    Log(vlErrors, 'Cannot determine $HOME directory');
 end;
 
 {$IFDEF MSWINDOWS}
 procedure TCvsPassTask.ChangeCvsPassInRegistry;
 begin
-  if RegKeyExists(HKEY_CURRENT_USER, 'Software\Cvsnt\cvspass') then begin
-     RegWriteString(HKEY_CURRENT_USER, 'Software\Cvsnt\cvspass', fcvsRoot, ScrambleCvsPassword(fPassword));
-     Log(vlVerbose, 'Password for repository '+fcvsRoot+' stored do registry key HKEY_CURRENT_USER/Software/Cvsnt/cvspass');
-  end else begin
-     Log(vlWarnings, 'Could not find registry key HKEY_CURRENT_USER/Software/Cvsnt/cvspass. Trying $HOME');
-     ChangeCvsPassInhome;
+  if RegKeyExists(HKEY_CURRENT_USER, 'Software\Cvsnt\cvspass') then 
+  begin
+    RegWriteString(HKEY_CURRENT_USER,
+                   'Software\Cvsnt\cvspass',
+                   FCvsRoot,
+                   ScrambleCvsPassword(fPassword));
+    Log(vlVerbose, 'Password for repository '
+                   + FCvsRoot
+                   + ' stored to registry key HKEY_CURRENT_USER/Software/Cvsnt/cvspass');
+  end 
+  else 
+  begin
+    Log(vlWarnings, 'Could not find registry key HKEY_CURRENT_USER/Software/Cvsnt/cvspass. Trying $HOME');
+    ChangeCvsPassInhome;
   end;
 end;
 {$ENDIF}
@@ -824,9 +909,9 @@ begin
 
   // in linux is used ~/.cvspass
   {$IFDEF LINUX}
-     ChangeCvsPassInHome;
+  ChangeCvsPassInHome;
   {$ELSE}
-     ChangeCvsPassInRegistry;
+  ChangeCvsPassInRegistry;
   {$ENDIF}
 end;
 
@@ -835,50 +920,57 @@ begin
   inherited;
   RequireAttribute('cvsroot');
   RequireAttribute('password|emptypassword');
-  if GetAttribute('emptypassword') <> '' then begin
-     if fEmptyPassword then fPassword := ''; 
+  if GetAttribute('emptypassword') <> '' then 
+  begin
+    if FEmptyPassword then FPassword := ''; 
   end;
 end;
 
-function TCvsPassTask.ScrambleCvsPassword(const aPassword: string): string;
+function TCvsPassTask.ScrambleCvsPassword(const APassword: string): string;
 var
-   i : integer;
+  i: integer;
 begin
-   Result := 'A';
-   for i := 1 to Length(aPassword) do begin
-      Result := Result + Chr(shifts[Ord(aPassword[i])]);
-   end;
+  Result := 'A';
+  for i := 1 to Length(APassword) do
+  begin
+    Result := Result + Chr(PSW_SHIFTS[Ord(APassword[i])]);
+  end;
 end;
 
-procedure TCvsPassTask.WritePasswordTo(aFileName: string);
+procedure TCvsPassTask.WritePasswordTo(AFileName: string);
 var
-   SL : TStringList;
-   bExists, bFound  : boolean;
-   i : integer;
+  bSL     : TStringList;
+  bExists : boolean;
+  bFound  : boolean;
+  i       : integer;
 begin
   bExists := False;
-  if FileExists(aFileName) then begin
-     bExists := True;
-     if FileIsReadOnly(aFileName) then begin
-       Log(vlErrors, 'Cannot write to '+aFileName);
-       exit;
-     end;
+  if FileExists(AFileName) then
+  begin
+    bExists := True;
+    if FileIsReadOnly(AFileName) then
+    begin
+      Log(vlErrors, 'Cannot write to ' + AFileName);
+      exit;
+    end;
   end;
-  SL := TStringList.Create;
+  bSL := TStringList.Create;
   try
-    if bExists then SL.LoadFromFile(aFileName);
+    if bExists then bSL.LoadFromFile(AFileName);
     bFound := False;
-    for i := 0 to SL.Count - 1 do begin
-      if Copy(SL[i], 1, Length(fcvsRoot)) = fcvsRoot then begin
-         SL[i] := fcvsRoot + ' ' + ScrambleCvsPassword(fPassword);
-         bFound := true;
-         break;
+    for i := 0 to bSL.Count - 1 do
+    begin
+      if Copy(bSL[i], 1, Length(FCvsRoot)) = FCvsRoot then
+      begin
+        bSL[i] := FCvsRoot + ' ' + ScrambleCvsPassword(FPassword);
+        bFound := True;
+        break;
       end;
     end;
-    if not bFound then SL.Add(fcvsRoot + ' ' + ScrambleCvsPassword(fPassword));
-    SL.SaveToFile(aFileName);
+    if not bFound then bSL.Add(FCvsRoot + ' ' + ScrambleCvsPassword(FPassword));
+    bSL.SaveToFile(AFileName);
   finally
-    SL.Free;
+    bSL.Free;
   end;
 end;
 
@@ -906,109 +998,128 @@ end;
 
 function TCvsChangeLogTask.BuildArgumentsSpecific: string;
 var
-   s : string;
+  s: string;
 begin
-  if fdaysinpast <> '' then begin
-     DateTimeToString(fstart, 'yyyy-mm-dd', Now - StrToInt(fdaysinpast) * 24 * 60 * 60);
-     Log(vlVerbose, 'daysinpast ('+fdaysinpast+') converted to '+fstart);
+  if FDaysInPast <> '' then
+  begin
+    DateTimeToString(FStart, 'yyyy-mm-dd', Now - StrToInt(FDaysInPast));
+    Log(vlVerbose, 'daysinpast (' + FDaysInPast + ') converted to ' + FStart);
   end;
-  if fstart <> '' then begin
-    DateTimeToString(s, 'yyyy-mm-dd', ParseCVSDate(fstart));
-    s := '>='+s;
-    ArgumentList.Add(AddOption('-d', s, true));
-    Log(vlVerbose, 'date'+s);
+  if FStart <> '' then
+  begin
+    DateTimeToString(s, 'yyyy-mm-dd', ParseCVSDate(FStart));
+    s := '>=' + s;
+    ArgumentList.Add(AddOption('-d', s, True));
+    Log(vlVerbose, 'date' + s);
   end;
-  if fdir = '' then fdir := basedir;
+  if FDir = '' then FDir := FBasedir;
   inherited BuildArgumentsSpecific;
 end;
 
-constructor TCvsChangeLogTask.Create(aOwner: TScriptElement);
+constructor TCvsChangeLogTask.Create(AOwner: TScriptElement);
 begin
-   fDateFormat := 'yyyy-mm-dd';
-   fTimeFormat := 'hh:mm';
-   inherited Create(aOwner);
-   fUserList := TList.Create;
+  FDateFormat := 'yyyy-mm-dd';
+  FTimeFormat := 'hh:mm';
+  inherited Create(aOwner);
+  FUserList := TList.Create;
 end;
 
 function TCvsChangeLogTask.CreateUser: TCvsChangeLogUserElement;
 begin
   Result := TCvsChangeLogUserElement.Create(self);
-  fUserList.Add(Result);
+  FUserList.Add(Result);
 end;
 
-function TCvsChangeLogTask.CreateUser(aUserID,
-  aDisplayName: string): TCvsChangeLogUserElement;
+function TCvsChangeLogTask.CreateUser(AUserID,
+  ADisplayName: string): TCvsChangeLogUserElement;
 begin
   Result := TCvsChangeLogUserElement.Create(self);
-  Result.userid := aUserID;
-  Result.displayname := aDisplayName;
-  fUserList.Add(Result);
+  Result.userid := AUserID;
+  Result.displayname := ADisplayName;
+  FUserList.Add(Result);
 end;
 
 destructor TCvsChangeLogTask.Destroy;
 begin
-  fUserList.Free;
+  FUserList.Free;
   inherited;
 end;
 
 procedure TCvsChangeLogTask.Execute;
 var
-   SL : TStringList;
-   i,j : integer;
-   bOldDir : TPath;
-   bEntries : THashedStringList;
+  i         : integer;
+  j         : integer;
+  bSL       : TStringList;
+  bOldDir   : TPath;
+  bEntry    : TCvsEntry;
+  bEntries  : THashedStringList;
 begin
   bOldDir := CurrentDir;
-  if fdir <> '' then begin
-     Log(vlVerbose, 'directory changed to '+dir);
-     ChangeDir(fdir, true);
+  if FDir <> '' then
+  begin
+    ChangeDir(FDir, True);
+    Log(vlDebug, 'directory changed to ' + FDir);
   end;
   output := FileGetTempName('cvs');
   inherited;
   ChangeDir(bOldDir);
-  Log(vlVerbose, 'directory changed back to '+bOldDir);
+  Log(vlDebug, 'directory changed back to ' + bOldDir);
 
   // append to user list from file
-  if fusersfile <> '' then begin
-    if FileExists(fusersfile) then begin
-      SL := TStringList.Create;
+  if FUsersFile <> '' then
+  begin
+    if FileExists(FUsersFile) then
+    begin
+      bSL := TStringList.Create;
       try
-        SL.LoadFromFile(fusersfile);
-        for i := 0 to SL.Count - 1 do begin
-           if SL.Values[SL.Names[i]] <> '' then begin
-              CreateUser(SL.Names[i], SL.Values[SL.Names[i]]);
-           end;
+        bSL.LoadFromFile(FUsersFile);
+        for i := 0 to bSL.Count - 1 do
+        begin
+          if bSL.Values[bSL.Names[i]] <> '' then
+          begin
+            CreateUser(bSL.Names[i], bSL.Values[bSL.Names[i]]);
+          end;
         end;
       finally
-        SL.Free;
+        bSL.Free;
       end;
-    end else Log(vlWarnings, 'Userfile ' + fUsersfile + ' does not exists');
+    end
+    else
+      Log(vlWarnings, 'Userfile ' + fUsersFile + ' does not exists');
   end;
   bEntries := TCvsChangeLogParser.Parse(output);
   DeleteFile(output);
 
   // filter start/end dates and replace username
-  for i := bEntries.Count - 1 downto 0 do begin
-    if fstart <> '' then begin
-       if TCvsEntry(bEntries.Objects[i]).fDate < ParseCVSDate(fStart) then begin
-          bEntries.Delete(i);
-          continue;
-       end;
+  for i := bEntries.Count - 1 downto 0 do
+  begin
+    bEntry := TCvsEntry(bEntries.Objects[i]);
+    if FStart <> '' then
+    begin
+      if bEntry.FDate < ParseCVSDate(FStart) then
+      begin
+        bEntries.Delete(i);
+        continue;
+      end;
     end;
-    if fend <> '' then begin
-       if TCvsEntry(bEntries.Objects[i]).fDate > ParseCVSDate(fend) then begin
-          bEntries.Delete(i);
-          continue;
-       end;
+    if FEnd <> '' then
+    begin
+      if bEntry.FDate > ParseCVSDate(FEnd) then
+      begin
+        bEntries.Delete(i);
+        continue;
+      end;
     end;
-    for j := 0 to fUserList.Count - 1 do begin
-       if TCvsChangeLogUserElement(fUserList[j]).userid = TCvsEntry(bEntries.Objects[i]).fAuthor then begin
-          TCvsEntry(bEntries.Objects[i]).fAuthor := TCvsChangeLogUserElement(fUserList[j]).displayname;
-          break;
-       end;
+    for j := 0 to fUserList.Count - 1 do
+    begin
+      if TCvsChangeLogUserElement(FUserList[j]).userid = bEntry.FAuthor then
+      begin
+        bEntry.FAuthor := TCvsChangeLogUserElement(fUserList[j]).displayname;
+        break;
+      end;
     end;
   end;
-  TCvsChangeLogParser.OutputEntriesToXML(fdestfile, bEntries, fDateFormat, fTimeFormat);
+  TCvsChangeLogParser.OutputEntriesToXML(FDestFile, bEntries, FDateFormat, FTimeFormat);
 end;
 
 procedure TCvsChangeLogTask.Init;
@@ -1019,265 +1130,291 @@ end;
 
 { TRCSFile }
 
-constructor TRCSFile.Create(aName, aRevision: string);
+constructor TRCSFile.Create(AName, ARevision: string);
 begin
-   fFile := aNAme;
-   fRevision := aRevision;
-   fPrevRevision := '';
+  FFile         := AName;
+  FRevision     := ARevision;
+  FPrevRevision := '';
 end;
 
 constructor TRCSFile.Create(aName, aRevision, aPrevRevision: string);
 begin
-   fFile := aName;
-   fRevision := aRevision;
-   fPrevRevision := '';
-   if aRevision <> aPrevRevision then fPrevRevision := aPrevRevision;
+  FFile         := AName;
+  FRevision     := ARevision;
+  FPrevRevision := '';
+  if ARevision <> APrevRevision then FPrevRevision := APrevRevision;
 end;
 
 { TCvsEntry }
 
-procedure TCvsEntry.AddFile(aFile, aRevision, aPreviousRevision: string);
+procedure TCvsEntry.AddFile(AFile, ARevision, APreviousRevision: string);
 begin
-   fFiles.Add(TRCSFile.Create(aFile, aRevision, aPreviousRevision));
+  FFiles.Add(TRCSFile.Create(AFile, ARevision, APreviousRevision));
 end;
 
-procedure TCvsEntry.AddFile(aFile, aRevision: string);
+procedure TCvsEntry.AddFile(AFile, ARevision: string);
 begin
-   fFiles.Add(TRCSFile.Create(aFile, aRevision));
+  FFiles.Add(TRCSFile.Create(AFile, ARevision));
 end;
 
-constructor TCvsEntry.Create(aDate : TDateTime; aAuthor, aComment: string);
+constructor TCvsEntry.Create(ADate: TDateTime; AAuthor, AComment: string);
 begin
-  fDate := aDate;
-  fAuthor := aAuthor;
-  fComment := aComment;
-  fFiles := TObjectList.Create;
+  FDate    := ADate;
+  FAuthor  := AAuthor;
+  FComment := AComment;
+  FFiles   := TObjectList.Create;
 end;
 
 destructor TCvsEntry.Destroy;
 begin
-  fFiles.Free;
+  FFiles.Free;
   inherited;
 end;
 
-function TCvsEntry.OutAsXML(aDateFormat, aTimeFormat : string): string;
+function TCvsEntry.OutAsXML(ADateFormat, ATimeFormat: string): string;
 var
-   i : integer;
-   s, bOutput : string;
-   bRF : TRCSFile;
+  i       : integer;
+  s       : string;
+  bOutput : string;
+  bRF     : TRCSFile;
 
-   function AddLine(aText : string) : string;
-   begin
-      bOutput := bOutput + aText + #13#10;
-   end;
+  function AddLine(AText: string): string;
+  begin
+    bOutput := bOutput + AText + #13#10;
+  end;
 begin
-   bOutput := '';
-   AddLine(#9'<entry>');
-   DateTimeToString(s, aDateFormat, fDate);
-   AddLine(#9#9'<date>' + s + '</date>');
-   DateTimeToString(s, aTimeFormat, fDate);
-   AddLine(#9#9'<time>' + s + '</time>');
-   AddLine(#9#9'<author><![CDATA[' + fAuthor + ']]></author>');
-   for i := 0 to fFiles.Count - 1 do begin
-     bRF := TRCSFile(fFiles[i]);
-     AddLine(#9#9'<file>');
-     AddLine(#9#9#9'<name>' + bRF.FileName + '</name>');
-     AddLine(#9#9#9'<revision>' + bRF.Revision + '</revision>');
-     if bRF.PrevRevision <> '' then begin
-        AddLine(#9#9#9'<prevrevision>' + bRF.PrevRevision + '</prevrevision>');
-     end;
-     AddLine(#9#9'</file>');
-   end;
-   AddLine(#9#9'<msg><![CDATA[' + fComment + ']]></msg>');
-   AddLine(#9'</entry>');
-   Result := bOutput;
+  bOutput := '';
+  AddLine(#9'<entry>');
+  DateTimeToString(s, ADateFormat, FDate);
+  AddLine(#9#9'<date>' + s + '</date>');
+  DateTimeToString(s, ATimeFormat, FDate);
+  AddLine(#9#9'<time>' + s + '</time>');
+  AddLine(#9#9'<author><![CDATA[' + FAuthor + ']]></author>');
+  for i := 0 to FFiles.Count - 1 do
+  begin
+    bRF := TRCSFile(FFiles[i]);
+    AddLine(#9#9'<file>');
+    AddLine(#9#9#9'<name>' + bRF.FileName + '</name>');
+    AddLine(#9#9#9'<revision>' + bRF.Revision + '</revision>');
+    if bRF.PrevRevision <> '' then
+    begin
+      AddLine(#9#9#9'<prevrevision>' + bRF.PrevRevision + '</prevrevision>');
+    end;
+    AddLine(#9#9'</file>');
+  end;
+  AddLine(#9#9'<msg><![CDATA[' + FComment + ']]></msg>');
+  AddLine(#9'</entry>');
+  Result := bOutput;
 end;
 
 { TCvsChangeLogParser }
 
 constructor TCvsChangeLogParser.Create;
 begin
-  fStatus := GET_FILE;
-  fEntries := THashedStringList.Create;
+  FStatus  := GET_FILE;
+  FEntries := THashedStringList.Create;
 end;
 
 destructor TCvsChangeLogParser.Destroy;
 begin
-  fEntries.Free;
+  FEntries.Free;
   inherited;
 end;
 
-class procedure TCvsChangeLogParser.OutputEntriesToXML(aOutputFile : string;
-  aEntries: THashedStringList; aDateFormat, aTimeformat : string);
+class procedure TCvsChangeLogParser.OutputEntriesToXML(AOutputFile: string;
+  AEntries: THashedStringList; ADateFormat, ATimeformat: string);
 var
-   i : integer;
-   FS : TFileStream;
+  i   : integer;
+  bFS : TFileStream;
 
-   procedure StreamWriteString(const aString : string);
-   var
-      s : string;
-   begin
-      s := WideStringToUTF8(aString);
-      FS.WriteBuffer(s[1], Length(s));
-   end;
-begin
-   FS := TFileStream.Create(aOutputFile, fmCreate);
-   try
-     StreamWriteString('<?xml version="1.0" encoding="UTF-8"?>'#13#10);
-     StreamWriteString('<changelog>'#13#10);
-     for i := 0 to aEntries.Count - 1 do begin
-        StreamWriteString(TCvsEntry(aEntries.Objects[i]).OutAsXML(aDateFormat, aTimeFormat));
-     end;
-     StreamWriteString('</changelog>'#13#10);
-   finally
-     FS.Free;
-   end;
-end;
-
-class function TCvsChangeLogParser.Parse(aInputFile : string) : THashedStringList;
-begin
-   with TCvsChangeLogParser.Create do begin
-      ProcessInputFile(aInputfile);
-      Result := fEntries;
-   end;
-end;
-
-procedure TCvsChangeLogParser.processComment(aLine: string);
-var
-   lineSeparator : string;
-   bEnd : integer;
-begin
-   {$IFDEF LINUX}
-     lineSeparator := #$0A;
-   {$ELSE}
-     lineSeparator := #$0D#$0A;
-   {$ENDIF}
-   if Pos('======', aLine) = 1 then begin
-      //We have ended changelog for that particular file
-      //so we can save it
-      bEnd := Length(fComment) - Length(lineSeparator);
-      fComment := Copy(fComment, 1, bEnd);
-      saveEntry;
-      fStatus := GET_FILE;
-   end else if Pos('----------------------------', aLine) = 1 then begin
-      bEnd := Length(fComment) - Length(lineSeparator);
-      fComment := Copy(fComment, 1, bEnd);
-      fStatus := GET_PREVIOUS_REV;
-   end else if Pos('branches:', aLine) = 1 then begin
-      // - this was not in original Ant implementation
-      // ignore this line; continue in Comment parsing
-   end else begin
-      fComment := fComment + aLine + lineSeparator;
-   end;
-end;
-
-procedure TCvsChangeLogParser.processDate(aLine: string);
-var
-   lineData : string;
-begin
-   if Pos('date:', aLine) = 1 then begin
-      fDate := Copy(aLine, 7, 19);
-      lineData := Copy(aLine, Pos(';', aLine)+1, Length(aLine));
-      fAuthor := Copy(lineData, 11, Pos(';', lineData)-11);
-      fStatus := GET_COMMENT;
-      //Reset comment to empty here as we can accumulate multiple lines
-      //in the processComment method
-      fComment := '';
-   end;
-end;
-
-procedure TCvsChangeLogParser.processFile(aLine: string);
-begin
-   if Pos('Working file:', aLine) = 1 then begin
-      fFile := Copy(aLine, 15, Length(aLine));
-      fStatus := GET_REVISION;
-   end;
-end;
-
-procedure TCvsChangeLogParser.processGetPreviousRevision(aLine: string);
-begin
-  if Pos('revision', aLine) = 0 then begin
-     raise Exception.Create('Unexpected line from CVS: ' + aLine);
+  procedure StreamWriteString(const AString: string);
+  var
+    s: string;
+  begin
+    s := WideStringToUTF8(AString);
+    bFS.WriteBuffer(s[1], Length(s));
   end;
-  fPreviousRevision := Copy(aLine, 10, Length(aLine));
-  saveEntry;
-  fRevision := fPreviousRevision;
-  fStatus := GET_DATE;
+begin
+  bFS := TFileStream.Create(AOutputFile, fmCreate);
+  try
+    StreamWriteString('<?xml version="1.0" encoding="UTF-8"?>'#13#10);
+    StreamWriteString('<changelog>'#13#10);
+    for i := 0 to AEntries.Count - 1 do
+    begin
+      StreamWriteString(TCvsEntry(AEntries.Objects[i]).OutAsXML(ADateFormat, ATimeFormat));
+    end;
+    StreamWriteString('</changelog>'#13#10);
+  finally
+    bFS.Free;
+  end;
 end;
 
-procedure TCvsChangeLogParser.ProcessInputFile(aFile: string);
+class function TCvsChangeLogParser.Parse(AInputFile: string): THashedStringList;
+begin
+  with TCvsChangeLogParser.Create do
+  begin
+    ProcessInputFile(AInputfile);
+    Result := FEntries;
+  end;
+end;
+
+procedure TCvsChangeLogParser.ProcessComment(ALine: string);
 var
-   i : integer;
-   SL : TStringList;
+  bLineSeparator : string;
+  bEnd           : integer;
 begin
-   SL := TStringList.Create;
-   try
-     SL.LoadFromFile(aFile);
-     for i := 0 to SL.Count - 1 do begin
-        case fStatus of
-            GET_FILE: begin
-                // make sure attributes are reset when
-                // working on a 'new' file.
-                reset;
-                processFile(SL[i]);
-            end;
-            GET_REVISION: begin
-                processRevision(SL[i]);
-            end;
-            GET_DATE: begin
-                processDate(SL[i]);
-            end;
-            GET_COMMENT: begin
-                processComment(SL[i]);
-            end;
-            GET_PREVIOUS_REV: begin
-                processGetPreviousRevision(SL[i]);
-            end;
-        end;
-     end;
-   finally
-     SL.Free;
-   end;
-
+  {$IFDEF LINUX}
+  bLineSeparator := #$0A;
+  {$ELSE}
+  bLineSeparator := #$0D#$0A;
+  {$ENDIF}
+  if Pos('======', ALine) = 1 then
+  begin
+    //We have ended changelog for that particular file
+    //so we can save it
+    bEnd := Length(FComment) - Length(bLineSeparator);
+    fComment := Copy(FComment, 1, bEnd);
+    SaveEntry;
+    FStatus := GET_FILE;
+  end
+  else if Pos('----------------------------', ALine) = 1 then
+  begin
+    bEnd     := Length(FComment) - Length(bLineSeparator);
+    FComment := Copy(FComment, 1, bEnd);
+    FStatus  := GET_PREVIOUS_REV;
+  end 
+  else if Pos('branches:', ALine) = 1 then
+  begin
+    // "branches" was not in original Ant implementation
+    // ignore "branches" line; continue in Comment parsing
+  end
+  else
+  begin
+    FComment := FComment + ALine + bLineSeparator;
+  end;
 end;
 
-procedure TCvsChangeLogParser.processRevision(aLine: string);
+procedure TCvsChangeLogParser.ProcessDate(ALine: string);
+var
+  bLineData: string;
 begin
-  if Pos('revision', aLine) = 1 then begin
-     fRevision := Copy(aLine, 10, Length(aLine));
-     fStatus := GET_DATE;
-  end else if Pos('======', aLine) = 1 then begin
-     //There was no revisions in this changelog
-     //entry so lets move unto next file
-     fStatus := GET_FILE;
+  if Pos('date:', ALine) = 1 then
+  begin
+    FDate     := Copy(ALine, 7, 19);
+    bLineData := Copy(ALine, Pos(';', ALine) + 1, Length(ALine));
+    FAuthor   := Copy(bLineData, 11, Pos(';', bLineData) - 11);
+    FStatus   := GET_COMMENT;
+    //Reset comment to empty here as we can accumulate multiple lines
+    //in the processComment method
+    FComment := '';
+  end;
+end;
+
+procedure TCvsChangeLogParser.ProcessFile(ALine: string);
+begin
+  if Pos('Working file:', ALine) = 1 then
+  begin
+    FFile   := Copy(ALine, 15, Length(ALine));
+    FStatus := GET_REVISION;
+  end;
+end;
+
+procedure TCvsChangeLogParser.ProcessGetPreviousRevision(ALine: string);
+begin
+  if Pos('revision', ALine) = 0 then
+  begin
+    raise Exception.Create('Unexpected line from CVS: ' + ALine);
+  end;
+  FPreviousRevision := Copy(ALine, 10, Length(ALine));
+  SaveEntry;
+  FRevision := FPreviousRevision;
+  FStatus   := GET_DATE;
+end;
+
+procedure TCvsChangeLogParser.ProcessInputFile(AFile: string);
+var
+  i   : integer;
+  bSL : TStringList;
+begin
+  bSL := TStringList.Create;
+  try
+    bSL.LoadFromFile(AFile);
+    for i := 0 to bSL.Count - 1 do
+    begin
+      case FStatus of
+        GET_FILE:
+          begin
+            // make sure attributes are reset when
+            // working on a 'new' file.
+            Reset;
+            ProcessFile(bSL[i]);
+          end;
+        GET_REVISION: 
+          begin
+            ProcessRevision(bSL[i]);
+          end;
+        GET_DATE:
+          begin
+            ProcessDate(bSL[i]);
+          end;
+        GET_COMMENT:
+          begin
+            ProcessComment(bSL[i]);
+          end;
+        GET_PREVIOUS_REV:
+          begin
+            ProcessGetPreviousRevision(bSL[i]);
+          end;
+      end;
+    end;
+  finally
+    bSL.Free;
+  end;
+end;
+
+procedure TCvsChangeLogParser.ProcessRevision(aLine: string);
+begin
+  if Pos('revision', ALine) = 1 then
+  begin
+    FRevision := Copy(ALine, 10, Length(ALine));
+    FStatus   := GET_DATE;
+  end
+  else if Pos('======', ALine) = 1 then
+  begin
+    //There was no revisions in this changelog
+    //entry so lets move into next file
+    FStatus := GET_FILE;
   end;
 end;
 
 procedure TCvsChangeLogParser.Reset;
 begin
-   fFile := '';
-   fDate := '';
-   fAuthor := '';
-   fComment := '';
-   fRevision := '';
-   fPreviousRevision := '';
+  FFile             := '';
+  FDate             := '';
+  FAuthor           := '';
+  FComment          := '';
+  FRevision         := '';
+  FPreviousRevision := '';
 end;
 
 procedure TCvsChangeLogParser.SaveEntry;
 var
-   bEntryKey : string;
-   bEntry : TCvsEntry;
-   i : integer;
+  i         : integer;
+  bEntryKey : string;
+  bEntry    : TCvsEntry;
 begin
-   bEntryKey := fDate + fAuthor + fComment;
-   i := fEntries.IndexOf(bEntryKey);
-   if i = -1 then begin
-       bEntry := TCvsEntry.Create(ParseCVSDate(fDate), fAuthor, fComment);
-       fEntries.AddObject(bEntryKey, bEntry);
-     end else begin
-       bEntry := TCVSEntry(fEntries.Objects[i]);
-   end;
-   bEntry.AddFile(fFile, fRevision, fPreviousRevision);
+  bEntryKey := FDate + FAuthor + FComment;
+  i := FEntries.IndexOf(bEntryKey);
+  if i = -1 then
+  begin
+    bEntry := TCvsEntry.Create(ParseCVSDate(FDate), FAuthor, FComment);
+    FEntries.AddObject(bEntryKey, bEntry);
+  end
+  else
+  begin
+    bEntry := TCVSEntry(FEntries.Objects[i]);
+  end;
+  bEntry.AddFile(FFile, FRevision, FPreviousRevision);
 end;
 
 { TCvsMostRecentTag }
@@ -1291,43 +1428,38 @@ end;
 function TCvsMostRecentTag.BuildArgumentsSpecific: string;
 begin
   ArgumentList.Add(AddOption('-h')); // headers only
-  ArgumentList.Add(AddOption(fModuleName));
+  ArgumentList.Add(AddOption(FModuleName));
 end;
 
 procedure TCvsMostRecentTag.Execute;
 var
-   SL : TStringList;
-   i : integer;
+  i   : integer;
+  BSL : TStringList;
 begin
-  fMostRecentTag := '';
+  FMostRecentTag := '';
   output := FileGetTempName('cvs');
   inherited;
-  SL := TStringList.Create;
+  bSL := TStringList.Create;
   try
-    SL.LoadFromFile(output);
-    i := SL.IndexOf('symbolic names:');
-    if i <> -1 then begin
-       if SL[i+1][1] = #9 then begin
-         fMostRecentTag := Trim(Copy(SL[i+1], 1, Pos(':', SL[i+1])-1));
-       end;
+    bSL.LoadFromFile(output);
+    i := bSL.IndexOf('symbolic names:');
+    if i <> -1 then
+    begin
+      if bSL[i+1][1] = #9 then
+      begin
+        FMostRecentTag := Trim(Copy(bSL[i+1], 1, Pos(':', bSL[i+1]) - 1));
+      end;
     end;
   finally
-    SL.Free;
+    bSL.Free;
     DeleteFile(output);
   end;
 end;
 
-procedure TCvsMostRecentTag.Init;
-begin
-  inherited;
-end;
-
 initialization
-  RegisterTask(TCvsTask);
-  RegisterTask(TCvsTagDiffTask);
-  RegisterTask(TCvsPassTask);
-  RegisterTask(TCvsChangeLogTask);
-  RegisterElement( TCvsChangeLogTask, TCvsChangeLogUserElement );
+  RegisterTasks([ TCvsTask,
+                  TCvsTagDiffTask,
+                  TCvsPassTask,
+                  TCvsChangeLogTask ]);
+  RegisterElement(TCvsChangeLogTask, TCvsChangeLogUserElement);
 end.
-
-
