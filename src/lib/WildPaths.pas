@@ -556,7 +556,7 @@ var
 begin
   P := nil;
   B := nil;
-  Path     := ToPath(Path);
+  Path     := PathConcat('.', ToPath(Path));
   if not PathIsAbsolute(Path)
   and PathIsAbsolute(BasePath) then
     Result := Path

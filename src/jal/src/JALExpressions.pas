@@ -63,7 +63,7 @@ begin
     Result := expression;
   except
     on e :Exception do
-      raise EExpressionError.CreateFmt('at %d: %s', [getColumnNumber, e.Message]);
+      raise EExpressionError.CreateFmt('at %d %s', [getColumnNumber, e.Message]);
   end;
   if currentChar <> eofch then
     raise EExpressionError.CreateFmt('unexpected character in expression at pos %d: %s',

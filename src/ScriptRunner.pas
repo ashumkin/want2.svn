@@ -197,6 +197,7 @@ begin
       Log(vlDebug, Format('basedir="%s"',   [Project.BaseDir]));
       Log(vlDebug, Format('basepath="%s"',  [Project.BasePath]));
 
+      Project.Configure;
       if Target = '' then
       begin
         if Project._Default <> '' then
@@ -205,7 +206,6 @@ begin
           raise ENoDefaultTargetError.Create('No default target');
       end;
 
-      Project.Configure;
     except
       on e :Exception do
       begin

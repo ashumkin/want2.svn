@@ -27,6 +27,8 @@ uses
   Variants,
   {$ENDIF}
 
+  JCLStrings,
+
   JALStrings,
   JalPaths,
   JALOwnedTrees,
@@ -118,9 +120,8 @@ type
 
 
   TScriptElement = class(TTree)
-  private
-    FBaseDir: TPath;       // where paths for this object are based
   protected
+    FBaseDir: TPath;       // where paths for this object are based
     FLine   : Integer;
     FColumn : Integer;
     
@@ -573,7 +574,7 @@ begin
       with Attributes do
       begin
         for a := 0 to Count-1 do
-          SetDelphiProperty(Names[a], Evaluate(Values[Names[a]]) );
+          SetDelphiProperty(Names[a], Evaluate(Values[Names[a]]));
       end;
 
       ChangeDir(BasePath, false);
@@ -652,7 +653,7 @@ function TScriptElement.SetAttribute(Name, Value: string): boolean;
 begin
   Log(vlDebug, 'attribute %s="%s"', [Name,Value]);
   FAttributes.Values[Name] := Value;
-  Result := SetDelphiProperty(Name, Evaluate(Value));
+  Result := true;
 end;
 
 
@@ -883,19 +884,29 @@ end;
 
 
 function TScriptElement.INIValue(Expre: string): string;
+  function StrExtractAfter(Pat :string; var Val :string):string;
+  var
+    i  :Integer;
+  begin
+    Result := '';
+    i      := StrLastPos(Pat, Val);
+    if i > 0 then
+    begin
+      Result := StrRestOf(Val, i+1);
+      Delete(Val, i, Length(Val));
+    end;
+  end;
 var
-  INIPart,
   FileName,
   Section,
   Key,
   Def       :string;
 begin
-  INIPart := StrToken(Expre, '|');
-  Def      := Expre;
+  Def      := StrExtractAfter('|', Expre);
+  Key      := StrExtractAfter(':', Expre);
+  Section  := StrExtractAfter(':', Expre);
+  FileName := ToAbsolutePath(Expre);
 
-  FileName := ToAbsolutePath(StrToken(INIPart, ':'));
-  Section  := StrToken(INIPart, ':');
-  Key      := INIPart;
   if not PathExists(FileName) or (Section = '') or (Key = '') then
     Result := ''
   else
@@ -916,36 +927,43 @@ function TScriptElement.Evaluate(Value: string): string;
 type
   TMacroExpansion = function(Name: string): string of object;
 
-  function Expand(StartPat, EndPat, Val: string; MacroExpansion:  TMacroExpansion): string;
+  function Expand(MacroStart :Integer; Val: string; MacroExpansion:  TMacroExpansion): string;
   var
-    MacroStart,
     MacroEnd   : Integer;
-    SubPropName: string;
+    Content    : string;
   begin
     Result := Val;
-    MacroStart := StrSearch(StartPat, Result);
-    while MacroStart <> 0 do
+    Result := Copy(Result, 1, MacroStart-1) + Evaluate(Copy(Result, MacroStart+2, Length(Result)));
+    MacroEnd := StrSearch('}', Result, macroStart+1);
+    if MacroEnd > 0  then
     begin
-      Result := Copy(Result, 1, MacroStart+1) + Evaluate(Copy(Result, MacroStart+2, Length(Result)));
-      MacroEnd := StrSearch(EndPat, Result, macroStart+1);
-      if MacroEnd =0  then
-        break
-      else begin
-        SubPropName := Copy(Result, MacroStart+2, -2 + MacroEnd-MacroStart);
-        Delete(Result, MacroStart, 3 + Length(SubPropName));
-        Insert(MacroExpansion(SubPropName), Result, MacroStart);
-        MacroStart := StrSearch(StartPat, Result, macroEnd+1);
-      end;
+      Content := Copy(Result, MacroStart, MacroEnd-MacroStart);
+      Delete(Result, MacroStart, 1 + Length(Content));
+      Insert(MacroExpansion(Content), Result, MacroStart);
     end;
   end;
 
+var
+  MacroStart :Integer;
 begin
   Result := Value;
-  Result := Expand('%{', '}', Result, EnvironmentValue);
-  Result := Expand('${', '}', Result, PropertyValue);
-  Result := Expand('={', '}', Result, ExpressionValue);
-  Result := Expand('?{', '}', Result, INIValue);
-  Result := Expand('@{', '}', Result, PathValue);
+  MacroStart := StrSearch('{', Result)-1;
+  while MacroStart > 0 do
+  begin
+    case Result[MacroStart] of
+      '%':
+          Result := Expand(MacroStart, Result, EnvironmentValue);
+      '$':
+          Result := Expand(MacroStart, Result, PropertyValue);
+      '=':
+          Result := Expand(MacroStart, Result, ExpressionValue);
+      '?':
+          Result := Expand(MacroStart, Result, INIValue);
+      '@':
+          Result := Expand(MacroStart, Result, PathValue);
+    end;
+    MacroStart := StrSearch('{', Result, MacroStart+2)-1;
+  end;
 end;
 
 function TScriptElement.HasDelphiProperty(Name: string): boolean;
