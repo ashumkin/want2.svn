@@ -46,6 +46,19 @@ uses
 type
   EFileOpException = class(Exception);
 
+  TFileAttribute = (
+    ReadOnly,  {= $00000001 }
+    Hidden,    {= $00000002 }
+    SysFile,   {= $00000004 }
+    VolumeID,  {= $00000008 }
+    Directory, {= $00000010 }
+    Archive    {= $00000020 }
+  );
+  TFileAttributes = set of TFileAttribute;
+
+const
+  AnyFileAttribute = [ReadOnly..Archive];
+
 procedure MakeDir(Path :TPath);
 procedure ChangeDir(Path :TPath);
 
@@ -65,6 +78,15 @@ procedure DeleteFiles(Pattern :TPath; BasePath :TPath= '');  overload;
 
 procedure TouchFile(Path :TPath; When :TDateTime = 0); overload;
 procedure TouchFile(Path :TPath; When :string); overload;
+
+function  FileAttributes(Path :TPath):TFileAttributes;
+function  FileTime(Path :TPath) :TDateTime;
+
+function  SystemFileAttributes(Path :TPath) :Byte;
+function  SystemFileTime(Path :TPath) :Longint;
+
+function  TimeToSystemFileTime(const Time :TDateTime):Integer;
+function  FileAttributesToSystemAttributes(const Attr :TFileAttributes):Byte;
 
 implementation
 
@@ -191,5 +213,42 @@ begin
    end;
 end;
 
+function FileAttributes(Path :TPath):TFileAttributes;
+begin
+  Result := TFileAttributes(SystemFileAttributes(ToSystemPath(Path)));
+end;
+
+function  FileTime(Path :TPath) :TDateTime;
+var
+  SystemTime :Longint;
+begin
+  SystemTime := SystemFileTime(Path);
+  if SystemTime <= 0 then
+    Result := 0
+  else
+    Result := FileDateToDateTime(SystemTime);
+end;
+
+function  SystemFileAttributes(Path :TPath) :Byte;
+begin
+  Result := Byte(SysUtils.FileGetAttr(ToSystemPath(Path)));
+end;
+
+function  SystemFileTime(Path :TPath)     :Longint;
+begin
+  Result := SysUtils.FileAge(ToSystemPath(Path));
+  if Result < 0 then
+    Result := 0;
+end;
+
+function  TimeToSystemFileTime(const Time :TDateTime):Integer;
+begin
+  Result := DateTimeToFileDate(Time);
+end;
+
+function  FileAttributesToSystemAttributes(const Attr :TFileAttributes):Byte;
+begin
+  Result := Byte(Attr);
+end;
 
 end.

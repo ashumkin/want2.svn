@@ -170,10 +170,11 @@ end;
 function ToSystemPath(Path: TPath; BasePath :string): string;
 begin
    Result := PathConcat(BasePath, Path);
+   if (Length(Result) >= 1) and (Result[Length(Result)] = '/') then
+     Delete(Result,Length(Result), 1);
    Result := StringReplace(Result, '/', SystemPathDelimiter, [rfReplaceAll]);
    if (Length(Result) >= 3) and (Result[3] = ':') and (Result[1] = '\') then
      Delete(Result,1, 1);
-   Result := ExpandFileName(Result);
 end;
 
 function ToSystemPaths(Paths :TPaths; BasePath :string = '') :TPaths;
@@ -447,16 +448,10 @@ end;
 
 function  SuperPath(Path :TPath) :TPath;
 var
-  Base :TPath;
   p    :Integer;
 begin
-  Base := '';
-  ForceRelativePath(Path, Base);
   p := LastDelimiter('/', path);
-  if p = 0 then
-    raise Exception.Create(Path + ' does not have a super directory')
-  else
-    Result := PathConcat(Base, Copy(Path, 1, p-1));
+  Result := Copy(Path, 1, p-1);
 end;
 
 end.
