@@ -880,25 +880,27 @@ begin
     WantError('property name missing');
   if Value = '' then
     Value := #0;
-  if not PropertyDefined(Name) then
-    Properties.Values[Name] := Value;
+  if Owner<>nil then
+     Owner.SetProperty(Name,Value)
+  else if not PropertyDefined(Name) then
+     Properties.Values[Name] := Value;
 end;
 
 function TScriptElement.PropertyDefined(Name: string): boolean;
 begin
   Assert(Name <> '');
   Result :=   (Properties.IndexOfName(Name) >= 0) and (Trim(Properties.Values[Name]) <> '')
-           or (Owner <> nil) and (Owner.PropertyDefined(Name));
+           or ((Owner <> nil) and (Owner.PropertyDefined(Name)));
 end;
 
 function TScriptElement.PropertyValue(Name: string): string;
 begin
   if Name = '' then
     Result := ''
-  else if Properties.IndexOfName(Name) >= 0 then
-    Result := TrimRight(Evaluate(Properties.Values[Name]))
   else if Owner <> nil then
     Result := Owner.PropertyValue(Name)
+  else if Properties.IndexOfName(Name) >= 0 then
+    Result := TrimRight(Evaluate(Properties.Values[Name]))
   else
     Result := '${' + Name + '}'
 end;
