@@ -1,7 +1,7 @@
 <!--
 ********************************************************************
 *  WANT - A build management tool.                                 *
-*  Copyright (c) 2001 Juancarlo Añez, Caracas, Venezuela.          *
+*  Copyright (c) 2001 Juancarlo Anez, Caracas, Venezuela.          *
 *  All rights reserved.                                            *
 *                                                                  *
 ********************************************************************
@@ -55,10 +55,6 @@ See http://www.suigeneris.org/want/ for details.
   </target>
 
   <target name="compile" depends="clean,prepare">
-    <versioninfo rcfilename="${src}/wantver.rc"
-	              increment="${increment.build}"
-	 />
-	 <echo message="Build number is '${build}'" />
     <brcc file="${src}/wantver.rc" output="${bin}/wantver.res" />
     <brcc file="${src}/license.rc" output="${bin}/license.res" />
 
@@ -132,7 +128,7 @@ See http://www.suigeneris.org/want/ for details.
 
   <target name="dist" depends="clean,prepare,compile,test" >
     <mkdir dir="${dist}" />
-    <property name="zipfile" value="${dist}/want-${version}.${build}.zip" />
+    <property name="zipfile" value="${dist}/want-${version}.zip" />
     <delete file="${zipfile}" />
     <zip zipfile="${zipfile}" >
          <exclude name="${dist}/**" />
