@@ -30,7 +30,7 @@ type
     class procedure ParseProject(Project :TProject; Dom : MiniDom.IDocument);
   public
     class procedure ParseText(Project :TProject; XML: string);
-    class function Parse(Project :TProject; const SystemPath: TSystemPath = ''):TPath;
+    class function Parse(Project :TProject; const Path: TPath = ''):TPath;
   end;
 
 implementation
@@ -145,13 +145,13 @@ begin
 end;
 
 
-class function TScriptParser.Parse(Project: TProject; const SystemPath: TSystemPath):TPath;
+class function TScriptParser.Parse(Project: TProject; const Path: TPath):TPath;
 var
   BuildFile :TPath;
   Dom       :IDocument;
 begin
-  BuildFile := ToPath(ToSystemPath(SystemPath));
-  if SystemPath = '' then
+  BuildFile := ToPath(Path);
+  if Path = '' then
     BuildFile := Project.FindBuildFile(False)
   else
     BuildFile := Project.FindBuildFile(BuildFile, False);

@@ -43,7 +43,6 @@ uses
   ZipStreams in 'lib\ZipStreams.pas',
   OwnedTrees in 'lib\OwnedTrees.pas',
   WildPaths in 'lib\WildPaths.pas',
-  ConsoleLogMgr in 'lib\ConsoleLogMgr.pas',
   ZipTasks in 'tasks\ZipTasks.pas',
   DelphiTasks in 'tasks\DelphiTasks.pas',
   EchoTasks in 'tasks\EchoTasks.pas',
@@ -59,14 +58,15 @@ uses
   RegexpElements in 'elements\RegexpElements.pas',
   StandardElements in 'elements\StandardElements.pas',
   crt32 in 'lib\CRT32.pas',
-  LogMgr in 'lib\LogMgr.pas',
   ScriptParser in 'lib\ScriptParser.pas',
   ScriptFrm in 'forms\ScriptFrm.pas' {ScriptForm},
   ScriptRunner in 'ScriptRunner.pas',
   WantBase in 'WantBase.pas',
   WantClasses in 'WantClasses.pas',
   WantTasks in 'tasks\WantTasks.pas',
-  XPerlRE in 'lib\XPerlRE.pas';
+  XPerlRE in 'lib\XPerlRE.pas',
+  Resources in 'lib\Resources.pas',
+  ConsoleListener in 'lib\ConsoleListener.pas';
 
 {$R wantver.res}
 

@@ -21,8 +21,7 @@ uses
   JclMiscel,
   JclStrings,
 
-  LogMgr,
-  ConsoleLogMgr,
+  ConsoleListener,
   WildPaths,
 
   WantBase,
@@ -45,7 +44,7 @@ type
     procedure DoBuild( ABuildFileName: TPath;
                        Level:      TLogLevel = vlNormal); overload;
 
-    procedure CreateLogManager;
+    procedure CreateListener;
   end;
 
   TConsoleScriptRunner = class(TScriptRunner)
@@ -82,45 +81,44 @@ var
 begin
   if not IsSystemIndependentPath(ABuildFileName) then
     ABuildFileName := ToPath(ABuildFileName);
-  Log('buildfile: ' + ToRelativePath(FindBuildFile(ABuildFileName, False)));
-  Log(Description);
 
   try
-    TScriptParser.Parse(Self, ABuildFileName);
-    if LogManager <> nil then
-      LogManager.Level := Level;
-    try
-      if Length(Targets) = 0 then
-        Build
-      else
-      begin
-        for t := Low(Targets) to High(Targets) do
-          Build(Targets[t]);
-      end;
-    finally
-      Log;
+    ABuildFileName := TScriptParser.Parse(Self, ABuildFileName);
+
+    if Listener <> nil then
+    begin
+      Listener.Level := Level;
+      Listener.BuildFileLoaded(Self, ToRelativePath(ABuildFileName));
     end;
-    Log('Build complete.');
+
+    if Length(Targets) = 0 then
+      Build
+    else
+    begin
+      for t := Low(Targets) to High(Targets) do
+        Build(Targets[t]);
+    end;
   except
+    on e: EWantParseException do
+    begin
+      if Listener <> nil then
+        Listener.BuildFailed(Self, e.Message);
+      raise;
+    end;
+    on e: EWantException do
+      raise;
     on e: Exception do
     begin
-      if e is ETaskException then
-        Log(vlErrors)
-      else if e is EWantException then
-        Log(e.Message, vlErrors)
-      else
-        Log(E.ClassName + ': ' + E.Message, vlErrors);
-      Log;
-      Log('BUILD FAILED','', vlErrors);
+      Log(E.ClassName + ': ' + E.Message, vlErrors);
       raise;
     end;
   end;
 end;
 
 
-procedure TScriptRunner.CreateLogManager;
+procedure TScriptRunner.CreateListener;
 begin
-  LogManager := TConsoleLogManager.Create;
+  Listener := TConsoleListener.Create;
 end;
 
 procedure TScriptRunner.DoBuild(ABuildFileName: TPath; Level: TLogLevel);
@@ -142,12 +140,12 @@ end;
 constructor TConsoleScriptRunner.Create(Owner: TScriptElement);
 begin
   inherited Create(Owner);
-  CreateLogManager;
+  CreateListener;
 end;
 
 destructor TConsoleScriptRunner.Destroy;
 begin
-  FreeAndNil(FLogManager);
+  FreeAndNil(FListener);
   inherited Destroy;
 end;
 
@@ -175,7 +173,7 @@ begin
   else if Switch = '-debug' then
   begin
     Verbosity := vlDebug;
-    LogManager.Level := Verbosity;
+    Listener.Level := Verbosity;
     Log(vlDebug, 'Parsing commandline');
   end
   else if Switch = '-quiet' then
@@ -239,12 +237,12 @@ end;
 
 function TConsoleScriptRunner.GetUseColor: boolean;
 begin
-  Result := TConsoleLogManager(LogManager).UseColor;
+  Result := TConsoleListener(Listener).UseColor;
 end;
 
 procedure TConsoleScriptRunner.SetUseColor(Value: boolean);
 begin
-  TConsoleLogManager(LogManager).UseColor := Value;
+  TConsoleListener(Listener).UseColor := Value;
 end;
 
 

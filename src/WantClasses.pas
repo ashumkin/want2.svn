@@ -22,7 +22,6 @@ uses
   JclSysInfo,
   JclStrings,
   JclFileUtils,
-  LogMgr,
 
   OwnedTrees;
 
@@ -41,25 +40,29 @@ const
 
   LabeledMsgFormat = '%14s %s';
 
-  vlErrors     = LogMgr.vlErrors;
-  vlWarnings   = LogMgr.vlWarnings;
-  vlVeryQuiet  = LogMgr.vlVeryQuiet;
-  vlQuiet      = LogMgr.vlQuiet;
-  vlNormal     = LogMgr.vlNormal;
-  vlVerbose    = LogMgr.vlVerbose;
-  vlDebug      = LogMgr.vlDebug;
+type
+  TLogLevel = ( vlErrors,
+                vlWarnings,
+                vlNormal,
+                vlVerbose,
+                vlDebug     );
+
+const
+  vlVeryQuiet = vlErrors;
+  vlQuiet     = vlWarnings;
 
 type
-  TLogLevel = LogMgr.TLogLevel;
-
   TScriptElement = class;
   TScriptElementClass = class of TScriptElement;
   TScriptElementClassArray = array of TScriptElementClass;
 
-  TProject    = class;
-  TTarget     = class;
-  TTask       = class;
-  TTaskClass  = class of TTask;
+  TProject       = class;
+  TTarget        = class;
+  TTask          = class;
+  TTaskClass     = class of TTask;
+
+  TBuildListener = class;
+
 
   EWantException   = class(Exception);
   EWantError       = class(EWantException);
@@ -117,13 +120,13 @@ type
     function  Log(const Format: string; const Args: array of const; Level: TLogLevel = vlNormal): string; overload;
     function  Log(Level: TLogLevel; const Format: string; const Args: array of const): string; overload;
 
-    procedure Log(Tag: string; Msg: string; Level: TLogLevel = vlNormal);  overload; virtual;
-
     procedure RequireAttribute(Name: string);
     procedure RequireAttributes(Names: array of string);
     procedure AttributeRequiredError(AttName: string);
 
     procedure Init;   virtual;
+
+    function GetListener :TBuildListener;
   public
     constructor Create(Owner: TScriptElement); reintroduce; overload; virtual;
     destructor Destroy; override;
@@ -171,6 +174,8 @@ type
 
     property Children[i :Integer] :TScriptElement read GetChild;
   published
+    property Listener :TBuildListener read GetListener;
+
     property Tag :  string        read TagName stored False;
     property Description: string  read FDescription write FDescription;
 
@@ -187,12 +192,11 @@ type
   protected
     FTargets:       TList;
     FDefaultTarget: string;
-    FVerbosity:      TLogLevel;
+    FVerbosity:     TLogLevel;
     FRootPath:      TPath;  // root for all path calculations
     FRootPathSet:   boolean;
 
-    FLogManager :TLogManager;
-    FOnLog      :TLogMethod;
+    FListener :TBuildListener;
 
     procedure InsertNotification(Child :TTree); override;
     procedure RemoveNotification(Child :TTree); override;
@@ -233,14 +237,14 @@ type
     function  Schedule(Target: string): TTargetArray;
     procedure Build(Target: string = '');      overload; virtual;
 
-    procedure Log(Tag: string; Msg: string; Level: TLogLevel = vlNormal);  override;
+    procedure Log(Msg: string; Level: TLogLevel = vlNormal);  override;
 
     property RootPath: TPath read FRootPath write SetRootPath;
 
     property Targets[i: Integer]: TTarget             read GetTarget; default;
     property TargetNames[TargetName: string]: TTarget read GetTargetByName;
 
-    property LogManager: TLogManager read FLogManager write FLogManager;
+    property Listener: TBuildListener read FListener write FListener;
   published
     function CreateTarget    : TTarget;
 
@@ -254,8 +258,6 @@ type
       write  FVerbosity
       stored False
       default vlNormal;
-
-    property OnLog :TLogMethod read FOnLog write FOnLog;
   end;
 
 
@@ -291,6 +293,7 @@ type
   TTask = class(TScriptElement)
   protected
     procedure DoExecute;
+    procedure TaskFailure(Msg: string = '');
   public
     class function TagName: string; override;
 
@@ -298,10 +301,34 @@ type
     function Target: TTarget;
 
     procedure Execute; virtual;
-    procedure Log(Tag: string; Msg: string; Level: TLogLevel = vlNormal);  override;
-
     property Name stored False;
   published
+  end;
+
+
+  TBuildListener = class
+  protected
+    FLevel        :TLogLevel;
+
+    procedure LogLine(Msg: string; Level: TLogLevel = vlNormal); virtual; abstract;
+  public
+    procedure Log(Level: TLogLevel; Msg: string = '');               overload;
+    procedure Log(Msg: string = ''; Level: TLogLevel = vlNormal);    overload;
+
+    procedure BuildFileLoaded(Project :TProject; FileName :string); virtual;
+
+    procedure BuildStarted(Project :TProject);   virtual;
+    procedure BuildFinished(Project :TProject);  virtual;
+    procedure BuildFailed(Project :TProject; Msg :string = ''); virtual;
+
+    procedure TargetStarted(Target :TTarget);    virtual;
+    procedure TargetFinished(Target :TTarget);   virtual;
+
+    procedure TaskStarted( Task :TTask);         virtual;
+    procedure TaskFinished(Task :TTask);         virtual;
+    procedure TaskFailed(  Task :TTask; Msg :string);  virtual;
+
+    property Level :TLogLevel read FLevel write FLevel;
   end;
 
 
@@ -321,7 +348,6 @@ function  TextToArray(const Text: string; const Delimiter :string = ','): TStrin
 procedure RaiseLastSystemError(Msg: string = '');
 procedure WantError(Msg: string = '');
 procedure TaskError(Msg: string = '');
-procedure TaskFailure(Msg: string = '');
 
 function CallerAddr: Pointer;
 {$IFNDEF DELPHI5_UP}
@@ -430,7 +456,7 @@ end;
 
 procedure RaiseLastSystemError(Msg: string = '');
 begin
-  raise ETaskError.Create(SysErrorMessage(GetLastError) + Msg)
+  raise Exception.Create(SysErrorMessage(GetLastError) + Msg)
 end;
 
 function TextToArray(const Text: string; const Delimiter :string): TStringArray;
@@ -492,11 +518,6 @@ end;
 procedure TaskError(Msg: string);
 begin
    raise ETaskError.Create(Msg + '!' ) at CallerAddr;;
-end;
-
-procedure TaskFailure(Msg: string);
-begin
-   raise ETaskFailure.Create(Msg) //at CallerAddr;
 end;
 
 { TScriptElement }
@@ -737,17 +758,12 @@ end;
 
 procedure TScriptElement.Log(Msg: string; Level: TLogLevel);
 begin
-  Log('', Msg, Level);
+  Project.Log(Msg, Level);
 end;
 
 procedure TScriptElement.Log(Level: TLogLevel; Msg: string);
 begin
   Log(Msg, Level);
-end;
-
-procedure TScriptElement.Log(Tag, Msg: string; Level: TLogLevel);
-begin
-  Owner.Log(Tag, Msg, Level);
 end;
 
 function TScriptElement.Log(const Format: string; const Args: array of const; Level: TLogLevel): string;
@@ -949,6 +965,9 @@ begin
         SetOrdProp(Self, PropInfo, StrToInt(Value))
       else if Kind in [tkEnumeration] then
       begin
+        if Name = 'TLogLevel' then
+          Value := 'vl' + Value;
+          
         if Name <> 'Boolean' then
           SetOrdProp(Self, PropInfo, GetEnumValue(PropType^, Value))
         else
@@ -964,6 +983,11 @@ begin
         Result := False;
     end;
   end;
+end;
+
+function TScriptElement.GetListener: TBuildListener;
+begin
+  Result := Project.Listener;
 end;
 
 { TProject }
@@ -1082,17 +1106,10 @@ begin
   end;
 end;
 
-procedure TProject.Log(Tag, Msg: string; Level: TLogLevel);
+procedure TProject.Log(Msg: string; Level: TLogLevel);
 begin
-  if Assigned(FOnLog) then
-    FOnLog(Tag, Msg, Level)
-  else if LogManager <> nil then
-  begin
-    if Tag <> '' then
-      LogManager.Log(Format('%14s ', [ Tag ]), Msg, Level)
-    else
-      LogManager.Log(Msg, Level);
-  end;
+  if Listener <> nil then
+      Listener.Log(Msg, Level);
 end;
 
 procedure TProject.Build(Target: string = '');
@@ -1101,9 +1118,22 @@ var
   Sched:   TTargetArray;
   LastDir: TPath;
 begin
+  with FProperties do
+  begin
+    if Verbosity >= vlVerbose then
+      Values['verbose'] := 'true'
+    else if PropertyDefined('verbose') then
+      Delete(IndexOfName('verbose'));
+
+    if Verbosity >= vlDebug then
+      Values['debug'] := 'true'
+    else if PropertyDefined('debug') then
+      Delete(IndexOfName('debug'));
+  end;
+
   Log(vlDebug, 'rootpath="%s"',  [RootPath]);
-  Log(vlDebug, 'basepath="%s"', [BasePath]);
-  Log(vlDebug, 'basedir="%s"',  [BaseDir]);
+  Log(vlDebug, 'basepath="%s"',  [BasePath]);
+  Log(vlDebug, 'basedir="%s"',   [BaseDir]);
 
   Sched := nil;
   if Target = '' then
@@ -1123,10 +1153,19 @@ begin
   begin
     LastDir := CurrentDir;
     try
-      for i := Low(Sched) to High(Sched) do
-      begin
-          ChangeDir(BasePath);
-          Sched[i].Build;
+      try
+        if Listener <> nil then Listener.BuildStarted(Self);
+        for i := Low(Sched) to High(Sched) do
+        begin
+            ChangeDir(BasePath);
+            Sched[i].Build;
+        end;
+        if Listener <> nil then
+          Listener.BuildFinished(Self);
+      except
+        if Listener <> nil then
+          Listener.BuildFailed(Self);
+        raise;
       end;
     finally
       ChangeDir(LastDir);
@@ -1256,8 +1295,8 @@ var
   i: Integer;
   LastDir :TPath;
 begin
-  Project.Log;
-  Log(Description);
+  if Listener <> nil then
+    Listener.TargetStarted(Self);
 
   Log(vlDebug, 'basepath="%s"', [BasePath]);
   Log(vlDebug, 'basedir="%s"',  [BaseDir]);
@@ -1265,10 +1304,12 @@ begin
   LastDir := CurrentDir;
   try
     ChangeDir(BasePath);
+
     for i := 0 to TaskCount-1 do
-    begin
       Tasks[i].DoExecute;
-    end;
+
+    if Listener <> nil then
+      Listener.TargetFinished(Self);
   finally
     ChangeDir(LastDir)
   end;
@@ -1325,11 +1366,6 @@ end;
 
 { TTask }
 
-procedure TTask.Log(Tag, Msg: string; Level: TLogLevel);
-begin
-  inherited Log('['+TagName+']'+Tag, Msg, Level);
-end;
-
 function TTask.Target: TTarget;
 begin
   Result := Owner as TTarget;
@@ -1344,6 +1380,9 @@ begin
   if Description <> '' then
     Log(Description);
 
+  if Listener <> nil then
+    Listener.TaskStarted(Self);
+
   Log(vlDebug, 'basepath="%s"', [BasePath]);
   Log(vlDebug, 'basedir="%s"',  [BaseDir]);
 
@@ -1352,20 +1391,16 @@ begin
     try
       ChangeDir(BasePath);
       Execute;
+      if Listener <> nil then
+        Listener.TaskFinished(Self);
     finally
       ChangeDir(LastDir);
     end;
   except
     on e: ETaskException do
-    begin
-      Log(vlErrors, e.Message);
       raise;
-    end;
     on e: Exception do
-    begin
-      Log(vlErrors, e.Message);
       TaskFailure(e.Message);
-    end;
   end;
 end;
 
@@ -1393,9 +1428,87 @@ begin
   // do nothing
 end;
 
+procedure TTask.TaskFailure(Msg: string);
+begin
+  if Listener <> nil then Listener.TaskFailed(Self, Msg);
+  raise ETaskFailure.Create(Msg) //at CallerAddr;
+end;
+
+{ TBuildListener }
+
+procedure TBuildListener.BuildFileLoaded(Project: TProject; FileName: string);
+begin
+
+end;
+
+procedure TBuildListener.BuildStarted(Project: TProject);
+begin
+
+end;
+
+procedure TBuildListener.BuildFinished(Project: TProject);
+begin
+
+end;
+
+procedure TBuildListener.BuildFailed(Project: TProject; Msg :string);
+begin
+
+end;
+
+procedure TBuildListener.TargetStarted(Target: TTarget);
+begin
+
+end;
+
+procedure TBuildListener.TargetFinished(Target: TTarget);
+begin
+
+end;
+
+procedure TBuildListener.TaskStarted(Task: TTask);
+begin
+
+end;
+
+procedure TBuildListener.TaskFinished(Task: TTask);
+begin
+
+end;
+
+procedure TBuildListener.Log(Level: TLogLevel; Msg: string);
+begin
+  Log(Msg, Level);
+end;
+
+procedure TBuildListener.Log(Msg: string; Level: TLogLevel);
+var
+  Lines     :TStringList;
+  i         :Integer;
+begin
+  if (Self.Level >= Level) then
+  begin
+    Lines := TStringList.Create;
+    try
+      Msg := Msg + ' ';
+      Lines.Text := Msg;
+      for i := 0 to Lines.Count-1 do
+        LogLine(Lines[i], Level);
+    finally
+      FreeAndNil(Lines);
+    end;
+  end;
+end;
+
+procedure TBuildListener.TaskFailed(Task: TTask; Msg :string);
+begin
+
+end;
+
 initialization
   __ElementRegistry := nil;
 finalization
   __ElementRegistry := nil;
 end.
+
 

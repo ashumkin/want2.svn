@@ -74,8 +74,7 @@ begin
   inherited Create(Owner);
   FSubProject := TProject.Create(Self);
   FSubProject.RootPath := ToAbsolutePath(Project.RootPath);
-  FSubProject.LogManager := Project.LogManager;
-  FSubProject.OnLog := Self.Log;
+  FSubProject.Listener := Project.Listener;
 end;
 
 destructor TWantTask.Destroy;
