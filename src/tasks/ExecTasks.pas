@@ -97,6 +97,7 @@ type
     procedure Init; override;
     procedure Execute; override;
   published
+    property basedir;
     property Arguments;
     property ArgumentList stored False;
     property Executable;

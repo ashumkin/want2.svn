@@ -52,6 +52,7 @@ var
   i :IIterator;
   child: MiniDom.INode;
   text : MiniDom.ITextNode;
+  s    : string;
 begin
   Result := TStringList.Create;
   try
@@ -61,13 +62,18 @@ begin
       with i.Next as IAttribute do
           Result.Values[Name] := Value;
     end;
+
+    s := '';
     i := Node.Children.Iterator;
     while i.HasNext do
     begin
       child := i.next as INode;
       if 0 = child.QueryInterface(ITextNode, text)  then
-        Result.Values['text'] := Result.Values['text'] + text.text;
+        s := s + text.text;
     end;
+    s := TrimRight(s);
+    if s <> '' then
+       Result.Values['text'] := s;
   except
     FreeAndNil(Result);
     raise;

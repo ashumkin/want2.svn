@@ -77,7 +77,10 @@ end;
 
 procedure TDUnitTask.AddFailure(failure: TTestFailure);
 begin
-  Log(vlWarnings, '- "%s" at %s', [failure.ThrownExceptionMessage, failure.LocationInfo]);
+  Log(vlWarnings, '- "%s" at %s', [ failure.ThrownExceptionMessage,
+                                    PointerToLocationInfo(failure.ThrownExceptionAddress)
+                                    //PointerToAddressInfo(failure.ThrownExceptionAddress)
+                                    ]);
 end;
 
 procedure TDUnitTask.AddSuccess(test: ITest);

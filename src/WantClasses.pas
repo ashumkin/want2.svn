@@ -124,7 +124,6 @@ type
     procedure AttributeRequiredError(AttName: string);
 
     procedure Init;   virtual;
-    procedure Initialize; virtual;
   public
     constructor Create(Owner: TScriptElement); reintroduce; overload; virtual;
     destructor Destroy; override;
@@ -134,6 +133,7 @@ type
     function  Enabled :boolean; virtual;
     procedure SetUp(Name :string; Atts :TStrings); virtual;
     function  SetupChild(ChildName :string; Atts :TStrings):TScriptElement; virtual;
+    procedure Initialize; virtual;
 
     procedure SetProperty(Name, Value: string);          virtual;
     function  PropertyDefined(Name: string): boolean;    virtual;
@@ -644,17 +644,9 @@ end;
 
 function TScriptElement.SetAttribute(Name, Value: string): boolean;
 begin
-  Result := true;
-  if (Name = 'text') then
-  begin
-     if Trim(Value) = '' then
-       EXIT // ignore it
-     else
-       Value := TrimRight(Value);
-  end;
   Log(vlDebug, 'attribute %s="%s"', [Name,Value]);
   FAttributes.Values[Name] := Value;
-  Result := SetDelphiProperty(Name, Value);
+  Result := SetDelphiProperty(Name, Evaluate(Value));
 end;
 
 
@@ -896,7 +888,7 @@ var
   TypeInfo :PTypeInfo;
   PropInfo :PPropInfo;
 begin
-  Result := '';
+  Result := Null;
   TypeInfo := Self.ClassInfo;
   PropInfo := TypInfo.GetPropInfo(Self.ClassInfo, Name);
   if PropINfo = nil then

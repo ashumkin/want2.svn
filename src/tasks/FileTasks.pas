@@ -99,6 +99,7 @@ type
   public
     procedure Init; override;
   published
+    property basedir;
     property todir : string read FToDir  write FToDir;
   end;
 

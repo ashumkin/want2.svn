@@ -9,6 +9,8 @@ uses
 type
   TCustomAttributeElement = class(TScriptElement)
   protected
+    FStrValue :string;
+    
     function  ValueName :string; virtual;
   public
     procedure Init; override;
@@ -47,6 +49,9 @@ procedure TCustomAttributeElement.Init;
 begin
   inherited Init;
   RequireAttribute(ValueName);
+
+  Owner.SetAttribute(Self.TagName, FStrValue);
+  Log(vlVerbose, '%s=%s', [Self.TagName, FStrValue]);
 end;
 
 function TCustomAttributeElement.ValueName: string;
@@ -57,10 +62,10 @@ end;
 function TCustomAttributeElement.SetAttribute(Name, Value: string) :boolean;
 begin
   Result := inherited SetAttribute(Name, Value);
-  if Name = ValueName then
+  if Result and (Name = ValueName) then
   begin
-    Result := Owner.SetAttribute(Self.TagName, Value);
-    Log(vlVerbose, '%s=%s', [Self.TagName, Value]);
+    FStrValue := Value;
+    Result := (Owner <> nil) and not VarIsNull(Owner.GetDelphiProperty(Self.TagName))
   end;
 end;
 
