@@ -99,5 +99,5 @@ end;
 
 initialization
   RegisterElement(TTStampElement);
-  RegisterElement(TFormatElement, TTStampElement);
+  RegisterElement(TTStampElement, TFormatElement);
 end.

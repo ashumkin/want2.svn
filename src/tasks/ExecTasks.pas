@@ -160,7 +160,7 @@ implementation
 
 procedure TExecTask.Execute;
 begin
-  Log(Executable);
+  Log(ToRelativePath(Executable));
   Log(vlVerbose, BuildArguments);
   inherited Execute;
 end;

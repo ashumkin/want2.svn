@@ -71,12 +71,14 @@ implementation
 procedure TEchoTask.Execute;
 var
   EchoFile: System.Text;
+  msg:      string;
 begin
+  msg := _message + FormatText;
   if _file = '' then
-    Log(_message + _text)
+    Log(msg)
   else
   begin
-    Log(SysUtils.Format('echo to "%s"', [_file]));
+    Log(SysUtils.Format('echo to "%s"', [ToRelativePath(_file)]));
     AboutToScratchPath(_file);
 
     System.Assign(EchoFile, ToSystemPath(_file));
@@ -85,7 +87,7 @@ begin
     else
       System.Rewrite(EchoFile);
     try
-      Writeln( EchoFile, _message + FormatText);
+      Writeln( EchoFile, msg);
     finally
       System.Close(EchoFile);
     end;
