@@ -1,3 +1,9 @@
+2002-02-21 14:35  juanco
+
+	* ChangeLog, release.ini, doc/index.html, src/want.dsk,
+	test/WantAcceptTestLib.drc, test/WantTestLib.drc: ready for new
+	release
+
 2002-02-16 21:23  juanco
 
 	* make/bootstrap.bat: minor changes to make bootstrapping work
