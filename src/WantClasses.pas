@@ -37,6 +37,10 @@ unit DanteClasses;
 
 interface
 uses
+  WildPaths,
+  FileOps,
+  FileSets,
+
   SysUtils,
   Classes;
 
@@ -61,6 +65,16 @@ type
 
   TTargetArray = array of TTarget;
 
+  TVerbosityLevel = (
+     vlErrors,
+     vlWarnings,
+     vlVeryQuiet,
+     vlQuiet,
+     vlNormal,
+     vlVerbose,
+     vlDebug
+  );
+
 
   TDanteComponent = class(TComponent)
   protected
@@ -82,12 +96,11 @@ type
 
   TProject = class(TDanteComponent)
   protected
-    FTargets: TList;
+    FTargets:       TList;
     FDefaultTarget: string;
-    FBeQuiet: boolean;
-    // base directory: where the build script was found
-    FBasePath: string;
-    FProperties: TStrings;
+    FVerbosity:     TVerbosityLevel;
+    FBasePath:      string;
+    FProperties:    TStrings;
 
     function  GetTarget(Index: Integer):TTarget;
 
@@ -119,16 +132,16 @@ type
     procedure Build(TargetName :string); overload;
     procedure Build;                     overload;
 
-    procedure Log(Msg :string = '');
+    procedure Log(Msg :string = ''; Verbosity :TVerbosityLevel = vlNormal);
 
     property Targets[i: Integer]: TTarget read GetTarget; default;
     property Names[TargetName :string] :TTarget read GetTargetByName;
     property BasePath :string read FBasePath write FBasePath;
 
   published
-    property DefaultTarget :string read FDefaultTarget write FDefaultTarget;
-    property BeQuiet: boolean read FBeQuiet write FBeQuiet default false;
-    property Properties :TStrings read FProperties write SetProperties;
+    property DefaultTarget: string          read FDefaultTarget  write FDefaultTarget;
+    property Verbosity:     TVerbosityLevel read FVerbosity      write FVerbosity default vlNormal;
+    property Properties:    TStrings        read FProperties     write SetProperties;
   end;
 
   TTarget = class(TDanteComponent)
@@ -146,7 +159,7 @@ type
     function TaskCount: Integer;
     procedure Build;
 
-    procedure Log(Msg :string = '');
+    procedure Log(Msg :string = ''; Verbosity :TVerbosityLevel = vlNormal);
 
     property Tasks[i: Integer]: TTask read GetTask; default;
   published
@@ -163,7 +176,7 @@ type
     function Target :TTarget;
 
     procedure Execute; virtual; abstract;
-    procedure Log(Msg :string = '');
+    procedure Log(Msg :string = ''; Verbosity :TVerbosityLevel = vlNormal);
 
   published
     // Tag is the Name to use for the task in build scripts
@@ -242,6 +255,7 @@ begin
   inherited Create(Owner);
   FTargets    := TList.Create;
   FProperties := TWriteOnceStringList.Create;
+  FVerbosity  := vlNormal;
 end;
 
 destructor TProject.Destroy;
@@ -386,11 +400,12 @@ begin
   end;
 end;
 
-procedure TProject.Log(Msg: string);
+procedure TProject.Log(Msg: string; Verbosity :TVerbosityLevel);
 begin
   // bare bones implementation
   // something smarter can be thought of later
-  writeln(Msg);
+  if Self.Verbosity >= Verbosity then
+    writeln(Msg);
 end;
 
 procedure TProject.Build(TargetName: string);
@@ -408,7 +423,7 @@ begin
   except
     on e :Exception do
     begin
-      Log(Format('%s: %s', [e.ClassName, e.Message]));
+      Log(Format('%s: %s', [e.ClassName, e.Message]), vlErrors);
       raise;
     end;
   end;
@@ -470,9 +485,9 @@ begin
   Result := FTasks[Index];
 end;
 
-procedure TTarget.Log(Msg: string);
+procedure TTarget.Log(Msg: string; Verbosity :TVerbosityLevel);
 begin
-  Project.Log(Format('%s: %s', [Name, Msg]));
+  Project.Log(Format('%s: %s', [Name, Msg]), Verbosity);
 end;
 
 procedure TTarget.Notification(AComponent: TComponent; Operation: TOperation);
@@ -509,9 +524,9 @@ begin
   end;
 end;
 
-procedure TTask.Log(Msg: string);
+procedure TTask.Log(Msg: string; Verbosity :TVerbosityLevel);
 begin
-  Project.Log(Format('%16s %s', ['['+Tag+']', Msg]));
+  Project.Log(Format('%16s %s', ['['+Tag+']', Msg]), Verbosity);
 end;
 
 function TTask.Target: TTarget;
@@ -522,13 +537,17 @@ end;
 procedure TTask.DoExecute;
 begin
   try
-    Execute;
-  except
-    on e :Exception do
-    begin
-      Log(Format('%s: %s', [e.ClassName, e.Message]));
-      raise;
+    try
+      Execute;
+    except
+      on e :Exception do
+      begin
+        Log(Format('%s: %s', [e.ClassName, e.Message]), vlErrors);
+        raise;
+      end;
     end;
+  finally
+    ChangeDir(Project.BasePath);
   end;
 end;
 

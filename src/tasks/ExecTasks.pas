@@ -113,8 +113,7 @@ var
   ExitCode: Cardinal;
 begin
   CmdLine := BuildCmdLine;
-  if not Project.BeQuiet then
-    Log(CmdLine);
+  Log(CmdLine, vlVerbose);
 
   ExitCode := WinExec32AndWait(CmdLine, 0);
 
