@@ -28,11 +28,11 @@ See http://www.suigeneris.org/want/ for details.
 
   <property name="etc"       value="${basedir}/etc" />
   <property name="src"       value="${basedir}/src" />
-  <property name="dist"      value="${basedir}/dist" />
+  <property name="doc"       value="${basedir}/doc" />
+  <property name="dist"      value="${doc}/dist" />
   <property name="res"       value="${basedir}/res" />
   <property name="lib"       value="${basedir}/lib" />
   <property name="test"      value="${basedir}/test" />
-  <property name="doc"       value="${basedir}/doc" />
   <property name="examples"  value="${basedir}/examples" />
 
   <property name="bin" value="${basedir}/bin" />
