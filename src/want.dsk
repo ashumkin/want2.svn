@@ -102,59 +102,56 @@ Visible=1
 State=0
 Left=11
 Top=0
-Width=831
+Width=1013
 Height=169
 MaxLeft=-1
 MaxTop=-1
-ClientWidth=831
+ClientWidth=1013
 ClientHeight=169
 TBDockHeight=169
 LRDockWidth=366
 Dockable=1
 
 [Closed Files]
-File_0=SourceModule,'C:\home\want\src\tasks\WantTasks.pas',0,1,51,1,69,0,0
-File_1=SourceModule,'C:\home\want\src\tasks\ExecTasks.pas',0,1,1,1,10,0,0
-File_2=SourceModule,'C:\home\want\src\lib\ChildProcesses.pas',0,1,1,1,9,0,0
-File_3=SourceModule,'C:\home\want\src\win32\WIN32.pas',0,1,1,1,10,0,0
-File_4=SourceModule,'C:\home\want\src\win32\Win32ChildProcesses.pas',0,1,1,18,16,0,0
-File_5=SourceModule,'C:\home\want\src\win32\Win32Implementations.pas',0,1,1,19,16,0,0
-File_6=SourceModule,'C:\home\want\src\elements\RegexpElements.pas',0,1,46,1,59,0,0
-File_7=SourceModule,'C:\home\want\src\WantBase.pas',0,1,71,1,84,0,0
-File_8=SourceModule,'C:\home\want\src\lib\CRT32.pas',0,1,304,17,317,0,0
-File_9=SourceModule,'C:\home\want\src\tasks\DelphiTasks.pas',0,1,264,48,277,0,0
+File_0=SourceModule,'C:\home\want\src\win32\ConsoleListener.pas',0,1,109,11,123,0,0
+File_1=SourceModule,'C:\home\want\src\win32\ConsoleScriptRunner.pas',0,1,1,1,1,0,0
+File_2=SourceModule,'C:\home\want\src\lib\ScriptParser.pas',0,1,148,1,158,0,0
+File_3=SourceModule,'C:\home\want\test\WantClassesTest.pas',0,1,396,1,413,0,0
+File_4=SourceModule,'C:\home\want\test\RegexpElementsTest.pas',0,1,34,14,43,0,0
+File_5=SourceModule,'C:\home\want\test\ExecTasksTest.pas',0,1,126,21,141,0,0
+File_6=SourceModule,'C:\home\want\test\DelphiTasksTest.pas',0,1,1,41,23,0,0
+File_7=SourceModule,'C:\home\want\src\ConsoleScriptRunner.pas',0,1,10,6,18,0,0
+File_8=SourceModule,'C:\home\want\src\WantClasses.pas',0,1,1062,8,1075,0,0
 
 [Modules]
-Module0=C:\home\want\src\want.dpr
-Module1=C:\home\want\test\WantAcceptTestLib.dpr
-Module2=C:\home\want\src\tasks\StandardTasks.pas
-Module3=C:\home\want\src\WantResources.pas
-Module4=C:\home\want\src\ScriptRunner.pas
-Count=5
+Module0=C:\home\want\test\ExternalTests.pas
+Module1=C:\home\want\test\RunnerTests.pas
+Module2=C:\home\want\src\BuildListeners.pas
+Module3=C:\home\want\src\ScriptRunner.pas
+Count=4
 EditWindowCount=1
 
-[C:\home\want\src\want.dpr]
+[C:\home\want\test\ExternalTests.pas]
 ModuleType=SourceModule
 FormState=0
 FormOnTop=0
 
-[C:\home\want\test\WantAcceptTestLib.dpr]
+[C:\home\want\test\RunnerTests.pas]
 ModuleType=SourceModule
 FormState=0
 FormOnTop=0
 
-[C:\home\want\src\tasks\StandardTasks.pas]
-ModuleType=SourceModule
-FormState=0
-FormOnTop=0
-
-[C:\home\want\src\WantResources.pas]
+[C:\home\want\src\BuildListeners.pas]
 ModuleType=SourceModule
 FormState=0
 FormOnTop=0
 
 [C:\home\want\src\ScriptRunner.pas]
 ModuleType=SourceModule
+FormState=0
+FormOnTop=0
+
+[C:\home\want\src\want.dpr]
 FormState=0
 FormOnTop=0
 
@@ -166,34 +163,39 @@ FormOnTop=0
 FormState=0
 FormOnTop=0
 
+[C:\home\want\test\WantAcceptTestLib.dpr]
+FormState=0
+FormOnTop=0
+
 [EditWindow0]
 CodeExplorer=CodeExplorer@EditWindow0
 MessageView=MessageView@EditWindow0
 Create=1
 Visible=1
-State=0
+State=2
 Left=131
 Top=142
 Width=850
 Height=574
-MaxLeft=-1
-MaxTop=-1
-ClientWidth=842
-ClientHeight=547
+MaxLeft=-4
+MaxTop=117
+MaxWidth=1032
+MaxHeight=627
+ClientWidth=1024
+ClientHeight=600
 LeftPanelSize=0
 LeftPanelClients=CodeExplorer@EditWindow0
 LeftPanelData=00000400010000000C000000436F64654578706C6F7265720000000000000000000000000000000000FFFFFFFF
 RightPanelSize=0
 BottomPanelSize=169
 BottomPanelClients=MessageView@EditWindow0,LocalVarsWindow
-BottomPanelData=00000400010000000B0000004D65737361676556696577A900000000000000014A030000000000000100000000A90000000F0000004C6F63616C5661727357696E646F77FFFFFFFF
-ViewCount=5
-CurrentView=2
+BottomPanelData=00000400010000000B0000004D65737361676556696577A9000000000000000100040000000000000100000000A90000000F0000004C6F63616C5661727357696E646F77FFFFFFFF
+ViewCount=4
+CurrentView=3
 View0=0
 View1=1
 View2=2
 View3=3
-View4=4
 
 [CodeExplorer@EditWindow0]
 Create=1
@@ -217,49 +219,42 @@ Visible=0
 State=0
 Left=11
 Top=0
-Width=831
+Width=1013
 Height=80
 MaxLeft=-1
 MaxTop=-1
-ClientWidth=831
+ClientWidth=1013
 ClientHeight=80
 TBDockHeight=80
 LRDockWidth=443
 Dockable=1
 
 [View0]
-Module=C:\home\want\src\want.dpr
+Module=C:\home\want\src\ScriptRunner.pas
 CursorX=1
-CursorY=47
-TopLine=38
+CursorY=1
+TopLine=1
 LeftCol=1
 
 [View1]
-Module=C:\home\want\src\ScriptRunner.pas
-CursorX=3
-CursorY=30
-TopLine=26
+Module=C:\home\want\src\BuildListeners.pas
+CursorX=1
+CursorY=92
+TopLine=77
 LeftCol=1
 
 [View2]
-Module=C:\home\want\src\WantResources.pas
+Module=C:\home\want\test\RunnerTests.pas
 CursorX=1
-CursorY=8
-TopLine=1
+CursorY=94
+TopLine=70
 LeftCol=1
 
 [View3]
-Module=C:\home\want\src\tasks\StandardTasks.pas
+Module=C:\home\want\test\ExternalTests.pas
 CursorX=1
-CursorY=20
-TopLine=1
-LeftCol=1
-
-[View4]
-Module=C:\home\want\test\WantAcceptTestLib.dpr
-CursorX=1
-CursorY=20
-TopLine=1
+CursorY=206
+TopLine=191
 LeftCol=1
 
 [DockHosts]
@@ -275,8 +270,8 @@ Watch4='FIncludes[i]',256,0,18,1
 
 [Breakpoints]
 Count=2
-Breakpoint0='C:\home\want\src\want.dpr',64,'',0,1
-Breakpoint1='C:\home\want\src\ScriptRunner.pas',213,'',0,1
+Breakpoint0='C:\home\want\src\want.dpr',66,'',0,1
+Breakpoint1='C:\home\want\src\win32\ConsoleScriptRunner.pas',119,'',0,1
 
 [AddressBreakpoints]
 Count=0

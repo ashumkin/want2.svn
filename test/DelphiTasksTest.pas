@@ -80,7 +80,7 @@ begin
   exe := PathConcat(FDelphiTask.exeoutput, 'Want.exe');
   if PathIsFile(exe) then
     DeleteFile(exe);
-  FProject.Build('compile');
+  RunProject('compile');
   Check(PathIsFile(exe), 'Want exe not found');
 end;
 

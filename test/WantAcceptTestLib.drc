@@ -5,6 +5,7 @@
 #define ComConst_SOleError 65332
 #define ComConst_SNoMethod 65333
 #define ComConst_SVarNotObject 65334
+#define WantResources_WantUsageText 65335
 #define Consts_SBitsIndexError 65344
 #define Consts_SInvalidRegType 65345
 #define Consts_SRegCreateFailed 65346
@@ -206,6 +207,7 @@ BEGIN
 	ComConst_SOleError,	"OLE error %.8x"
 	ComConst_SNoMethod,	"Method '%s' not supported by automation object"
 	ComConst_SVarNotObject,	"Variant does not reference an automation object"
+	WantResources_WantUsageText,	"Usage:\r\n  want [options] [target]\r\n\r\nOptions:\r\n  -h, -H, -?          Displays this help text.\r\n  -L                  Displays licensing information.\r\n  -buildfile <file>   Specifies the build file. Default is want.xml\r\n  -Dname=value        Define property \"name\".\r\n  -quiet              Be very quiet. \r\n  -verbose            Be extra verbose.\r\n  -debug              Print debugging information.\r\n  -color              Output to console using color.\r\n"
 	Consts_SBitsIndexError,	"Bits index out of range"
 	Consts_SInvalidRegType,	"Invalid data type for '%s'"
 	Consts_SRegCreateFailed,	"Failed to create key %s"

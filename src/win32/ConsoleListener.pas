@@ -9,7 +9,8 @@ uses
   JclStrings,
 
   CRT32,
-  WantClasses;
+  WantClasses,
+  BuildListeners;
 
 const
   PrefixColorMap :array[TLogLevel] of WORD = (
@@ -31,7 +32,7 @@ const
   DEFAULT_RIGTH_MARGIN = 72;
 
 type
-  TConsoleListener = class(TBuildListener)
+  TConsoleListener = class(TBasicListener)
   protected
     FUseColor     :boolean;
     FRightMargin  :Word;
@@ -116,7 +117,10 @@ begin
       ClrEOL;
       WriteLn;
     finally
-      if UseColor then CRT32.Restore;
+      if UseColor then begin
+        CRT32.Restore;
+        ClrEOL;
+      end;
     end;
   end;
 end;
@@ -144,52 +148,49 @@ begin
   p := Pos(S, FPrefix);
   if p <> 0 then
     Delete(FPrefix, p, Length(S));
+  if Trim(FPrefix) = '' then
+    FPrefix := ''; 
 end;
 
 
 
 procedure TConsoleListener.BuildFileLoaded(Project: TProject; FileName: string);
 begin
-  Log('buildfile: ' + FileName);
+  Log(vlNormal, 'buildfile: ' + FileName);
 end;
 
 procedure TConsoleListener.BuildStarted(Project: TProject);
 begin
-  Log(Project.Description);
+  Log(vlNormal, Project.Description);
 end;
 
 procedure TConsoleListener.BuildFinished(Project: TProject);
 begin
-  FPrefix := '';
-  Log;
-  LogMessage('', 'Build complete.', vlNormal);
+  Log(vlNormal);
+  Log(vlNormal, 'Build complete.');
 end;
 
 procedure TConsoleListener.BuildFailed(Project: TProject; Msg :string);
 begin
-  FPrefix := '';
-  Log(Msg, vlErrors);
+  Log(vlErrors, Msg);
   LogMessage('BUILD FAILED', '', vlErrors);
 end;
 
 procedure TConsoleListener.TargetStarted(Target: TTarget);
 begin
-  FPrefix := '';
-  LogMessage('', Target.Name + ': ' + Target.Description, vlNormal);
-  FPrefix := '     ';
+  Log(vlNormal, Target.Name + ': ' + Target.Description);
 end;
 
 procedure TConsoleListener.TargetFinished(Target: TTarget);
 begin
-  FPrefix := '';
-  Log;
+  Log(vlNormal);
 end;
 
 procedure TConsoleListener.TaskStarted(Task: TTask);
 begin
-  FPrefix := Format('%14s ', [Trim(FPrefix + '[' + Task.TagName + ']') ] );
+  FPrefix := Format('%14s ', [Trim(FPrefix) + '[' + Task.TagName + ']' ] );
   if Task.Description <> '' then
-    Log(Task.Description);
+    Log(vlNormal, Task.Description);
 end;
 
 procedure TConsoleListener.TaskFinished(Task: TTask);
@@ -199,7 +200,7 @@ end;
 
 procedure TConsoleListener.TaskFailed(Task: TTask; Msg: string);
 begin
-  Log(Msg, vlErrors);
+  Log(vlErrors, Msg);
   DeleteTaskPrefix(Task);
 end;
 

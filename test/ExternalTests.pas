@@ -210,12 +210,13 @@ procedure TExternalTest.DoTest;
 var
   Runner: TScriptRunner;
 begin
-  Runner := TScriptRunner.Create;
   {$IFNDEF USE_TEXT_RUNNER}
-     Runner.CreateListener;
+  Runner := TScriptRunner.Create;
+  {$ELSE}
+  Runner := TConsoleScriptRunner.Create;
   {$ENDIF}
   try
-    Runner.DoBuild(PathConcat(SetupPath, BuildFileName), vlVerbose);
+    Runner.Build(PathConcat(SetupPath, BuildFileName), vlVerbose);
   finally
     Runner.Free;
   end;

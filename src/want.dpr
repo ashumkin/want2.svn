@@ -44,7 +44,9 @@ uses
   WantTasks in 'tasks\WantTasks.pas',
   XPerlRE in 'lib\XPerlRE.pas',
   ChildProcesses in 'lib\ChildProcesses.pas',
-  WantResources in 'WantResources.pas';
+  WantResources in 'WantResources.pas',
+  ConsoleScriptRunner in 'win32\ConsoleScriptRunner.pas',
+  BuildListeners in 'BuildListeners.pas';
 
 {$r wantver.res}
 {$r ..\bin\license.res }
@@ -54,7 +56,7 @@ const
 
 procedure Run;
 var
-  Runner :TConsoleScriptRunner;
+  Runner  :TConsoleScriptRunner;
 begin
   try
     Runner := TConsoleScriptRunner.Create;

@@ -86,9 +86,10 @@ end;
 procedure TScriptRunnerTests.Setup;
 begin
   inherited;
-  FRunner := TScriptRunner.Create;
   {$IFNDEF USE_TEXT_RUNNER}
-  FRunner.CreateListener;
+  FRunner := TScriptRunner.Create;
+  {$ELSE}
+  FRunner := TConsoleScriptRunner.Create;
   {$ENDIF}
 
   FBuildFileName := FTestDir + '\build.xml';
@@ -110,7 +111,7 @@ var
 begin
   CurDir := GetCurrentDir;
   MakeTestBuildFile;
-  FRunner.DoBuild(FBuildFileName, vlWarnings);
+  FRunner.Build(FBuildFileName, vlWarnings);
 
   { leaving CurrentDir is important for other tests depend on it, because
     TProject.FRootDir defaults to CurrentDir. }

@@ -21,7 +21,6 @@ uses
   JclSysUtils,
   JclSysInfo,
   JclStrings,
-  JclFileUtils,
 
   OwnedTrees;
 
@@ -61,9 +60,6 @@ type
   TTask          = class;
   TTaskClass     = class of TTask;
 
-  TBuildListener = class;
-
-
   EWantException   = class(Exception);
   EWantError       = class(EWantException);
   ETargetException  = class(EWantException);
@@ -86,11 +82,34 @@ type
 
   TCreateElementMethod = function: TScriptElement of object;
 
+  TBuildListener = class
+  protected
+    FLevel        :TLogLevel;
+  public
+    procedure Log(Level: TLogLevel; Msg: string = '');              virtual; abstract;
+    procedure BuildFileLoaded(Project :TProject; FileName :string); virtual; abstract;
+
+    procedure BuildStarted(Project :TProject);                      virtual; abstract;
+    procedure BuildFinished(Project :TProject);                     virtual; abstract;
+    procedure BuildFailed(Project :TProject; Msg :string = '');     virtual; abstract;
+
+    procedure TargetStarted(Target :TTarget);                       virtual; abstract;
+    procedure TargetFinished(Target :TTarget);                      virtual; abstract;
+
+    procedure TaskStarted( Task :TTask);                            virtual; abstract;
+    procedure TaskFinished(Task :TTask);                            virtual; abstract;
+    procedure TaskFailed(  Task :TTask; Msg :string);               virtual; abstract;
+
+    property Level :TLogLevel read FLevel write FLevel;
+  end;
+
+
   TScriptElement = class(TTree)
+  private
+    FBaseDir: TPath;       // where paths for this object are based
   protected
     FName   : string;
     FId     : string;      // element Id
-    FBaseDir: TPath;       // where paths for this object are based
 
     FProperties:  TStrings;
     FAttributes:  TStrings;
@@ -109,14 +128,13 @@ type
 
     procedure SetID(Value: string); virtual;
 
-    function GetOwner: TScriptElement; reintroduce;
-    function GetProject: TProject;
+    function  GetOwner: TScriptElement; reintroduce;
+    function  GetProject: TProject;
 
     function  GetChildrenTyped(AClass: TScriptElementClass = nil):  TScriptElementArray;
 
-    procedure Log(Msg: string = ''; Level: TLogLevel = vlNormal); overload; virtual;
-    procedure Log(Level: TLogLevel; Msg: string = '');            overload;
-
+    procedure Log(Msg: string = ''; Level: TLogLevel = vlNormal); overload;
+    procedure Log(Level: TLogLevel; Msg: string = '');            overload; virtual;
     function  Log(const Format: string; const Args: array of const; Level: TLogLevel = vlNormal): string; overload;
     function  Log(Level: TLogLevel; const Format: string; const Args: array of const): string; overload;
 
@@ -125,8 +143,6 @@ type
     procedure AttributeRequiredError(AttName: string);
 
     procedure Init;   virtual;
-
-    function GetListener :TBuildListener;
   public
     constructor Create(Owner: TScriptElement); reintroduce; overload; virtual;
     destructor Destroy; override;
@@ -136,7 +152,7 @@ type
     function  Enabled :boolean; virtual;
     procedure SetUp(Name :string; Atts :TStrings); virtual;
     function  SetupChild(ChildName :string; Atts :TStrings):TScriptElement; virtual;
-    procedure Initialize; virtual;
+    procedure Configure; virtual;
 
     procedure SetProperty(Name, Value: string);          virtual;
     function  PropertyDefined(Name: string): boolean;    virtual;
@@ -174,8 +190,6 @@ type
 
     property Children[i :Integer] :TScriptElement read GetChild;
   published
-    property Listener :TBuildListener read GetListener;
-
     property Tag :  string        read TagName stored False;
     property Description: string  read FDescription write FDescription;
 
@@ -192,7 +206,6 @@ type
   protected
     FTargets:       TList;
     FDefaultTarget: string;
-    FVerbosity:     TLogLevel;
     FRootPath:      TPath;  // root for all path calculations
     FRootPathSet:   boolean;
 
@@ -202,13 +215,13 @@ type
     procedure RemoveNotification(Child :TTree); override;
 
     function  GetTarget(Index: Integer):TTarget;
-    procedure BuildSchedule(TargetName: string; Sched: TList);
 
     procedure SetBaseDir(const Value: TPath); override;
     function  GetBaseDir: TPath;              override;
 
     procedure SetRootPath(const Path :TPath);
 
+    procedure BuildSchedule(TargetName: string; Sched: TList);
   public
     constructor Create(Owner: TScriptElement = nil); override;
     destructor  Destroy; override;
@@ -216,10 +229,6 @@ type
     procedure SetInitialBaseDir(Path: TPath);
 
     class function TagName: string; override;
-
-    class function DefaultBuildFileName: TPath;
-    function FindBuildFile(BuildFile: TPath; SearchUp :boolean = False):TPath; overload;
-    function FindBuildFile(SearchUp :boolean= False) :TPath; overload;
 
     function  FindChild(Id: string; ChildClass: TClass = nil): TScriptElement;
 
@@ -230,34 +239,25 @@ type
 
     function  AddTarget(Name: string): TTarget;
     function  TargetCount:  Integer;
+    function  Schedule(Target: string): TTargetArray;
 
     function  GetTargetByName(Name: string):TTarget;
 
-
-    function  Schedule(Target: string): TTargetArray;
-    procedure Build(Target: string = '');      overload; virtual;
-
-    procedure Log(Msg: string; Level: TLogLevel = vlNormal);  override;
+    procedure Log(Level: TLogLevel; Msg: string= '');  override;
 
     property RootPath: TPath read FRootPath write SetRootPath;
 
     property Targets[i: Integer]: TTarget             read GetTarget; default;
     property TargetNames[TargetName: string]: TTarget read GetTargetByName;
 
-    property Listener: TBuildListener read FListener write FListener;
+    property Listener :TBuildListener read FListener write FListener;
   published
     function CreateTarget    : TTarget;
-
 
     property basedir;
 
     property Name stored True;
     property _Default:  string read FDefaultTarget  write FDefaultTarget;
-    property Verbosity:   TLogLevel
-      read   FVerbosity
-      write  FVerbosity
-      stored False
-      default vlNormal;
   end;
 
 
@@ -278,9 +278,6 @@ type
     class function TagName: string; override;
 
     function TaskCount: Integer;
-    procedure Build; virtual;
-
-    procedure Log(Msg: string = ''; Level: TLogLevel = vlNormal);          override;
 
     property Tasks[i: Integer]: TTask read GetTask; default;
   published
@@ -292,43 +289,15 @@ type
 
   TTask = class(TScriptElement)
   protected
-    procedure DoExecute;
     procedure TaskFailure(Msg: string = ''; Addr :Pointer = nil);
   public
     class function TagName: string; override;
 
-    function BasePath: string; override;
-    function Target: TTarget;
+    function  Target: TTarget;
 
     procedure Execute; virtual;
     property Name stored False;
   published
-  end;
-
-
-  TBuildListener = class
-  protected
-    FLevel        :TLogLevel;
-
-    procedure LogLine(Msg: string; Level: TLogLevel = vlNormal); virtual; abstract;
-  public
-    procedure Log(Level: TLogLevel; Msg: string = '');               overload;
-    procedure Log(Msg: string = ''; Level: TLogLevel = vlNormal);    overload;
-
-    procedure BuildFileLoaded(Project :TProject; FileName :string); virtual;
-
-    procedure BuildStarted(Project :TProject);   virtual;
-    procedure BuildFinished(Project :TProject);  virtual;
-    procedure BuildFailed(Project :TProject; Msg :string = ''); virtual;
-
-    procedure TargetStarted(Target :TTarget);    virtual;
-    procedure TargetFinished(Target :TTarget);   virtual;
-
-    procedure TaskStarted( Task :TTask);         virtual;
-    procedure TaskFinished(Task :TTask);         virtual;
-    procedure TaskFailed(  Task :TTask; Msg :string);  virtual;
-
-    property Level :TLogLevel read FLevel write FLevel;
   end;
 
 
@@ -577,7 +546,7 @@ begin
   // do nothing
 end;
 
-procedure TScriptElement.Initialize;
+procedure TScriptElement.Configure;
 var
   a       :Integer;
   i       :Integer;
@@ -594,13 +563,12 @@ begin
     LastDir := CurrentDir;
     ChangeDir(BasePath);
     try
-      Log(vlDebug, 'Init, BasePath ="%s"', [BasePath]);
       ChangeDir(BasePath);
 
       Self.Init;
 
       for i := 0 to ChildCount-1 do
-        Children[i].Initialize;
+        Children[i].Configure;
     finally
       ChangeDir(LastDir);
     end;
@@ -758,12 +726,12 @@ end;
 
 procedure TScriptElement.Log(Msg: string; Level: TLogLevel);
 begin
-  Project.Log(Msg, Level);
+  Log(Level, Msg);
 end;
 
 procedure TScriptElement.Log(Level: TLogLevel; Msg: string);
 begin
-  Log(Msg, Level);
+  Project.Log(Level, Msg);
 end;
 
 function TScriptElement.Log(const Format: string; const Args: array of const; Level: TLogLevel): string;
@@ -985,18 +953,12 @@ begin
   end;
 end;
 
-function TScriptElement.GetListener: TBuildListener;
-begin
-  Result := Project.Listener;
-end;
-
 { TProject }
 
 constructor TProject.Create(Owner: TScriptElement);
 begin
   inherited Create(Owner);
   FTargets    := TList.Create;
-  FVerbosity  := vlNormal;
 
   FRootPath    := CurrentDir;
   FRootPathSet := False;
@@ -1066,123 +1028,11 @@ begin
     WantError(Format('Target "%s" not found',[Name]));
 end;
 
-procedure TProject.BuildSchedule(TargetName: string; Sched: TList);
-var
-  Target:  TTarget;
-  i     :  Integer;
-  Deps  :  TStringArray;
-begin
-  Target := GetTargetByName(TargetName);
-  if Sched.IndexOf(Target) >= 0 then
-    EXIT; // done
-  if not Target.Enabled then
-  begin
-    Log(vlVerbose, 'Skipping disabled target "%s"', [Target.TagName]);
-    EXIT;
-  end;
-
-  Deps := TextToArray(Target.Depends);
-  for i := Low(Deps) to High(Deps) do
-     BuildSchedule(Deps[i], Sched);
-
-  if Sched.IndexOf(Target) >= 0 then
-     raise ECircularTargetDependency.Create(TargetName);
-  Sched.Add(Target);
-end;
-
-function TProject.Schedule(Target: string): TTargetArray;
-var
-  Sched: TList;
-  i    : Integer;
-begin
-  Sched := TList.Create;
-  try
-    BuildSchedule(Target, Sched);
-    SetLength(Result, Sched.Count);
-    for i := 0 to Sched.Count-1 do
-      Result[i] := Sched[i];
-  finally
-    FreeAndNil(Sched);
-  end;
-end;
-
-procedure TProject.Log(Msg: string; Level: TLogLevel);
+procedure TProject.Log(Level: TLogLevel; Msg: string);
 begin
   if Listener <> nil then
-      Listener.Log(Msg, Level);
+    Listener.Log(Level, Msg);
 end;
-
-procedure TProject.Build(Target: string = '');
-var
-  i:       Integer;
-  Sched:   TTargetArray;
-  LastDir: TPath;
-begin
-  if Listener <> nil then
-    Listener.BuildStarted(Self);
-
-  try
-    with FProperties do
-    begin
-      if Verbosity >= vlVerbose then
-        Values['verbose'] := 'true'
-      else if PropertyDefined('verbose') then
-        Delete(IndexOfName('verbose'));
-
-      if Verbosity >= vlDebug then
-        Values['debug'] := 'true'
-      else if PropertyDefined('debug') then
-        Delete(IndexOfName('debug'));
-    end;
-
-    Log(vlDebug, 'rootpath="%s"',  [RootPath]);
-    Log(vlDebug, 'basepath="%s"',  [BasePath]);
-    Log(vlDebug, 'basedir="%s"',   [BaseDir]);
-
-    Sched := nil;
-    if Target = '' then
-    begin
-      if _Default <> '' then
-        Target := _Default
-      else
-        raise ENoDefaultTargetError.Create('No default target');
-    end;
-
-    Initialize;
-    Sched := Schedule(Target);
-
-    if Length(Sched) = 0 then
-      Log(vlWarnings, 'Nothing to build')
-    else
-    begin
-      LastDir := CurrentDir;
-      try
-        for i := Low(Sched) to High(Sched) do
-        begin
-            ChangeDir(BasePath);
-            Sched[i].Build;
-        end;
-      finally
-        ChangeDir(LastDir);
-      end;
-    end;
-    if Listener <> nil then
-      Listener.BuildFinished(Self);
-  except
-    on e :Exception do
-    begin
-      if Listener <> nil then
-        if e is ETaskException then
-          Listener.BuildFailed(Self)
-        else
-          Listener.BuildFailed(Self, e.Message);
-      raise;
-    end;
-  end;
-end;
-
-
-// XML handling
 
 class function TProject.TagName: string;
 begin
@@ -1242,86 +1092,49 @@ begin
 end;
 
 
-class function TProject.DefaultBuildFileName: TPath;
+procedure TProject.BuildSchedule(TargetName: string; Sched: TList);
 var
-  AppName :string;
+  Target:  TTarget;
+  i     :  Integer;
+  Deps  :  TStringArray;
 begin
-  AppName := ExtractFileName(GetModulePath(hInstance));
-  Result  := ChangeFileExt(LowerCase(AppName),'.xml');
-end;
-
-
-function TProject.FindBuildFile(BuildFile: TPath; SearchUp: boolean): TPath;
-var
-  Dir: TPath;
-begin
-  if BuildFile = '' then
-    Result := FindBuildFile(SearchUp)
-  else
+  Target := Project.GetTargetByName(TargetName);
+  if Sched.IndexOf(Target) >= 0 then
+    EXIT; // done
+  if not Target.Enabled then
   begin
-    Result := ToAbsolutePath(BuildFile);
-    Dir    := SuperPath(Result);
-
-    Log(vlDebug, 'Looking for "%s in "%s"', [BuildFile, Dir]);
-    while not PathIsFile(Result)
-    and SearchUp
-    and (Dir <> '')
-    and (Dir <> SuperPath(Dir))
-    do
-    begin
-      if PathIsDir(Dir) then
-      begin
-        Result := PathConcat(Dir, BuildFile);
-        Dir    := SuperPath(Dir);
-        Log(vlDebug, 'Looking for "%s in "%s"', [BuildFile, Dir]);
-      end
-      else
-        break;
-    end;
-
-    if not PathIsFile(Result) then
-      Result := BuildFile;
+    Log(Format('Skipping disabled target "%s"', [Target.TagName]), vlVerbose);
+    EXIT;
   end;
+
+  Deps := TextToArray(Target.Depends);
+  for i := Low(Deps) to High(Deps) do
+     BuildSchedule(Deps[i], Sched);
+
+  if Sched.IndexOf(Target) >= 0 then
+     raise ECircularTargetDependency.Create(TargetName);
+  Sched.Add(Target);
 end;
 
 
-function TProject.FindBuildFile(SearchUp: boolean): TPath;
+function TProject.Schedule(Target: string): TTargetArray;
+var
+  Sched: TList;
+  i    : Integer;
 begin
-  Log(vlDebug, 'Findind buildfile', [Result]);
-  Result := FindBuildFile(DefaultBuildFileName, SearchUp);
-  if not PathIsFile(Result) then
-     Result := FindBuildFile(AntBuildFileName, SearchUp);
-  if not PathIsFile(Result) then
-     Result := DefaultBuildFileName;
+  Sched := TList.Create;
+  try
+    BuildSchedule(Target, Sched);
+    SetLength(Result, Sched.Count);
+    for i := 0 to Sched.Count-1 do
+      Result[i] := Sched[i];
+  finally
+    FreeAndNil(Sched);
+  end;
 end;
 
 
 { TTarget }
-
-procedure TTarget.Build;
-var
-  i: Integer;
-  LastDir :TPath;
-begin
-  if Listener <> nil then
-    Listener.TargetStarted(Self);
-
-  Log(vlDebug, 'basepath="%s"', [BasePath]);
-  Log(vlDebug, 'basedir="%s"',  [BaseDir]);
-
-  LastDir := CurrentDir;
-  try
-    ChangeDir(BasePath);
-
-    for i := 0 to TaskCount-1 do
-      Tasks[i].DoExecute;
-
-    if Listener <> nil then
-      Listener.TargetFinished(Self);
-  finally
-    ChangeDir(LastDir)
-  end;
-end;
 
 constructor TTarget.Create(Owner: TScriptElement);
 begin
@@ -1345,11 +1158,6 @@ end;
 function TTarget.GetTask(Index: Integer): TTask;
 begin
   Result := FTasks[Index];
-end;
-
-procedure TTarget.Log(Msg: string; Level: TLogLevel);
-begin
-  Project.Log(Format('%s: %s', [Name, Msg]), Level);
 end;
 
 function TTarget.TaskCount: Integer;
@@ -1379,53 +1187,10 @@ begin
   Result := Owner as TTarget;
 end;
 
-procedure TTask.DoExecute;
-var
-  LastDir: TPath;
-begin
-  if not Enabled then
-    EXIT;
-  if Listener <> nil then
-    Listener.TaskStarted(Self);
-
-  Log(vlDebug, 'basepath="%s"', [BasePath]);
-  Log(vlDebug, 'basedir="%s"',  [BaseDir]);
-
-  LastDir := CurrentDir;
-  try
-    try
-      ChangeDir(BasePath);
-      Execute;
-      if Listener <> nil then
-        Listener.TaskFinished(Self);
-    finally
-      ChangeDir(LastDir);
-    end;
-  except
-    on e: ETaskException do
-      raise;
-    on e: Exception do
-      TaskFailure(e.Message, ExceptAddr);
-  end;
-end;
-
 class function TTask.TagName: string;
 begin
   Result := SynthesizeTagName('Task');
 end;
-
-
-
-{ TaskRegistry }
-
-function TTask.BasePath: string;
-begin
-  if (Owner = nil) or PathIsAbsolute(BaseDir) then
-    Result := FBaseDir
-  else
-    Result := PathConcat((Owner as TScriptElement).BasePath, BaseDir);
-end;
-
 
 
 procedure TTask.Execute;
@@ -1435,83 +1200,10 @@ end;
 
 procedure TTask.TaskFailure(Msg: string; Addr :Pointer);
 begin
-  if Listener <> nil then
-     Listener.TaskFailed(Self, Msg);
   if Addr <> nil then
     raise ETaskFailure.Create(Msg) at Addr
   else
     raise ETaskFailure.Create(Msg) at CallerAddr;
-end;
-
-{ TBuildListener }
-
-procedure TBuildListener.BuildFileLoaded(Project: TProject; FileName: string);
-begin
-
-end;
-
-procedure TBuildListener.BuildStarted(Project: TProject);
-begin
-
-end;
-
-procedure TBuildListener.BuildFinished(Project: TProject);
-begin
-
-end;
-
-procedure TBuildListener.BuildFailed(Project: TProject; Msg :string);
-begin
-
-end;
-
-procedure TBuildListener.TargetStarted(Target: TTarget);
-begin
-
-end;
-
-procedure TBuildListener.TargetFinished(Target: TTarget);
-begin
-
-end;
-
-procedure TBuildListener.TaskStarted(Task: TTask);
-begin
-
-end;
-
-procedure TBuildListener.TaskFinished(Task: TTask);
-begin
-
-end;
-
-procedure TBuildListener.Log(Level: TLogLevel; Msg: string);
-begin
-  Log(Msg, Level);
-end;
-
-procedure TBuildListener.Log(Msg: string; Level: TLogLevel);
-var
-  Lines     :TStringList;
-  i         :Integer;
-begin
-  if (Self.Level >= Level) then
-  begin
-    Lines := TStringList.Create;
-    try
-      Msg := Msg + ' ';
-      Lines.Text := Msg;
-      for i := 0 to Lines.Count-1 do
-        LogLine(Lines[i], Level);
-    finally
-      FreeAndNil(Lines);
-    end;
-  end;
-end;
-
-procedure TBuildListener.TaskFailed(Task: TTask; Msg :string);
-begin
-
 end;
 
 initialization

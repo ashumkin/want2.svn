@@ -27,6 +27,8 @@ uses
   ExecTasks,
   DelphiTasks,
   ConsoleListener,
+  ScriptRunner,
+  ConsoleScriptRunner,
 
   TestFramework;
 
@@ -41,6 +43,8 @@ type
 
     procedure SetUp;    override;
     procedure TearDown; override;
+
+    procedure RunProject(target :string ='');
   published
   end;
 
@@ -52,6 +56,7 @@ type
     FFileNameInc: Integer;
 
     function MakeSampleTextFile: string;
+
   public
     procedure Setup; override;
     procedure TearDown; override;
@@ -65,6 +70,7 @@ type
   end;
 
   TBuildTests = class(TProjectBaseCase)
+  private
   protected
     procedure BuildProject;
     procedure SetUp; override;
@@ -135,6 +141,19 @@ implementation
 
 
 { TProjectBaseCase }
+
+procedure TProjectBaseCase.RunProject(target: string);
+var
+  Runner :TScriptRunner;
+begin
+  Runner := TConsoleScriptRunner.Create;
+  try
+    Runner.BuildProject(FProject, target);
+  finally
+    Runner.Free;
+  end;
+end;
+
 
 procedure TProjectBaseCase.SetUp;
 begin
@@ -305,7 +324,7 @@ begin
 
    Check(not FileExists(NewFileName), 'file not copied');
 
-   FProject.Build('copy');
+   RunProject('copy');
 
    Check(FileExists(NewFileName), 'file not copied');
  finally
@@ -389,9 +408,9 @@ begin
   P := (FProject.Children[1] as TPropertyElement);
 
   CheckEquals('_${global}_', P.Value);
-  FProject.Initialize;
+  FProject.Configure;
   CheckEquals('_0_', P.Value);
-  FProject.Build;
+  RunProject;
   CheckEquals('_0_', P.Value);
 end;
 
@@ -406,7 +425,7 @@ const
   +'';
 begin
   TScriptParser.ParseText(FProject, build_xml);
-  FProject.Build;
+  RunProject;
 end;
 
 procedure TPropertyTests.TestInvalidPath;
@@ -421,7 +440,7 @@ const
 begin
   try
     TScriptParser.ParseText(FProject, build_xml);
-    FProject.Build;
+    RunProject;
     fail('expected exception about invalid path')
   except
     on e :EWantParseException do

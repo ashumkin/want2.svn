@@ -12,62 +12,61 @@ unit ScriptRunner;
 interface
 
 uses
-  Windows,
   SysUtils,
   Classes,
-  Forms,
-  Math,
 
-  JclSysUtils,
-  JclMiscel,
-  JclStrings,
+  JclFileUtils,
 
-  CRT32,
-
-  ConsoleListener,
   WildPaths,
 
-  WantResources,
   WantClasses,
-  ScriptParser,
+  BuildListeners,
+  ScriptParser;
 
-  StandardElements,
-  StandardTasks,
-  CustomTasks;
 
 type
-  TScriptRunner = class(TProject)
-  public
-    procedure DoBuild( ABuildFileName: TPath;
-                       Targets:    TStringArray;
-                       Level:      TLogLevel = vlNormal); overload;
-    procedure DoBuild( ABuildFileName: TPath;
-                       Target:     string;
-                       Level:      TLogLevel = vlNormal); overload;
-    procedure DoBuild( ABuildFileName: TPath;
-                       Level:      TLogLevel = vlNormal); overload;
-
-    procedure CreateListener;
-  end;
-
-  TConsoleScriptRunner = class(TScriptRunner)
+  TScriptRunner = class
   protected
     FBuildFile   :string;
     FTargets     :TStringArray;
+    FListener    :TBuildListener;
+    FListenerCreated :boolean;
 
-    procedure ParseCommandLine;              virtual;
-    function  ParseOption(Switch :string) :boolean;  virtual;
+    procedure ParseCommandLine(Project :TProject);  virtual;
 
-    function  GetUseColor :boolean;
-    procedure SetUseColor(Value :boolean);
+    function  ParseArgument(Project :TProject; var N :Integer; Argument:string) :boolean;  virtual;
+    function  ParseOption(  Project :TProject; var N :Integer; Switch :string) :boolean;   virtual;
+
+    procedure DoCreateListener;  virtual;
+    procedure CreateListener;    virtual;
+    procedure SetListener(Value :TBuildListener);
+
+    procedure BuildTarget(Target :TTarget);
+    procedure ExecuteTask(Task :TTask);
+
   public
-    constructor Create(Owner :TScriptElement = nil); override;
+    constructor Create;
     destructor  Destroy; override;
 
+    procedure LoadProject(Project :TProject; BuildFile: TPath);
 
-    procedure Execute; virtual;
+    procedure BuildProject(Project :TProject; Target: string = '');   overload;
+    procedure BuildProject(Project :TProject; Targets: TStringArray); overload;
 
-    property  UseColor :Boolean read GetUseColor write SetUseColor;
+    procedure Build(BuildFile: TPath; Targets :TStringArray; Level :TLogLevel = vlNormal); overload;
+    procedure Build(BuildFile: TPath; Target  :string;       Level :TLogLevel = vlNormal); overload;
+    procedure Build(BuildFile: TPath; Level   :TLogLevel = vlNormal); overload;
+
+    procedure Execute;    virtual;
+
+    procedure Log(Level: TLogLevel; Msg: string);
+
+    class function DefaultBuildFileName: TPath;
+    function FindBuildFile(BuildFile: TPath; SearchUp :boolean = False):TPath; overload;
+    function FindBuildFile(SearchUp :boolean= False) :TPath; overload;
+
+    property Listener :TBuildListener read FListener write SetListener;
+    property ListenerCreated :boolean read FListenerCreated;
   end;
 
 implementation
@@ -76,179 +75,307 @@ implementation
 
 { TScriptRunner }
 
-procedure TScriptRunner.DoBuild( ABuildFileName: TPath;
-                          Targets:    TStringArray;
-                          Level:      TLogLevel = vlNormal);
-var
-  t:    Integer;
+constructor TScriptRunner.Create;
 begin
-  if not IsSystemIndependentPath(ABuildFileName) then
-    ABuildFileName := ToPath(ABuildFileName);
+  inherited Create;
+  DoCreateListener;
+end;
 
+destructor TScriptRunner.Destroy;
+begin
+  if ListenerCreated then
+    FreeAndNil(FListener);
+  inherited Destroy;
+end;
+
+procedure TScriptRunner.LoadProject(Project :TProject; BuildFile: TPath);
+begin
+  if not IsSystemIndependentPath(BuildFile) then
+    BuildFile := ToPath(BuildFile);
+  BuildFile := FindBuildFile(BuildFile, False);
+
+  TScriptParser.Parse(Project, BuildFile);
+  Listener.BuildFileLoaded(Project, WildPaths.ToRelativePath(BuildFile, CurrentDir));
+end;
+
+procedure TScriptRunner.Build( BuildFile: TPath;
+                               Targets:    TStringArray;
+                               Level:      TLogLevel = vlNormal);
+var
+  Project :TProject;
+begin
+  Listener.Level := Level;
+  Project := TProject.Create;
   try
-    ABuildFileName := TScriptParser.Parse(Self, ABuildFileName);
-
-    if Listener <> nil then
-    begin
-      Listener.Level := Level;
-      Listener.BuildFileLoaded(Self, WildPaths.ToRelativePath(ToAbsolutePath(ABuildFileName), CurrentDir));
+    Project.Listener := Listener;
+    try
+      LoadProject(Project, BuildFile);
+      BuildProject(Project, Targets);
+    except
+      on e :EWantException do
+        raise;
+      on e :Exception do
+      begin
+        Listener.BuildFailed(Project, e.Message);
+        raise;
+      end;
     end;
-
-    if Length(Targets) = 0 then
-      Build
-    else
-    begin
-      for t := Low(Targets) to High(Targets) do
-        Build(Targets[t]);
-    end;
-  except
-    on e: EWantParseException do
-    begin
-      if Listener <> nil then
-        Listener.BuildFailed(Self, e.Message);
-      raise;
-    end;
-    on e: EWantException do
-      raise;
-    on e: Exception do
-    begin
-      Log(E.ClassName + ': ' + E.Message, vlErrors);
-      raise;
-    end;
+  finally
+    Project.Free;
   end;
 end;
 
 
+procedure TScriptRunner.DoCreateListener;
+begin
+  if Listener = nil then
+  begin
+    CreateListener;
+    FListenerCreated := True;
+  end;
+end;
+
 procedure TScriptRunner.CreateListener;
 begin
-  Listener := TConsoleListener.Create;
+  FListener := TBasicListener.Create;
 end;
 
-procedure TScriptRunner.DoBuild(ABuildFileName: TPath; Level: TLogLevel);
+procedure TScriptRunner.Build(BuildFile: TPath; Level: TLogLevel);
 begin
-  DoBuild(ABuildFileName, nil, Level);
+  Build(BuildFile, nil, Level);
 end;
 
-procedure TScriptRunner.DoBuild(ABuildFileName: TPath; Target: string; Level: TLogLevel);
+procedure TScriptRunner.Build(BuildFile: TPath; Target: string; Level: TLogLevel);
 var
   T :TStringArray;
 begin
   SetLength(T, 1);
   T[0] := Target;
-  DoBuild(ABuildFileName, T, Level);
+  Build(BuildFile, T, Level);
 end;
 
-{ TConsoleScriptRunner }
-
-constructor TConsoleScriptRunner.Create(Owner: TScriptElement);
-begin
-  inherited Create(Owner);
-  CreateListener;
-end;
-
-destructor TConsoleScriptRunner.Destroy;
-begin
-  FreeAndNil(FListener);
-  inherited Destroy;
-end;
-
-procedure TConsoleScriptRunner.Execute;
-begin
-  ParseCommandLine;
-  if FBuildFile = '' then
-    FBuildFile := FindBuildFile(True);
-  DoBuild(FBuildFile, FTargets, Verbosity)
-end;
-
-procedure More(Text :string);
+procedure TScriptRunner.Execute;
 var
-  S :TStrings;
-  i :Integer;
+  Project :TProject;
 begin
-  S := TStringList.Create;
+  Project := TProject.Create;
   try
-    S.Text := Text;
-    i := 0;
-    while i < S.Count do
-    begin
-      if (Pos('---', S[i]) <> 1) then
+    Project.Listener := Listener;
+    ParseCommandLine(Project);
+    if FBuildFile = '' then
+      FBuildFile := FindBuildFile(True);
+    LoadProject(Project, FBuildFile);
+    BuildProject(Project, FTargets);
+  finally
+    FreeAndNil(Project);
+  end;
+end;
+
+procedure TScriptRunner.BuildProject(Project: TProject; Targets: TStringArray);
+var
+  t       :Integer;
+begin
+  if Length(Targets) = 0 then
+    BuildProject(Project)
+  else
+  begin
+    for t := Low(Targets) to High(Targets) do
+      BuildProject(Project, Targets[t]);
+  end;
+end;
+
+procedure TScriptRunner.BuildProject(Project :TProject; Target: string);
+var
+  i:       Integer;
+  Sched:   TTargetArray;
+  LastDir: TPath;
+begin
+  Sched := nil;
+  Listener.BuildStarted(Project);
+  try
+    Sched := nil;
+    Project.Listener := Listener;
+
+    Log(vlVerbose, Format('basedir="%s"',   [Project.RootPath]));
+    Log(vlVerbose, Format('basedir="%s"',   [Project.BaseDir]));
+    Log(vlVerbose, Format('basepath="%s"',  [Project.BasePath]));
+
+    try
+      if Target = '' then
       begin
-        Writeln(S[i]);
-        Inc(i);
-      end
+        if Project._Default <> '' then
+          Target := Project._Default
+        else
+          raise ENoDefaultTargetError.Create('No default target');
+      end;
+
+      Project.Configure;
+      Sched := Project.Schedule(Target);
+
+      if Length(Sched) = 0 then
+        Listener.Log(vlWarnings, 'Nothing to build')
       else
       begin
-        Write(Format('-- More (%d%%) --'#13, [100*(i+2) div S.Count]));
-        Inc(i);
-        repeat until ReadKey in [' ',#13,#10, 'q'];
-        writeln(#13' ': 70);
+        LastDir := CurrentDir;
+        try
+          for i := Low(Sched) to High(Sched) do
+          begin
+              ChangeDir(Project.BasePath);
+              BuildTarget(Sched[i]);
+          end;
+        finally
+          ChangeDir(LastDir);
+        end;
       end;
+      Listener.BuildFinished(Project);
+    finally
+      Project.Listener := nil;
     end;
+  except
+    on e :Exception do
+    begin
+      if e is ETaskException then
+        Listener.BuildFailed(Project)
+      else
+        Listener.BuildFailed(Project, e.Message);
+      raise;
+    end;
+  end;
+end;
+
+procedure TScriptRunner.BuildTarget(Target: TTarget);
+var
+  i: Integer;
+  LastDir :TPath;
+begin
+  if not Target.Enabled then
+    EXIT;
+
+  Listener.TargetStarted(Target);
+
+  Log(vlVerbose, Format('basedir="%s"',   [Target.BaseDir]));
+  Log(vlVerbose, Format('basepath="%s"',  [Target.BasePath]));
+
+  LastDir := CurrentDir;
+  try
+    ChangeDir(Target.BasePath);
+
+    for i := 0 to Target.TaskCount-1 do
+      ExecuteTask(Target.Tasks[i]);
+
+    Listener.TargetFinished(Target);
   finally
-    S.Free;
+    ChangeDir(LastDir)
   end;
 end;
 
 
-function TConsoleScriptRunner.ParseOption(Switch: string):boolean;
+procedure TScriptRunner.ExecuteTask(Task: TTask);
 var
-  PropName:  string;
-  PropValue: string;
-  EqPos:     Integer;
+  LastDir: TPath;
 begin
-  Result := True;
-  if (Switch = 'h')
-  or (Switch = '?')
-  then
-  begin
-    WriteLn(Copyright );
-    Usage;
-    Halt(2);
-  end
-  else if (Switch = 'v')
-  or (Switch = 'version')
-  or (Switch = '-version') then
-  begin
-    WriteLn(Copyright );
-    Halt(2);
-  end
-  else if (Switch = 'L') then
-  begin
-    More(License);
-    Halt(3);
-  end
-  else if Switch = 'verbose' then
-    Verbosity := vlVerbose
-  else if Switch = 'debug' then
-  begin
-    Verbosity := vlDebug;
-    Listener.Level := Verbosity;
-    Log(vlDebug, 'Parsing commandline');
-  end
-  else if Switch = 'quiet' then
-    Verbosity := vlQuiet
-  else if Switch = 'color'then
-    UseColor := True
-  else if StrLeft(Switch, 1) = 'D' then
-  begin
-    Delete(Switch, 1, 1);
+  if not Task.Enabled then
+    EXIT;
+  Listener.TaskStarted(Task);
 
-    EqPos := Pos('=', Switch);
-    if EqPos = 0 then
-       EqPos := 1+Length(Switch);
+  Log(vlVerbose, Format('basedir="%s"',   [Task.BaseDir]));
+  Log(vlVerbose, Format('basepath="%s"',  [Task.BasePath]));
 
-    PropName  := Copy(Switch, 1, EqPos-1);
-    PropValue := Copy(Switch, EqPos+1, Length(Switch));
-
-    PropValue := StrTrimQuotes(PropValue);
-
-    Project.SetProperty(PropName, PropValue);
-  end
-  else
-    Result := False;
+  LastDir := CurrentDir;
+  try
+    try
+      ChangeDir(Task.BasePath);
+      Task.Execute;
+      Listener.TaskFinished(Task);
+    finally
+      ChangeDir(LastDir);
+    end;
+  except
+    on e: Exception do
+    begin
+      Listener.TaskFailed(Task, e.Message);
+      raise;
+    end;
+  end;
 end;
 
-procedure TConsoleScriptRunner.ParseCommandLine;
+
+procedure TScriptRunner.Log(Level: TLogLevel; Msg: string);
+begin
+  Assert(Listener <> nil);
+  Listener.Log(Level, Msg);
+end;
+
+procedure TScriptRunner.SetListener(Value: TBuildListener);
+begin
+  if FListener <> Value then
+  begin
+    if FListenerCreated then
+    begin
+      FListener.Free;
+      FListener := nil;
+    end;
+    FListenerCreated := False;
+    FListener := Value;
+  end;
+end;
+
+class function TScriptRunner.DefaultBuildFileName: TPath;
+var
+  AppName :string;
+begin
+  AppName := ExtractFileName(GetModulePath(hInstance));
+  Result  := ChangeFileExt(LowerCase(AppName),'.xml');
+end;
+
+function TScriptRunner.FindBuildFile(BuildFile: TPath; SearchUp: boolean): TPath;
+var
+  Dir: TPath;
+begin
+  if BuildFile = '' then
+    Result := FindBuildFile(SearchUp)
+  else
+  begin
+    Result := BuildFile;
+    Dir    := SuperPath(Result);
+
+    Log(vlDebug, Format('Looking for "%s in "%s"', [BuildFile, Dir]));
+    while not PathIsFile(Result)
+    and SearchUp
+    and (Dir <> '')
+    and (Dir <> SuperPath(Dir))
+    do
+    begin
+      if PathIsDir(Dir) then
+      begin
+        Result := PathConcat(Dir, BuildFile);
+        Dir    := SuperPath(Dir);
+        Log(vlDebug, Format('Looking for "%s in "%s"', [BuildFile, Dir]));
+      end
+      else
+        break;
+    end;
+
+    if not PathIsFile(Result) then
+      Result := BuildFile;
+  end;
+end;
+
+
+
+function TScriptRunner.FindBuildFile(SearchUp: boolean): TPath;
+begin
+  Log(vlDebug, Format('Findind buildfile', [Result]));
+  Result := FindBuildFile(DefaultBuildFileName, SearchUp);
+  if not PathIsFile(Result) then
+     Result := FindBuildFile(AntBuildFileName, SearchUp);
+  if not PathIsFile(Result) then
+     Result := DefaultBuildFileName;
+end;
+
+
+
+procedure TScriptRunner.ParseCommandLine(Project :TProject);
 var
   p:         Integer;
   Param:     string;
@@ -258,41 +385,44 @@ begin
     while p <= ParamCount do
     begin
       Param := ParamStr(p);
-      if Param = '-buildfile' then
+      if Param[1] in ['-','/'] then
       begin
-        Inc(p);
-        FBuildFile := ToPath(ParamStr(p));
-      end
-      else if Param[1] in ['-','/'] then
-      begin
-        if not ParseOption(Copy(Param, 2, Length(Param))) then
+        if not ParseOption(Project, p, Copy(Param, 2, Length(Param))) then
           WantError('Unknown commandline option: ' + Param);
       end
-      else
-      begin
-        SetLength(FTargets, 1+Length(FTargets));
-        FTargets[High(FTargets)] := Param;
-      end;
+      else if not ParseArgument(Project, p, Param) then
+          WantError('Don''t know what to do with argument : ' + Param);
       Inc(p);
     end;
   except
     on e :Exception do
     begin
-      Log(vlErrors, e.Message);
+      Listener.Log(vlErrors, e.Message);
       raise;
     end;
   end;
 end;
 
-function TConsoleScriptRunner.GetUseColor: boolean;
+
+function TScriptRunner.ParseArgument(Project :TProject; var N: Integer; Argument: string): boolean;
 begin
-  Result := TConsoleListener(Listener).UseColor;
+  SetLength(FTargets, 1+Length(FTargets));
+  FTargets[High(FTargets)] := Argument;
+  Result := True;
 end;
 
-procedure TConsoleScriptRunner.SetUseColor(Value: boolean);
+function TScriptRunner.ParseOption(Project :TProject; var N : Integer;  Switch: string): boolean;
 begin
-  TConsoleListener(Listener).UseColor := Value;
+  Result := True;
+  if Switch = 'buildfile' then
+  begin
+    Inc(N);
+    FBuildFile := ToPath(ParamStr(N));
+  end
+  else
+    Result := False;
 end;
+
 
 
 end.

@@ -30,7 +30,7 @@ type
     class procedure ParseProject(Project :TProject; Dom : MiniDom.IDocument);
   public
     class procedure ParseText(Project :TProject; XML: string);
-    class function Parse(Project :TProject; const Path: TPath = ''):TPath;
+    class procedure Parse(Project :TProject; const Path: TPath = '');
   end;
 
 implementation
@@ -145,26 +145,21 @@ begin
 end;
 
 
-class function TScriptParser.Parse(Project: TProject; const Path: TPath):TPath;
+class procedure TScriptParser.Parse(Project: TProject; const Path: TPath);
 var
   BuildFile :TPath;
   Dom       :IDocument;
 begin
   BuildFile := ToPath(Path);
-  if Path = '' then
-    BuildFile := Project.FindBuildFile(False)
-  else
-    BuildFile := Project.FindBuildFile(BuildFile, False);
 
-  BuildFile := Project.ToAbsolutePath(BuildFile);
   if not PathIsFile(BuildFile) then
     WantError(Format('Cannot find build file "%s"',[BuildFile]));
 
+  BuildFile := Project.ToAbsolutePath(BuildFile);
   Project.RootPath := SuperPath(BuildFile);
   Dom := MiniDom.ParseToDom(ToSystemPath(BuildFile));
   try
     ParseProject(Project, Dom);
-    Result := BuildFile;
   except
     on e :Exception do
     begin

@@ -17,7 +17,7 @@ uses
   JclSysUtils,
 
   WantClasses,
-  ScriptParser,
+  ScriptRunner,
   WildPaths,
   PatternSets;
 
@@ -38,11 +38,8 @@ type
 
   TWantTask = class(TCustomWantTask)
   protected
-    FBuildFile  :string;
-    FDir        :string;
-
+    FBuildFile  :TPath;
     FSubProject :TProject;
-
   public
     constructor Create(Owner: TScriptElement = nil); override;
     destructor  Destroy; override;
@@ -51,16 +48,8 @@ type
     procedure Execute;  override;
   published
     property _target;
-    property buildfile :string read FBuildFile write FBuildFile;
-    property dir       :string read FDir       write FDir;
-  end;
-
-  TWantCallTask = class(TCustomWantTask)
-  public
-    procedure Init; override;
-    procedure Execute;  override;
-  published
-    property _target;
+    property buildfile :TPath read FBuildFile write FBuildFile;
+    property dir       :TPath read GetBaseDir write SetBaseDir;
   end;
 
 
@@ -72,12 +61,13 @@ constructor TWantTask.Create(Owner: TScriptElement);
 begin
   inherited Create(Owner);
   FSubProject := TProject.Create(Self);
-  FSubProject.RootPath := ToAbsolutePath(Project.RootPath);
-  FSubProject.Listener := Project.Listener;
+  FSubProject.Listener := Self.Project.Listener;
+  FSubProject.RootPath := ToAbsolutePath(Self.Project.RootPath);
 end;
 
 destructor TWantTask.Destroy;
 begin
+  FSubProject.Free;
   inherited Destroy;
 end;
 
@@ -91,11 +81,17 @@ end;
 
 procedure TWantTask.Execute;
 var
-  bfile :string;
+  FRunner :TScriptRunner;
 begin
-  bfile := TScriptParser.Parse(FSubProject, buildfile);
-  Log('building "%s"', [ ToRelativePath(bfile) ]);
-  FSubProject.Build(_target);
+  FRunner := TScriptRunner.Create;
+  try
+    FRunner.Listener  := Self.Project.Listener;
+    ChangeDir(BasePath);
+    FRunner.LoadProject(FSubProject, buildfile);
+    FRunner.BuildProject(FSubProject, _target);
+  finally
+    FRunner.Free;
+  end;
 end;
 
 { TSubProjectPropertyElement }
@@ -110,18 +106,6 @@ begin
   (Owner as TWantTask).FSubProject.SetProperty(Name, Value);
 end;
 
-{ TWantCallTask }
-
-procedure TWantCallTask.Init;
-begin
-  RequireAttribute('target');
-end;
-
-procedure TWantCallTask.Execute;
-begin
-  Project.Build(_target);
-end;
-
 initialization
- RegisterTasks([TWantTask,TWantCallTask]);
+ RegisterTasks([TWantTask]);
 end.

@@ -210,7 +210,7 @@ begin
     HandleOutput(Child);
     if (Child.ExitCode <> 0) and FailOnError then
     begin
-      Log(vlVerbose, 'Exit code not zero');
+      Log(vlErrors, 'Exit code not zero');
       TaskFailure('failed');
     end;
   finally

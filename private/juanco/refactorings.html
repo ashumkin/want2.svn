@@ -11,21 +11,19 @@
 
 <body>
 
-<h1>Want Refactorings</h1>
+<h1>Pending Refactorings</h1>
 <pre>$Id$</pre>
-<h2>Running logic</h2>
+<h2>Want Classes</h2>
 <ol>
-  <li>Move TConsoleScriptRunner into its own unit.</li>
-  <li>Move Schedule, Build, DoExecute logic out of WantClasses and into
-    ScriptRunner.</li>
-  <li>Move TBuildListener into its own unit.</li>
-  <li>Make TScriptRunner have a Listener property.</li>
-  <li>Once more, add an OnLog method to TProject, and make ScriptRunner assign
-    to it.</li>
-  <li>Remove references to listeners from WantClasses.</li>
-  <li>Move FindBuildFile logic into TScriptParser/TConsoleScriptRunner.</li>
-  <li>Make ScriptRunner contain rather than be a TProject.</li>
-  <li>Running logic is now factored out of WantClasses.</li>
+  <li>Embed&nbsp; JclStrings routines used by WantClasses into the unit.</li>
+  <li>Remove references to all JCL units from WantClasses.</li>
+  <li>Now WantClasses is independent of third party units.</li>
+</ol>
+<h1>Already Done</h1>
+<h2>Want Classes</h2>
+<ol>
+  <li>Rename WantBase to WantResources.</li>
+  <li>Remove references to WantResources from WantClasses.</li>
 </ol>
 <h2>TChildProcess</h2>
 <ol>
@@ -40,13 +38,16 @@
   <li>Child processes are now abstract and factored out of TExecTasks. Providing
     a linux implementation should become easier.</li>
 </ol>
-<h2>Want Classes</h2>
+<h2>Running logic</h2>
 <ol>
-  <li>Rename WantBase to WantResources.</li>
-  <li>Remove references to WantResources from WantClasses. </li>
-  <li>Embed&nbsp; JclStrings routines used by WantClasses into the unit.</li>
-  <li>Remove references to all JCL units from WantClasses.</li>
-  <li>Now WantClasses is independent of third party units.</li>
+  <li>Move TConsoleScriptRunner into its own unit.</li>
+  <li>Move Schedule, Build, DoExecute logic out of WantClasses and into
+    ScriptRunner.</li>
+  <li>Move TBuildListener into its own unit as TBasicBuildListener.</li>
+  <li>Make TScriptRunner have a Listener property.</li>
+  <li>Move FindBuildFile logic into TConsoleScriptRunner.</li>
+  <li>Make ScriptRunner contain/use rather than be a TProject.</li>
+  <li>Running logic is now factored out of WantClasses.</li>
 </ol>
 
 </body>

@@ -40,7 +40,7 @@ const
   +'';
 begin
   TScriptParser.ParseText(FProject, build_xml);
-  FProject.Build;
+  RunProject;
   CheckEquals('1_2_3', FProject.Targets[0].PropertyValue('subst'));
 end;
 

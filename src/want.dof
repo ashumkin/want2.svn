@@ -49,7 +49,7 @@ Conditionals=USE_JEDI_JCL
 DebugSourceDirs=
 UsePackages=0
 [Parameters]
-RunParams=-v
+RunParams=-buildfile c:\home\dunit\want.xml cmdline -verbose
 HostApplication=
 [Version Info]
 IncludeVerInfo=0
@@ -133,5 +133,6 @@ Item1=..\bin
 Count=1
 Item0=c:\home\dunit\bin\dunit.exe
 [HistoryLists\hlRunParameters]
-Count=1
-Item0=WantAcceptTestLib
+Count=2
+Item0=-buildfile c:\home\dunit\want.xml cmdline -verbose
+Item1=WantAcceptTestLib

@@ -61,7 +61,7 @@ type
 
     FVersionFound :string;
 
-    procedure Log(Msg: string = ''; Level: TLogLevel = vlNormal); overload; override;
+    procedure Log(Level: TLogLevel = vlNormal; Msg: string = ''); overload; override;
 
     function RootForVersion(version: string): string;
     function FindDelphiVersion(ver :string) :string;
@@ -259,12 +259,12 @@ begin
   Result := Format('%s\%s', [DelphiRegRoot, version]);
 end;
 
-procedure TCustomDelphiTask.Log(Msg: string; Level: TLogLevel);
+procedure TCustomDelphiTask.Log( Level: TLogLevel; Msg: string);
 begin
  //if not XPerlre.regex.Match('^(.*\([0-9]+\)) *([A-Z][a-z]+:.*$)', Msg) then
  if (Pos(':', Msg) = 0)
  or not XPerlre.regex.Match('^(.*)(\([0-9]+\)) *([HWEF][a-z]+:.*)$', Msg) then
-   inherited Log(Msg, Level)
+   inherited Log(Level, Msg)
  else
  begin
    if (Pos('Fatal', Msg) <> 0) or  (Pos('Error', Msg) <> 0) then
@@ -274,8 +274,8 @@ begin
 
    with regex do
    begin
-     inherited Log(ToRelativePath(ToPath(SubExp[1].Text)) + ' ' + SubExp[2].Text, Level);
-     inherited Log(regex.SubExp[3].Text, Level);
+     inherited Log(Level, ToRelativePath(ToPath(SubExp[1].Text)) + ' ' + SubExp[2].Text);
+     inherited Log(Level, regex.SubExp[3].Text);
    end;
  end;
 end;

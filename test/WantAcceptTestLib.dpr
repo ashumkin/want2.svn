@@ -11,13 +11,10 @@ library WantAcceptTestLib;
 
 uses
   TestFramework,
-
-  {$IFDEF WIN32}
   Win32Implementations in '..\src\win32\Win32Implementations.pas',
-  {$ENDIF}
-
   RunnerTests,
-  ExternalTests in 'ExternalTests.pas';
+  ExternalTests in 'ExternalTests.pas',
+  ConsoleScriptRunner in '..\src\win32\ConsoleScriptRunner.pas';
 
 {$R *.RES}
 
