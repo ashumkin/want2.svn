@@ -1,3 +1,13 @@
+2002-06-22 04:15  juanco
+
+	* lib/jal-0.1.4.zip: new version of JAL library
+
+2002-06-21 18:39  juanco
+
+	* ChangeLog, release.ini, doc/index.html,
+	src/tasks/DelphiTasks.pas: patch to delphi error message detecting
+	code by Michael A. Johnson
+
 2002-06-11 17:34  juanca
 
 	* lib/jal/src/: JALCollections.pas, JALGeomModels.pas, JalDXF.pas:
