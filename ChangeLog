@@ -1,3 +1,53 @@
+2002-10-27 16:03  juanco
+
+	* release.ini, src/want.dof, src/want.dsk, src/lib/WildPaths.pas:
+	changes in FindPaths so files wihout the Archive bit set are found,
+	and extended wildcards can be used
+
+2002-10-27 15:30  juanco
+
+	* src/: want.cfg, want.dof, want.dsk, tasks/DUnitTasks.pas,
+	tasks/DelphiTasks.pas, win32/WIN32.pas: find delphi and store
+	delphi.version and delphi.dir environment variables for any task to
+	use
+
+2002-10-21 19:02  juanca
+
+	* lib/jal/src/JalXMLGenerator.pas: simple cheap XML generation
+
+2002-10-21 19:02  juanca
+
+	* lib/jal/src/JALCollections.pas: formatting
+
+2002-10-21 16:32  juanca
+
+	* lib/jal/src/JALGeometry.pas: added Integer TPoint3 type
+
+2002-10-21 15:49  juanca
+
+	* lib/jal/src/JALCollections.pas: code formatting, and minor
+	logically equivalent changes
+
+2002-10-21 15:31  juanca
+
+	* lib/jal/src/JALCollections.pas: code formatting
+
+2002-10-13 00:00  juanco
+
+	* release.ini, want.xml, src/lib/ChildProcesses.pas,
+	src/win32/Win32ChildProcesses.pas: default to long strings where
+	appropiate
+
+2002-10-12 23:56  juanco
+
+	* src/tasks/DelphiTasks.pas: default to long strings
+
+2002-10-11 14:38  juanco
+
+	* ChangeLog, release.ini, src/tasks/DelphiTasks.pas,
+	test/WantAcceptTestLib.drc, test/WantTestLib.drc: added longstrings
+	options to <dcc> task
+
 2002-10-10 19:14  juanca
 
 	* lib/jal/: src/JalParse.pas, test/ExpressionTests.pas: fixed
