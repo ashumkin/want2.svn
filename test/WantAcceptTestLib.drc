@@ -8,53 +8,55 @@
   resources were bound to the produced executable.
 */
 
-#define ExtCtrls_clNameInactiveCaption 65264
-#define ExtCtrls_clNameInactiveCaptionText 65265
-#define ExtCtrls_clNameInfoBk 65266
-#define ExtCtrls_clNameInfoText 65267
-#define ExtCtrls_clNameMenu 65268
-#define ExtCtrls_clNameMenuText 65269
-#define ExtCtrls_clNameNone 65270
-#define ExtCtrls_clNameScrollBar 65271
-#define ExtCtrls_clName3DDkShadow 65272
-#define ExtCtrls_clName3DLight 65273
-#define ExtCtrls_clNameWindow 65274
-#define ExtCtrls_clNameWindowFrame 65275
-#define ExtCtrls_clNameWindowText 65276
-#define WinHelpViewer_hNoKeyword 65277
-#define WantResources_WantUsageText 65278
-#define ExtCtrls_clNameCream 65280
-#define ExtCtrls_clNameMedGray 65281
-#define ExtCtrls_clNameActiveBorder 65282
-#define ExtCtrls_clNameActiveCaption 65283
-#define ExtCtrls_clNameAppWorkSpace 65284
-#define ExtCtrls_clNameBackground 65285
-#define ExtCtrls_clNameBtnFace 65286
-#define ExtCtrls_clNameBtnHighlight 65287
-#define ExtCtrls_clNameBtnShadow 65288
-#define ExtCtrls_clNameBtnText 65289
-#define ExtCtrls_clNameCaptionText 65290
-#define ExtCtrls_clNameDefault 65291
-#define ExtCtrls_clNameGrayText 65292
-#define ExtCtrls_clNameHighlight 65293
-#define ExtCtrls_clNameHighlightText 65294
-#define ExtCtrls_clNameInactiveBorder 65295
-#define ExtCtrls_clNameGreen 65296
-#define ExtCtrls_clNameOlive 65297
-#define ExtCtrls_clNameNavy 65298
-#define ExtCtrls_clNamePurple 65299
-#define ExtCtrls_clNameTeal 65300
-#define ExtCtrls_clNameGray 65301
-#define ExtCtrls_clNameSilver 65302
-#define ExtCtrls_clNameRed 65303
-#define ExtCtrls_clNameLime 65304
-#define ExtCtrls_clNameYellow 65305
-#define ExtCtrls_clNameBlue 65306
-#define ExtCtrls_clNameFuchsia 65307
-#define ExtCtrls_clNameAqua 65308
-#define ExtCtrls_clNameWhite 65309
-#define ExtCtrls_clNameMoneyGreen 65310
-#define ExtCtrls_clNameSkyBlue 65311
+#define WantResources_WantUsageText 65248
+#define ExtCtrls_clNameHighlightText 65264
+#define ExtCtrls_clNameInactiveBorder 65265
+#define ExtCtrls_clNameInactiveCaption 65266
+#define ExtCtrls_clNameInactiveCaptionText 65267
+#define ExtCtrls_clNameInfoBk 65268
+#define ExtCtrls_clNameInfoText 65269
+#define ExtCtrls_clNameMenu 65270
+#define ExtCtrls_clNameMenuText 65271
+#define ExtCtrls_clNameNone 65272
+#define ExtCtrls_clNameScrollBar 65273
+#define ExtCtrls_clName3DDkShadow 65274
+#define ExtCtrls_clName3DLight 65275
+#define ExtCtrls_clNameWindow 65276
+#define ExtCtrls_clNameWindowFrame 65277
+#define ExtCtrls_clNameWindowText 65278
+#define WinHelpViewer_hNoKeyword 65279
+#define ExtCtrls_clNameMoneyGreen 65280
+#define ExtCtrls_clNameSkyBlue 65281
+#define ExtCtrls_clNameCream 65282
+#define ExtCtrls_clNameMedGray 65283
+#define ExtCtrls_clNameActiveBorder 65284
+#define ExtCtrls_clNameActiveCaption 65285
+#define ExtCtrls_clNameAppWorkSpace 65286
+#define ExtCtrls_clNameBackground 65287
+#define ExtCtrls_clNameBtnFace 65288
+#define ExtCtrls_clNameBtnHighlight 65289
+#define ExtCtrls_clNameBtnShadow 65290
+#define ExtCtrls_clNameBtnText 65291
+#define ExtCtrls_clNameCaptionText 65292
+#define ExtCtrls_clNameDefault 65293
+#define ExtCtrls_clNameGrayText 65294
+#define ExtCtrls_clNameHighlight 65295
+#define ExtCtrls_clNameBlack 65296
+#define ExtCtrls_clNameMaroon 65297
+#define ExtCtrls_clNameGreen 65298
+#define ExtCtrls_clNameOlive 65299
+#define ExtCtrls_clNameNavy 65300
+#define ExtCtrls_clNamePurple 65301
+#define ExtCtrls_clNameTeal 65302
+#define ExtCtrls_clNameGray 65303
+#define ExtCtrls_clNameSilver 65304
+#define ExtCtrls_clNameRed 65305
+#define ExtCtrls_clNameLime 65306
+#define ExtCtrls_clNameYellow 65307
+#define ExtCtrls_clNameBlue 65308
+#define ExtCtrls_clNameFuchsia 65309
+#define ExtCtrls_clNameAqua 65310
+#define ExtCtrls_clNameWhite 65311
 #define Consts_SCannotOpenClipboard 65312
 #define Consts_SDuplicateMenus 65313
 #define Consts_SDockedCtlNeedsName 65314
@@ -65,12 +67,12 @@
 #define ComConst_SNoMethod 65319
 #define ComConst_SVarNotObject 65320
 #define ComConst_STooManyParams 65321
-#define HelpIntfs_hNoTableOfContents 65322
-#define HelpIntfs_hNothingFound 65323
-#define HelpIntfs_hNoContext 65324
-#define HelpIntfs_hNoTopics 65325
-#define ExtCtrls_clNameBlack 65326
-#define ExtCtrls_clNameMaroon 65327
+#define JalMessages_msg_Error 65322
+#define JalMessages_msg_OEMError 65323
+#define HelpIntfs_hNoTableOfContents 65324
+#define HelpIntfs_hNothingFound 65325
+#define HelpIntfs_hNoContext 65326
+#define HelpIntfs_hNoTopics 65327
 #define Consts_SmkcEnter 65328
 #define Consts_SmkcSpace 65329
 #define Consts_SmkcPgUp 65330
@@ -281,6 +283,9 @@
 #define SysConst_SInvalidInput 65535
 STRINGTABLE
 BEGIN
+	WantResources_WantUsageText,	"Usage:\r\n  want [options] [target]\r\n\r\nOptions:\r\n  -h, -H, -?          Displays this help text.\r\n  -L                  Displays licensing information.\r\n  -buildfile <file>   Specifies the build file. Default is want.xml\r\n  -Dname=value        Define property \"name\".\r\n  -quiet              Be very quiet. \r\n  -verbose            Be extra verbose.\r\n  -debug              Print debugging information.\r\n  -nocolor            Do not use color in console output.\r\n"
+	ExtCtrls_clNameHighlightText,	"Highlight Text"
+	ExtCtrls_clNameInactiveBorder,	"Inactive Border"
 	ExtCtrls_clNameInactiveCaption,	"Inactive Caption"
 	ExtCtrls_clNameInactiveCaptionText,	"Inactive Caption Text"
 	ExtCtrls_clNameInfoBk,	"Info Background"
@@ -295,7 +300,8 @@ BEGIN
 	ExtCtrls_clNameWindowFrame,	"Window Frame"
 	ExtCtrls_clNameWindowText,	"Window Text"
 	WinHelpViewer_hNoKeyword,	"No help keyword specified."
-	WantResources_WantUsageText,	"Usage:\r\n  want [options] [target]\r\n\r\nOptions:\r\n  -h, -H, -?          Displays this help text.\r\n  -L                  Displays licensing information.\r\n  -buildfile <file>   Specifies the build file. Default is want.xml\r\n  -Dname=value        Define property \"name\".\r\n  -quiet              Be very quiet. \r\n  -verbose            Be extra verbose.\r\n  -debug              Print debugging information.\r\n  -nocolor            Do not use color in console output.\r\n"
+	ExtCtrls_clNameMoneyGreen,	"Money Green"
+	ExtCtrls_clNameSkyBlue,	"Sky Blue"
 	ExtCtrls_clNameCream,	"Cream"
 	ExtCtrls_clNameMedGray,	"Medium Gray"
 	ExtCtrls_clNameActiveBorder,	"Active Border"
@@ -310,8 +316,8 @@ BEGIN
 	ExtCtrls_clNameDefault,	"Default"
 	ExtCtrls_clNameGrayText,	"Gray Text"
 	ExtCtrls_clNameHighlight,	"Highlight Background"
-	ExtCtrls_clNameHighlightText,	"Highlight Text"
-	ExtCtrls_clNameInactiveBorder,	"Inactive Border"
+	ExtCtrls_clNameBlack,	"Black"
+	ExtCtrls_clNameMaroon,	"Maroon"
 	ExtCtrls_clNameGreen,	"Green"
 	ExtCtrls_clNameOlive,	"Olive"
 	ExtCtrls_clNameNavy,	"Navy"
@@ -326,8 +332,6 @@ BEGIN
 	ExtCtrls_clNameFuchsia,	"Fuchsia"
 	ExtCtrls_clNameAqua,	"Aqua"
 	ExtCtrls_clNameWhite,	"White"
-	ExtCtrls_clNameMoneyGreen,	"Money Green"
-	ExtCtrls_clNameSkyBlue,	"Sky Blue"
 	Consts_SCannotOpenClipboard,	"Cannot open clipboard"
 	Consts_SDuplicateMenus,	"Menu '%s' is already being used by another form"
 	Consts_SDockedCtlNeedsName,	"Docked control must have a name"
@@ -338,12 +342,12 @@ BEGIN
 	ComConst_SNoMethod,	"Method '%s' not supported by automation object"
 	ComConst_SVarNotObject,	"Variant does not reference an automation object"
 	ComConst_STooManyParams,	"Dispatch methods do not support more than 64 parameters"
+	JalMessages_msg_Error,	"Internal Error %0:4.4s at %1:p"
+	JalMessages_msg_OEMError,	"Internal Error %0:4.4s at %1:p"
 	HelpIntfs_hNoTableOfContents,	"Unable to find a Table of Contents"
 	HelpIntfs_hNothingFound,	"No help found for %s"
 	HelpIntfs_hNoContext,	"No context-sensitive help installed"
 	HelpIntfs_hNoTopics,	"No topic-based help system installed"
-	ExtCtrls_clNameBlack,	"Black"
-	ExtCtrls_clNameMaroon,	"Maroon"
 	Consts_SmkcEnter,	"Enter"
 	Consts_SmkcSpace,	"Space"
 	Consts_SmkcPgUp,	"PgUp"

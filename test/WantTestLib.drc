@@ -19,6 +19,8 @@
 #define ComConst_SNoMethod 65416
 #define ComConst_SVarNotObject 65417
 #define ComConst_STooManyParams 65418
+#define JalMessages_msg_Error 65419
+#define JalMessages_msg_OEMError 65420
 #define SysConst_SLongDayNameSat 65424
 #define RTLConsts_SAssignError 65425
 #define RTLConsts_SDuplicateItem 65426
@@ -144,6 +146,8 @@ BEGIN
 	ComConst_SNoMethod,	"Method '%s' not supported by automation object"
 	ComConst_SVarNotObject,	"Variant does not reference an automation object"
 	ComConst_STooManyParams,	"Dispatch methods do not support more than 64 parameters"
+	JalMessages_msg_Error,	"Internal Error %0:4.4s at %1:p"
+	JalMessages_msg_OEMError,	"Internal Error %0:4.4s at %1:p"
 	SysConst_SLongDayNameSat,	"Saturday"
 	RTLConsts_SAssignError,	"Cannot assign a %s to a %s"
 	RTLConsts_SDuplicateItem,	"List does not allow duplicates ($0%x)"

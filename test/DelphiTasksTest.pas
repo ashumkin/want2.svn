@@ -51,6 +51,9 @@ begin
       source  := 'Want.dpr';
       exeoutput := ToPath(Evaluate('%{temp}/want.test'));
       dcuoutput := ToPath(Evaluate('%{temp}/want.test'));
+
+      AddDefine('DUNIT_DLL', '1');
+
       build   := true;
       quiet   := true;
       uselibrarypath := false;
