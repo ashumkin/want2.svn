@@ -27,6 +27,12 @@ TBDockHeight=18
 LRDockWidth=421
 Dockable=1
 
+[BreakpointWindow]
+Column0Width=100
+Column1Width=75
+Column2Width=225
+Column3Width=40
+
 [CallStackWindow]
 Create=1
 Visible=1
@@ -86,19 +92,34 @@ File_6=SourceModule,'C:\home\want\lib\jal\src\JALExpressions.pas',0,1,52,1,65,0,
 File_7=SourceModule,'C:\home\want\src\tasks\EchoTasks.pas',0,1,123,1,135,0,0
 
 [Modules]
-Module0=C:\home\want\lib\jal\src\JalGZipStreams.pas
-Module1=C:\home\want\src\tasks\GZipTasks.pas
-Module2=C:\home\want\lib\jal\lib\paszlib\inftrees.pas
-Module3=C:\home\want\lib\jal\lib\paszlib\trees.pas
-Module4=C:\home\want\src\win32\WIN32.pas
-Module5=C:\home\want\lib\jcl\JclResources.pas
-Module6=C:\home\want\src\tasks\ExecTasks.pas
-Module7=C:\home\want\src\WantClasses.pas
-Module8=C:\home\want\src\lib\ScriptParser.pas
-Module9=C:\home\want\src\tasks\DelphiTasks.pas
+Module0=C:\home\want\src\WantClasses.pas
+Module1=C:\home\want\src\lib\ScriptParser.pas
+Module2=C:\home\want\src\tasks\DelphiTasks.pas
+Module3=C:\home\want\lib\jal\src\JalGZipStreams.pas
+Module4=C:\home\want\src\tasks\GZipTasks.pas
+Module5=C:\home\want\lib\jal\lib\paszlib\inftrees.pas
+Module6=C:\home\want\lib\jal\lib\paszlib\trees.pas
+Module7=C:\home\want\src\win32\WIN32.pas
+Module8=C:\home\want\lib\jcl\JclResources.pas
+Module9=C:\home\want\src\tasks\ExecTasks.pas
 Module10=C:\home\want\src\elements\PatternSets.pas
 Count=11
 EditWindowCount=1
+
+[C:\home\want\src\WantClasses.pas]
+ModuleType=SourceModule
+FormState=0
+FormOnTop=0
+
+[C:\home\want\src\lib\ScriptParser.pas]
+ModuleType=SourceModule
+FormState=0
+FormOnTop=0
+
+[C:\home\want\src\tasks\DelphiTasks.pas]
+ModuleType=SourceModule
+FormState=0
+FormOnTop=0
 
 [C:\home\want\lib\jal\src\JalGZipStreams.pas]
 ModuleType=SourceModule
@@ -131,21 +152,6 @@ FormState=0
 FormOnTop=0
 
 [C:\home\want\src\tasks\ExecTasks.pas]
-ModuleType=SourceModule
-FormState=0
-FormOnTop=0
-
-[C:\home\want\src\WantClasses.pas]
-ModuleType=SourceModule
-FormState=0
-FormOnTop=0
-
-[C:\home\want\src\lib\ScriptParser.pas]
-ModuleType=SourceModule
-FormState=0
-FormOnTop=0
-
-[C:\home\want\src\tasks\DelphiTasks.pas]
 ModuleType=SourceModule
 FormState=0
 FormOnTop=0
@@ -191,9 +197,9 @@ LeftPanelData=00000400010000000C000000436F64654578706C6F726572000000000000000000
 RightPanelSize=0
 BottomPanelSize=0
 BottomPanelClients=WatchWindow,MessageView@EditWindow0
-BottomPanelData=00000400020000000B000000576174636857696E646F770B0000004D657373616765566965770000000000000000017F0200000000000001000000002A0000000000000001000000003F0000000000000001000000000000000000000000FFFFFFFF
+BottomPanelData=00000400020000000B000000576174636857696E646F770B0000004D657373616765566965770000000000000000017F0200000000000001000000002F0000000000000001000000005E0000000000000001000000000000000000000000FFFFFFFF
 ViewCount=11
-CurrentView=5
+CurrentView=9
 View0=0
 View1=1
 View2=2
@@ -226,15 +232,15 @@ Dockable=1
 Create=1
 Visible=0
 State=0
-Left=330
-Top=0
-Width=309
-Height=17
+Left=11
+Top=141
+Width=628
+Height=48
 MaxLeft=-1
 MaxTop=-1
-ClientWidth=309
-ClientHeight=17
-TBDockHeight=17
+ClientWidth=628
+ClientHeight=48
+TBDockHeight=48
 LRDockWidth=443
 Dockable=1
 
@@ -289,9 +295,9 @@ LeftCol=1
 
 [View7]
 Module=C:\home\want\src\tasks\DelphiTasks.pas
-CursorX=57
-CursorY=60
-TopLine=43
+CursorX=75
+CursorY=448
+TopLine=435
 LeftCol=1
 
 [View8]
@@ -303,9 +309,9 @@ LeftCol=1
 
 [View9]
 Module=C:\home\want\src\WantClasses.pas
-CursorX=13
-CursorY=567
-TopLine=549
+CursorX=73
+CursorY=1372
+TopLine=1347
 LeftCol=1
 
 [View10]
