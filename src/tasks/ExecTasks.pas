@@ -55,7 +55,7 @@ type
     FExecutable: string;
     FArguments: TStringList;
 
-    function BuildCmdLine :string; virtual;
+    function BuildCmdLine: string; virtual;
   public
     constructor Create(Owner: TComponent); override;
     destructor Destroy; override;
@@ -77,7 +77,7 @@ type
   // this class will pass commands through the command processor
   TShellExecTask = class(TExecTask)
   protected
-    function BuildCmdLine :string; override;
+    function BuildCmdLine: string; override;
   end;
 
 
@@ -86,8 +86,13 @@ implementation
 { TCustomExecTask }
 
 function TCustomExecTask.BuildCmdLine: string;
+var
+  i: Integer;
 begin
-  Result := Executable + ' ' + StringReplace(Arguments.CommaText, ',', ' ', [rfReplaceAll]);
+  Result := Executable;
+  { Arguments.CommaText screws with the contents. See unit test }
+  for i := 0 to Arguments.Count - 1 do
+    Result := Result + ' ' + Arguments[i];
 end;
 
 constructor TCustomExecTask.Create(Owner: TComponent);
@@ -104,8 +109,8 @@ end;
 
 procedure TCustomExecTask.Execute;
 var
-  CmdLine  :string;
-  ExitCode :Cardinal;
+  CmdLine : string;
+  ExitCode: Cardinal;
 begin
   CmdLine := BuildCmdLine;
   if not Project.BeQuiet then
@@ -116,7 +121,8 @@ begin
   if ExitCode = Cardinal(-1) then
     raise ETaskError.Create(SysErrorMessage(GetLastError))
   else if ExitCode <> 0 then
-    raise ETaskFailure.Create('')
+    raise ETaskFailure.Create('Execution failed (' + CmdLine + '). ExitCode: ' +
+      IntToStr(ExitCode));
 end;
 
 
