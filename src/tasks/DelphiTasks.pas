@@ -755,7 +755,7 @@ begin
 
   if HasAttribute('debuginfo') then
   begin
-    if debug then
+    if debuginfo then
     begin
       Result := Result + ' -$D+'
     end
