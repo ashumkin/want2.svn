@@ -287,7 +287,7 @@ begin
       if e is EWantException then
         raise
       else
-        WantError(e.Message);
+        TaskError(e.Message);
     end;
   end;
 end;

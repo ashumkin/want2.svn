@@ -44,8 +44,8 @@ uses
   WantUtils;
 
 const
-  InvalidPathChars = ''; //';:,';
   WildChars        = '?*';
+  InvalidPathChars = ';,()' + WildChars {$IFDEF LINUX} + ':' {$ENDIF};
 
   {$IFDEF LINUX}
   SystemPathDelimiter: string = '/';
@@ -287,36 +287,47 @@ begin
   end;
 end;
 
+procedure CheckPath(Path :TPath);
+var
+  i :Integer;
+begin
+  for i := 1 to Length(InvalidPathChars) do
+  begin
+    if Pos(InvalidPathChars[i], Path) <> 0 then
+      raise EPathException.Create('invalid path chars in ' + Path);
+  end;
+end;
+
 function ToPath(SystemPath: TSystemPath; const BasePath: TPath): TPath;
 begin
-  if Pos(InvalidPathChars, SystemPath) <> 0 then
-    raise EPathException.Create('invalid path chars in ' + SystemPath)
-  else
+  CheckPath(SystemPath);
+  CheckPath(BasePath);
+
+  Result := SystemPath;
+  if BasePath <> '' then
+    Result := ExtractRelativePath(BasePath, Result);
+  if (Length(Result) >= 2)
+  and (Result[2] = ':')
+  and (Result[1] in ['a'..'z', 'A'..'Z'])
+  then
   begin
-    Result := SystemPath;
-    if BasePath <> '' then
-      Result := ExtractRelativePath(BasePath, Result);
-    if (Length(Result) >= 2)
-    and (Result[2] = ':')
-    and (Result[1] in ['a'..'z', 'A'..'Z'])
-    then
+    if (Length(Result) >= 3)
+    and (Result[3] = SystemPathDelimiter) then
     begin
-      if (Length(Result) >= 3)
-      and (Result[3] = SystemPathDelimiter) then
-      begin
-        Result[1] := LowerCase(''+Result[1])[1];
-        Result := SystemPathDelimiter + Result;
-      end
-      else
-        raise EPathException.Create('invalid absolute path ' + SystemPath)
-    end;
-    Result := StringReplace(Result, SystemPathDelimiter, '/', [rfReplaceAll]);
+      Result[1] := LowerCase(''+Result[1])[1];
+      Result := SystemPathDelimiter + Result;
+    end
+    else
+      raise EPathException.Create('invalid absolute path ' + SystemPath)
   end;
+  Result := StringReplace(Result, SystemPathDelimiter, '/', [rfReplaceAll]);
 end;
 
 function ToSystemPath(const Path: TPath; const BasePath: TPath): string;
 begin
    AssertIsSystemIndependentPath(Path);
+   CheckPath(Path);
+   CheckPath(BasePath);
    //!!!AssertIsSystemIndependentPath(BasePath);
 
    Result := MovePath(Path, '', BasePath);

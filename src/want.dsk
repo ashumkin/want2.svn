@@ -69,40 +69,40 @@ Visible=1
 State=0
 Left=11
 Top=0
-Width=747
+Width=819
 Height=195
 MaxLeft=-1
 MaxTop=-1
-ClientWidth=747
+ClientWidth=819
 ClientHeight=195
 TBDockHeight=195
 LRDockWidth=421
 Dockable=1
 
 [Closed Files]
-File_0=SourceModule,'C:\home\want\src\lib\WildPaths.pas',0,1,756,25,770,0,0
-File_1=SourceModule,'C:\home\want\src\elements\Attributes.pas',0,1,14,15,14,0,0
-File_2=SourceModule,'C:\home\want\src\WantClasses.pas',0,1,743,1,754,0,0
-File_3=SourceModule,'C:\home\want\src\tasks\ExecTasks.pas',0,1,253,24,267,0,0
-File_4=SourceModule,'C:\home\want\lib\jal\src\JALSAX.pas',0,1,1977,1,1988,0,0
-File_5=SourceModule,'C:\home\want\lib\jal\src\JALXMLParser.pas',0,1,1156,1,1167,0,0
-File_6=SourceModule,'C:\home\want\src\win32\ConsoleListener.pas',0,1,103,1,122,0,0
-File_7=SourceModule,'C:\home\want\lib\jal\src\JALMiniDom.pas',0,1,590,1,601,0,0
-File_8=SourceModule,'C:\home\want\src\lib\ScriptParser.pas',0,1,107,1,118,0,0
-File_9=SourceModule,'C:\home\want\src\win32\WIN32.pas',0,1,22,1,33,0,0
+File_0=SourceModule,'C:\home\want\src\WantClasses.pas',0,1,1,1,1,0,0
+File_1=SourceModule,'C:\home\want\src\tasks\ZipTasks.pas',0,1,1,1,1,0,0
+File_2=SourceModule,'C:\home\want\lib\dunit\TestModules.pas',0,1,62,1,78,0,0
+File_3=SourceModule,'C:\home\want\lib\jal\src\JALGZipStreams.pas',0,1,621,1,637,0,0
+File_4=SourceModule,'C:\home\want\src\tasks\FileTasks.pas',0,1,179,1,195,0,0
+File_5=SourceModule,'C:\home\want\src\elements\PatternSets.pas',0,1,229,1,245,0,0
+File_6=SourceModule,'C:\home\want\lib\dunit\TestFramework.pas',0,1,1255,1,1271,0,0
+File_7=SourceModule,'C:\home\want\src\win32\ConsoleScriptRunner.pas',0,1,102,1,118,0,0
+File_8=SourceModule,'C:\home\want\src\tasks\DelphiTasks.pas',0,1,406,1,422,0,0
+File_9=SourceModule,'C:\home\want\src\tasks\DUnitTasks.pas',0,1,127,1,148,0,0
 
 [Modules]
-Module0=C:\home\want\src\tasks\DelphiTasks.pas
-Module1=C:\home\want\lib\jal\src\JALStrings.pas
+Module0=C:\home\want\lib\jal\src\JalPaths.pas
+Module1=C:\home\want\src\lib\WildPaths.pas
 Count=2
 EditWindowCount=1
 
-[C:\home\want\src\tasks\DelphiTasks.pas]
+[C:\home\want\lib\jal\src\JalPaths.pas]
 ModuleType=SourceModule
 FormState=0
 FormOnTop=0
 
-[C:\home\want\lib\jal\src\JALStrings.pas]
+[C:\home\want\src\lib\WildPaths.pas]
 ModuleType=SourceModule
 FormState=0
 FormOnTop=0
@@ -123,21 +123,21 @@ Visible=1
 State=0
 Left=46
 Top=64
-Width=766
-Height=618
+Width=838
+Height=694
 MaxLeft=-1
 MaxTop=-1
-ClientWidth=758
-ClientHeight=591
+ClientWidth=830
+ClientHeight=667
 LeftPanelSize=0
 LeftPanelClients=CodeExplorer@EditWindow0
 LeftPanelData=00000400010000000C000000436F64654578706C6F7265720000000000000000000000000000000000FFFFFFFF
 RightPanelSize=0
 BottomPanelSize=195
 BottomPanelClients=MessageView@EditWindow0,LocalVarsWindow
-BottomPanelData=00000400010000000B0000004D65737361676556696577F60200000000000002C3000000000000000100000000F60200000F0000004C6F63616C5661727357696E646F77FFFFFFFF
+BottomPanelData=00000400010000000B0000004D657373616765566965773E0300000000000002C30000000000000001000000003E0300000F0000004C6F63616C5661727357696E646F77FFFFFFFF
 ViewCount=2
-CurrentView=0
+CurrentView=1
 View0=0
 View1=1
 
@@ -161,30 +161,30 @@ Dockable=1
 Create=1
 Visible=0
 State=0
-Left=390
+Left=426
 Top=0
-Width=368
-Height=149
+Width=404
+Height=195
 MaxLeft=-1
 MaxTop=-1
-ClientWidth=368
-ClientHeight=149
-TBDockHeight=149
+ClientWidth=404
+ClientHeight=195
+TBDockHeight=195
 LRDockWidth=443
 Dockable=1
 
 [View0]
-Module=C:\home\want\src\tasks\DelphiTasks.pas
+Module=C:\home\want\src\lib\WildPaths.pas
 CursorX=1
-CursorY=313
-TopLine=300
+CursorY=301
+TopLine=274
 LeftCol=1
 
 [View1]
-Module=C:\home\want\lib\jal\src\JALStrings.pas
+Module=C:\home\want\lib\jal\src\JalPaths.pas
 CursorX=1
-CursorY=211
-TopLine=193
+CursorY=174
+TopLine=158
 LeftCol=1
 
 [DockHosts]
@@ -200,7 +200,7 @@ Watch4='FIncludes[i]',256,0,18,1
 
 [Breakpoints]
 Count=1
-Breakpoint0='C:\home\want\src\tasks\DelphiTasks.pas',422,'',0,1
+Breakpoint0='C:\home\want\src\tasks\DUnitTasks.pas',148,'',0,1
 
 [AddressBreakpoints]
 Count=0
