@@ -124,9 +124,18 @@ end;
 procedure TExternalTest.CompareActualToFinal;
 var
   ADirComp: TclDirectoryCompare;
+  p       : Integer;
 begin
   ADirComp := TclDirectoryCompare.Create(FTestExeSetupDir, FTestExeFinalDir);
   try
+     ADirComp.GetRelativeFiles;
+     with ADirComp do
+     begin
+       for p := 0 to AFiles.Count-1 do
+         Check(BFiles.IndexOf(AFiles[p]) >= 0, AFiles[p] + ' in A dir but not in B dir');
+       for p := 0 to BFiles.Count-1 do
+         Check(BFiles.IndexOf(BFiles[p]) >= 0, BFiles[p] + ' in B dir but not in A dir');
+     end;
      Check(ADirComp.CompareByFileContent);
   finally
     ADirComp.Free;
@@ -212,17 +221,22 @@ var
       PChar(Directory + FileName), false) then
       RaiseLastWin32Error;
   end;
+var
+  ZipLocation  :string;
+  UnzipCmdLine :string;
 begin
   ChDir(ExtractFilePath(ParamStr(0)));
   JclFileUtils.ForceDirectories(Directory);
   DoCopy(BuildFileName);
-  DoCopy(ZipFileName);
+  ZipLocation := FRootTestDataDir + FTestPath + ZipFileName;
   CurrentDir := GetCurrentDir;
-  ChDir(Directory);
-  WinExec32AndWait(
-    '..\..\..\test\data\unzip.exe ' + ZipFileName, 0);
-  SysUtils.DeleteFile(ZipFileName);
-  ChDir(CurrentDir);
+  try
+    UnzipCmdLine := Format('%sunzip.exe -d %s %s', [FRootTestDataDir, Directory, ZipLocation]);
+    if WinExec32AndWait( UnzipCmdLine, 0) <> 0 then
+      fail('could not run unzip');
+  finally
+    ChDir(CurrentDir);
+  end;
 end;
 
 procedure TExternalTest.UnzipFinal;
