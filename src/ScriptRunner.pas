@@ -71,9 +71,9 @@ var
 begin
   Project := TProject.Create(nil);
   try
+    Project.Verbosity := Verbosity;
     SetCommandLineProperties(Project);
     Project.LoadXML(ABuildFileName);
-    Project.Verbosity := Verbosity;
     if Targets = '' then
       Project.Build
     else begin
