@@ -23,6 +23,9 @@ uses
   {$IFDEF VER140}
   Variants,
   {$ENDIF}
+  {$IFDEF VER150}
+  Variants,
+  {$ENDIF}
 
   JALStrings,
   JalPaths,
