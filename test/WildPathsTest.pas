@@ -42,7 +42,7 @@ begin
 
   Base := '/SomeRoot/subdir/src';
   Path := '/SomeRoot/subdir/src/tasks';
-  CheckEquals('tasks', WildPaths.ToRelativePath(Path, Base),
+  CheckEquals('./tasks', WildPaths.ToRelativePath(Path, Base),
     'ToRelativePath - Path subdir');
 
   Base := '/SomeRoot/subdir/src';
