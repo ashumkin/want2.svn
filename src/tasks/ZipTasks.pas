@@ -88,6 +88,7 @@ var
 begin
   Log(vlVerbose, Format('Fileset with basedir "%s"', [Fileset.dir]));
   Log(vlVerbose, CurrentDir);
+
   AboutToScratchPath(zipfile);
 
   Paths := FileSet.RelativePaths;
@@ -95,7 +96,7 @@ begin
   if Length(Paths) = 0 then
     Log
   else
-    Log(Format('Zipping %4d files from %s to %s', [Length(Paths), ToRelativePath(Fileset.dir), ToRelativePath(zipfile)]));
+    Log(Format(' %4d files from %s', [Length(Paths), ToRelativePath(Fileset.dir)]));
 
   for p := Low(Paths) to High(Paths) do
   begin
@@ -106,6 +107,7 @@ end;
 
 procedure TZipTask.Execute;
 begin
+  Log(ToRelativePath(zipfile));
   AboutToScratchPath(zipfile);
   FZipStream := TZipStream.Create(zipfile);
   try

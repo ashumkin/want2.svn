@@ -62,8 +62,8 @@ end;
 
 procedure TEchoTask.Execute;
 var
-  EchoFile: System.Text;
   msg:      string;
+  sysfile:  string;
 begin
   msg := _message + FormatText;
   if _file = '' then
@@ -76,16 +76,13 @@ begin
       Log(vlVerbose, '%s -> %s', [ToRelativePath(input), ToRelativePath(_file)]);
     AboutToScratchPath(_file);
 
-    System.Assign(EchoFile, ToSystemPath(_file));
-    if append and FileExists(ToSystemPath(_file)) then
-      System.Append(EchoFile)
-    else
-      System.Rewrite(EchoFile);
-    try
-      Writeln(EchoFile, msg);
-    finally
-      System.Close(EchoFile);
-    end;
+    if StrRight(msg, 1) <> #10 then
+      msg := AdjustLineBreaks(msg + #10);
+
+    sysfile := ToSystemPath(_file);
+    if append and PathIsFile(_file) then
+      msg := FileToString(sysfile) + msg;
+    StringToFile(sysfile, msg);
   end;
 end;
 

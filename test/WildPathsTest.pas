@@ -12,6 +12,8 @@ type
     procedure TearDown; override;
   published
     procedure TestToRelativePath;
+
+    procedure TestIsMatch;
   end;
 
 implementation
@@ -68,28 +70,12 @@ begin
   { any case like previous where drive letter was not in same place in both
     paths? -- shouldn't be }
 
-  (* If you remove the checks in ToRelativePath ensuring both Path and Base
-     are already absolute paths, then a lot of these tests below work ... but
-     this means ToRelativePath is assuming that any relative markers (..) in
-     a path represent the same thing, of which there's no guarantee, and this
-     could deceive code using this method.
-
-     However, this assumptive behavior could be useful as in the first test
-     below. If I know that the up (..) placeholders are equivalent (represent
-     the same absolute), then I could use ToRelativePath successfully to get
-     ./testA/AStuff. Otherwise, I have to go the extra step of replacing ..
-     before calling ToRelativePath. However, some cases are more obviously
-     arbitrary than others. If the following was implemented, there'd have to be
-     some way of forcing the user to state what's common ... but that's probably
-     as much or more work than simply forcing them to use Absolute paths.
-     -- Chrismo
-
   Base := '../sample/test';
   Path := '../sample/test/testA/AStuff';
   CheckEquals('./testA/AStuff', WildPaths.ToRelativePath(Path, Base),
     'relative base and path, path subdir of base');
 
-  == Additional examples of assumptive relative behavior
+  // == Additional examples of assumptive relative behavior
 
   // Works
   Base := '../sample/test';
@@ -116,11 +102,27 @@ begin
     /different/yuk/test/testA/AStuff OR
     anything, can't assume the two 'test' directories are on the same path }
   CheckEquals('../test/testA/AStuff', WildPaths.ToRelativePath(Path, Base),
-    'absolute base, relative path, cannot determine if Path in Base or not');*)
+    'absolute base, relative path, cannot determine if Path in Base or not');
 end;
 
+
+procedure TTestToRelativePath.TestIsMatch;
+const
+  Matches : array[1..3,1..2] of string =
+    ( ('**/CVS/**', 'xx/yy/CVS'),
+      ('**/CVS/**', 'xx/yy/CVS/Entries'),
+      ('**/CVS/**', '/c:/home/want/lib/dunit/CVS')
+    );
+var
+  i :Integer;
+begin
+  for i := Low(Matches) to High(Matches) do
+    Check(IsMatch(Matches[i][1], Matches[i][2]), Matches[i][1] + ' ~ '+ Matches[i][2]);
+end;
+
+
 initialization
-  RegisterTest('Path Tests', TTestToRelativePath);
+  RegisterTests('Path Tests', [TTestToRelativePath.Suite]);
 
 end.
 

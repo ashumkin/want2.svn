@@ -284,6 +284,8 @@ procedure TDeleteTask.DoFileset(Fileset: TFileSet);
 var
   Paths : TPaths;
   p     : Integer;
+  path  : string;
+  msg   : string;
 begin
   Paths := Fileset.Paths;
 
@@ -299,11 +301,16 @@ begin
 
     for p := High(Paths) downto Low(Paths) do
     begin
-      Log(vlVerbose, 'del ' + ToSystemPath(Paths[p]));
-      AboutToScratchPath(Paths[p]);
-      WildPaths.DeleteFile(Paths[p], FDeleteReadOnly);
-      if PathExists(Paths[p]) then
-        TaskFailure(Format('Could not delete %s', [  Paths[p] ]) );
+      path := Paths[p];
+      Log(vlVerbose, 'del ' + ToSystemPath(path));
+      AboutToScratchPath(path);
+      WildPaths.DeleteFile(path, FDeleteReadOnly);
+      if PathExists(path) then
+      begin
+        paths := nil;
+        msg := Format('Could not delete %s', [  ToSystemPath(path) ]);
+        TaskFailure( msg );
+      end;
     end;
   end;
 end;

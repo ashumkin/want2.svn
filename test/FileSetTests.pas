@@ -41,14 +41,14 @@ implementation
 
 procedure TPathsTestCase.CheckMatch(Path, Spec, Msg: string);
 begin
-  if not IsMatch(Path, Spec) then
+  if not IsMatch(Spec, Path) then
     fail(Format('%s"<%s> does not match <%s>', [Msg, Path, Spec]));
 end;
 
 
 procedure TPathsTestCase.CheckNoMatch(Path, Spec, Msg: string);
 begin
-  if IsMatch(Path, Spec) then
+  if IsMatch(Spec, Path) then
     fail(Format('%s <%s> should not match <%s>', [Msg, Path, Spec]));
 end;
 
@@ -171,7 +171,7 @@ end;
 procedure TestMatch(p, s :string);
 begin
    write(p,'  ', s, ' ');
-   writeln(IsMatch(p,s));
+   writeln(IsMatch(s, p));
 end;
 
 
@@ -206,5 +206,5 @@ end;
 
 
 initialization
-  RegisterTests('FileSet', [TestSuiteOf(TPathsTestCase)]);
+  RegisterTests('FileSet', [TPathsTestCase.Suite]);
 end.

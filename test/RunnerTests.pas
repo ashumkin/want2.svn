@@ -122,7 +122,7 @@ begin
 end;
 
 initialization
-  RegisterTest('Acceptance Suite', TScriptRunnerTests);
+  RegisterTests('Acceptance Suite', [TScriptRunnerTests.Suite]);
 
 end.
 

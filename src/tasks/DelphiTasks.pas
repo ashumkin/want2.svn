@@ -45,13 +45,13 @@ const
   DelphiRootKey  = 'RootDir';
 
   __RENAMED_CFG_EXT = '.want.cfg';
-  
+
 type
   EDelphiTaskError       = class(ETaskError);
   EDelphiNotFoundError   = class(EDelphiTaskError);
   ECompilerNotFoundError = class(EDelphiTaskError);
 
-  TMapType = (none, segments, publics, detailed); 
+  TMapType = (none, segments, publics, detailed);
 
   TPathSet = class(TCustomDirSet)
   protected
@@ -71,15 +71,25 @@ type
     FVersions : string;
 
     FVersionFound :string;
+    FDelphiDir    :string;
+    FToolPath     :string;
 
     procedure HandleOutputLine(Line :string); override;
 
     function RootForVersion(version: string): string;
-    function FindDelphiVersion(ver :string) :string;
-    function FindDelphiDir: string;
+    function ReadDelphiDir(ver :string = '') :string;
+
+    function ToolName :string; virtual;  abstract;
+    procedure FindTool;
 
     function ReadUserOption(Key, Name :string):string;
     function ReadMachineOption(Key, Name :string):string;
+  public
+    function BuildExecutable: string; override;
+    procedure Execute;  override;
+
+    property DelphiDir :string read FDelphiDir;
+    property ToolPath  :string read FToolPath;
   published
     property versions: string read FVersions  write FVersions;
   end;
@@ -111,9 +121,9 @@ type
 
     FRenamedCFGs    :boolean;
 
-    function BuildExecutable: string; override;
     function BuildArguments: string; override;
-    function FindCompiler: string;
+
+    function ToolName :string; override;
 
     procedure SetExes(Value: string);
 
@@ -126,7 +136,7 @@ type
     class function TagName: string; override;
 
     procedure Init; override;
-    procedure Execute;  override;
+    procedure Execute; override;
 
     procedure AddUnitPath(Path: TPath);
     procedure AddResourcePath(Path: TPath);
@@ -173,10 +183,9 @@ type
     FFile:   string;
     FOutput: string;
 
-    function BuildExecutable: string; override;
-    function BuildArguments: string; override;
+    function ToolName :string; override;
 
-    function FindBRCC :string;
+    function BuildArguments: string; override;
   public
     class function TagName: string; override;
 
@@ -240,49 +249,50 @@ implementation
 
 { TCustomDelphiTask }
 
-function TCustomDelphiTask.FindDelphiDir: string;
+procedure TCustomDelphiTask.FindTool;
 var
-  ver:  Integer;
   vers: TStringArray;
   i     :Integer;
+  Path  :string;
+  Tool  :string;
 begin
+  FVersionFound := '';
+  FDelphiDir    := '';
+  FToolPath     := '';
+
   vers := nil;
   if versions = '' then
     WantUtils.GetEnvironmentVar('delphi_version', FVersions, true);
-  if versions <> '' then
+  if versions = '' then
+     versions := '6,5,4';
+
+  vers := StringToArray(versions);
+  for i := 0 to High(vers) do
   begin
-    vers := StringToArray(versions);
-    for i := 0 to High(vers) do
-    begin
-       if StrLeft(vers[i], 2) <> '.0' then
-         vers[i] := vers[i] + '.0';
-       Result := FindDelphiVersion(vers[i]);
-       if Result <> '' then
+     if StrLeft(vers[i], 2) <> '.0' then
+       vers[i] := vers[i] + '.0';
+     Path := ReadDelphiDir(vers[i]);
+     if Path <> '' then
+     begin
+       Tool := Path + '\' + ToolName;
+       if FileExists(Tool) then // found it !
        begin
          FVersionFound := vers[i];
+         FDelphiDir    := Path;
+         FToolPath     := Tool;
          BREAK;
        end;
-    end;
-  end
-  else
-  begin
-    for ver := 6 downto 4 do
-    begin
-      Result := FindDelphiVersion(IntToStr(ver));
-      if Result <> '' then
-      begin
-        FVersionFound := IntToStr(ver);
-        BREAK;
-      end;
-    end;
+     end;
   end;
-  if Result = '' then
-    raise EDelphiNotFoundError.Create('Could not find delphi');
+  if FToolPath = '' then
+    raise EDelphiNotFoundError.Create('Could not find ' + ToolName);
 end;
 
 
-function TCustomDelphiTask.FindDelphiVersion(ver: string): string;
+function TCustomDelphiTask.ReadDelphiDir(ver: string): string;
 begin
+  if ver = '' then
+    ver := FVersionFound;
   Result := RegReadStringDef(HKEY_LOCAL_MACHINE, RootForVersion(ver), DelphiRootKey, '');
 end;
 
@@ -333,6 +343,22 @@ begin
    inherited HandleOutputLine(Line);
 end;
 
+procedure TCustomDelphiTask.Execute;
+begin
+  FindTool;
+  Executable := ToWantPath(ToolPath);
+  inherited;
+end;
+
+function TCustomDelphiTask.BuildExecutable: string;
+begin
+  FindTool;
+
+  Executable := ToWantPath(ToolPath);
+
+  Result := inherited BuildExecutable;
+end;
+
 { TDelphiCompileTask }
 
 constructor TDelphiCompileTask.Create(Owner: TScriptElement);
@@ -363,6 +389,10 @@ begin
 end;
 
 
+function TDelphiCompileTask.ToolName: string;
+begin
+  Result := 'bin\dcc32.exe';
+end;
 
 procedure TDelphiCompileTask.Execute;
 begin
@@ -374,22 +404,9 @@ begin
   end;
 end;
 
-function TDelphiCompileTask.FindCompiler: string;
-begin
-  Result := FindDelphiDir + '\bin\dcc32.exe';
-  if not FileExists(Result) then
-     raise ECompilerNotFoundError.Create(Result);
-end;
-
 class function TDelphiCompileTask.TagName: string;
 begin
   Result := 'dcc';
-end;
-
-function TDelphiCompileTask.BuildExecutable: string;
-begin
-  Executable := ToWantPath(FindCompiler);
-  Result := inherited BuildExecutable;
 end;
 
 function TDelphiCompileTask.BuildArguments: string;
@@ -406,11 +423,8 @@ var
   PS     : TStringArray;
   Paths  : TPaths;
   cfg    : TPath;
-  Delphi : string;
 begin
   Result := inherited BuildArguments;
-
-  Delphi := FindDelphiDir;
 
   Log(vlVerbose, 'sources %s', [ToRelativePath(source)]);
   Sources := WildPaths.Wild(Source, BasePath);
@@ -527,8 +541,8 @@ begin
   PS := nil;
   if not useLibraryPath then
   begin
-    Result := Result + ' -U' + Delphi + '\Lib';
-    Result := Result + ' -R' + Delphi + '\Lib';
+    Result := Result + ' -U' + DelphiDir + '\Lib';
+    Result := Result + ' -R' + DelphiDir + '\Lib';
   end
   else
   begin
@@ -540,7 +554,7 @@ begin
         PS[p] := Trim(PS[p]);
         if PS[p] <> '' then
         begin
-          PS[p] := StringReplace(PS[p], '$(DELPHI)', Delphi, [rfReplaceAll, rfIgnoreCase]);
+          PS[p] := StringReplace(PS[p], '$(DELPHI)', DelphiDir, [rfReplaceAll, rfIgnoreCase]);
           Result := Result + ' -U' + PS[p];
           Result := Result + ' -R' + PS[p];
         end;
@@ -667,12 +681,6 @@ begin
     Result := Result + ' -fo' + ToSystemPath(output);
 end;
 
-function TResourceCompileTask.BuildExecutable: string;
-begin
-  Executable := ToWantPath(FindBRCC);
-  Result := inherited BuildExecutable;
-end;
-
 constructor TResourceCompileTask.Create(Owner: TScriptElement);
 begin
   inherited Create(Owner);
@@ -682,14 +690,7 @@ end;
 procedure TResourceCompileTask.Execute;
 begin
   Log(ToRelativePath(_file));
-  inherited Execute;
-end;
-
-function TResourceCompileTask.FindBRCC: string;
-begin
-  Result := FindDelphiDir + '\bin\brcc32.exe';
-  if not FileExists(Result) then
-     raise ECompilerNotFoundError.Create(Result);
+  inherited;
 end;
 
 procedure TResourceCompileTask.Init;
@@ -702,6 +703,11 @@ end;
 class function TResourceCompileTask.TagName: string;
 begin
   Result := 'brcc';
+end;
+
+function TResourceCompileTask.ToolName: string;
+begin
+  Result := 'bin\brcc32.exe';
 end;
 
 { TDefineElement }

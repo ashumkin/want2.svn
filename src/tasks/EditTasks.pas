@@ -489,7 +489,7 @@ begin
   if (_file = '') then
   begin
     if (Editor.FFile = '') then
-      TaskError('No file name')
+      WantError('No file name')
     else
       _file := Editor.FFile;
   end;

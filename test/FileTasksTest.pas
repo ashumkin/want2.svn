@@ -53,6 +53,7 @@ procedure TTestDeleteTask.Setup;
 begin
   inherited;
   FDeleteTask := TDeleteTask.Create(FProject.AddTarget('test_delete_task'));
+  FProject.basedir := SuperPath(FTestDir);
 end;
 
 procedure TTestDeleteTask.TearDown;
@@ -68,7 +69,7 @@ begin
   MakeSampleTextFile;
   Check(DirectoryExists(FTestDir), 'no directory to start with');
 
-  FDeleteTask.Dir := FDeleteTask.ToWantPath(FTestDir);
+  FDeleteTask.Dir := FTestDir;
   FDeleteTask.Execute;
 
   // the following test was reversed in the previous version

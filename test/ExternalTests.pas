@@ -125,28 +125,37 @@ begin
      ToRelativePaths(SetupFiles, SetupPath);
      ToRelativePaths(FinalFiles, FinalPath);
 
+     for p := SetupFiles.Count-1 downto 0 do
+       if Pos('CVS', SetupFiles[p]) <> 0 then
+         SetupFiles.Delete(p);
+
+     for p := FinalFiles.Count-1 downto 0 do
+       if Pos('CVS', FinalFiles[p]) <> 0 then
+         FinalFiles.Delete(p);
+
      for p := 0 to SetupFiles.Count-1 do
-       if Pos('CVS', SetupFiles[p]) = 0 then
-         Check(FinalFiles.IndexOf(SetupFiles[p]) >= 0, Format('%s in setup but not in final', [SetupFiles[p]]));
+       Check(FinalFiles.IndexOf(SetupFiles[p]) >= 0, Format('%s in setup but not in final', [SetupFiles[p]]));
 
      for p := 0 to FinalFiles.Count-1 do
-       if Pos('CVS', FinalFiles[p]) = 0 then
-         Check(SetupFiles.IndexOf(FinalFiles[p]) >= 0, Format('%s in final but not in setup', [FinalFiles[p]]));
+       Check(SetupFiles.IndexOf(FinalFiles[p]) >= 0, Format('%s in final but not in setup', [FinalFiles[p]]));
 
      for p := 0 to Min(SetupFiles.Count, FinalFiles.Count)-1 do
      begin
-       if Pos('CVS', SetupFiles[p]) = 0 then
+       SF := PathConcat(SetupPath, SetupFiles[p]);
+       FF := PathConcat(FinalPath, FinalFiles[p]);
+
+       CheckEquals(   IsDirectory(SF),
+                      IsDirectory(FF),
+                      Format('%s files not both directories', [SetupFiles[p]]));;
+
+       if PathExists(SF)
+       and PathExists(FF)
+       and not PathIsDir(SF)
+       and not PathIsDir(FF) then
        begin
-         SF := PathConcat(SetupPath, SetupFiles[p]);
-         FF := PathConcat(FinalPath, FinalFiles[p]);
-
-         CheckEquals(   IsDirectory(SF),
-                        IsDirectory(FF),
-                        Format('%s files not both directories', [SetupFiles[p]]));;
-
-         if PathExists(SF) and not PathIsDir(SF) then
-           Check(CompareFiles(SF, FF), Format('%s files are different', [SetupFiles[p]]));;
-         end;
+         if not CompareFiles(SF, FF) then
+           Fail(Format('%s files are different', [SetupFiles[p]]));;
+       end;
      end;
   finally
     SetupFiles.Free;

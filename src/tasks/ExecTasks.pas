@@ -152,8 +152,8 @@ implementation
 procedure TExecTask.Execute;
 begin
   Log(PathFile(Executable));
-  Log(vlVerbose, Executable);
-  Log(vlVerbose, BuildArguments);
+  Log(vlDebug, 'executable=' + Executable);
+  Log(vlDebug, 'arguments='  + BuildArguments);
   inherited Execute;
 end;
 
@@ -178,12 +178,12 @@ end;
 
 function TCustomExecTask.BuildExecutable: string;
 begin
-  Result := WildPaths.ToSystemPath(Executable);
+  Result := '"' + Trim(WildPaths.ToSystemPath(Executable)) + '"';
 end;
 
 function TCustomExecTask.BuildCmdLine: string;
 begin
-  Result := Trim(BuildExecutable + ' ' + BuildArguments);
+  Result := Trim(Trim(BuildExecutable) + ' ' + BuildArguments);
 end;
 
 function TCustomExecTask.BuildArguments: string;
@@ -193,7 +193,7 @@ begin
   Result := '';
   { Arguments.CommaText screws with the contents. See unit test }
   for i := 0 to ArgumentList.Count - 1 do
-    Result := Result + ' ' + ArgumentList[i];
+    Result := Result + ' ' +ArgumentList[i];
   Result := Trim(Result);
 end;
 
@@ -394,7 +394,7 @@ begin
     if GetAttribute('path') = '' then
       RequireAttribute('value');
     RequireAttribute('path');
-    value := ToSystemPath(path.asString);
+    value := Format('"%s"', [ ToSystemPath(path.asString) ] );
   end;
   (Owner as TCustomExecTask).FArguments.Add(Value);
 end;

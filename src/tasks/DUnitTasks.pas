@@ -37,6 +37,7 @@ type
     procedure EndTest(test: ITest); virtual;
     procedure TestingStarts; virtual;
     procedure TestingEnds(testResult: TTestResult); virtual;
+    procedure Status(test :ITest; const Msg :ShortString); virtual;
 
  // implement the task
   protected
@@ -153,6 +154,11 @@ begin
     on e :Exception do
       TaskError(e.Message, ExceptAddr);
   end;
+end;
+
+procedure TDUnitTask.Status(test: ITest; const Msg: ShortString);
+begin
+  Log(vlVerbose, Format('%s: %s', [test.Name, Msg]));
 end;
 
 initialization
