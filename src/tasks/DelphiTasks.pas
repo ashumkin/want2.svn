@@ -677,6 +677,13 @@ begin
           begin
             Log(vlVerbose, 'Renaming configuration file for %s', [ Sources[s] ]);
             WildPaths.MoveFile(cfg + '.cfg', cfg + __RENAMED_CFG_EXT);
+            if WildPaths.PathExists(cfg + '.cfg') then
+            begin
+              Log( vlWarnings,
+                   'Should not use configuration files but could not rename "%s"',
+                   [cfg + '.cfg']
+                   );
+            end;
           end;
         end;
       end;
@@ -1135,7 +1142,7 @@ begin
     if usedebugdcu then
     begin
       path := libPath;
-      if FileExists(path + '\Debug') then
+      if PathExists(path + '\Debug') then
          path := path + '\Debug';
       FUnitPaths.Includes.Insert(0, path);
       FResourcePaths.Includes.Insert(0, path);
