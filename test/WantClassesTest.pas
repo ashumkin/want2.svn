@@ -194,7 +194,7 @@ begin
   inherited;
   FFileNameInc := 0;
 
-  FTestDir := ExtractFilePath(ParamStr(0)) + 'test';
+  FTestDir := ExtractFilePath(ParamStr(0)) + 'dunit_tmp';
   FLongFNTestDir := ExtractFilePath(ParamStr(0)) + 'my test dir';
   JclFileUtils.ForceDirectories(FTestDir);
   JclFileUtils.ForceDirectories(FLongFNTestDir);
