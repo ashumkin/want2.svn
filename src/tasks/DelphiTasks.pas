@@ -646,10 +646,16 @@ var
   w      : TWarning;
   PS     : TStringArray;
   cfg    : TPath;
-  wname  : string;
+  wname   :string;
+  libPath :string;
+  path    :string;
 begin
   Log(vlVerbose, 'sources %s', [ToRelativePath(source)]);
   Sources := WildPaths.Wild(Source, BasePath);
+  if Length(Sources) = 0 then
+    TaskFailure(Format('Could not find %s to compile', [ToSystemPath(PathConcat(BasePath, source))]));
+
+  libPath := DelphiDir + '\Lib';
 
   for s := Low(Sources) to High(Sources) do
   begin
@@ -1128,15 +1134,18 @@ begin
   begin
     if usedebugdcu then
     begin
-      FUnitPaths.Includes.Insert(0, DelphiDir + '\Lib\Debug');
-      FResourcePaths.Includes.Insert(0, DelphiDir + '\Lib\Debug');
-      FIncludePaths.Includes.Insert(0, DelphiDir + '\Lib\Debug');
+      path := libPath;
+      if FileExists(path + '\Debug') then
+         path := path + '\Debug';
+      FUnitPaths.Includes.Insert(0, path);
+      FResourcePaths.Includes.Insert(0, path);
+      FIncludePaths.Includes.Insert(0, path);
     end
     else if not useLibraryPath then
     begin
-      FUnitPaths.Includes.Insert(0, DelphiDir + '\Lib');
-      FResourcePaths.Includes.Insert(0, DelphiDir + '\Lib');
-      FIncludePaths.Includes.Insert(0, DelphiDir + '\Lib');
+      FUnitPaths.Includes.Insert(0, libPath);
+      FResourcePaths.Includes.Insert(0, libPath);
+      FIncludePaths.Includes.Insert(0, libPath);
     end;
   end;
 
@@ -1151,10 +1160,6 @@ begin
 
   if (FObjectPaths.Includes.Count <> 0) or (Length(FObjectPaths.FPatternSets) <> 0) then
     Result := Result + OutputPathElements('objectpath', 'O', FObjectPaths.Paths);
-
-
-  if Length(Sources) = 0 then
-    TaskFailure(Format('Could not find %s to compile', [ToSystemPath(PathConcat(BasePath, source))]));
 end;
 
 procedure TDelphiCompileTask.AddUnitPath(Path: TPath);
