@@ -111,6 +111,7 @@ type
     FWarnings       : boolean;
     FUseLibraryPath : boolean;
     FUseCFG         : boolean;
+    FLongStrings    : boolean;
 
     FMap            : TMapType;
 
@@ -174,6 +175,8 @@ type
     property warnings: boolean read FWarnings write FWarnings default true;
     property usecfg:   boolean read FUseCFG   write FUseCFG;
 
+    property longstrings :boolean read FLongStrings   write FLongStrings;
+    
     property map       :TMapType read FMap write FMap;
 
     property uselibrarypath : boolean read FUseLibraryPath write FUseLibraryPath;
@@ -415,7 +418,7 @@ var
   Paths  : TPaths;
   cfg    : TPath;
 begin
-  Result := inherited BuildArguments;
+  Result := inherited BuildArguments + ' ';
 
   Log(vlVerbose, 'sources %s', [ToRelativePath(source)]);
   Sources := WildPaths.Wild(Source, BasePath);
@@ -423,7 +426,7 @@ begin
   for s := Low(Sources) to High(Sources) do
   begin
     Log(vlVerbose, 'source %s', [ToRelativePath(Sources[s])]);
-    Result := Result + ToSystemPath(Sources[s]) + ' ';
+    Result := Result + ' ' + ToSystemPath(Sources[s]);
   end;
 
   if not usecfg then
@@ -489,7 +492,6 @@ begin
     Result := Result + ' -W-';
   end;
 
-
   if quiet then
     Result := Result + ' -Q'
   else
@@ -521,6 +523,11 @@ begin
   end
   else if optimize then
     Result := Result + ' -$D- -$L- -$R- -$Q- -$C-';
+
+  if longstrings then
+    Result := Result + ' -$H+'
+  else
+    Result := Result + ' -$H-';
 
   case map of
     segments : Result := Result + ' -GS';
