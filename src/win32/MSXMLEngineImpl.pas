@@ -1,6 +1,7 @@
 (****************************************************************************
  * WANT - A build management tool.                                          *
  * Copyright (c) 2001-2003 Juancarlo Anez, Caracas, Venezuela.              *
+ * Copyright (c) 2003 Ignacio J. Ortega, Granada, Spain                     *
  * All rights reserved.                                                     *
  *                                                                          *
  * This library is free software; you can redistribute it and/or            *
