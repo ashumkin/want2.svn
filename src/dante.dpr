@@ -184,10 +184,11 @@ begin
     Inc(p);
   end;
 
+  // only search for build file if name not specified
   if BuildFile = '' then
-    BuildFile := BuildFileName;
+    BuildFile := TDante.FindBuildFile;
   if not FileExists(BuildFile) then
-    WriteLn('Cannot find ' + ExtractFileName(BuildFile))
+    WriteLn('Cannot find buildfile ' + ExtractFileName(BuildFile))
   else
   begin
     ADante := TDante.Create;
