@@ -30,6 +30,7 @@ uses
 
   XPerlRe,
 
+  WantUtils,
   WantClasses,
   ExecTasks,
   WildPaths,
@@ -246,6 +247,8 @@ var
   i     :Integer;
 begin
   vers := nil;
+  if versions = '' then
+    WantUtils.GetEnvironmentVar('delphi_version', FVersions, true);
   if versions <> '' then
   begin
     vers := StringToArray(versions);
@@ -356,7 +359,6 @@ end;
 procedure TDelphiCompileTask.Init;
 begin
   inherited Init;
-  RequireAttribute('basedir');
   RequireAttribute('source');
 end;
 
