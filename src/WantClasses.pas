@@ -191,7 +191,7 @@ type
     function  GetAttribute(Name :string) : string;        virtual;
 
     function  GetDelphiProperty(Name :string) :Variant;
-    function  SetDelphiProperty(Name, Value :string) :boolean;
+    function  SetDelphiProperty(PropName, Value :string) :boolean;
     function  HasDelphiProperty(Name :string):boolean;
 
     // use this to get the fully qualified base path
@@ -334,7 +334,7 @@ type
 
     function  Target: TTarget;
 
-    procedure DoExecute; 
+    procedure DoExecute;
 
     property Name stored False;
   published
@@ -1036,20 +1036,21 @@ begin
   end;
 end;
 
-function TScriptElement.SetDelphiProperty(Name, Value: string) :boolean;
+function TScriptElement.SetDelphiProperty(PropName, Value: string) :boolean;
 var
   TypeInfo: PTypeInfo;
   PropInfo: PPropInfo;
   O       : TObject;
   S       : TStrings;
-  P        :IPath;
+  P       : IPath;
+  EnumVal : Integer;
 begin
   Result := True;
 
   TypeInfo := Self.ClassInfo;
-  PropInfo := GetPropInfo(TypeInfo, Name);
+  PropInfo := GetPropInfo(TypeInfo, PropName);
   if PropINfo = nil then
-    PropInfo := GetPropInfo(TypeInfo, '_' + Name);
+    PropInfo := GetPropInfo(TypeInfo, '_' + PropName);
   if PropInfo = nil then
      Result := False
   else if not IsStoredProp(Self, PropInfo) then
@@ -1072,7 +1073,14 @@ begin
           Value := 'vl' + Value;
 
         if Name <> 'Boolean' then
-          SetOrdProp(Self, PropInfo, GetEnumValue(PropType^, Value))
+        begin
+          EnumVal :=GetEnumValue(PropType^, Value);
+          if EnumVal < 0 then
+            WantError(Format( '"%s" is not a valid value for property "%s"',
+                              [Value, PropName]
+                              ));
+          SetOrdProp(Self, PropInfo, EnumVal)
+        end
         else
         begin
           Value := LowerCase(Value);
