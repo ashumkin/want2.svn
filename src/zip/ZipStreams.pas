@@ -38,7 +38,10 @@ uses
   SysUtils,
   Classes,
   ZipUtils,
-  ZIP;
+  ZIP,
+  UNZIP,
+  WildPaths,
+  FileOps;
 
 type
   EZipFileException = class(Exception);
@@ -53,12 +56,14 @@ type
 
 
   TZipStream = class(TStream)
+  private
   protected
     FZipFileName :string;
     FEntryName   :string;
     FEntryOpen   :boolean;
     FComment     :string;
 
+    FCompress    :boolean;
     FCompression :TCompressionLevel;
 
     FZipFile     :ZipUtils.ZipFile;
@@ -67,29 +72,41 @@ type
 
     procedure Error(Msg :string);
     procedure NotImplementedError(Msg :string);
+
+    function CheckFileTime(FileName :string; Time :TDateTime = 0) :TDateTime;
+
   public
-    constructor Create(const ZipFileName :string);
+    constructor Create( ZipFileName :TPath);
     destructor  Destroy; override;
-
-    procedure NewEntry(const EntryName :string; const Comment :string = ''; Age :Integer = 0);            overload;
-    procedure NewEntry(const EntryName :string; Age:Integer; const Comment :string = ''); overload;
-
-    procedure CloseEntry;
 
     function Read(var Buffer; Count: Longint): Longint;    override;
     function Write(const Buffer; Count: Longint): Longint; override;
     function Seek(Offset: Longint; Origin: Word): Longint; override;
 
-    procedure WriteStream(const EntryName :string; Stream :TStream; const Comment :string = ''; Age :Integer = 0);   overload;
-    procedure WriteStream(const EntryName :string; Stream :TStream; Age :Integer; const Comment :string = '');       overload;
-    procedure WriteFile(const FileName :string; const Comment :string = '');
+    procedure NewEntry(  EntryName    :TPath;
+                         Attributes   :TFileAttributes;
+                         Time         :TDateTime;
+                         Compress     :boolean;
+                         Comment      :string = ''); overload;
+    procedure CloseEntry;
+
+    procedure WriteDirEntry( DirName :TPath; Time:TDateTime = 0;  Comment :string = '');
+
+    procedure WriteStream( EntryName  :TPath;
+                           Stream     :TStream;
+                           Attributes :TFileAttributes;
+                           Time       :TDateTime;
+                           Comment    :string = ''); overload;
+
+    procedure WriteFile( FileName :TPath;  Comment :string = '');
 
   public
-    property ZipFileName      :string  read FZipFileName write FZipFileName;
-    property EntryName        :string  read FEntryName   write FEntryName;
-    property EntryOpen        :boolean read FEntryOpen   write FEntryOpen;
-    property Comment          :string  read FComment     write FComment;
+    property ZipFileName      :TPath   read FZipFileName write FZipFileName;
+    property EntryName        :TPath   read FEntryName   write FEntryName;
+    property EntryOpen        :boolean  read FEntryOpen   write FEntryOpen;
+    property Comment          :string   read FComment     write FComment;
 
+    property Compress         :boolean  read FCompress    write FCompress default true;
     property CompressionLevel :TCompressionLevel read FCompression write FCompression;
   end;
 
@@ -107,16 +124,18 @@ const
 
 { TZipStream }
 
-constructor TZipStream.Create(const ZipFileName: string);
+constructor TZipStream.Create( ZipFileName: TPath);
 begin
   inherited Create;
   FPaths := TStringList.Create;
   FPaths.Sorted := True;
   FPaths.Duplicates := dupIgnore;
 
+  FCompress := True;
+
   FZipFileName := ZipFileName;
 
-  FZipFile  := ZIP.ZipOpen(PChar(ZipFileName), 0 {DO NOT APPEND});
+  FZipFile  := ZIP.ZipOpen(PChar(ToSystemPath(ZipFileName)), 0 {DO NOT APPEND});
   if FZipFile = nil then
      Error(Format('Could not open zip file "%s"', [ZipFileName]));
 end;
@@ -144,47 +163,18 @@ begin
   Error(Format('"%s" not implemented in %s', [Msg, ClassName]));
 end;
 
-procedure TZipStream.NewEntry(const EntryName: string; Age: Integer; const Comment: string);
+
+function TZipStream.CheckFileTime(FileName :string; Time :TDateTime = 0) :TDateTime;
 begin
-  NewEntry(EntryName, Comment, Age);
+  if Time <= 0 then
+    Result := FileTime(FileName)
+  else
+    Result := Time;
+
+  if Time <= 0 then
+    Result := Now;
 end;
 
-
-procedure TZipStream.NewEntry(const EntryName, Comment: string; Age: Integer);
-var
-  Err         :Integer;
-  ZipFileInfo :zip_fileinfo;
-begin
-  FEntryName := EntryName;
-
-  FillChar(ZipFileInfo, SizeOf(ZipFileInfo), 0);
-  ZipFileInfo.dosDate := Age;
-
-  Err := zipOpenNewFileInZip( FZipFile,
-                              PChar(EntryName),
-                              @ZipFileInfo,
-                              NIL,             { const extrafield_local : voidp; }
-                              0,               { size_extrafield_local : uInt; }
-                              NIL,             { const extrafield_global : voidp; }
-                              0,               { size_extrafield_global : uInt; }
-                              PChar(Comment),  { const comment : PChar;}
-                              Z_DEFLATED,
-                              CompressionMap[CompressionLevel]);
-  if Err <> ZIP_OK then
-    Error(Format('Error creating zip file entry "%s"', [EntryName]));
-
-  FEntryOpen := True;
-end;
-
-procedure TZipStream.CloseEntry;
-var
-  Err :Integer;
-begin
-  FEntryOpen := False;
-  Err := ZipCloseFileInZip (FZipFile);
-  if Err <> ZIP_OK then
-    Error('Could not close zip file entry');
-end;
 
 function TZipStream.Read(var Buffer; Count: Integer): Longint;
 begin
@@ -214,14 +204,70 @@ begin
   end;
 end;
 
-procedure TZipStream.WriteStream(const EntryName :string; Stream :TStream; Age :Integer; const Comment: string);
+
+
+procedure TZipStream.NewEntry(  EntryName    :TPath;
+                                Attributes   :TFileAttributes;
+                                Time         :TDateTime;
+                                Compress     :boolean;
+                                Comment :string = '');
+var
+  Err            :Integer;
+  ZipFileInfo    :zip_fileinfo;
+  TrashBase      :TPath;
+  CompressMethod :Integer;
 begin
-  WriteStream(EntryName, Stream, Comment, Age);
+  FEntryName := EntryName;
+
+  FillChar(ZipFileInfo, SizeOf(ZipFileInfo), 0);
+
+  ZipFileInfo.external_fa := FileAttributesToSystemAttributes(Attributes);
+  ZipFileInfo.dosDate     := TimeToSystemFileTime(Time);
+
+  WildPaths.ForceRelativePath(EntryName, TrashBase);
+  // Yank Base!!
+
+  if Compress then
+    CompressMethod := Z_DEFLATED
+  else
+    CompressMethod := 0 {Z_STORED};
+
+  Err := zipOpenNewFileInZip( FZipFile,
+                              PChar(EntryName),
+                              @ZipFileInfo,
+                              NIL,             { const extrafield_local : voidp; }
+                              0,               { size_extrafield_local : uInt; }
+                              NIL,             { const extrafield_global : voidp; }
+                              0,               { size_extrafield_global : uInt; }
+                              PChar(Comment),  { const comment : PChar;}
+                              CompressMethod,
+                              CompressionMap[CompressionLevel]);
+  if Err <> ZIP_OK then
+    Error(Format('Error creating zip file entry "%s"', [EntryName]));
+
+  FEntryOpen := True;
 end;
 
-procedure TZipStream.WriteStream(const EntryName :string; Stream :TStream; const Comment: string; Age :Integer);
+procedure TZipStream.CloseEntry;
+var
+  Err :Integer;
 begin
-  NewEntry(EntryName, Comment, Age);
+  FEntryOpen := False;
+  Err := ZipCloseFileInZip (FZipFile);
+  if Err <> ZIP_OK then
+    Error('Could not close zip file entry');
+end;
+
+
+
+
+procedure TZipStream.WriteStream( EntryName  :TPath;
+                                  Stream     :TStream;
+                                  Attributes   :TFileAttributes;
+                                  Time         :TDateTime;
+                                  Comment    :string );
+begin
+  NewEntry(EntryName, Attributes, Time, FCompress, Comment);
   try
     Self.CopyFrom(Stream, Stream.Size);
   finally
@@ -230,28 +276,49 @@ begin
 end;
 
 
-procedure TZipStream.WriteFile(const FileName: string; const Comment :string);
+procedure TZipStream.WriteFile( FileName: TPath;  Comment :string);
 var
-  Stream :TFileStream;
-  Path   :string;
+  Stream  :TFileStream;
+  FileDir :TPath;
 begin
-  Path := ExtractFileDir(FileName);
-  if FPaths.IndexOf(Path) < 0 then
+  if IsDir(FileName) then
+    WriteDirEntry(FileName, CheckFileTime(FileName), Comment)
+  else
   begin
+    FileDir := SuperPath(FileName);
+    if IsDir(FileDir) then
+       WriteDirEntry(FileDir);
+    Stream := TFileStream.Create(ToSystemPath(FileName), fmOpenRead or fmShareDenyWrite);
     try
-      {:TODO Find a way to add directory entries to .ZIP files }
-      FPaths.Add(Path);
+      WriteStream( FileName, Stream,
+                             FileAttributes(FileName),
+                             CheckFileTime(FileName),
+                             Comment);
     finally
+      Stream.Free;
     end;
-  end;
-  Stream := TFileStream.Create(FileName, fmOpenRead or fmShareDenyWrite);
-  try
-    WriteStream(FileName, Stream, Comment, FileAge(FileName));
-  finally
-    Stream.Free;
   end;
 end;
 
+
+
+
+procedure TZipStream.WriteDirEntry( DirName: TPath; Time:TDateTime; Comment :string);
+begin
+  if (Length(DirName) > 0) and (FPaths.IndexOf(DirName) < 0) then
+  begin
+    NewEntry( DirName+'/',
+              [Directory] + FileAttributes(DirName),
+              CheckFileTime(DirName, Time),
+              False, { do not compress }
+              Comment);
+    try
+      FPaths.Add(DirName);
+    finally
+      CloseEntry;
+    end;
+  end;
+end;
 
 
 

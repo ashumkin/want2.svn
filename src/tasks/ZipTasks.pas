@@ -37,6 +37,7 @@ interface
 uses
   SysUtils,
   WildPaths,
+  FileOps,
   ZipStreams,
   DanteClasses,
   FileTasks;
@@ -68,33 +69,35 @@ implementation
 
 { TZipTask }
 
-procedure TZipTask.Validate;
-begin
-  if zipfile = '' then
-    TaskError('zipfile attribute not set');
-end;
-
 constructor TZipTask.Create(Owner: TDanteElement);
 begin
   inherited Create(Owner);
   FCompress := true;
 end;
 
+procedure TZipTask.Validate;
+begin
+  if zipfile = '' then
+    TaskError('zipfile attribute not set');
+end;
+
 procedure TZipTask.Execute;
 var
-  Paths :TPaths;
-  Zip   :TZipStream;
-  p     :Integer;
+  Paths   :TPaths;
+  Zip     :TZipStream;
+  p       :Integer;
 begin
+  AboutToScratchPath(zipfile);
   Paths := FFileSet.RelativePaths;
-  Log(Format('Zipping %d files to %s', [Length(Paths), zipfile]));
+  Log(Format('Zipping %d files to %s', [Length(Paths), ToRelativePath(zipfile)]));
+  ChangeDir(FFileSet.Dir);
 
-  Zip := TZipStream.Create(ToSystemPath(zipfile));
+  Zip := TZipStream.Create(zipfile);
   try
     for p := Low(Paths) to High(Paths) do
     begin
       Log(vlVerbose, Paths[p]);
-      Zip.WriteFile(ToSystemPath(Paths[p]));
+      Zip.WriteFile(Paths[p]);
     end;
   finally
     Zip.Free;

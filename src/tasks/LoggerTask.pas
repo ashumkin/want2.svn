@@ -58,7 +58,9 @@ type
   public
     constructor Create(Owner :TDanteElement); override;
     destructor Destroy; override;
+
     class function XMLTag :string; override;
+
     procedure Execute; override;
   published
     function CreateInfo :TInfoElement;
