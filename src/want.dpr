@@ -25,7 +25,6 @@ uses
   WantStandardTasks in 'tasks\WantStandardTasks.pas',
   Attributes in 'elements\Attributes.pas',
   DUnitTasks in 'tasks\DUnitTasks.pas',
-  ZipStreams in 'lib\ZipStreams.pas',
   WildPaths in 'lib\WildPaths.pas',
   ZipTasks in 'tasks\ZipTasks.pas',
   DelphiTasks in 'tasks\DelphiTasks.pas',
