@@ -40,7 +40,7 @@ uses
   ExecTasksTest in 'ExecTasksTest.pas',
   FileTasksTest in 'FileTasksTest.pas',
   DanteMainTest in 'DanteMainTest.pas',
-  DelphiCompileTest in 'DelphiCompileTest.pas';
+  DelphiTasksTest in 'DelphiTasksTest.pas';
 
 {$R *.RES}
 
