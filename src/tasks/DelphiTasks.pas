@@ -388,11 +388,14 @@ var
   d      : Integer;
   s      : Integer;
   p      : Integer;
-  PS     : TStrings;
+  PS     : TStringArray;
   Paths  : TPaths;
   cfg    : TPath;
+  Delphi : string;
 begin
   Result := inherited BuildArguments;
+
+  Delphi := FindDelphiDir;
 
   Log(vlVerbose, 'sources %s', [ToRelativePath(source)]);
   Sources := WildPaths.Wild(Source, BasePath);
@@ -500,16 +503,29 @@ begin
     Result := Result + PathOpt('LU', FPackages[p]);
   end;
 
-  if useLibraryPath then
+  PS := nil;
+  if not useLibraryPath then
+  begin
+    Result := Result + ' -U' + Delphi + '\Lib';
+    Result := Result + ' -R' + Delphi + '\Lib';
+  end
+  else
   begin
     Log(vlVerbose, 'uselibrarypath=true');
-    PS := TStringList.Create;
+    PS := StringToArray(ReadLibraryPaths, ';');
     try
-      StrToStrings(ReadLibraryPaths, ';', PS);
-      for p := 0 to PS.Count-1 do
-        Result := Result + ' -U' + PS[p];
+      for p := 0 to High(PS) do
+      begin
+        PS[p] := Trim(PS[p]);
+        if PS[p] <> '' then
+        begin
+          PS[p] := StringReplace(PS[p], '$(DELPHI)', Delphi, [rfReplaceAll, rfIgnoreCase]);
+          Result := Result + ' -U' + PS[p];
+          Result := Result + ' -R' + PS[p];
+        end;
+      end;
     finally
-      FreeAndNil(PS);
+      PS := nil;
     end;
   end;
 
