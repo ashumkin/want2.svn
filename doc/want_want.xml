@@ -12,14 +12,29 @@ This is the Want script for building Want.
 See http://www.suigeneris.org/want/ for details.
 -->
 <project name="want"
-         basedir=".."
+         basedir="."
          default="dist" >
 
-  <property name="version" value="0.9.0" />
-  <property name="increment.build" value="false" />
+  <property name="want.master" value="%{want_master}" />
 
+  <property name="old.version"    value="?{release.ini:releases:current}" />
+  <regexp   property="old.build"  text="${old.version}" pattern="^.*\.([0-9]+)$" subst ="\1" />
+  
+  <property name="build" value="={1 + ${old.build}}" if="want.master" />
+  <property name="build" value="${old.build}"    unless="want.master" />
+  
+  <regexp property="version" text="${old.version}" pattern="\.[0-9]*$" subst=".${build}" />
+  <regexp property="comma.version" pattern="\." subst="," text="${version}" />
+
+  <tstamp>
+    <format property="when"      pattern="yyyy,mm,dd,HH,nn,ss" />
+    <format property="date.tag"  pattern="yyyy-mm-dd" />
+  </tstamp>
+
+  <property name="etc"       value="${basedir}/etc" />
   <property name="src"       value="${basedir}/src" />
-  <property name="dist"      value="${basedir}/dist" />
+  <property name="doc"       value="${basedir}/doc" />
+  <property name="dist"      value="${doc}/dist" />
   <property name="res"       value="${basedir}/res" />
   <property name="lib"       value="${basedir}/lib" />
   <property name="test"      value="${basedir}/test" />
@@ -33,43 +48,65 @@ See http://www.suigeneris.org/want/ for details.
   <property name="paszlib" value="${lib}/paszlib" />
   <property name="regexp"  value="${lib}/perlre" />
 
+  <property name="zipname" value="want-${version}.zip" />
+  <property name="zipfile" value="${dist}/${zipname}" />
+
   <patternset id="sources" >
     <include  name="${lib}/**" />
+    <include  name="${src}" />
     <include  name="${src}/**" />
   </patternset>
 
   <patternset id="resources" >
     <patternset refid="sources"/>
+    <include name="${bin}" />
   </patternset>
 
 
   <target name="prepare" >
     <mkdir dir="${dcu}" />
     <mkdir dir="${bin}" />
+    <echo  message="version=${version}" />
+    <echo  message="build=${build}" />
   </target>
 
   <target name="clean" >
-    <!-- delete dir="${dist}" / -->
-    <delete dir="${dcu}/**" />
-    <delete dir="${bin}/**" />
+    <delete dir="${bin}" >
+       <include name="**" />
+       <exclude name="ide" />
+       <exclude name="ide/**" />
+    </delete>
+    <delete dir="${dcu}" >
+       <include name="**" />
+       <exclude name="ide" />
+       <exclude name="ide/**" />
+    </delete>
   </target>
 
-  <target name="compile" depends="clean,prepare">
-    <brcc file="${src}/wantver.rc" output="${bin}/wantver.res" />
-    <brcc file="${src}/license.rc" output="${bin}/license.res" />
+  <target name="versioninfo" >
+    <echo message="version=${version}" />
+    <echo input="${src}/wantver.template.rc" file="${src}/wantver.rc" />
+  </target>
 
-    <!-- Delete want.cfg first to get a reproducible build.
-         (Should this be automated?)
-    -->
-    <touch  file="${src}/want.cfg"  />
-    <delete file="${src}/want.cfg" />
+  <target name="resources" depends="prepare,versioninfo" >
+    <brcc file="${src}/license.rc" output="${src}/license.res" />
+    <brcc file="${src}/wantver.rc" output="${src}/wantver.res" />
+  </target>
+
+  <target name="compile" depends="clean,prepare,versioninfo,resources,build">
 
     <dcc basedir="${src}" source="want.dpr"  >
       <exeoutput path="${bin}"  />
       <dcuoutput path="${dcu}"      />
       <build     value="true" />
-      <optimize  value="true" />
+      <!-- optimize  value="true" / -->
+      <debug     value="true" />
       <console   value="true" />
+
+      <longstrings value="true" />
+
+      <define name="USE_JEDI_JCL" />
+      <define name="DUNIT_DLL" />
 
       <unitpath     refid="sources"   />
       <includepath  refid="sources"   />
@@ -80,7 +117,7 @@ See http://www.suigeneris.org/want/ for details.
 
   <target name="test" depends="internal_tests,acceptance_tests" />
 
-  <target name="internal_tests" depends="clean,prepare">
+  <target name="internal_tests" depends="clean,prepare,versioninfo,resources">
     <property name="test.app" value="WantTestLib" />
     <dcc basedir="${test}" source="${test.app}.dpr" >
       <exeoutput path="${bin}"  />
@@ -89,10 +126,13 @@ See http://www.suigeneris.org/want/ for details.
       <debug     value="true" />
       <console   value="true" />
 
-      <define name="USE_TEXT_RUNNER" />
-      <define name="USE_JEDI_JCL" />
+      <warning name="SYMBOL_PLATFORM" value="off" />
+
+      <define name="USE_TEXT_RUNNER" unless="debug" />
+      <define name="DUNIT_DLL" />
+
       <unitpath     refid="sources" >
-        <include name="${test}/**" />
+        <include  name="${test}/**" />
         <exclude  name="${test}/data" />
         <exclude  name="${test}/data/**" />
       </unitpath>
@@ -103,7 +143,7 @@ See http://www.suigeneris.org/want/ for details.
  </target>
 
 
-  <target name="acceptance_tests" depends="clean,prepare" >
+  <target name="acceptance_tests" depends="clean,prepare,versioninfo,resources" >
     <property name="test.app" value="wantAcceptTestLib" />
     <dcc basedir="${test}" source="${test.app}.dpr" >
       <exeoutput path="${bin}"  />
@@ -112,8 +152,8 @@ See http://www.suigeneris.org/want/ for details.
       <debug     value="true" />
       <console   value="true" />
 
-      <define name="USE_TEXT_RUNNER" />
-      <define name="NO_RUN_VSS_TESTS" unless="include.vss" />
+      <define name="USE_TEXT_RUNNER" unless="debug" />
+      <define name="DUNIT_DLL" />
 
       <unitpath     refid="sources" >
         <include name="${test}/**" />
@@ -126,43 +166,77 @@ See http://www.suigeneris.org/want/ for details.
     <dunit testlib="${bin}/${test.app}" />
  </target>
 
-  <target name="dist" depends="clean,prepare,compile,test" >
+ <target name="dist" depends="clean,compile,test,changelog,tag,package,publish" />
+
+ <target name="publish" >
+   <echo input="${doc}/index.template.html" file="${doc}/index.html" />
+ </target>
+         
+ <target name="zip" depends="package" />
+
+ <target name="package" >
     <mkdir dir="${dist}" />
-    <property name="zipfile" value="${dist}/want-${version}.zip" />
     <delete file="${zipfile}" />
     <zip zipfile="${zipfile}" >
          <exclude name="${dist}/**" />
 
          <include name="${bin}/want.exe" />
 
+         <include name="ChangeLog" />
          <include name="**/*.pas" />
          <include name="**/*.dpr" />
          <include name="**/*.inc" />
          <include name="**/*.rc" />
          <include name="**/*.res" />
          <include name="**/*.html" />
+         <include name="**/*.htm" />
+         <include name="**/*.css" />
+         <include name="**/*.xml" />
          <include name="**/*.gif" />
          <include name="**/*.png" />
          <include name="**/*.jpg" />
          <include name="**/*.jpeg" />
          <include name="**/*.txt" />
+         <include name="**/*.ini" />
+         <include name="**/*.bat" />
+         <include name="**/*.obj" />
 
          <include name="${test}/data/**" />
 
          <include name="${lib}/*.zip" />    <!-- include third party library .zips -->
-         <exclude name="${lib}/*/**"   />   <!-- exclude subdirectories -->
          <exclude name="${basedir}/private/**" />
     </zip>
   </target>
 
+  <target name="build" >
+    <ini file="release.ini" if="want.master" >
+      <write section="releases" key="current" value="${version}" />                  
+    </ini>
+  </target>
+
   <target name="changelog" >
-     <shell executable="perl tools/cvs2cl.pl" >
-			<arg value="--file ChangeLog" />
-			<arg value="--tags" />
-			<arg value="--utc" />
-			<arg value="--window 604800" />
-			<arg value="--prune" />
-		</shell>
+     <exec executable="perl" >
+         <arg path="tools/cvs2cl.pl" />
+         <arg value="--file ChangeLog" />
+         <arg value="--tags" />
+         <arg value="--utc" />
+         <arg value="--window 604800" />
+         <arg value="--prune" />
+     </exec>
+  </target>
+
+  <target name="tag">
+     <regexp   property="cvs.tag" text="build_${version}" pattern="\." subst="_" />
+     <exec  executable="cvs rtag -R -F ${cvs.tag} ." />
+  </target>
+
+
+  <target name="tarball" >
+    <exec executable="wget">
+      <arg value="--quiet" />
+      <arg value="--output-document=@{want-cvs-${date.tag}.tar.gz}" />
+      <arg value="http://cvs.sourceforge.net/cvstarballs/want-cvsroot.tar.gz" />
+    </exec>
   </target>
 
 </project>
