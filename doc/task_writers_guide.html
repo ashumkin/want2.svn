@@ -1,0 +1,498 @@
+<!DOCTYPE html PUBLIC "-//IETF//DTD HTML 2.0//EN">
+
+<html>
+  <head>
+    <meta name="generator" content="HTML Tidy, see www.w3.org">
+    <meta http-equiv="Content-Language" content="en-us">
+    <meta http-equiv="Content-Type" content=
+    "text/html; charset=windows-1252">
+
+    <title>Dante Task Writers Guide</title>
+    <link rel="stylesheet" type="text/css" href="style.css">
+  </head>
+
+  <body>
+    <h1>Dante Task Writers Guide</h1>
+    <p><i>by Juanco A&ntilde;ez</i></p>
+
+    <h2>Basic Steps</h2>
+
+    <p>Dante lets you write your own customized tasks and make them
+    available to build scripts. In this short tutorial we'll
+    write a basic "log" task for Dante. The complete source code
+    for the example is included as <code>
+    &lt;dante&gt;/src/tasks/LoggerTasks.pas</code> in the Dante
+    distribution.</p>
+
+    <h3>Go!</h3>
+
+    <p>To create a new Dante task:</p>
+
+    <ol>
+      <li>Create a new unit, and add DanteClasses to the uses
+      clause.</li>
+
+      <li>Define a new class that descends from
+      DanteClasses.TTask.</li>
+
+      <li>Override the Execute procedure to define the task's
+      actions.</li>
+
+      <li>Register the the class by calling
+      DanteClasses.RegisterTask.</li>
+
+      <li>Include the new unit in the uses clause of <code>
+      &lt;dante&gt;/src/tasks/CustomTasks.pas</code> (Dante's
+      standard tasks go in <code>StandardTasks.pas</code>).</li>
+    </ol>
+
+    <p>Here's an example:</p>
+
+    <blockquote>
+<pre>
+unit LoggerTask;
+interface
+uses
+  DanteClasses;
+
+type
+  TLoggerTask = class(TTask)
+  public
+    procedure Execute; override;
+  end;
+
+implementation
+
+procedure TLoggerTask.Execute;
+begin
+  Log('writing log info');
+  try
+    // do nothing for now
+  except
+    TaskFailure;
+  end;
+end;
+
+initialization
+  RegisterTask(TLoggerTask);
+end.
+</pre>
+    </blockquote>
+
+    <p>And here's the uses clause in <code>
+    CustomTasks.pas</code>:</p>
+
+    <blockquote>
+<pre>
+unit CustomTasks;
+interface
+uses { add the units for your customs task here }
+  LoggerTask;
+
+implementation
+end.
+</pre>
+    </blockquote>
+<h3>Choosing the Task's XML tag</h3>
+    <p>Dante synthesizes an XML tag for your task from its class
+    name using these rules:</p>
+
+    <ul>
+      <li>Remove the initial 'T' from the class name, if
+      present.</li>
+
+      <li>Remove the 'Task' suffix from the class name, if
+      present.</li>
+
+      <li>Convert the result to lowercase.</li>
+    </ul>
+
+    <p>The XML tag for the task in the above example would be
+    '<b>logger</b>'.</p>
+
+    <p>&nbsp;If you followed the above steps then, after
+    recompiling Dante, you should be able to use the the new task
+    in build scripts:</p>
+
+    <blockquote>
+<pre>
+&lt;project name="myproject" default="main" &gt;
+  &lt;target name="main" &gt;
+ <b>  &lt;logger /&gt;
+</b>  &lt;/target&gt;
+&lt;/project&gt;
+</pre>
+    </blockquote>
+
+    <p>To use an XML tag different from the automatically generated
+    one, override the XMLTag class function in your task class:</p>
+
+    <blockquote>
+<pre>
+  TLoggerTask = class(TTask)
+  public
+    class function XMLTag :string; override;
+    procedure Execute; override;
+  end;
+  //...
+  class function TLoggerTask.XMLTag :string;
+  begin
+    Result := '<b>log</b>';
+  end;
+</pre>
+    </blockquote>
+
+    <blockquote>
+<pre>
+&lt;project name="myproject" default="main" &gt;
+  &lt;target name="main" &gt;
+ <b>  &lt;log /&gt;
+</b>  &lt;/target&gt;
+&lt;/project&gt;
+</pre>
+    </blockquote>
+<h3>Handling XML attributes</h3>
+    <p>Dante interprets the published properties of task classes as
+    XML element attributes, and automatically manages them using
+    Runtime Type Information (RTTI) (currently, only properties of
+    types string, integer, boolean, and enumeration are supported).
+    When defining properties that will map to XML attributes, keep
+    in mind that:</p>
+
+    <ul>
+      <li>Property/attribute names are case independent in this
+      version of Dante.</li>
+
+      <li>You can use an underscore as the first character for a
+      property/attribute name if the name would otherwise collide
+      with an Object Pascal keyword.</li>
+    </ul>
+
+    <p>We will add two properties/attributes to our logger:
+    '<b>file</b>', the file to output to, and '<b>format</b>', the
+    format to use. Note that 'file' is a reserved keyword in Object
+    Pascal, so we'll name the property <code>'_file'</code>
+    instead:</p>
+
+    <blockquote>
+<pre>
+type
+ <b>TLogFormat = (brief, normal, detailed);
+</b>
+  TLoggerTask = class(TTask)
+  protected
+ <b>  FFile   :string;
+    FFormat :TLogFormat;
+</b>  public
+    class function XMLTag :string; override;
+    procedure Execute; override;
+  published
+ <b>  property _file  :string     read FFile   write FFile;
+    property format :TLogFormat read FFormat write FFormat;
+</b>  end;
+</pre>
+    </blockquote>
+
+    <blockquote>
+<pre>
+&lt;project name="myproject" default="main" &gt;
+  &lt;target name="main" &gt;
+    &lt;log <b>file="${logs}/main.log" format="brief"</b> /&gt;
+  &lt;/target&gt;
+&lt;/project&gt;
+</pre>
+    </blockquote>
+
+    <p>Dante assigns the values of attributes to their
+    corresponding properties as the build script is parsed. The
+    following macro expansions are performed before doing the
+    assignment:</p>
+
+    <ol>
+      <li>Any appearance of a macro of the form <code>
+      %{name}</code> is replaced by the value of the environment
+      variable "<code>name</code>".</li>
+
+      <li>
+        Any appearance of a macro of the form <code>${name}</code>
+        is replaced by the value of the project's property
+        "<code>name</code>". Project properties are write once, and
+        are defined using the: 
+<pre>
+   &lt;property name="aname" value="avalue" /&gt;
+</pre>
+        element anywhere in a build script, or passing the (to be
+        implemented) 
+<pre>
+-Dname=value
+</pre>
+        command line option to dante.exe.
+      </li>
+    </ol>
+<h3>Defining the Task's action</h3>
+    <p>All that's left to do now is to define the task actions in
+    terms of the property/attribute values. Note that failure to
+    complete the task should be notified by calling the <code>
+    TTask.TaskFailure(Msg)</code> method:</p>
+
+    <blockquote>
+<pre>
+procedure TLoggerTask.Execute;
+var
+  LogFile :System.Text;
+begin
+  <b>Log(SysUtils.Format('writing log info to "%s"', [_file]));
+  AboutToScratchPath(_file);
+</b>  System.Assign(LogFile, <b>ToSystemPath(_file)</b>);
+  try
+ <b>  if FileExists(ToSystemPath(_file)) then
+      System.Append(LogFile)
+    else
+      System.Rewrite(LogFile);
+    try
+      Writeln(LogFile, DateTimeToStr(Now));
+    finally
+      System.Close(LogFile);
+    end;
+</b>  except
+    TaskFailure('could not open log file');
+  end;
+end;
+</pre>
+    </blockquote>
+
+    <p>Note the following in the above code:</p>
+
+    <ul>
+      <li>Dante scripts treat file paths in a platform independent
+      way, so paths obtained from a script must be translated to
+      platform dependent ones by calling the <code>
+      ToSystemPath(Path)</code> method.</li>
+
+      <li>As a safety measure, tasks should call the <code>
+      TTask.AboutToScratchPath(Path)</code> method before changing
+      any system file. The <code>AboutToScratchPath</code> method
+      verifies the location of the passed path and raises an
+      exception if the file resides outside of the Dante project's
+      base directory.</li>
+
+      <li>The Execute method starts by calling the <code>
+      TTask.Log(Msg)</code> method to provide some feedback to the
+      user.</li>
+    </ul>
+
+    <h2>Nested Task Elements</h2>
+
+    <p>Now we want to give our <code>&lt;log&gt;</code> task a nested
+    <code>&lt;info&gt;</code> element that contains the text that the
+    task will log.
+    Scripts that use the <code>&lt;log&gt;</code> task would look like this:</p>
+<pre>
+    &lt;log file="${logs}/main.log" format="brief" &gt;
+ <b>    &lt;info code="66" &gt;
+        The logger is working.
+      &lt;/info&gt;
+</b>    &lt;/log&gt;
+</pre>
+
+    <p>To define nested XML elements for a task:</p>
+
+    <ol>
+      <li>Define a class that descends from <code>
+      TDanteElement</code> for each kind of nested element.</li>
+
+      <li>For each kind of nested element, Define a published
+      <code>CreateXYZ</code> function in the task class, where 
+      "<code>XYZ</code>" is
+      the XML tag of the nested element (in our example, the method
+      will be called <code>TLoggerTask.CreateInfo</code>).</li>
+    </ol>
+
+    <p>The rules that Dante uses for synthesizing an XML tag 
+    out of the names of nested elements classes
+    are like the ones used for tasks, except that the
+    "<code>Element</code>" suffix is removed instead of the
+    "<code>Task</code>" one.</p>
+
+    <p>Instances of classes that descend from <code>
+    TDanteElement</code> and have a valid owner passed to their
+    constructor are automatically managed by Dante, so you don't
+    need to delete them (call <code>Free</code> on them). Valid
+    owners are instances of <code>TTask</code> and its descendants,
+    and instances of classes that descend from <code>
+    TDanteElement</code> and have themselves a valid owner.</p>
+
+    <p>Here's the complete logger example:</p>
+
+    <blockquote>
+<pre>
+unit LoggerTask;
+interface
+uses
+  SysUtils,
+  Classes,
+  DanteClasses;
+
+type
+  TLogFormat = (brief, normal, detailed);
+
+ <b>TInfoElement = class(TDanteElement)
+  protected
+    FCode :Integer;
+    FText :string;
+  published
+    property code :Integer read FCode write FCode;
+    property text :string  read FText write FText;
+  end;
+</b>
+  TLoggerTask = class(TTask)
+  protected
+    FFile   :string;
+    FFormat :TLogFormat;
+    FInfos  :TList;
+  public
+ <b>  constructor Create(owner :TDanteElement);
+</b>    <b>destructor Destroy; override;</b>
+    class function XMLTag :string; override;
+    procedure Execute; override;
+  published
+ <b>  function CreateInfo :TInfoElement;
+</b>
+    property _file  :string     read FFile   write FFile;
+    property format :TLogFormat read FFormat write FFormat;
+  end;
+
+implementation
+
+class function TLoggerTask.XMLTag :string;
+begin
+  Result := 'log';
+end;
+
+<b>constructor TLoggerTask.Create(owner :TDanteElement);
+begin
+  inherited Create(Owner);
+end;
+
+destructor TLoggerTask.Destroy;
+begin
+  // no need to free the TInfoElements themselves
+  FInfos.Free;
+  inherited Destroy;
+end;</b>
+
+<b>function TLoggerTask.CreateInfo :TInfoElement;
+begin
+  Result := TInfoElement.Create(Self);
+  if FInfos = nil then
+    FInfos := TList.Create;
+  FInfos.Add(Result);
+end;
+
+</b>procedure TLoggerTask.Execute;
+var
+  LogFile: System.Text;
+  i:       Integer;
+begin
+  Log(SysUtils.Format('writing log info to "%s"', [_file]));
+  AboutToScratchPath(_file);
+  System.Assign(LogFile, ToSystemPath(_file));
+  try
+    if FileExists(ToSystemPath(_file)) then
+      System.Append(LogFile)
+    else
+      System.Rewrite(LogFile);
+    try
+<b>      for i := 0 to FInfos.Count-1 do
+      begin
+        with TInfoElement(FInfos[i]) do
+          Writeln( LogFile, 
+                   DateTimeToStr(Now),
+                   SysUtils.Format(' (%d) %s', [code, text])
+                   );
+      end;
+</b>    finally
+      System.Close(LogFile);
+    end;
+  except
+<b>    TaskFailure('error writing log');</b>
+  end;
+end;
+
+initialization
+  RegisterTask(TLoggerTask);
+end.
+
+&lt;project name="myproject" default="main" &gt;
+  &lt;target name="main" &gt;
+    &lt;log file="${logs}/main.log" format="brief" &gt;
+ <b>    &lt;info code="66" &gt;
+        The logger is working.
+      &lt;/info&gt;
+</b>    &lt;/log&gt;
+  &lt;/target&gt;
+&lt;/project&gt;
+</pre>
+    </blockquote>
+
+    <p>In the above code, note the follwing:</p>
+
+    <ul>
+      <li>The rules for mapping attributes to properties, and
+      elements to <code>CreateXYZ</code> methods, apply recursively to
+      nested elements (nested elements can have attributes and other
+      nested elements).</li>
+
+      <li>Dante automatically assigns any character data (CDATA) in
+      an XML element to the '<b>text</b>' property, if the current
+      object defines one. In the above example, the text "The
+      logger is working." is assigned to the <code>text</code>
+      property of the current <code>TInfoElement</code>
+      instance. </li>
+
+      <li>The example adds nested elements to a list for later
+      retreival. To allow for only one appearance of the nested
+      element in build scripts, make the <code>CreateXYZ</code>
+      method assign the created element to an instance variable,
+      and raise an exception the second time it's called.</li>
+
+      <li>Unlike TTask descendants, nested element classes do not
+      need to be registered.</li>
+    </ul>
+
+    <p align="center">~o~</p>
+<pre>
+Copyright &copy; 2001 Juancarlo A&ntilde;ez, Caracas, Venezuela.
+All rights reserved.
+<small>
+Redistribution and use in source and binary forms, with or without modification,
+are permitted provided that the following conditions are met:
+
+1. Redistributions of source code must retain the above copyright notice, this
+list of conditions and the following disclaimer.
+
+2. Redistributions in binary form must reproduce the above copyright notice,
+this list of conditions and the following disclaimer in the documentation and/or
+other materials provided with the distribution.
+
+3. The names Chris Morris, Dante and the names of contributors to this software
+may not be used to endorse or promote products derived from this software
+without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS ``AS IS''
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDERS OR CONTRIBUTORS BE LIABLE
+FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR
+TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
+THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+--------------------------------------------------------------------------------
+(based on BSD Open Source License)
+</small>
+</pre>
+  </body>
+</html>
+
