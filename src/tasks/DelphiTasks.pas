@@ -85,6 +85,7 @@ type
     FOptimize       : boolean;
     FDebug          : boolean;
     FConsole        : boolean;
+    FWarnings       : boolean;
     FUseLibraryPath : boolean;
 
     FUnitPaths      : TUnitPathElement;
@@ -137,6 +138,7 @@ type
     property optimize: boolean read FOptimize write FOptimize;
     property debug:    boolean read FDebug    write FDebug;
     property console:  boolean read FConsole  write FConsole;
+    property warnings: boolean read FWarnings write FWarnings default true;
 
     property uselibrarypath : boolean read FUseLibraryPath write FUseLibraryPath;
 
@@ -170,6 +172,7 @@ type
   TOptimizeElement       = class(TBooleanAttributeElement);
   TDebugElement          = class(TBooleanAttributeElement);
   TConsoleElement        = class(TBooleanAttributeElement);
+  TWarningsElement       = class(TBooleanAttributeElement);
   TUseLibraryPathElement = class(TBooleanAttributeElement);
 
   TDCUOutputElement = class(TPathAttributeElement);
@@ -278,6 +281,7 @@ begin
   FResourcePaths  := TResourcePathElement.Create(Self);
   FIncludePaths   := TIncludePathElement.Create(Self);
   FDefines        := TStringList.Create;
+  FWarnings       := True;
 end;
 
 destructor TDelphiCompileTask.Destroy;
@@ -360,6 +364,15 @@ begin
   end
   else
     Result := Result + ' -CG';
+
+  if warnings then
+    Result := Result + ' -W'
+  else
+  begin
+    Log(vlVerbose, 'warnings=false');
+    Result := Result + ' -W-';
+  end;
+
 
   if quiet then
     Result := Result + ' -Q'
@@ -583,6 +596,7 @@ initialization
                          TOptimizeElement,
                          TDebugElement,
                          TConsoleElement,
+                         TWarningsElement,
                          TUseLibraryPathElement,
 
                          TDCUOutputElement,
