@@ -343,8 +343,11 @@ procedure RegisterTask(TaskClass: TTaskClass);
 procedure RegisterTasks(TaskClasses: array of TTaskClass);
 
 function  FindElement(Tag :string; AppliedTo :TClass = nil) :TDanteElementClass;
-procedure RegisterElement(ElementClass :TDanteElementClass; AppliesTo : TDanteElementClass = nil); overload;
-procedure RegisterElement(ElementClass :TDanteElementClass; AppliesTo : TDanteElementClassArray); overload;
+
+procedure RegisterElement(ElementClass :TDanteElementClass);                                            overload;
+procedure RegisterElement(AppliesTo, ElementClass :TDanteElementClass);                                 overload;
+procedure RegisterElements(ElementClasses:array of TDanteElementClass);                                 overload;
+procedure RegisterElements(AppliesTo : TDanteElementClass; ElementClasses:array of TDanteElementClass); overload;
 
 function  TextToArray(const Text: string; const Delimiter :string = ','): TStringArray;
 
@@ -357,9 +360,9 @@ implementation
 
 type
   TElementRecord = record
-    TagName      :string;
-    ElementClass :TDanteElementClass;
-    AppliesTo    :TDanteElementClassArray;
+    _TagName      :string;
+    _ElementClass :TDanteElementClass;
+    _AppliesTo    :TDanteElementClass;
   end;
 
 var
@@ -369,7 +372,6 @@ var
 function  FindElement(Tag :string; AppliedTo :TClass) :TDanteElementClass;
 var
   i :Integer;
-  c :Integer;
 begin
   Assert(Tag <> '');
 
@@ -379,52 +381,54 @@ begin
   for i := High(__ElementRegistry) downto Low(__ElementRegistry) do
     with __ElementRegistry[i] do
     begin
-      if (TagName <> Tag) then
+      if (_TagName <> Tag) then
         continue;
-      if AppliedTo = nil then
+      if (AppliedTo = nil)
+      or (_AppliesTo = nil)
+      or (AppliedTo.InheritsFrom(_AppliesTo))
+      then
       begin
-          Result := ElementClass;
+          Result := _ElementClass;
           Break;
-      end;
-      for c := Low(AppliesTo) to High(AppliesTo) do
-      begin
-        if AppliedTo.InheritsFrom(AppliesTo[c]) then
-        begin
-          Result := ElementClass;
-          Break;
-        end;
       end;
     end;
 end;
 
-procedure RegisterElement(ElementClass :TDanteElementClass; AppliesTo :TDanteElementClassArray);
+procedure RegisterElement(ElementClass :TDanteElementClass);
+begin
+  RegisterElement(TDanteElementClass(nil), ElementClass);
+end;
+
+procedure RegisterElement(AppliesTo, ElementClass :TDanteElementClass); overload;
 var
   pos :Integer;
 begin
   Assert(ElementClass <> nil);
-  Assert(Length(AppliesTo) > 0);
 
   pos := Length(__ElementRegistry);
   SetLength(__ElementRegistry, 1 + pos);
 
-  __ElementRegistry[pos].ElementClass := ElementClass;
-  __ElementRegistry[pos].TagName      := ElementClass.TagName;
-  __ElementRegistry[pos].AppliesTo    := AppliesTo;
+  with __ElementRegistry[pos] do
+  begin
+    _ElementClass := ElementClass;
+    _TagName      := ElementClass.TagName;
+    _AppliesTo    := AppliesTo;
+  end;
 end;
 
-procedure RegisterElement(ElementClass :TDanteElementClass; AppliesTo : TDanteElementClass);
-var
-  Applies :TDanteElementClassArray;
+procedure RegisterElements(ElementClasses:array of TDanteElementClass);
 begin
-  Assert(ElementClass <> nil);
-
-  if AppliesTo = nil then
-    AppliesTo := TDanteElement;
-
-  SetLength(Applies, 1);
-  Applies[0] := AppliesTo;
-  RegisterElement(ElementClass, Applies);
+  RegisterElements(TDanteElementClass(nil), ElementClasses);
 end;
+
+procedure RegisterElements(AppliesTo : TDanteElementClass; ElementClasses:array of TDanteElementClass);
+var
+  i :Integer;
+begin
+  for i := Low(ElementClasses) to High(ElementClasses) do
+    RegisterElement(AppliesTo, ElementClasses[i]);
+end;
+
 
 function FindTask(Tag: string): TTaskClass;
 var
@@ -441,7 +445,7 @@ end;
 
 procedure RegisterTask(TaskClass: TTaskClass);
 begin
-  RegisterElement(TaskClass, TTarget);
+  RegisterElement(TTarget, TaskClass);
 end;
 
 procedure RegisterTasks(TaskClasses: array of TTaskClass);
@@ -612,9 +616,16 @@ end;
 
 function TDanteElement.SetAttribute(Name, Value: string): boolean;
 begin
-  Log(vlDebug, 'attribute %s="%s"', [Name,ExpandMacros(Value)]);
-  FAttributes.Values[Name] := Value;
-  Result := SetDelphiProperty(Name, ExpandMacros(Value));
+  if (Name = 'if') or (Name = 'unless')
+  or (Name = 'ifdef') or (Name = 'ifndef')
+  then
+    Result := true // Do nothing. Conditionals are processed by ParseXMLChild
+  else
+  begin
+    Log(vlDebug, 'attribute %s="%s"', [Name,ExpandMacros(Value)]);
+    FAttributes.Values[Name] := Value;
+    Result := SetDelphiProperty(Name, ExpandMacros(Value));
+  end;
 end;
 
 
@@ -638,10 +649,31 @@ var
   Method    : TMethod;
   ElemClass : TDanteElementClass;
   Elem      : TDanteElement;
+  CondPropName: string;
 begin
   Result := true;
-
   Elem := nil;
+
+  // conditionals
+  CondPropName := Child.attributeValue('if');
+  if CondPropName = '' then
+    CondPropName := Child.attributeValue('ifdef');
+  if (CondPropName <> '')
+  and not PropertyDefined(CondPropName) then
+  begin
+    Log(vlDebug, 'skipping <%s> because "%s" not defined', [Child.Name, CondPropName]);
+    EXIT;
+  end;
+
+  CondPropName := Child.attributeValue('unless');
+  if CondPropName = '' then
+    CondPropName := Child.attributeValue('ifndef');
+  if (CondPropName <> '')
+  and PropertyDefined(CondPropName) then
+  begin
+    Log(vlDebug, 'skipping <%s> because "%s" defined', [Child.Name, CondPropName]);
+    EXIT;
+  end;
 
   Method.Data  := Self;
   MethodName   := 'Create' + Child.Name;
@@ -806,7 +838,7 @@ end;
 
 procedure TDanteElement.Log(Tag, Msg: string; Level: TLogLevel);
 begin
-  Project.Log(Tag, Msg, Level);
+  Owner.Log(Tag, Msg, Level);
 end;
 
 function TDanteElement.Log(const Format: string; const Args: array of const; Level: TLogLevel): string;
@@ -996,7 +1028,7 @@ begin
     begin
       if Kind in [tkString, tkLString, tkWString] then
       begin
-        if (PropType^^.Name = 'TPath')
+        if (Name = 'TPath')
         and not WildPaths.IsSystemIndependentPath(Value) then
           DanteError(Format('expected system-independent path but got: "%s"', [Value]) );
         SetStrProp(Self, PropInfo, Value);
