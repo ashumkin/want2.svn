@@ -199,8 +199,11 @@ procedure TPatternSet.DoIncludes(Files: TStrings; Base: string; IncAtt, ExcAtt: 
 var
   i: Integer;
 begin
-  for i := 0 to FIncludes.Count-1 do
-    DoInclude(Files, FIncludes[i], Base, IncAtt, ExcAtt);
+  if (Base <> '') and (FIncludes.Count = 0) then
+    DoInclude(Files, '**', Base, IncAtt, ExcAtt)
+  else
+    for i := 0 to FIncludes.Count-1 do
+      DoInclude(Files, FIncludes[i], Base, IncAtt, ExcAtt);
 
   for i := Low(FPatternSets) to High(FPatternSets) do
     FPatternSets[i].DoIncludes(Files, Base, IncAtt, ExcAtt);
@@ -301,8 +304,7 @@ end;
 procedure TCustomFileSet.AddDefaultPatterns;
 begin
   // add the default Ant excludes
-  Exclude('**/CVS');
-  Exclude('**/CVS/*');
+  Exclude('**/CVS/**');
   Exclude('**/.cvsignore');                                                                 
 
   Exclude('**/*~');
