@@ -85,10 +85,12 @@ begin
      this fails -- should it? I'm not up on DOM/SAX reqs                 }
     '  <property name="test" value="sample" />                       '+ CR +
     '  <target name="main">                                          '+ CR +
-    '    <shell executable="mkdir" arguments="' + FNewDir + '" />    '+ CR +
+    '    <shell executable="mkdir" arguments="' + FNewDir + '"       '+ CR +
+    '           failonerror="no" />                                  '+ CR +
     '    <mkdir dir="' + ToPath(FCopyDir) + '" />                    '+ CR +
     '    <shell executable="copy" arguments="                        '+
-             FBuildFileName + ' ' + FCopyOfFileName + '" />          '+ CR +
+             FBuildFileName + ' ' + FCopyOfFileName + '"             '+ CR +
+    '           failonerror="no" />                                  '+ CR +
     '    <shell executable="copy" arguments="                        '+
              FBuildFileName + ' ' + FNewCopyOfFileName + '" />       '+ CR +
     '    <copy todir="' + ToPath(FCopyDir) + '">                     '+ CR +
@@ -101,7 +103,7 @@ begin
     '</project>                                                      '+ CR;
 
   WriteLn(FBuildFile, Content);
-  CloseFile(FBuildFile);
+  CloseFile(FBuildFile);                                   
 end;
 
 procedure TTestDanteMain.Setup;
