@@ -100,7 +100,7 @@ Conditionals=USE_JEDI_JCL;DUNIT_DLL;SUPPORTS_WIDESTRING
 DebugSourceDirs=
 UsePackages=0
 [Parameters]
-RunParams=
+RunParams=-debug -verbose -q -warnings -buildfile clean.xml
 HostApplication=
 Launcher=
 UseLauncher=0
