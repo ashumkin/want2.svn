@@ -173,7 +173,7 @@ end;
 
 function TCustomExecTask.BuildExecutable: string;
 begin
-  Result := ToSystemPath(Executable);
+  Result := WildPaths.ToSystemPath(Executable);
 end;
 
 function TCustomExecTask.BuildCmdLine: string;
@@ -209,6 +209,7 @@ procedure TCustomExecTask.Execute;
 var
   CmdLine :string;
 begin
+  Log(vlDebug, 'currentDir=%s', [CurrentDir] );
   CmdLine := BuildCmdLine;
   Log(vlDebug, CmdLine);
   Run(CmdLine);
@@ -278,6 +279,7 @@ begin
     RaiseLastSystemError('CloseHandle');
   if (hChild <> 0) then
   begin
+    TerminateProcess(hChild, Cardinal(-1));
     if not CloseHandle(hChild) then
       RaiseLastSystemError('CloseHandle');
   end;
@@ -342,6 +344,13 @@ function TChildProcess.__Read(Count: Integer): string;
 var
   BytesRead     :DWORD;
 begin
+  Result := '';
+  if hOutputRead = 0 then
+  begin
+    Result := FLine;
+    FLine := '';
+    EXIT;
+  end;
   repeat
     SetLength(Result, Max(Count, 1));
     if not ReadFile(hOutputRead, Result[1], Length(Result), BytesRead, nil)
