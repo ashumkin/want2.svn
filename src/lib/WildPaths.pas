@@ -739,12 +739,12 @@ begin
   begin
     Result := Path;
     p := LastDelimiter('/', Result);
-    if p = Length(Path) then
+    if p = Length(Result) then
     begin
-      Result := Copy(Path, 1, p-1);
+      Result := Copy(Result, 1, p-1);
       p := LastDelimiter('/', Result);
     end;
-    Result := Copy(Path, 1, p-1);
+    Result := Copy(Result, 1, p-1);
   end;
 end;
 
