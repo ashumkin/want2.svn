@@ -30,25 +30,88 @@ TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
 THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 --------------------------------------------------------------------------------
 }
-program DanteTest;
+unit DelphiCompileTest;
 
+interface
 uses
-  GUITestRunner,
+  WildPaths,
+  FileOps,
+  DanteClasses,
+  DelphiTasks,
   TestFramework,
-  DanteClassesTest in 'DanteClassesTest.pas',
-  FileSetTests in 'FileSetTests.pas',
-  ExecTasksTest in 'ExecTasksTest.pas',
-  FileTasksTest in 'FileTasksTest.pas',
-  DanteMainTest in 'DanteMainTest.pas',
-  DelphiCompileTest in 'DelphiCompileTest.pas';
+  DanteClassesTest;
 
-{$R *.RES}
+type
+  TDelphiCompileTests = class(TProjectBaseCase)
+    FDelphiTask :TDelphiCompileTask;
+  protected
+    procedure BuildProject;
+    procedure SetUp;    override;
+    procedure TearDown; override;
+  published
+    procedure TestCompile;
+  end;
 
+implementation
+
+{ TDelphiCompileTests }
+
+procedure TDelphiCompileTests.BuildProject;
+var
+  T :TTarget;
 begin
-  { this would be handy, since some test nodes beneath will be called
-    acceptance tests and the default name of the registered tests is called
-    Unit Tests and is read-only
-  RegisteredTests.Name := 'Dante Test Suite'; }
-  GUITestRunner.RunRegisteredTests;
-end.
+  with FProject do
+  begin
+    BaseDir := PathConcat(SuperPath(ToPath(ParamStr(0))), '..');
+    Name := 'delphi_compile';
+    Verbosity := vlDebug;
 
+    T := AddTarget('compile');
+    FDelphiTask := TDelphiCompileTask.Create(T);
+    with FDelphiTask do
+    begin
+      basedir := PathConcat(FProject.BasePath, 'src');
+      writeln(ToSystemPath(basedir));
+      writeln(CurrentDir);
+      source  := 'dante.dpr';
+      exes    := '/tmp';
+      dcus    := '/tmp';
+      build   := true;
+      quiet   := true;
+
+      AddUnitPath('jcl');
+      AddUnitPath('paths');
+      AddUnitPath('xml');
+      AddUnitPath('tasks');
+      AddUnitPath('zip');
+      AddUnitPath('../lib/paszlib');
+      AddUnitPath('../lib/paszlib/minizip');
+    end;
+  end;
+end;
+
+procedure TDelphiCompileTests.SetUp;
+begin
+  inherited SetUp;
+  BuildProject;
+end;
+
+procedure TDelphiCompileTests.TearDown;
+begin
+  FDelphiTask := nil;
+end;
+
+procedure TDelphiCompileTests.TestCompile;
+var
+  exe : string;
+begin
+  exe := PathConcat(FDelphiTask.exes, 'dante.exe');
+  if IsFile(exe) then
+    DeleteFile(exe);
+  FProject.Build('compile');
+  Check(IsFile(exe), 'dante exe not found');
+end;
+
+initialization
+  RegisterTests('dcc', [TDelphiCompileTests.Suite]);
+end.

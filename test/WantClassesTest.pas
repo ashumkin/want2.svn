@@ -87,14 +87,6 @@ type
     procedure TestBuild;
   end;
 
-  TDelphiCompileTests = class(TProjectBaseCase)
-  protected
-    procedure BuildProject;
-    procedure SetUp; override;
-  published
-    procedure TestCompile;
-  end;
-
   TDummyTask1 = class(TTask)
   public
     class function XMLTag :string; override;
@@ -365,55 +357,6 @@ begin
  end;
 end;
 
-{ TDelphiCompileTests }
-
-procedure TDelphiCompileTests.BuildProject;
-var
-  T :TTarget;
-begin
-  with FProject do
-  begin
-    BaseDir := PathConcat(ToPath(ExtractFilePath(ParamStr(0))), '..');
-    Name := 'delphi_compile';
-    T := AddTarget('compile');
-    with TDelphiCompileTask.Create(T) do
-    begin
-      basedir := PathConcat(FProject.BasePath, 'src');
-      writeln(ToSystemPath(basedir));
-      writeln(GetCurrentDir);
-      source  := 'dante.dpr';
-      exes    := '/tmp';
-      dcus    := '/tmp';
-      build   := true;
-      quiet   := true;
-
-      AddUnitPath('tasks');
-      AddUnitPath('jcl');
-      AddUnitPath('paths');
-      AddUnitPath('xml');
-      AddUnitPath('zip');
-      AddUnitPath('../lib/paszlib');
-      AddUnitPath('../lib/paszlib/minizp');
-    end;
-  end;
-end;
-
-procedure TDelphiCompileTests.SetUp;
-begin
-  inherited SetUp;
-  BuildProject;
-end;
-
-procedure TDelphiCompileTests.TestCompile;
-const
-  exe = 'dante.exe';
-begin
-  if FileExists(exe) then
-    DeleteFile(exe);
-  FProject.Build('compile');
-  Check(FileExists(exe), 'dante exe not found');
-end;
-
 { TDummyTask1 }
 
 procedure TDummyTask1.Execute;
@@ -444,8 +387,7 @@ initialization
   RegisterTests('Unit Tests', [
              TSaveProjectTests.Suite,
              TTestExecTask.Suite,
-             TBuildTests.Suite,
-             TDelphiCompileTests.Suite
+             TBuildTests.Suite
            ]);
 end.
 
