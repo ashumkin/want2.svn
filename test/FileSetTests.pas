@@ -50,6 +50,7 @@ type
     procedure CheckMatch(Path, Spec :string; Msg :string = '');
     procedure CheckNoMatch(Path, Spec :string; Msg :string = '');
   published
+    procedure TestConcat;
     procedure TestSystemPaths;
     procedure TestRelative;
     procedure TestPathMatches;
@@ -75,6 +76,50 @@ begin
     fail(Format('%s <%s> should not match <%s>', [Msg, Path, Spec]));
 end;
 
+
+procedure TPathsTestCase.TestConcat;
+const
+  empty  = '';
+  abs    = '/c:/tmp';
+  rel    = 'some/path';
+  dot    = '.';
+  dotrel = dot + '/' + rel;
+  up     = '..';
+  uprel  = up + '/' + rel;
+begin
+  CheckEquals(dot,       PathConcat(empty, dot));
+  CheckEquals(dot,       PathConcat(dot,    empty));
+
+  CheckEquals(up,        PathConcat(empty, up));
+  CheckEquals(up,        PathConcat(up,    empty));
+
+  CheckEquals(up,        PathConcat(up,    dot));
+  CheckEquals(up,        PathConcat(dot,   up), 'dot + up');
+
+  CheckEquals(abs,       PathConcat(abs, empty));
+  CheckEquals(abs,       PathConcat(empty, abs));
+  CheckEquals(abs,       PathConcat(abs, abs));
+  CheckEquals(abs,       PathConcat(abs, dot));
+  CheckEquals(abs,       PathConcat(dot, abs));
+  CheckEquals('/c:',     PathConcat(abs, up));
+  CheckEquals(abs,       PathConcat(up,  abs));
+
+  CheckEquals(rel,       PathConcat(rel, empty));
+  CheckEquals(rel,       PathConcat(empty, rel));
+  CheckEquals(rel,       PathConcat(rel, dot));
+  CheckEquals(dotrel,    PathConcat(dot, rel));
+  CheckEquals('some',    PathConcat(rel, up));
+  CheckEquals(uprel,     PathConcat(up,  rel));
+
+  CheckEquals(uprel,     PathConcat(empty, uprel));
+  CheckEquals(uprel,     PathConcat(uprel, empty));
+
+  CheckEquals(abs +'/' + rel,   PathConcat(abs, rel));
+  CheckEquals(abs +'/' + rel,   PathConcat(abs, dotrel));
+  CheckEquals(abs           ,   PathConcat(rel, abs));
+  CheckEquals('/c:/' + rel,     PathConcat(abs, uprel));
+  CheckEquals(rel + '/'+ rel,   PathConcat(rel, rel));
+end;
 
 procedure TPathsTestCase.TestSystemPaths;
 begin
@@ -145,12 +190,14 @@ end;
 
 
 procedure TPathsTestCase.TestResolve;
+const
+  test_dir = '/c:/tmp';
 var
   FS    :TFileSet;
 begin
   FS := TFileSet.Create(FProject);
+  FS.basedir := test_dir;
   try
-    FS.Dir := '/c:/tmp';
     FS.Include('**/*.pas');
     FS.Include('**/*.dpr');
     FS.Include('**/*.html');
@@ -170,6 +217,7 @@ begin
     FS.Free;
   end;
 end;
+
 
 initialization
   RegisterTests('FileSet', [TestSuiteOf(TPathsTestCase)]);
