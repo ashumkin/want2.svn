@@ -38,7 +38,7 @@ uses
   WildPaths,
   FileOps,
   DanteClasses,
-  PatternSets,
+  //PatternSets,
 
   SysUtils,
   Classes;
