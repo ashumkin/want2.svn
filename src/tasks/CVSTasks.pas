@@ -56,7 +56,6 @@ uses
   {$ENDIF}
   JclSysInfo,
   JclFileUtils,
-  JclUnicode,
 
   XPerlRE,
 
@@ -735,7 +734,7 @@ begin
       bSL.LoadFromFile(AOutput);
       for i := 0 to bSL.Count - 1 do
       begin
-        bLine := CopyToEnd(bSL[i], bHeaderLength - 1);
+        bLine := CopyToEnd(bSL[i], bHeaderLength);
         bIndex := Pos(FILE_IS_NEW, bLine);
         if bIndex <> 0 then
         begin
@@ -791,7 +790,7 @@ var
   var
     s: string;
   begin
-    s := WideStringToUTF8(AString);
+    s := AnsiToUtf8(AString);
     bFS.WriteBuffer(s[1], Length(s));
   end;
 begin
@@ -1231,7 +1230,7 @@ var
   var
     s: string;
   begin
-    s := WideStringToUTF8(AString);
+    s := AnsiToUtf8(AString);
     bFS.WriteBuffer(s[1], Length(s));
   end;
 begin
