@@ -39,6 +39,7 @@ interface
 uses
   Windows,
   SysUtils,
+  Classes,
 
   JclMiscel,
   JclStrings,
@@ -46,28 +47,47 @@ uses
   LogMgr,
   ConsoleLogMgr,
   WildPaths,
+
   DanteBase,
   DanteClasses,
+
   StandardElements,
   StandardTasks,
   CustomTasks;
 
 type
-  TDante = class(TObject)
-  protected
-    FUseColor :boolean;
-
-    function RunConsole(CmdLine: string): boolean;
-
-    procedure SetCommandLineProperties(Project :TProject);
+  TDante = class(TProject)
   public
-    procedure DoBuild( ABuildFileName: string;
-                       Level: TLogLevel = vlNormal); overload;
-    procedure DoBuild( ABuildFileName: string;
-                       Targets:        string;
+    procedure DoBuild( const ABuildFileName: TPath;
+                       Targets:    TStringArray;
+                       Level:      TLogLevel = vlNormal); overload;
+    procedure DoBuild( const ABuildFileName: TPath;
+                       Target:     string;
+                       Level:      TLogLevel = vlNormal); overload;
+    procedure DoBuild( const ABuildFileName: TPath;
                        Level:      TLogLevel = vlNormal); overload;
 
-    property UseColor :boolean read FUseColor write FUseColor;
+    procedure CreateLogManager;
+  end;
+
+  TConsoleDante = class(TDante)
+  protected
+    FBuildFile   :string;
+    FTargets     :TStringArray;
+
+    procedure ParseCommandLine;              virtual;
+    function  ParseOption(Switch :string) :boolean;  virtual;
+
+    function  GetUseColor :boolean;
+    procedure SetUseColor(Value :boolean);
+  public
+    constructor Create(Owner :TDanteElement = nil); override;
+    destructor  Destroy; override;
+
+
+    procedure DoBuild; overload;
+
+    property  UseColor :Boolean read GetUseColor write SetUseColor;
   end;
 
 implementation
@@ -76,84 +96,139 @@ implementation
 
 { TDante }
 
-procedure TDante.DoBuild( ABuildFileName: string;
-                          Targets:        string;
+procedure TDante.DoBuild( const ABuildFileName: TPath;
+                          Targets:    TStringArray;
                           Level:      TLogLevel = vlNormal);
 var
-  Project: TProject;
-  T:       string;
-  Logger: TConsoleLogManager;
+  t:    Integer;
 begin
-  Logger  := TConsoleLogManager.Create;
-  Logger.Level := Level;
-  Logger.UseColor := Self.UseColor or SysUtils.FindCmdLineSwitch('color', ['/','-'], True);
-  Logger.Start;
-  try
-    ABuildFileName := ToPath(ABuildFileName);
-
-    Project := TProject.Create(nil);
-    try
-      Project.LogManager := Logger;
-
-      SetCommandLineProperties(Project);
-
-      Project.LoadXML(ABuildFileName);
-      if Targets = '' then
-        Project.Build
-      else begin
-        T := StrToken(Targets, ',');
-        while T <> '' do
-        begin
-          Project.Build(T);
-          T := StrToken(Targets, ',');
-        end;
-      end;
-    finally
-      Project.Free;
-    end;
-  finally
-    Logger.Free;
-  end;
+  Project.LoadXML(ABuildFileName);
+  if LogManager <> nil then
+    LogManager.Level := Level;
+  if Length(Targets) = 0 then
+    Build
+  else
+    for t := Low(Targets) to High(Targets) do
+      Build(Targets[t]);
 end;
 
-procedure TDante.DoBuild(ABuildFileName: string; Level: TLogLevel);
+
+procedure TDante.CreateLogManager;
 begin
-  DoBuild(ABuildFileName, '', Level);
+  LogManager := TConsoleLogManager.Create;
 end;
 
-function TDante.RunConsole(CmdLine: string): boolean;
+procedure TDante.DoBuild(const ABuildFileName: TPath; Level: TLogLevel);
 begin
-  Result := (WinExec32AndWait(CmdLine, SW_HIDE) = 0);
+  DoBuild(ABuildFileName, nil, Level);
 end;
 
-procedure TDante.SetCommandLineProperties(Project: TProject);
+procedure TDante.DoBuild(const ABuildFileName: TPath; Target: string; Level: TLogLevel);
 var
-  i:         Integer;
-  Param:     string;
+  T :TStringArray;
+begin
+  SetLength(T, 1);
+  T[0] := Target;
+  DoBuild(ABuildFileName, T, Level);
+end;
+
+{ TConsoleDante }
+
+constructor TConsoleDante.Create(Owner: TDanteElement);
+begin
+  inherited Create(Owner);
+  CreateLogManager;
+end;
+
+destructor TConsoleDante.Destroy;
+begin
+  LogManager.Free;
+  LogManager := nil;
+  inherited Destroy;
+end;
+
+procedure TConsoleDante.DoBuild;
+begin
+  ParseCommandLine;
+  DoBuild(FBuildFile, FTargets, FVerbosity);
+end;
+
+function TConsoleDante.ParseOption(Switch: string):boolean;
+var
   PropName:  string;
   PropValue: string;
   EqPos:     Integer;
 begin
-  for i := 1 to ParamCount do
+  Result := True;
+  if (Switch = '-h') or (Switch = '-?') then
+    // nothing: handled elsewhere
+  else if (Switch = '-L') then
+    // nothing: handled elsewhere
+  else if Switch = '-verbose' then
+    Verbosity := vlVerbose
+  else if Switch = '-debug' then
+    Verbosity := vlDebug
+  else if Switch = '-quiet' then
+    Verbosity := vlQuiet
+  else if Switch = '-color'then
+    UseColor := True
+  else if StrLeft(Switch, 2) = '-D' then
   begin
-    Param := ParamStr(i);
-    if Copy(Param, 1, 2) = '-D' then
+    Delete(Switch, 1, 2);
+
+    EqPos := Pos('=', Switch);
+    if EqPos = 0 then
+       EqPos := 1+Length(Switch);
+
+    PropName  := Copy(Switch, 1, EqPos-1);
+    PropValue := Copy(Switch, EqPos+1, Length(Switch));
+
+    PropValue := StrTrimQuotes(PropValue);
+
+    Project.SetProperty(PropName, PropValue);
+  end
+  else
+    Result := False;
+end;
+
+procedure TConsoleDante.ParseCommandLine;
+var
+  p:         Integer;
+  Param:     string;
+begin
+  p := 1;
+  while p <= ParamCount do
+  begin
+    Param := ParamStr(p);
+    if Param = '-buildfile' then
     begin
-      Delete(Param, 1, 2);
-
-      EqPos := Pos('=', Param);
-      if EqPos = 0 then
-         EqPos := 1+Length(Param);
-
-      PropName  := Copy(Param, 1, EqPos-1);
-      PropValue := Copy(Param, EqPos+1, Length(Param));
-
-      PropValue := StrTrimQuotes(PropValue);
-
-      Project.SetProperty(PropName, PropValue);
+      Inc(p);
+      FBuildFile := FindBuildFile(ToPath(ParamStr(p)), True);
     end
+    else if (StrLeft(Param, 1) = '-') then
+    begin
+      if not ParseOption(Param) then
+        DanteError('Unknown commandline option: ' + Param)
+    end
+    else
+    begin
+      SetLength(FTargets, 1+Length(FTargets));
+      FTargets[High(FTargets)] := Param;
+    end;
+    Inc(p);
   end;
 end;
+
+function TConsoleDante.GetUseColor: boolean;
+begin
+  Result := TConsoleLogManager(LogManager).UseColor;
+end;
+
+procedure TConsoleDante.SetUseColor(Value: boolean);
+begin
+  TConsoleLogManager(LogManager).UseColor := Value;
+end;
+
 
 end.
 

@@ -52,50 +52,18 @@ const
 
 procedure Run;
 var
-  BuildFile: string;
-  Targets:   string;
-  ADante:    TDante;
-  p:         Integer;
-  VLevel:    TLogLevel;
+  ADante :TConsoleDante;
 begin
-  BuildFile := '';
-  Targets   := '';
-  VLevel    := vlNormal;
-  p := 1;
-  while p <= ParamCount do
-  begin
-    if ParamStr(p)[1] <> '-' then
-    begin
-      if Targets = '' then
-        Targets := ParamStr(p)
-      else
-        Targets := Targets + ',' + ParamStr(p);
-    end
-    else if ParamStr(p) = '-buildfile' then
-    begin
-      Inc(p);
-      BuildFile := ParamStr(p);
-    end
-    else if ParamStr(p) = '-verbose' then
-      VLevel := vlVerbose
-    else if ParamStr(p) = '-debug' then
-      VLevel := vlDebug
-    else if ParamStr(p) = '-quiet' then
-      VLevel := vlQuiet
-    else begin
-    end;
-    Inc(p);
-  end;
-
-  ADante := TDante.Create;
   try
+    ADante := TConsoleDante.Create;
     try
-      ADante.DoBuild(BuildFile, Targets, VLevel);
-    except
-      Halt(1);
+      ADante.UseColor := False;
+      ADante.DoBuild;
+    finally
+      ADante.Free;
     end;
-  finally
-    ADante.Free;
+  except
+    Halt(1);
   end;
 end;
 

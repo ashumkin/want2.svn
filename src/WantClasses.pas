@@ -211,7 +211,7 @@ type
   protected
     FTargets:       TList;
     FDefaultTarget: string;
-    FVerbosity:     TLogLevel;
+    FVerbosity:      TLogLevel;
     FRootPath:      TPath;  // root for all path calculations
     FRootPathSet:   boolean;
     FDescription:   string;
@@ -242,8 +242,8 @@ type
     class function TagName: string; override;
 
     class function DefaultBuildFileName: TPath;
-    function FindBuildFile(BuildFile: TPath; SearchUp :boolean = True):TPath; overload;
-    function FindBuildFile(SearchUp :boolean= True) :TPath; overload;
+    function FindBuildFile(BuildFile: TPath; SearchUp :boolean = False):TPath; overload;
+    function FindBuildFile(SearchUp :boolean= False) :TPath; overload;
 
     function  ToXML(Dom: IDocument):  IElement; override;
     procedure ParseXMLText(const XML: string);
@@ -263,8 +263,7 @@ type
 
 
     function  Schedule(Target: string): TTargetArray;
-    procedure Build(Targets: array of string); overload;
-    procedure Build(Target: string = ''); overload;
+    procedure Build(Target: string = '');      overload; virtual;
 
     procedure Log(Msg: string = ''; Level: TLogLevel = vlNormal);  override;
     procedure Log(Tag: string; Msg: string; Level: TLogLevel = vlNormal);  override;
@@ -282,11 +281,11 @@ type
     property basedir;
 
     property Name stored True;
-    property Default:       string          read FDefaultTarget  write FDefaultTarget;
-    property Level:     TLogLevel
-      read    FVerbosity
-      write   FVerbosity
-      stored  False
+    property _Default:  string read FDefaultTarget  write FDefaultTarget;
+    property Verbosity:   TLogLevel
+      read   FVerbosity
+      write  FVerbosity
+      stored False
       default vlNormal;
     property Description:   string          read FDescription    write FDescription;
 
@@ -313,7 +312,7 @@ type
     function  ToXML(Dom: IDocument):  IElement; override;
 
     function TaskCount: Integer;
-    procedure Build;
+    procedure Build; virtual;
 
     procedure Log(Msg: string = ''; Level: TLogLevel = vlNormal); override;
 
@@ -716,6 +715,8 @@ begin
               // do nothing
             end
           end;
+        if StrLeft(PropName,1) = '_' then
+          Delete(PropName, 1, 1);
         if PropValue <> '' then
           Result.SetAttribute(PropName, PropValue);
       end;
@@ -1102,7 +1103,7 @@ begin
     end;
   end;
   if Result = nil then
-    raise ETargetNotFoundException.Create(Format('Target "%s" not found',[Name]));
+    DanteError(Format('Target "%s" not found',[Name]));
 end;
 
 procedure TProject.BuildSchedule(TargetName: string; Sched: TList);
@@ -1156,10 +1157,10 @@ begin
     LogManager.Log(Format('%14s ', [ '['+Tag+']' ]), Msg, Level);
 end;
 
-procedure TProject.Build(Target: string);
+procedure TProject.Build(Target: string = '');
 var
-  i    : Integer;
-  Sched: TTargetArray;
+  i:       Integer;
+  Sched:   TTargetArray;
   LastDir: TPath;
 begin
   Log(vlDebug, 'runpath="%s"',  [RootPath]);
@@ -1169,16 +1170,14 @@ begin
   try
     if Target = '' then
     begin
-      if Default = '' then
-         raise ENoDefaultTargetError.Create('No default target')
+      if _Default <> '' then
+        Target := _Default
       else
-        Target := Default;
+        raise ENoDefaultTargetError.Create('No default target');
     end;
 
     Sched := Schedule(Target);
-
     LastDir := CurrentDir;
-    Sched := Schedule(Target);
     for i := Low(Sched) to High(Sched) do
     begin
       try
@@ -1192,8 +1191,7 @@ begin
   except
     on e: Exception do
     begin
-      if not E.ClassType.InheritsFrom(EDanteException) then
-        Log(vlErrors, E.ClassName + ': ' + E.Message);
+      Log(vlErrors, E.ClassName + ': ' + E.Message);
       Log;
       Log(vlErrors, 'BUILD FAILED');
       raise;
@@ -1201,18 +1199,6 @@ begin
   end;
 end;
 
-
-procedure TProject.Build(Targets: array of string);
-var
-  t    : Integer;
-begin
-  if Length(Targets) = 0 then
-    Build
-  else begin
-    for t := Low(Targets) to High(Targets) do
-      Build(Targets[t])
-  end;
-end;
 
 // XML handling
 
@@ -1245,9 +1231,9 @@ var
 begin
   BuildFile := ToPath(SystemPath);
   if SystemPath = '' then
-    BuildFile := FindBuildFile
+    BuildFile := FindBuildFile(False)
   else
-    BuildFile := FindBuildFile(BuildFile);
+    BuildFile := FindBuildFile(BuildFile, False);
 
   BuildFile := ToAbsolutePath(BuildFile);
   try
@@ -1405,6 +1391,7 @@ begin
   if not PathIsFile(Result) then
      Result := DefaultBuildFileName;
 end;
+
 
 { TTarget }
 

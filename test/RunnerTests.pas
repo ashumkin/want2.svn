@@ -111,6 +111,9 @@ procedure TTestDanteMain.Setup;
 begin
   inherited;
   FDante := TDante.Create;
+  {$IFNDEF USE_TEXT_RUNNER}
+  FDante.CreateLogManager;
+  {$ENDIF}
 
   FBuildFileName := FTestDir + '\build.xml';
   FCopyOfFileName := FTestDir + '\copyofbuild.xml';

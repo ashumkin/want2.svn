@@ -167,8 +167,10 @@ var
   Dante: TDante;
 begin
   Dante := TDante.Create;
+  {$IFNDEF USE_TEXT_RUNNER}
+     Dante.CreateLogManager;
+  {$ENDIF}
   try
-    Dante.UseColor := True;
     Dante.DoBuild(FTestExeSetupDir + BuildFileName, vlVerbose);
   finally
     Dante.Free;

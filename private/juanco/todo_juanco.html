@@ -12,20 +12,23 @@
 <h1>Dante TODO</h1>
 <p><i>Juanco Añez</i></p>
 <h2>Build Scripts</h2>
-<p>To avoid any confusion with Ant's build scripts, which are named &quot;build.xml&quot;,
-Dante's build scripts should be named &quot;make.xml&quot;, or anything
-different.</p>
+<ul>
+<li><b>DONE!</b> To avoid any confusion with Ant's build scripts, which are
+named &quot;build.xml&quot;, Dante's build scripts should be named
+&quot;dante.xml&quot;, &quot;make.xml&quot;, or anything different.</li>
+</ul>
 <h2>FileSets</h2>
 <ul>
-  <li>Turn on the ability for file tasks (touch, delete, copy, move) to specify
+   <li><b>DONE!</b> Turn on the ability for file tasks (touch, delete, copy, move) to specify
     internal &lt;fileset&gt; elements.</li>
-  <li>Implement this (from the Ant docs):
+
+   <li><b>WILL NOT DO!</b> Implement this (from the Ant docs):
     <p>There is one &quot;shorthand&quot;, if a pattern ends with '/' or '\',
     then '**' is appended. E.g. &quot;mypackage/test/&quot; is interpreted as
     were it &quot;mypackage/test/**&quot;.</li>
-  <li>Implement this: filesets with no &lt;include&gt; elements have an implicit
+  <li><b>WILL NOT DO!</b> Implement this: filesets with no &lt;include&gt; elements have an implicit
     include of &quot;basedir/**&quot;.</li>
-  <li>Implement this:<br>
+  <li><b>DONE!</b> Implement this:<br>
     <blockquote>
       <pre>&lt;patternset id=&quot;non.test.sources&quot; &gt;
   &lt;include name=&quot;**/*.java&quot; /&gt;
@@ -41,7 +44,7 @@ different.</p>
 <h2>Properties</h2>
 <ul>
   <li>Decide on the set ob built-in properties to support and add them.</li>
-  <li>Consider making properties local to elements, but inheritable to
+  <li><b>DONE!</b> Consider making properties local to elements, but inheritable to
     sub-elements. This would add flexibility, and will eliminate the fiddling
     with properties in TDanteTask if the subproject's owner was set to the
     TDanteTask instance. In other words, properties would have the expected
@@ -49,25 +52,30 @@ different.</p>
 </ul>
 <h2>Attributes</h2>
 <ul>
-  <li>Make boolean attributes accept values of &quot;yes&quot; and
+  <li><b>DONE!</b> Make boolean attributes accept values of &quot;yes&quot; and
     &quot;no&quot;.</li>
 </ul>
 <h2>Targets</h2>
 <ul>
   <li>Add a &quot;description&quot; attribute/property to targets. Ant has one.</li>
+  Log the description when the target is entered.
+  <li>Add a &quot;description&quot; attribute to tasks too. Tasks can optionall
+  log it, or they can call inherited Execute to do it.
 </ul>
 <h2>Tasks</h2>
 <ul>
-  <li>Expose the &quot;basedir&quot; property in the &lt;exec&gt;&nbsp; task.</li>
+  <li><b>DONE!</b> Expose the &quot;basedir&quot; property in the &lt;exec&gt;&nbsp; task.</li>
   <li>For testing purposes, it would be useful to define a TCheckProperty task:</li>
 </ul>
 <pre>  &lt;checkproperty name=&quot;aname&quot; expectedvalue=&quot;avalue&quot; /&gt;</pre>
 <ul>
-  <li>Overload RegisterTask, and have the overloaded version take a Name
+  <li>Overload RegisterElement/RegisterTask, and have the overloaded version 
+  take a Name
     parameter. This allows for task aliasing (tasks that have more than one
     name/xmltag). </li>
-  <li>Implement the &lt;tstamp/&gt; task.</li>
+  <li><b>DONE!</b> Implement the &lt;tstamp&gt; task.</li>
   <li>Implement the &lt;available&gt; task.</li>
+  <li>Implement the &lt;uptodate&gt; task.
   <li>Implement the &lt;fail&gt; task.</li>
   <li>To be consistent with Ant, make&nbsp; ETaskException descend from
     EBuildException and use accross the board. Refactor exception classes in

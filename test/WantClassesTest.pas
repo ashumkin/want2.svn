@@ -40,6 +40,7 @@ uses
   StandardElements,
   ExecTasks,
   DelphiTasks,
+  ConsoleLogMgr,
 
   TestFramework,
 
@@ -53,6 +54,7 @@ uses
 type
   TProjectBaseCase = class(TTestCase)
   protected
+    FLogger : TConsoleLogManager;
     FProject: TProject;
 
     procedure SetUp;    override;
@@ -155,11 +157,17 @@ implementation
 procedure TProjectBaseCase.SetUp;
 begin
   FProject := TProject.Create;
+  {$IFNDEF USE_TEXT_RUNNER}
+    FLogger  := TConsoleLogManager.Create;
+    FLogger.UseColor := True;
+    FProject.LogManager := FLogger;
+  {$ENDIF}
 end;
 
 procedure TProjectBaseCase.TearDown;
 begin
   FProject.Free;
+  FLogger.Free;
 end;
 
 { TTestDirCase }
@@ -333,7 +341,7 @@ begin
 
    Check(not FileExists(NewFileName), 'file not copied');
 
-   FProject.Build(['copy']);
+   FProject.Build('copy');
 
    Check(FileExists(NewFileName), 'file not copied');
  finally

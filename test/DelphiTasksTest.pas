@@ -77,6 +77,7 @@ begin
       dcus    := '/tmp';
       build   := true;
       quiet   := true;
+      uselibrarypath := true;
 
       AddUnitPath('lib');
       AddUnitPath('tasks');
