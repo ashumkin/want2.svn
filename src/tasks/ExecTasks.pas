@@ -60,6 +60,11 @@ type
     property value :string read FValue write FValue;
   end;
 
+  TPathElement = class(TArgElement)
+  public
+    procedure Init; override;
+  end;
+
   TCustomExecTask = class(TTask)
   protected
     FOS          :string;
@@ -97,7 +102,8 @@ type
     }
     property timeout:      Longint  read FTimeout     write FTimeout;       
   published
-    function CreateArg :TArgElement;
+    function CreateArg  :TArgElement;
+    function CreatePath :TPathElement;
   end;
 
   TExecTask = class(TCustomExecTask)
@@ -268,6 +274,11 @@ end;
 function TCustomExecTask.CreateArg: TArgElement;
 begin
   Result := TArgElement.Create(Self);
+end;
+
+function TCustomExecTask.CreatePath: TPathElement;
+begin
+  Result := TPathElement.Create(Self);
 end;
 
 { TChildProcess }
@@ -464,6 +475,15 @@ procedure TArgElement.Init;
 begin
   RequireAttribute('value');
   (Owner as TCustomExecTask).FArguments.Add(Value);
+end;
+
+{ TPathElement }
+
+procedure TPathElement.Init;
+begin
+  RequireAttribute('value');
+  value := ToSystemPath(value);
+  inherited Init;
 end;
 
 initialization
