@@ -9,7 +9,7 @@ MAKE = $(ROOT)\bin\make.exe -$(MAKEFLAGS) -f$**
 DCC = $(ROOT)\bin\dcc32.exe $**
 BRCC = $(ROOT)\bin\brcc32.exe $**
 #------------------------------------------------------------------------------
-PROJECTS = dante.exe DanteTest.exe
+PROJECTS = DanteAcceptTest.exe dante.exe DanteTest.exe
 #------------------------------------------------------------------------------
 default: $(PROJECTS)
 #------------------------------------------------------------------------------
@@ -18,6 +18,9 @@ dante.exe: dante.dpr
   $(DCC)
 
 DanteTest.exe: ..\test\DanteTest.dpr
+  $(DCC)
+
+DanteAcceptTest.exe: ..\test\DanteAcceptTest.dpr
   $(DCC)
 
 

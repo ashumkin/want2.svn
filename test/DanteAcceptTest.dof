@@ -13,15 +13,15 @@ K=0
 L=1
 M=0
 N=1
-O=0
+O=1
 P=1
-Q=1
-R=1
+Q=0
+R=0
 S=0
 T=0
 U=0
 V=1
-W=1
+W=0
 X=1
 Y=1
 Z=1
@@ -29,9 +29,9 @@ ShowHints=1
 ShowWarnings=1
 UnitAliases=WinTypes=Windows;WinProcs=Windows;DbiTypes=BDE;DbiProcs=BDE;DbiErrs=BDE;
 [Linker]
-MapFile=3
+MapFile=0
 OutputObjs=0
-ConsoleApp=0
+ConsoleApp=1
 DebugInfo=0
 RemoteSymbols=0
 MinStackSize=16384
@@ -45,7 +45,7 @@ PackageDLLOutputDir=
 PackageDCPOutputDir=
 SearchPath=$(DELPHI)\Lib;..\src\;..\src\xml;..\src\tasks;..\src\jcl;..\src\paths;..\src\xml;..\src\LogMgr
 Packages=Vcl50;Vclx50;VclSmp50;Vcldb50;vclado50;ibevnt50;Vclbde50;vcldbx50;Qrpt50;TeeUI50;TeeDB50;Tee50;Dss50;TeeQR50;VCLIB50;Vclmid50;vclie50;Inetdb50;Inet50;NMFast50;webmid50;dclocx50;dclaxserver50;Indy50;OE;RxCtl5;RxBDE5;RxDB5;msxml;OpenXML_D5
-Conditionals=RUN_VSS_TESTS
+Conditionals=
 DebugSourceDirs=$(DELPHI)\Lib;..\src\;..\src\xml;..\src\tasks;..\src\jcl;..\src\paths;..\src\xml;..\src\LogMgr
 UsePackages=0
 [Parameters]
@@ -53,7 +53,7 @@ RunParams=
 HostApplication=
 [Language]
 ActiveLang=
-ProjectLang=$00000409
+ProjectLang=
 RootDir=
 [Version Info]
 IncludeVerInfo=0

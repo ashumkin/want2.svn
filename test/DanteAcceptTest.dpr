@@ -30,16 +30,13 @@ TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
 THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 --------------------------------------------------------------------------------
 }
-program DanteTest;
+program DanteAcceptTest;
 
 uses
   GUITestRunner,
   TestFramework,
-  DanteClassesTest in 'DanteClassesTest.pas',
-  FileSetTests in 'FileSetTests.pas',
-  ExecTasksTest in 'ExecTasksTest.pas',
-  FileTasksTest in 'FileTasksTest.pas',
-  DelphiTasksTest in 'DelphiTasksTest.pas';
+  DanteMainTest,
+  VssTasksTest;
 
 {$R *.RES}
 
