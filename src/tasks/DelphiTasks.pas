@@ -707,17 +707,21 @@ begin
 
   { Meta options }
 
-  if HasAttribute('debug') or HasAttribute('optimize') then
+  if HasAttribute('debug') then
   begin
     if debug then
     begin
       Log(vlVerbose, 'debug=true');
       Result := Result + ' -$D+ -$L+ -$YD -$C+ -$Q+ -$R+ -$O- -GD';
-    end
-    else if optimize then
+    end;
+  end;
+
+  if HasAttribute('optimize') then
+  begin
+    if optimize then
     begin
       Log(vlVerbose, 'optimize=true');
-      Result := Result + ' -$D+ -$L+ -$Y- -$C+ -$Q+ -$R+ -$O+';
+      Result := Result + ' -$C- -$Q- -$R- -$O+';
     end
   end;
 
