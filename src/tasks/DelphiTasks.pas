@@ -244,7 +244,7 @@ type
 
     // these properties are mapped to XML attributes
     property Arguments;
-    property ArgumentList stored False;
+    property ArgumentList stored false;
     property SkipLines;
 
     property exeoutput :TPath read FExesPath write FExesPath;
@@ -596,7 +596,7 @@ begin
 end;
 
 function TDelphiCompileTask.OutputPathElements(const optionDescription,
-      optionFlag : string;pathsToOutput : TPaths) : string;
+      optionFlag : string; pathsToOutput : TPaths) : string;
 var
   path : integer;
 begin
@@ -989,22 +989,6 @@ begin
   end;
 
   PS := nil;
-  if (not usecfg) or HasAttribute('usedebugdcu') then
-  begin
-    if usedebugdcu then
-    begin
-      Result := Result + PathOpt('U', DelphiDir + '\Lib\Debug');
-      Result := Result + PathOpt('R', DelphiDir + '\Lib\Debug');
-      Result := Result + PathOpt('I', DelphiDir + '\Lib\Debug');
-    end
-    else if not useLibraryPath then
-    begin
-      Result := Result + PathOpt('U', DelphiDir + '\Lib');
-      Result := Result + PathOpt('R', DelphiDir + '\Lib');
-      Result := Result + PathOpt('I', DelphiDir + '\Lib');
-    end;
-  end;
-
   if (not usecfg) or HasAttribute('uselibrarypath') then
   begin
     if useLibraryPath then
@@ -1012,20 +996,36 @@ begin
       Log(vlVerbose, 'uselibrarypath=true');
       PS := StringToArray(ReadLibraryPaths, ';');
       try
-        for p := 0 to High(PS) do
+        for p := High(PS) downto Low(PS) do
         begin
           PS[p] := Trim(PS[p]);
           if PS[p] <> '' then
           begin
             PS[p] := StringReplace(PS[p], '$(DELPHI)', DelphiDir, [rfReplaceAll, rfIgnoreCase]);
-            Result := Result + PathOpt('U', PS[p]);
-            Result := Result + PathOpt('R', PS[p]);
-            Result := Result + PathOpt('I', PS[p]);
+            FUnitPaths.Includes.Insert(0, PS[p]);
+            FResourcePaths.Includes.Insert(0, PS[p]);
+            FIncludePaths.Includes.Insert(0, PS[p]);
           end;
         end;
       finally
         PS := nil;
       end;
+    end;
+  end;
+
+  if (not usecfg) or HasAttribute('usedebugdcu') then
+  begin
+    if usedebugdcu then
+    begin
+      FUnitPaths.Includes.Insert(0, DelphiDir + '\Lib\Debug');
+      FResourcePaths.Includes.Insert(0, DelphiDir + '\Lib\Debug');
+      FIncludePaths.Includes.Insert(0, DelphiDir + '\Lib\Debug');
+    end
+    else if not useLibraryPath then
+    begin
+      FUnitPaths.Includes.Insert(0, DelphiDir + '\Lib');
+      FResourcePaths.Includes.Insert(0, DelphiDir + '\Lib');
+      FIncludePaths.Includes.Insert(0, DelphiDir + '\Lib');
     end;
   end;
 
@@ -1196,6 +1196,7 @@ end;
 constructor TPathSet.Create(Owner: TScriptElement);
 begin
   inherited Create(Owner);
+  FSorted := false;
   AddDefaultPatterns;
 end;
 
