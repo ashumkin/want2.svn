@@ -35,12 +35,18 @@ program DanteTest;
 
 uses
   GUITestRunner,
+  TestFramework,
   DanteMainTest,
-  DanteClassesTest;
+  DanteClassesTest,
+  DanteTestUtil in 'DanteTestUtil.pas';
 
 {$R *.RES}
 
 begin
+  { this would be handy, since some test nodes beneath will be called
+    acceptance tests and the default name of the registered tests is called
+    Unit Tests and is read-only
+  RegisteredTests.Name := 'Dante Test Suite'; }
   GUITestRunner.RunRegisteredTests;
 end.
 

@@ -103,6 +103,23 @@ type
 
   TTask = class(TDanteComponent)
   public
+    procedure Execute; virtual; abstract;
+  end;
+
+  TExecTask = class(TTask)
+  private
+    FOS: string;
+    FExecutable: string;
+    FArguments: TStringList;
+  public
+    constructor Create(Owner: TComponent); override;
+    destructor Destroy; override;
+
+    procedure Execute; override;
+  published
+    property Arguments: TStringList read FArguments write FArguments;
+    property Executable: string read FExecutable write FExecutable;
+    property OS: string read FOS write FOS;
   end;
 
 
@@ -314,10 +331,26 @@ begin
   Result := FTasks.Count;
 end;
 
-{ TTask }
+{ TExecTask }
+
+constructor TExecTask.Create(Owner: TComponent);
+begin
+  inherited Create(Owner);
+  FArguments := TStringList.Create;
+end;
+
+destructor TExecTask.Destroy;
+begin
+  FArguments.Free;
+  inherited;
+end;
+
+procedure TExecTask.Execute;
+begin
+end;
 
 initialization
-  RegisterClasses([TProject, TTarget, TTask]);
+  RegisterClasses([TProject, TTarget, TTask, TExecTask]);
 end.
 
 

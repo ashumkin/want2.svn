@@ -36,11 +36,9 @@ Contributor(s): Juancarlo Añez
 unit DanteClassesTest;
 
 interface
+
 uses
-  Projects,
-  SysUtils,
-  Classes,
-  TestFramework;
+  DanteClasses, SysUtils, Classes, TestFramework, JclSysInfo, DanteTestUtil;
 
 type
   TProjectBaseCase = class(TTestCase)
@@ -60,13 +58,27 @@ type
     procedure TestSaveLoad;
   end;
 
-  TDummyTask1 = class(TTask);
-  TDummyTask2 = class(TTask);
-  TDummyTask3 = class(TTask)
+  TDummyTask1 = class(TTask)
+  public
+    procedure Execute; override;
+  end;
+
+  TDummyTask2 = class(TDummyTask1);
+  TDummyTask3 = class(TDummyTask1)
   protected
     FAnInt: Integer;
   published
     property AnInt: Integer read FAnInt write FAnInt;
+  end;
+
+  TTestExecTask = class(TTestDirCase)
+  private
+    FExecTask: TExecTask;
+  public
+    procedure Setup; override;
+    procedure TearDown; override;
+  published
+    procedure TestExecTask;
   end;
 
 implementation
@@ -153,8 +165,47 @@ begin
   end;
 end;
 
+{ TTestExecTask }
+
+procedure TTestExecTask.Setup;
+begin
+  inherited;
+  FExecTask := TExecTask.Create(nil);
+end;
+
+procedure TTestExecTask.TearDown;
+begin
+  FExecTask.Free;
+  inherited;
+end;
+
+procedure TTestExecTask.TestExecTask;
+var
+  CurrentFileName: string;
+  NewFileName: string;
+begin
+  CurrentFileName := MakeSampleTextFile;
+  NewFileName := ExtractFilePath(CurrentFileName) + 'new.txt';
+  if IsWinNT then
+    FExecTask.Executable := 'cmd.exe'
+  else
+    FExecTask.Executable := 'command.com';
+  FExecTask.Arguments.Add('/c copy');
+  FExecTask.Arguments.Add(CurrentFileName);
+  FExecTask.Arguments.Add(NewFileName);
+  FExecTask.Execute;
+  Check(FileExists(NewFileName), 'TExecTask copy file failed');
+end;
+
+{ TDummyTask1 }
+
+procedure TDummyTask1.Execute;
+begin
+end;
+
 initialization
   RegisterClasses([TDummyTask1, TDummyTask2, TDummyTask3]);
-  RegisterTest('', TSaveProjectTests);
+  RegisterTest('Unit Tests', TSaveProjectTests);
+  RegisterTest('Unit Tests', TTestExecTask);
 end.
 

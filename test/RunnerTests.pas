@@ -36,15 +36,17 @@ unit DanteMainTest;
 interface
 
 uses
-  TestFramework, DanteUnit, SysUtils, JclFileUtils, JclShell, JclSysInfo;
+  TestFramework, DanteMain, DanteTestUtil, SysUtils;
 
 type
-  TTestDanteMain = class(TTestCase)
+  TTestDanteMain = class(TTestDirCase)
   private
     FBuildFile: TextFile;
     FBuildFileName: string;
+    FCopyOfFileName: string;
     FDante: TDante;
-    FTestDir: string;
+  protected
+    procedure MakeTestBuildFile;
   public
     procedure Setup; override;
     procedure TearDown; override;
@@ -56,43 +58,63 @@ implementation
 
 { TTestDanteMain }
 
+procedure TTestDanteMain.MakeTestBuildFile;
+const
+  CR = #$D#$A;
+var
+  Content: string;
+begin
+  AssignFile(FBuildFile, FBuildFileName);
+  Rewrite(FBuildFile);
+
+  Content :=
+    'object TestProject: TProject                                       ' + CR +
+    '  object Main: TTarget                                             ' + CR +
+    '    object ExecNT: TExecTask                                       ' + CR +
+    '      Executable = ''cmd.exe''                                     ' + CR +
+    '      OS = ''Windows NT''                                          ' + CR +
+    '      Arguments.Strings = (                                        ' + CR +
+    '        ''/c copy''                                                ' + CR +
+    '        ''' + FBuildFileName + '''                                 ' + CR +
+    '        ''' + FCopyOfFileName + ''')                               ' + CR +
+    '    end                                                            ' + CR +
+    '    object Exec9x: TExecTask                                       ' + CR +
+    '      Executable = ''command.com''                                 ' + CR +
+    '      OS = ''Windows 9x''                                          ' + CR +
+    '      Arguments.Strings = (                                        ' + CR +
+    '        ''/c copy''                                                ' + CR +
+    '        ''' + FBuildFileName + '''                                 ' + CR +
+    '        ''' + FCopyOfFileName + ''')                               ' + CR +
+    '    end                                                            ' + CR +
+    '  end                                                              ' + CR +
+    'end                                                                ' + CR;
+  WriteLn(FBuildFile, Content);
+  CloseFile(FBuildFile);
+end;
+
 procedure TTestDanteMain.Setup;
 begin
   inherited;
-  FTestDir := ExtractFilePath(ParamStr(0)) + 'test';
-  JclFileUtils.ForceDirectories(FTestDir);
   FDante := TDante.Create;
   FBuildFileName := FTestDir + '\build.txt';
+  FCopyOfFileName := FTestDir + '\copyofbuild.txt';
 end;
 
 procedure TTestDanteMain.TearDown;
 begin
   FDante.Free;
-  JclShell.SHDeleteFolder(0, FTestDir, [doSilent]);
   inherited;
 end;
 
 procedure TTestDanteMain.TestDanteMain;
-var
-  FCopyOfFileName: string;
 begin
-  FCopyOfFileName := FTestDir + '\copyofbuild.txt';
-
-  AssignFile(FBuildFile, FBuildFileName);
-  Rewrite(FBuildFile);
-  if IsWinNT then
-    WriteLn(FBuildFile, 'cmd.exe /c copy ' + FBuildFileName + ' ' + FCopyOfFileName)
-  else
-    WriteLn(FBuildFile, 'command.com /c copy ' + FBuildFileName + ' ' + FCopyOfFileName);
-  CloseFile(FBuildFile);
-
+  MakeTestBuildFile;
   FDante.DoBuild(FBuildFileName);
-
   Check(FileExists(FCopyOfFileName), 'copy doesn''t exist');
 end;
 
 initialization
-  RegisterTest('', TTestDanteMain);
+  RegisterTest('Acceptance Suite', TTestDanteMain);
 
 end.
 

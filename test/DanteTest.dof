@@ -43,10 +43,10 @@ OutputDir=
 UnitOutputDir=
 PackageDLLOutputDir=
 PackageDCPOutputDir=
-SearchPath=..\src
+SearchPath=..\src\
 Packages=Vcl50;Vclx50;VclSmp50;Vcldb50;vclado50;ibevnt50;Vclbde50;vcldbx50;Qrpt50;TeeUI50;TeeDB50;Tee50;Dss50;TeeQR50;VCLIB50;Vclmid50;vclie50;Inetdb50;Inet50;NMFast50;webmid50;dclocx50;dclaxserver50;Indy50;OE;RxCtl5;RxBDE5;RxDB5;msxml;OpenXML_D5
 Conditionals=USE_JEDI_JCL
-DebugSourceDirs=S:\SF-dante\dante\src\
+DebugSourceDirs=
 UsePackages=0
 [Parameters]
 RunParams=
@@ -80,6 +80,10 @@ OriginalFilename=
 ProductName=
 ProductVersion=1.0.0.0
 Comments=
+[HistoryLists\hlDebugSourcePath]
+Count=2
+Item0=..\src\
+Item1=..\src
 [HistoryLists\hlConditionals]
 Count=1
 Item0=USE_JEDI_JCL
@@ -87,6 +91,7 @@ Item0=USE_JEDI_JCL
 Count=1
 Item0=WinTypes=Windows;WinProcs=Windows;DbiTypes=BDE;DbiProcs=BDE;DbiErrs=BDE;
 [HistoryLists\hlSearchPath]
-Count=2
-Item0=..\src
-Item1=..
+Count=3
+Item0=..\src\
+Item1=..\src
+Item2=..

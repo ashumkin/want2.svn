@@ -35,7 +35,7 @@ unit DanteMain;
 
 interface
 
-uses Windows, SysUtils, JclMiscel;
+uses Windows, SysUtils, JclMiscel, DanteClasses;
 
 type
   TDante = class(TObject)
@@ -51,21 +51,13 @@ implementation
 
 procedure TDante.DoBuild(ABuildFileName: string);
 var
-  F: TextFile;
-  CmdLine: string;
+  P: TProject;
 begin
-  AssignFile(F, ABuildFileName);
-  Reset(F);
+  P := TProject.Create(nil);
   try
-    while not Eof(F) do
-    begin
-      ReadLn(F, CmdLine);
-      if not RunConsole(CmdLine) then
-        // need to report errors somehow
-        RaiseLastWin32Error;
-    end;
+    P.Load(ABuildFileName);
   finally
-    CloseFile(F);
+    P.Free;
   end;
 end;
 
