@@ -781,7 +781,8 @@ end;
 initialization
   RegisterTasks( [TDelphiCompileTask, TResourceCompileTask]);
   RegisterElements(TDelphiCompileTask, [
-                         TDefineElement
+                         TDefineElement ,
+                         TUsePackageElement
                          ]);
   with TDelphiCompileTask.FindDelphi do
   begin
