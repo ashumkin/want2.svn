@@ -42,7 +42,10 @@ uses
   DanteClasses,
   DanteMain;
 
-{$R ..\bin\dantever.res}
+{ this was ../bin/dantever.res, but bootstrap.bat on a clean machine didn't
+  left dantever.res in the src directory, so the subsequent dcc32 call failed
+  -- Chrismo }  
+{$R dantever.res}
 
 const
   SwitchChars = ['-', '/'];
