@@ -45,6 +45,8 @@ type
     FBuildFileName: string;
     FCopyOfFileName: string;
     FDante: TDante;
+    FNewCopyOfFileName: string;
+    FNewDir: string;
   protected
     procedure MakeTestBuildFile;
   public
@@ -55,6 +57,8 @@ type
   end;
 
 implementation
+
+uses JclFileUtils;
 
 { TTestDanteMain }
 
@@ -71,11 +75,15 @@ begin
     CR+
     '<project name="test_project" default="main">'                      + CR +
     '  <target name="main">'                                            + CR +
+    '    <shell executable="mkdir ' + FNewDir + '" />'                  + CR +
     '    <shell executable="copy '
              + FBuildFileName + ' ' + FCopyOfFileName + '" />'          + CR +
+    '    <shell executable="copy '
+             + FBuildFileName + ' ' + FNewCopyOfFileName + '" />'       + CR +
+    '    <delete dir="' + FNewDir + '" />'                              + CR +
     '  </target>'                                                       + CR +
     '</project>'                                                        + CR;
-    
+
   WriteLn(FBuildFile, Content);
   CloseFile(FBuildFile);
 end;
@@ -86,6 +94,8 @@ begin
   FDante := TDante.Create;
   FBuildFileName := FTestDir + '\build.xml';
   FCopyOfFileName := FTestDir + '\copyofbuild.xml';
+  FNewDir := FTestDir + '\new';
+  FNewCopyOfFileName := FNewDir + '\copyofbuild.xml';
 end;
 
 procedure TTestDanteMain.TearDown;
@@ -99,6 +109,7 @@ begin
   MakeTestBuildFile;
   FDante.DoBuild(FBuildFileName);
   Check(FileExists(FCopyOfFileName), 'copy doesn''t exist');
+  Check(not DirectoryExists(FNewDir), 'directory exists');
 end;
 
 initialization
