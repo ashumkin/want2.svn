@@ -48,7 +48,7 @@ type
 
   TXRegexp = class(TPerlRE)
   public
-    function Replace(Text, Pattern, Subst :string; All :boolean = true) :string; overload;
+    function Replace(Pattern, Subst, Text:string; All :boolean = true) :string; overload;
     function Replace(Subst :string; All :boolean = true) :string;          overload;
   end;
 
@@ -66,22 +66,15 @@ begin
 end;
 
 function Replace(Pattern, Subst, Text :string; All :boolean = true) :string;
-var
-  Regexp      :TXRegexp;
 begin
-  Regexp := TXRegexp.Create(True, PCRE_EXTENDED);
-  try
-    Result := Regexp.Replace(Text, Pattern, Subst, True);
-  finally
-    FreeAndNil(Regexp);
-  end;
+  Result := regex.Replace(Pattern, Subst, Text, True);
 end;
 
 
 
 { TXRegexp }
 
-function TXRegexp.Replace(Text, Pattern, Subst: string; All :boolean): string;
+function TXRegexp.Replace(Pattern, Subst, Text: string; All :boolean): string;
 begin
   Self.Text    := Text;
   Self.RegExp  := Pattern;
