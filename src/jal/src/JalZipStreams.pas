@@ -82,7 +82,7 @@ type
                                 Comment    :string = ''); overload;
 
     procedure WriteFile(const FileName :TPath;  Comment :string = '';
-                              preservePath :boolean = true ); overload;
+                              preservePath :boolean = true ); 
 
   public
     property ZipFileName      :TPath    read FZipFileName write FZipFileName;
@@ -324,11 +324,6 @@ begin
   finally
     CloseEntry;
   end;
-end;
-
-procedure TZipStream.WriteFile(const FileName: TPath;  Comment :string);
-begin
-  WriteFile(FileName,Comment,true);
 end;
 
 procedure TZipStream.WriteFile(const FileName: TPath;  Comment :string; preservePath: boolean);
