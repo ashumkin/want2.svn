@@ -546,10 +546,6 @@ begin
   begin
     Log(vlVerbose, 'CVS_RSH=' + FCvsRsh);
     JclSysInfo.SetEnvironmentVar('CVS_RSH', FCvsRsh);
-  end
-  else
-  begin
-    JclSysInfo.SetEnvironmentVar('CVS_RSH', '');
   end;
 end;
 
