@@ -38,7 +38,8 @@ uses
   TestFramework,
   DanteMainTest,
   DanteClassesTest,
-  ExecTasksTest in 'ExecTasksTest.pas';
+  ExecTasksTest in 'ExecTasksTest.pas',
+  FileTasksTest in 'FileTasksTest.pas';
 
 {$R *.RES}
 
