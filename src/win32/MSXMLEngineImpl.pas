@@ -49,6 +49,7 @@ end;
 
 constructor TMSXMLEngineImpl.Create;
 begin
+  CoInitialize(nil);
   inherited;
   FXSLTemplateCache := TStringList.Create();
 end;
@@ -57,6 +58,7 @@ destructor TMSXMLEngineImpl.Destroy;
 begin
   FXSLTemplateCache.Free;
   inherited;
+  CoUnInitialize;
 end;
 
 function TMSXMLEngineImpl.LoadXMLDocument(fileName: string): Variant;
