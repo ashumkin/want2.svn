@@ -194,11 +194,8 @@ var
 begin
   for f := Low(FFileSets) to High(FFileSets) do
   begin
-    if FFileSets[f].Includes.Count > 0 then
-    begin
-      ChangeDir(FFileSets[f].BasePath);
-      Self.DoFileset(FFileSets[f]);
-    end;
+    ChangeDir(FFileSets[f].BasePath);
+    Self.DoFileset(FFileSets[f]);
   end;
 end;
 
