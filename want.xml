@@ -34,7 +34,7 @@ See http://www.suigeneris.org/want/ for details.
   <property name="etc"       value="${basedir}/etc" />
   <property name="src"       value="${basedir}/src" />
   <property name="doc"       value="${basedir}/doc" />
-  <property name="dist"      value="${doc}/dist" />
+  <property name="dist"      value="${basedir}/dist" />
   <property name="res"       value="${basedir}/res" />
   <property name="lib"       value="${basedir}/lib" />
   <property name="test"      value="${basedir}/test" />
@@ -198,7 +198,7 @@ See http://www.suigeneris.org/want/ for details.
     <zip zipfile="${zipfile}" >
          <exclude name="${dist}/**" />
 
-         <include name="${bin}/want.exe" />
+         <include name="${bin}/*.exe" />
 
          <fileset dir="${basedir}" >
            <exclude name="${lib}/**" /> 
@@ -250,9 +250,7 @@ See http://www.suigeneris.org/want/ for details.
   <target name="changelog">
     <cvschangelog
         destfile="changelog.xml"
-        start="?{release.ini:releases:last_date}"
-       >       
-    </cvschangelog>
+        start="?{release.ini:releases:last_date}"/>       
     <style in="changelog.xml" out="changelog.html" style="changelog.xsl">
       <param name="title" expression="Want ChangeLog"/>
       <param name="module" expression="want"/>
