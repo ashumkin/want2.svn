@@ -38,11 +38,11 @@ type
   private
     FTestPath: TPath;
     FRootPath: TPath;
+    FBuildFileName :TPath;
 
     procedure SetTestName;
     procedure SetTestPath(const Value: TPath);
   protected
-    function BuildFileName: string;
     class function CompareFiles(AFileName, BFileName: string): boolean;
     procedure CompareActualToFinal;
     procedure DeleteSubFolders;
@@ -81,9 +81,13 @@ begin
     Files := WildPaths.Wild('**/*.xml', BasePath);
     for i := 0 to High(Files) do
     begin
-      ATest := TExternalTest.Create;
-      ATest.TestPath := SuperPath(Files[i]);
-      RegisterTest('External Tests/' + ToRelativePath(ATest.TestPath, BasePath), ATest);
+      if Pos('CVS', Files[i]) = 0 then
+      begin
+        ATest := TExternalTest.Create;
+        ATest.TestPath := SuperPath(Files[i]);
+        ATest.FBuildFileName := MovePath(Files[i], ATest.TestPath, '');
+        RegisterTest('External Tests/' + ToRelativePath(ATest.TestPath, BasePath), ATest);
+      end;
     end;
   except
     on e :Exception do
@@ -92,11 +96,6 @@ begin
 end;
 
 { TExternalTest }
-
-function TExternalTest.BuildFileName: string;
-begin
-  Result := 'build.xml';
-end;
 
 function TExternalTest.SetupPath: TPath;
 begin
@@ -202,7 +201,7 @@ begin
   { make sure we haven't got off on the root dir or something heinous }
   if  PathIsDir(SetupPath)
   and  PathIsDir(FinalPath)
-  and  PathIsFile(PathConcat(SetupPath, BuildFileName))
+  and  PathIsFile(PathConcat(SetupPath, FBuildFileName))
   then
     DeleteFiles('**', FRootPath);
 end;
@@ -217,7 +216,7 @@ begin
   Runner := TConsoleScriptRunner.Create;   
   {$ENDIF}
   try
-    Runner.Build(PathConcat(SetupPath, BuildFileName), vlVerbose);
+    Runner.Build(PathConcat(SetupPath, FBuildFileName), vlVerbose);
   finally
     Runner.Free;
   end;
@@ -243,6 +242,7 @@ end;
 procedure TExternalTest.Setup;
 begin
   inherited;
+  DeleteSubFolders;
   UnzipSetup;
 end;
 
@@ -271,7 +271,7 @@ begin
 
   MakeDir(Directory);
 
-  DoCopy(BuildFileName);
+  DoCopy(FBuildFileName);
 
   ZipLocation := PathConcat(FTestPath, ZipFileName);
   if PathIsFile(ZipLocation) then

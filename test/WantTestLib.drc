@@ -127,7 +127,7 @@ BEGIN
 	ComConst_SOleError,	"OLE error %.8x"
 	ComConst_SNoMethod,	"Method '%s' not supported by automation object"
 	ComConst_SVarNotObject,	"Variant does not reference an automation object"
-	WantResources_WantUsageText,	"Usage:\r\n  want [options] [target]\r\n\r\nOptions:\r\n  -h, -H, -?          Displays this help text.\r\n  -L                  Displays licensing information.\r\n  -buildfile <file>   Specifies the build file. Default is want.xml\r\n  -Dname=value        Define property \"name\".\r\n  -quiet              Be very quiet. \r\n  -verbose            Be extra verbose.\r\n  -debug              Print debugging information.\r\n  -color              Output to console using color.\r\n"
+	WantResources_WantUsageText,	"Usage:\r\n  want [options] [target]\r\n\r\nOptions:\r\n  -h, -H, -?          Displays this help text.\r\n  -L                  Displays licensing information.\r\n  -buildfile <file>   Specifies the build file. Default is want.xml\r\n  -Dname=value        Define property \"name\".\r\n  -quiet              Be very quiet. \r\n  -verbose            Be extra verbose.\r\n  -debug              Print debugging information.\r\n  -nocolor            Do not use color in console output.\r\n"
 	Consts_SListCountError,	"List count out of bounds (%d)"
 	Consts_SSortedListError,	"Operation not allowed on sorted string list"
 	Consts_SDuplicateString,	"String list does not allow duplicates"
