@@ -87,6 +87,11 @@ type
     procedure TestBuild;
   end;
 
+  TPropertyTests = class(TProjectBaseCase)
+  published
+    procedure TestLocalProperties;
+  end;
+
   TDummyTask1 = class(TTask)
   public
     class function XMLTag :string; override;
@@ -103,6 +108,19 @@ type
   published
     class function XMLTag :string; override;
     property AProp: string read FAProp write FAProp;
+  end;
+
+  TCompareValuesTask = class(TTask)
+  protected
+    FExpected :string;
+    FActual   :string;
+  public
+    class function XMLTag :string; override;
+    procedure Init;    override;
+    procedure Execute; override;
+  published
+    property expected :string read FExpected write FExpected;
+    property actual   :string read FActual   write FActual;
   end;
 
 
@@ -343,12 +361,58 @@ begin
   Result := 'dummy3';
 end;
 
+{ TCompareValuesTask }
+
+class function TCompareValuesTask.XMLTag: string;
+begin
+  Result := 'check';
+end;
+
+procedure TCompareValuesTask.Init;
+begin
+  inherited Init;
+  RequireAttribute('expected');
+  RequireAttribute('actual');
+end;
+
+procedure TCompareValuesTask.Execute;
+begin
+  if expected <> actual then
+    raise ETestFailure.Create(Format('Expected <%s> but was <%s>.', [expected, actual]) );
+end;
+
+{ TPropertyTests }
+
+procedure TPropertyTests.TestLocalProperties;
+const
+  build_xml = ''
+  +#10'<project name="test" default="dotest" >'
+  +#10'  <property name="global" value="0" />'
+  +#10'  <target name="target1">'
+  +#10'    <property name="local" value="1" />'
+  +#10'    <check expected="1" actual="${local}" />'
+  +#10'    <check expected="0" actual="${global}" />'
+  +#10'  </target>'
+  +#10'  <target name="target2">'
+  +#10'    <property name="local" value="2" />'
+  +#10'    <check expected="2" actual="${local}" />'
+  +#10'    <check expected="0" actual="${global}" />'
+  +#10'  </target>'
+  +#10'  <target name="dotest" depends="target1,target2" />'
+  +#10'</project>'
+  +'';
+begin
+  FProject.ParseXMLText(build_xml);
+  FProject.Build;
+end;
+
 initialization
-  RegisterTasks([TDummyTask1, TDummyTask2, TDummyTask3]);
+  RegisterTasks([TDummyTask1, TDummyTask2, TDummyTask3, TCompareValuesTask]);
 
   RegisterTests('Dante Classes', [
              TSaveProjectTests.Suite,
-             TBuildTests.Suite
+             TBuildTests.Suite,
+             TPropertyTests.Suite
            ]);
 end.
 
