@@ -456,7 +456,9 @@ const
 begin
   TScriptParser.ParseText(FProject, build_xml);
   RunProject;
-  CheckEquals('/c:/awindows/path', (FProject.Targets[0].Tasks[0] as TWithPathTask).path);
+  CheckEquals( '/c:/awindows/path',
+               FProject.ToAbsolutePath((FProject.Targets[0].Tasks[0] as TWithPathTask).path)
+               );
 end;
 
 
