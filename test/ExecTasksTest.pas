@@ -83,7 +83,7 @@ begin
   FCustomExecTask.ArgumentList.Add('file1.txt');
   FCustomExecTask.ArgumentList.Add('"c:\dir w space\filecpy.txt"');
   CheckEquals(
-    '"cmd.exe" /c copy file1.txt "c:\dir w space\filecpy.txt"',
+    'cmd.exe /c copy file1.txt "c:\dir w space\filecpy.txt"',
     FCustomExecTask.BuildCmdLine, 'BuildCmdLine failed');
 end;
 
@@ -109,9 +109,9 @@ begin
   try
     FShellTask.Executable := 'dir';
     JclSysInfo.IsWinNT := false;
-    CheckEquals('command.com /c "dir"', FShellTask.BuildCmdLine);
+    CheckEquals('command.com /c dir', FShellTask.BuildCmdLine);
     JclSysInfo.IsWinNT := true;
-    CheckEquals('cmd.exe /c "dir"', FShellTask.BuildCmdLine);
+    CheckEquals('cmd.exe /c dir', FShellTask.BuildCmdLine);
   finally
     JclSysInfo.IsWinNT := OrigValue;
   end;

@@ -178,7 +178,7 @@ end;
 
 function TCustomExecTask.BuildExecutable: string;
 begin
-  Result := '"' + Trim(WildPaths.ToSystemPath(Executable)) + '"';
+  Result := WildPaths.ToSystemPath(Executable);
 end;
 
 function TCustomExecTask.BuildCmdLine: string;
@@ -394,7 +394,7 @@ begin
     if GetAttribute('path') = '' then
       RequireAttribute('value');
     RequireAttribute('path');
-    value := Format('"%s"', [ ToSystemPath(path.asString) ] );
+    value := ToSystemPath(path.asString);
   end;
   (Owner as TCustomExecTask).FArguments.Add(Value);
 end;
