@@ -77,9 +77,6 @@ procedure TWantTask.Init;
 begin
   Log(vlDebug, 'dir=%s(%s)', [dir, ToAbsolutePath(dir)]);
   Log(vlDebug, 'BasePath=%s(%s)', [BasePath, ToAbsolutePath(BasePath)]);
-  if dir <> '' then
-    FSubProject.SetInitialBaseDir(ToAbsolutePath(BasePath));
-  ChangeDir(BasePath);
   inherited Init;
 end;
 
@@ -87,6 +84,9 @@ procedure TWantTask.Execute;
 var
   FRunner :TScriptRunner;
 begin
+  if dir <> '' then
+    FSubProject.SetInitialBaseDir(ToAbsolutePath(BasePath));
+  ChangeDir(BasePath);
   Log(vlDebug, 'dir=%s(%s)', [dir, ToAbsolutePath(dir)]);
   Log(vlDebug, 'BasePath=%s(%s)', [BasePath, ToAbsolutePath(BasePath)]);
   try
