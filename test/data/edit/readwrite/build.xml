@@ -68,6 +68,11 @@
         <write from="." to="." file="c_all.txt" append="true" />
       </global>
     </edit>
+
+    <edit file="file.txt" >
+      <delete from="0" to="$" />
+      <write />
+    </edit>
   </target>
 
 </project>
