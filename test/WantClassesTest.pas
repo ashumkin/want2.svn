@@ -55,20 +55,18 @@ type
   TSaveProjectTests = class(TProjectBaseCase)
     procedure BuildTestProject;
   published
-    procedure testInMemoryConstruction;
-    procedure testParse;
-    procedure testSaveLoad;
+    procedure TestInMemoryConstruction;
+    procedure TestParse;
+    procedure TestSaveLoad;
   end;
 
   TDummyTask1 = class(TTask);
   TDummyTask2 = class(TTask);
   TDummyTask3 = class(TTask)
   protected
-    FAnInt :Integer;
+    FAnInt: Integer;
   published
-    property AnInt :Integer
-    read  FAnInt
-    write FAnInt;
+    property AnInt: Integer read FAnInt write FAnInt;
   end;
 
 implementation
@@ -88,7 +86,7 @@ end;
 { TSaveProjectTests }
 
 const
-  expected =
+  Expected =
     'object my_project: TProject' + #$D#$A +
     '  object prepare: TTarget' + #$D#$A +
     '    object TDummyTask1_0: TDummyTask1' + #$D#$A +
@@ -106,7 +104,7 @@ const
 
 procedure TSaveProjectTests.BuildTestProject;
 var
-  T :TTarget;
+  T: TTarget;
 begin
   with FProject do
   begin
@@ -120,25 +118,25 @@ begin
   end;
 end;
 
-procedure TSaveProjectTests.testInMemoryConstruction;
+procedure TSaveProjectTests.TestInMemoryConstruction;
 begin
   BuildTestProject;
-  CheckEquals(expected, FProject.AsString);
+  CheckEquals(Expected, FProject.AsString);
   CheckEquals(2, FProject.TargetCount);
   CheckEquals(1, FProject[0].TaskCount);
   CheckEquals(2, FProject[1].TaskCount);
   CheckEquals('TDummyTask3', FProject[1][1].ClassName);
 end;
 
-procedure TSaveProjectTests.testParse;
+procedure TSaveProjectTests.TestParse;
 begin
-  FProject.Parse(expected);
-  CheckEquals(expected, FProject.AsString);
+  FProject.Parse(Expected);
+  CheckEquals(Expected, FProject.AsString);
 end;
 
-procedure TSaveProjectTests.testSaveLoad;
+procedure TSaveProjectTests.TestSaveLoad;
 var
-  P :TProject;
+  P: TProject;
 begin
   BuildTestProject;
   FProject.Save('build1.dfm');

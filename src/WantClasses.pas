@@ -47,64 +47,58 @@ type
 
   TDanteComponent = class(TComponent)
   protected
-    function GetOwner :TPersistent; override;
-    function GetProject :TProject;
-    function NewName :string;
+    function GetOwner: TPersistent; override;
+    function GetProject: TProject;
+    function NewName: string;
 
     procedure GetChildren(Proc: TGetChildProc; Root: TComponent); override;
     function GetChildOwner: TComponent; override;
   public
-    constructor Create(owner :TComponent); override;
+    constructor Create(Owner: TComponent); override;
 
-    property Project :TProject
-      read  GetProject;
+    property Project: TProject read GetProject;
   published
     property Name;
   end;
 
   TProject = class(TDanteComponent)
   protected
-    FTargets :TList;
+    FTargets: TList;
 
-    function GetTarget(Index :Integer):TTarget;
+    function GetTarget(Index: Integer):TTarget;
     procedure Notification(AComponent: TComponent; Operation: TOperation); override;
   public
-    constructor Create(owner :TComponent);  override;
+    constructor Create(Owner: TComponent);  override;
     destructor  Destroy; override;
 
-    procedure Parse(const image :string);
-    procedure Load(const path :string);
-    procedure Save(const path :string);
+    procedure Parse(const Image: string);
+    procedure Load(const Path: string);
+    procedure Save(const Path: string);
 
-    function AsString :string;
-    function AddTarget(name :string = ''): TTarget;
-    function TargetCount :Integer;
+    function AsString: string;
+    function AddTarget(Name: string = ''): TTarget;
+    function TargetCount: Integer;
 
-    property Targets[i: Integer] :TTarget
-      read GetTarget; default;
+    property Targets[i: Integer]: TTarget read GetTarget; default;
   end;
 
   TTarget = class(TDanteComponent)
   protected
-    FTasks   :TList;
-    FDepends :TStrings;
+    FTasks: TList;
+    FDepends: TStrings;
 
-    procedure SetDepends(Value :TStrings);
-    function GetTask(Index :Integer):TTask;
+    procedure SetDepends(Value: TStrings);
+    function GetTask(Index: Integer):TTask;
     procedure Notification(AComponent: TComponent; Operation: TOperation); override;
   public
-    constructor Create(owner :TComponent); override;
+    constructor Create(Owner: TComponent); override;
     destructor  Destroy; override;
 
-    function TaskCount :Integer;
+    function TaskCount: Integer;
 
-    property Tasks[i: Integer] :TTask
-      read GetTask; default;
-
+    property Tasks[i: Integer]: TTask read GetTask; default;
   published
-    property Depends :TStrings
-      read  FDepends
-      write SetDepends;
+    property Depends: TStrings read FDepends write SetDepends;
   end;
 
   TTask = class(TDanteComponent)
@@ -116,9 +110,9 @@ implementation
 
 { TDanteComponent }
 
-constructor TDanteComponent.Create(owner: TComponent);
+constructor TDanteComponent.Create(Owner: TComponent);
 begin
-  inherited Create(owner);
+  inherited Create(Owner);
   Name := NewName;
 end;
 
@@ -158,7 +152,7 @@ end;
 
 function TDanteComponent.NewName: string;
 var
-  i :Integer;
+  i: Integer;
 begin
   for i := 0 to MaxInt do
   begin
@@ -170,9 +164,9 @@ end;
 
 { TProject }
 
-constructor TProject.Create(owner :TComponent);
+constructor TProject.Create(Owner: TComponent);
 begin
-  inherited Create(owner);
+  inherited Create(Owner);
   FTargets := TList.Create;
 end;
 
@@ -184,8 +178,8 @@ end;
 
 function TProject.AsString: string;
 var
-  MemStream :TMemoryStream;
-  StrStream :TStringStream;
+  MemStream: TMemoryStream;
+  StrStream: TStringStream;
 begin
   MemStream  := TMemoryStream.Create;
   try
@@ -203,14 +197,14 @@ begin
   end;
 end;
 
-procedure TProject.Parse(const image: string);
+procedure TProject.Parse(const Image: string);
 var
-  MemStream :TMemoryStream;
-  StrStream :TStringStream;
+  MemStream: TMemoryStream;
+  StrStream: TStringStream;
 begin
-  MemStream  := TMemoryStream.Create;
+  MemStream := TMemoryStream.Create;
   try
-    StrStream := TStringStream.Create(image);
+    StrStream := TStringStream.Create(Image);
     try
       ObjectTextToBinary(StrStream, MemStream);
     finally
@@ -224,11 +218,11 @@ begin
 end;
 
 
-function TProject.AddTarget(name :string ): TTarget;
+function TProject.AddTarget(Name: string): TTarget;
 begin
   Result := TTarget.Create(self);
-  if name <> '' then
-    Result.Name := name;
+  if Name <> '' then
+    Result.Name := Name;
 end;
 
 function TProject.GetTarget(Index: Integer): TTarget;
@@ -251,27 +245,27 @@ begin
   Result := FTargets.Count;
 end;
 
-procedure TProject.Load(const path: string);
+procedure TProject.Load(const Path: string);
 var
-  S :TStrings;
+  S: TStrings;
 begin
   S := TStringList.Create;
   try
-    S.LoadFromFile(path);
+    S.LoadFromFile(Path);
     Parse(S.Text);
   finally
     S.Free;
   end;
 end;
 
-procedure TProject.Save(const path: string);
+procedure TProject.Save(const Path: string);
 var
-  S :TStrings;
+  S: TStrings;
 begin
   S := TStringList.Create;
   try
     S.Text := self.AsString;
-    S.SaveToFile(path);
+    S.SaveToFile(Path);
   finally
     S.Free;
   end;
@@ -280,9 +274,9 @@ end;
 
 { TTarget }
 
-constructor TTarget.Create(owner :TComponent);
+constructor TTarget.Create(Owner: TComponent);
 begin
-  inherited Create(owner);
+  inherited Create(Owner);
   FTasks   := TList.Create;
   FDepends := TStringList.Create;
 end;
@@ -321,7 +315,6 @@ begin
 end;
 
 { TTask }
-
 
 initialization
   RegisterClasses([TProject, TTarget, TTask]);
