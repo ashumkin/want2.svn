@@ -105,15 +105,6 @@ type
     property AProp: string read FAProp write FAProp;
   end;
 
-  TTestExecTask = class(TTestDirCase)
-  private
-    FExecTask: TExecTask;
-  public
-    procedure Setup; override;
-    procedure TearDown; override;
-  published
-    procedure TestExecTask;
-  end;
 
 implementation
 
@@ -248,35 +239,6 @@ begin
   end;
 end;
 
-{ TTestExecTask }
-
-procedure TTestExecTask.Setup;
-begin
-  inherited;
-  FExecTask := TShellTask.Create(FProject.AddTarget('test_exec_task'));
-end;
-
-procedure TTestExecTask.TearDown;
-begin
-  FExecTask.Free;
-  inherited;
-end;
-
-procedure TTestExecTask.TestExecTask;
-var
-  CurrentFileName: string;
-  NewFileName: string;
-begin
-  CurrentFileName := MakeSampleTextFile;
-  NewFileName := ExtractFilePath(CurrentFileName) + 'new.txt';
-  FExecTask.Executable := 'copy';
-  FExecTask.ArgumentList.Add(CurrentFileName);
-  FExecTask.ArgumentList.Add(NewFileName);
-  FExecTask.Execute;
-  Check(FileExists(NewFileName), 'TExecTask copy file failed');
-end;
-
-
 { TBuildTests }
 
 procedure TBuildTests.BuildProject;
@@ -384,9 +346,8 @@ end;
 initialization
   RegisterTasks([TDummyTask1, TDummyTask2, TDummyTask3]);
 
-  RegisterTests('Unit Tests', [
+  RegisterTests('Dante Classes', [
              TSaveProjectTests.Suite,
-             TTestExecTask.Suite,
              TBuildTests.Suite
            ]);
 end.

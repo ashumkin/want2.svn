@@ -90,7 +90,7 @@ begin
 end;
 
 initialization
-  RegisterTest('Unit Tests', TTestDeleteTask);
+  RegisterTest('File Tasks', TTestDeleteTask);
 
 end.
 

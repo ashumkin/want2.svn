@@ -34,7 +34,12 @@ unit ExecTasksTest;
 
 interface
 
-uses ExecTasks, TestFramework;
+uses
+  SysUtils,
+  TestFramework,
+  DanteClasses,
+  DanteClassesTest,
+  ExecTasks;
 
 type
   THackedCustomExecTask = class(TCustomExecTask);
@@ -58,6 +63,21 @@ type
     procedure TearDown; override;
   published
     procedure TestBuildCmdLine;
+  end;
+
+  TTestExecTask = class(TProjectBaseCase)
+  published
+    procedure TestArgs;
+  end;
+
+  TTestExecCopyTask = class(TTestDirCase)
+  private
+    FExecTask: TExecTask;
+  public
+    procedure Setup; override;
+    procedure TearDown; override;
+  published
+    procedure TestExecTask;
   end;
 
 implementation
@@ -119,9 +139,67 @@ begin
   end;
 end;
 
-initialization
-  RegisterTest('Unit Tests', TTestCustomExecTask);
-  RegisterTest('Unit Tests', TTestShellTask);
+{ TTestExecTask }
 
+procedure TTestExecTask.TestArgs;
+const
+  build_xml =
+      '<project name="test" default="dotest" >'
+  +#10'  <target name="dotest">'
+  +#10'    <exec executable="any.exe"'
+  +#10'          arguments="first,second"'
+  +#10'          failonerror="no"'
+  +#10'    >'
+  +#10'      <arg value="third" />'
+  +#10'    </exec>'
+  +#10'  </target>'
+  +#10'</project>';
+var
+  ExecTask :THackedCustomExecTask;
+begin
+  FProject.ParseXMLText(build_xml);
+  FProject.EvaluateAttributes(MaxInt);
+
+  ExecTask := THackedCustomExecTask(FProject.Targets[0].Tasks[0] as TExecTask);
+  CheckEquals('first second third', ExecTask.BuildArguments);
+  CheckEquals(false, ExecTask.failonerror);
+end;
+
+{ TTestExecTask }
+
+procedure TTestExecCopyTask.Setup;
+begin
+  inherited;
+  FExecTask := TShellTask.Create(FProject.AddTarget('test_exec_task'));
+end;
+
+procedure TTestExecCopyTask.TearDown;
+begin
+  FExecTask.Free;
+  inherited;
+end;
+
+procedure TTestExecCopyTask.TestExecTask;
+var
+  CurrentFileName: string;
+  NewFileName: string;
+begin
+  CurrentFileName := MakeSampleTextFile;
+  NewFileName := ExtractFilePath(CurrentFileName) + 'new.txt';
+  FExecTask.Executable := 'copy';
+  FExecTask.ArgumentList.Add(CurrentFileName);
+  FExecTask.ArgumentList.Add(NewFileName);
+  FExecTask.Execute;
+  Check(FileExists(NewFileName), 'TExecTask copy file failed');
+end;
+
+
+initialization
+  RegisterTests('Exec Tasks', [
+           TTestCustomExecTask.Suite,
+           TTestShellTask.Suite,
+           TTestExecTask.Suite,
+           TTestExecCopyTask.Suite
+           ]);
 end.
 

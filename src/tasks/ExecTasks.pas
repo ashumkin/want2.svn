@@ -50,12 +50,22 @@ uses
 type
   TChildProcess = class;
 
+  TArgElement = class(TDanteElement)
+  protected
+    FVAlue :string;
+  public
+    procedure Validate; override;
+  published
+    property value :string read FValue write FValue;
+  end;
+
   TCustomExecTask = class(TTask)
   protected
-    FOS: string;
-    FExecutable: string;
-    FArguments : TStrings;
-    FSkipLines : Integer;
+    FOS          :string;
+    FExecutable  :string;
+    FArguments   :TStrings;
+    FSkipLines   :Integer;
+    FFailOnError :boolean;
 
     function BuildExecutable :string; virtual;
     function BuildArguments  :string; virtual;
@@ -72,12 +82,16 @@ type
     destructor Destroy; override;
 
     procedure Execute; override;
+
   protected
-    property Arguments: string      read GetArguments write SetArguments;
+    property Arguments:    string   read GetArguments write SetArguments;
     property ArgumentList: TStrings read FArguments   write SetArgumentList stored False;
-    property Executable: string     read FExecutable  write FExecutable;
-    property SkipLines :Integer     read FSkipLines   write FSkipLines;
-    property OS: string read FOS    write FOS;
+    property Executable:   string   read FExecutable  write FExecutable;
+    property SkipLines:    Integer  read FSkipLines   write FSkipLines;
+    property OS:           string   read FOS          write FOS;
+    property failonerror:  boolean  read FFailOnError write FFailOnError default True;
+  published
+    function CreateArg :TArgElement;
   end;
 
   TExecTask = class(TCustomExecTask)
@@ -90,6 +104,7 @@ type
     property Executable;
     property SkipLines :Integer     read FSkipLines   write FSkipLines;
     property OS;
+    property failonerror;
   end;
 
   // this class will pass commands through the command processor
@@ -157,7 +172,7 @@ end;
 
 function TCustomExecTask.BuildCmdLine: string;
 begin
-  Result := BuildExecutable + BuildArguments;
+  Result := Trim(BuildExecutable + ' ' + BuildArguments);
 end;
 
 function TCustomExecTask.BuildArguments: string;
@@ -168,12 +183,14 @@ begin
   { Arguments.CommaText screws with the contents. See unit test }
   for i := 0 to ArgumentList.Count - 1 do
     Result := Result + ' ' + ArgumentList[i];
+  Result := Trim(Result);
 end;
 
 constructor TCustomExecTask.Create(Owner: TDanteElement);
 begin
   inherited Create(Owner);
-  FArguments := TStringList.Create;
+  FArguments   := TStringList.Create;
+  FFailOnError := True;
 end;
 
 destructor TCustomExecTask.Destroy;
@@ -215,7 +232,7 @@ begin
   try
     Child.Run(CmdLine);
     HandleOutput(Child);
-    if Child.ExitCode <> 0 then
+    if (Child.ExitCode <> 0) and FailOnError then
       raise ETaskFailure.Create('failed');
   finally
     Child.Free;
@@ -240,6 +257,11 @@ begin
   end;
 end;
 
+
+function TCustomExecTask.CreateArg: TArgElement;
+begin
+  Result := TArgElement.Create(Self);
+end;
 
 { TChildProcess }
 
@@ -420,6 +442,14 @@ begin
   if not CloseHandle(hErrorWrite)  then RaiseLastSystemError('CloseHandle');
 end;
 
+
+{ TArgElement }
+
+procedure TArgElement.Validate;
+begin
+  RequireAttribute('value');
+  (Owner as TCustomExecTask).FArguments.Add(Value);
+end;
 
 initialization
   RegisterTasks([TCustomExecTask, TExecTask, TShellTask]);

@@ -171,5 +171,5 @@ begin
 end;
 
 initialization
-  RegisterTests('', [TestSuiteOf(TPathsTestCase)]);
+  RegisterTests('FileSet', [TestSuiteOf(TPathsTestCase)]);
 end.
