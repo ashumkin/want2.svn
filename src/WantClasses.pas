@@ -654,7 +654,7 @@ begin
   end;
   Log(vlDebug, 'attribute %s="%s"', [Name,Value]);
   FAttributes.Values[Name] := Value;
-  Result := SetDelphiProperty(Name, Evaluate(Value));
+  Result := SetDelphiProperty(Name, Value);
 end;
 
 
@@ -846,7 +846,9 @@ begin
   if Properties.IndexOfName(Name) >= 0 then
     Result := Evaluate(Properties.Values[Name])
   else if Owner <> nil then
-    Result := Owner.PropertyValue(Name);
+    Result := Owner.PropertyValue(Name)
+  else
+    Result := ''
 end;
 
 function TScriptElement.EnvironmentValue(Name: string): string;
@@ -1215,10 +1217,10 @@ begin
     Result := FindBuildFile(SearchUp)
   else
   begin
-    Result := PathConcat(BasePath, BuildFile);
-    Dir    := SuperPath(BuildFile);
+    Result := ToAbsolutePath(BuildFile);
+    Dir    := SuperPath(Result);
 
-    Log(vlDebug, 'Looking for "%s', [Result]);
+    Log(vlDebug, 'Looking for "%s in "%s"', [BuildFile, Dir]);
     while not PathIsFile(Result)
     and SearchUp
     and (Dir <> '')
@@ -1229,6 +1231,7 @@ begin
       begin
         Result := PathConcat(Dir, BuildFile);
         Dir    := SuperPath(Dir);
+        Log(vlDebug, 'Looking for "%s in "%s"', [BuildFile, Dir]);
       end
       else
         break;
@@ -1242,6 +1245,7 @@ end;
 
 function TProject.FindBuildFile(SearchUp: boolean): TPath;
 begin
+  Log(vlDebug, 'Findind buildfile', [Result]);
   Result := FindBuildFile(DefaultBuildFileName, SearchUp);
   if not PathIsFile(Result) then
      Result := FindBuildFile(AntBuildFileName, SearchUp);
