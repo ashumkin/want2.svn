@@ -24,6 +24,7 @@
     @author Dan Hughes <dan@multiedit.com>
     @author Ignacio J. Ortega
     @author Gerrit Jan Doornink
+    @author Tobias Grimm <tobias.grimm@e-tobi.net>
 }
 { TODO -oGJD -cTODO : 
   Add handling of:
@@ -68,10 +69,11 @@ uses
 
 
 const
-  DelphiRegRoot  = 'SOFTWARE\Borland\Delphi';
+  DelphiRegRoot   = 'SOFTWARE\Borland\Delphi';
   CBuilderRegRoot = 'SOFTWARE\Borland\C++Builder';
-  DelphiRootKey  = 'RootDir';
-
+  BDSRegRoot      = 'SOFTWARE\Borland\BDS';
+  DelphiRootKey   = 'RootDir';
+  
   __RENAMED_CFG_EXT = '.want.cfg';
 
 type
@@ -459,14 +461,19 @@ class function TCustomDelphiTask.RootForVersion(version: string; UseCBuilder: bo
 var
   RegRoot : string;
 begin
+  if Pos('.', version) = 0 then begin
+    version := version + '.0';
+  end;
   if ( UseCBuilder ) then begin
     RegRoot := CBuilderRegRoot;
   end
   else begin
-    RegRoot := DelphiRegRoot;
-  end;
-  if Pos('.', version) = 0 then begin
-    version := version + '.0';
+    if StrToIntDef(StrLeft(version, pos('.', version) -1), 0) > 8 then
+    begin
+      RegRoot := BDSRegRoot;
+      version := '3.0'; // will this change for Delphi 10 or even before?
+    end else
+      RegRoot := DelphiRegRoot;
   end;
   Result := Format('%s\%s', [RegRoot, version]);
 end;
