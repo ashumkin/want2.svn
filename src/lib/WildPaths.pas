@@ -135,8 +135,8 @@ procedure Wild(Files: TStrings; Pattern: TPath; BasePath: TPath = '';
           ); overload;
 
 
-function IsMatch(Path, Pattern: TPath):boolean; overload;
-function IsMatch(const Paths: TPaths; const Patterns: TPatterns; p: Integer = 0; s: Integer = 0):boolean; overload;
+function IsMatch(Pattern, Path: TPath):boolean; overload;
+function IsMatch(const Patterns: TPatterns; const Paths: TPaths; s: Integer = 0; p: Integer = 0):boolean; overload;
 
 function  PathExists(Path: TPath):boolean;
 function  PathIsDir(Path: TPath):boolean;
@@ -508,7 +508,8 @@ begin
   P := nil;
   B := nil;
   Path     := ToPath(Path);
-  if not PathIsAbsolute(Path) then
+  if not PathIsAbsolute(Path)
+  and PathIsAbsolute(BasePath) then
     Result := Path
   else
   begin
@@ -656,6 +657,7 @@ var
   NewBase: TPath;
 begin
   BasePath := ToPath(BasePath);
+  Matches := nil;
 
   if Index > High(Patterns) then
     EXIT;
@@ -678,7 +680,6 @@ begin
     for i := Low(Matches) to High(Matches) do
       Files.Add(PathConcat(NewBase, Matches[i]))
   end;
-  Matches := nil;
   // handle wildcards
   if Patterns[Index] = '**' then
   begin // match anything and recurse
@@ -721,8 +722,7 @@ begin
     Result := False;
 end;
 
-function IsMatch(const Paths: TPaths; const Patterns: TPatterns; p: Integer = 0; s: Integer = 0):boolean;
-
+function IsMatch(const Patterns: TPatterns; const Paths: TPaths; s: Integer = 0; p: Integer = 0):boolean;
 begin
   while (p <= High(Paths))
   and   (s <= High(Patterns))
@@ -734,22 +734,25 @@ begin
   end;
   if s > High(Patterns) then
     Result := p > High(Paths)
-  else if p > High(Paths) then
-    Result := False
   else if Patterns[s] = '**' then
-    Result :=    IsMatch(Paths, Patterns, p+1, s+1)
-              or IsMatch(Paths, Patterns, p,   s+1)
-              or IsMatch(Paths, Patterns, p+1, s)
+  begin
+    if p > High(Paths) then
+      Result := s = High(Patterns)
+    else
+      Result :=    IsMatch(Patterns, Paths, s+1,   p)
+                or IsMatch(Patterns, Paths, s+1, p+1)
+                or IsMatch(Patterns, Paths, s,   p+1)
+  end
   else
     Result := False;
 end;
 
-function IsMatch(Path, Pattern: TPath):boolean;
+function IsMatch(Pattern, Path : TPath):boolean;
 begin
-  Path     := ToPath(Path);
   Pattern  := ToPath(Pattern);
+  Path     := ToPath(Path);
 
-  Result := IsMatch(SplitPath(Path), SplitPath(Pattern));
+  Result := IsMatch(SplitPath(Pattern), SplitPath(Path));
 end;
 
 function  PathExists(Path: TPath):boolean;

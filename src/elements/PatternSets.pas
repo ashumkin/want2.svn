@@ -181,7 +181,7 @@ var
 begin
   Excluded := SplitPath(Pattern);
   for f := Files.Count-1 downto 0 do
-    if IsMatch(SplitPath(Files[f]), Excluded) then
+    if IsMatch(Excluded, SplitPath(Files[f])) then
       Files.Delete(f);
 end;
 
@@ -199,7 +199,10 @@ procedure TPatternSet.DoIncludes(Files: TStrings; Base: string; IncAtt, ExcAtt: 
 var
   i: Integer;
 begin
-  if (Base <> '') and (FIncludes.Count = 0) then
+  if (Base <> '')
+  and (FIncludes.Count = 0)
+  and (Length(FPatternSets) = 0)
+  then
     DoInclude(Files, '**', Base, IncAtt, ExcAtt)
   else
     for i := 0 to FIncludes.Count-1 do
@@ -305,7 +308,7 @@ procedure TCustomFileSet.AddDefaultPatterns;
 begin
   // add the default Ant excludes
   Exclude('**/CVS/**');
-  Exclude('**/.cvsignore');                                                                 
+  Exclude('**/.cvsignore');
 
   Exclude('**/*~');
   Exclude('**/#*#');
