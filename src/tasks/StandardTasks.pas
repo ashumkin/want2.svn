@@ -21,7 +21,10 @@ uses
   DUnitTasks,
   EditTasks,
   LoggerTask,
-  IniFileTasks;
+  IniFileTasks,
+  CVSTasks,
+  LoadFileTasks,
+  FilterElements;
 
 
 implementation

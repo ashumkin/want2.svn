@@ -22,14 +22,16 @@ uses
   FileTasksTest in 'FileTasksTest.pas',
   DelphiTasksTest in 'DelphiTasksTest.pas',
   WildPathsTest in 'WildPathsTest.pas',
+  CVSTasksTests in 'CVSTasksTests.pas',
   RegexpElementsTest in 'RegexpElementsTest.pas',
   WantStandardTasks in '..\src\tasks\WantStandardTasks.pas',
-  StandardTasks in '..\src\tasks\StandardTasks.pas';
+  StandardTasks in '..\src\tasks\StandardTasks.pas',
+  LoadFileTests,
+  FilterChainsElementsTests;
 
 {$R *.RES}
 
 exports
   RegisteredTests name 'Test';
-
 end.
 

@@ -23,7 +23,8 @@ uses
   ExternalTests in 'ExternalTests.pas',
   ConsoleScriptRunner in '..\src\win32\ConsoleScriptRunner.pas',
   StyleTasks in '..\src\tasks\StyleTasks.pas',
-  MSXMLEngineImpl in '..\src\win32\MSXMLEngineImpl.pas';
+  MSXMLEngineImpl in '..\src\win32\MSXMLEngineImpl.pas',
+  CVSTasksTests in 'CVSTaksTests.pas';
 
 {$R *.RES}
 
