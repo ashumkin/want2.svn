@@ -63,7 +63,7 @@ uses
   LogMgr in 'lib\LogMgr.pas',
   ScriptParser in 'lib\ScriptParser.pas',
   ScriptFrm in 'forms\ScriptFrm.pas' {ScriptForm},
-  WantRunner in 'WantRunner.pas',
+  ScriptRunner in 'ScriptRunner.pas',
   WantBase in 'WantBase.pas',
   WantClasses in 'WantClasses.pas',
   WantTasks in 'tasks\WantTasks.pas';
@@ -75,14 +75,14 @@ const
 
 procedure Run;
 var
-  AWant :TConsoleWant;
+  Runner :TConsoleScriptRunner;
 begin
   try
-    AWant := TConsoleWant.Create;
+    Runner := TConsoleScriptRunner.Create;
     try
-      AWant.Execute;
+      Runner.Execute;
     finally
-      FreeAndNil(AWant);
+      FreeAndNil(Runner);
     end;
   except
     Halt(1);

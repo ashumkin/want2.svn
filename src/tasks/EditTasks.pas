@@ -18,12 +18,14 @@ uses
   JclSysUtils,
   JclStrings,
 
+  WildPaths,
   WantClasses;
 
 type
   TEditTask = class(TTask)
   protected
     FBuffer   :TStrings;
+    FText     :string;
     FDot      :Integer;
 
     FFile     :string;
@@ -31,13 +33,14 @@ type
 
     procedure SetDot(Value :Integer);
 
-    function GetText :string;
     procedure SetText(Value :string);
 
     property Dot    :Integer     read FDot    write SetDot;
     property Buffer :TStrings    read FBuffer write FBuffer;
 
     function ParseLine(Line :string) :Integer;
+
+    procedure Perform;
   public
     constructor Create(Owner :TScriptElement); override;
     destructor Destroy; override;
@@ -45,7 +48,7 @@ type
     procedure Execute; override;
   published
     property _file :string read FFile   write FFile;
-    property text  :string read GetTExt write SetText;
+    property text  :string read FText   write FText;
   end;
   TEditor = TEditTask;
 
@@ -129,7 +132,9 @@ type
 
   TReadElement = class(TEditFileElement)
   protected
-    function  Perform(Buffer :TStrings; FromLine, ToLine :Integer) :Integer; override;
+    function Perform(Buffer :TStrings; FromLine, ToLine :Integer) :Integer; override;
+  public
+    procedure Init; override;
   end;
 
   TWriteElement = class(TEditFileElement)
@@ -180,11 +185,6 @@ begin
   inherited Destroy;
 end;
 
-function TEditTask.GetText: string;
-begin
-  Result := Buffer.Text;
-end;
-
 procedure TEditTask.SetText(Value: string);
 var
   S :TStrings;
@@ -230,20 +230,42 @@ begin
     FDot := Min(Buffer.Count-1, Value);
 end;
 
-procedure TEditTask.Execute;
+
+procedure TEditTask.Perform;
 var
-  i :Integer;
+  i     :Integer;
 begin
-  inherited Execute;
-  Log;
-  if _file <> '' then
-    Buffer.LoadFromFile(_file);
+  SetText(FText);
   for i := 0 to ChildCount-1 do
   begin
     if Children[i] is TCustomEditElement then
       TCustomEditElement(Children[i]).Perform(Self);
   end;
 end;
+
+procedure TEditTask.Execute;
+var
+  f     :Integer;
+  Files :TPaths;
+begin
+  Files := nil;
+  inherited Execute;
+  Log;
+  if _file = '' then
+    Perform
+  else
+  begin
+    Files := Wild(_file, BasePath);
+    for f := Low(Files) to High(Files) do
+    begin
+       Log(vlVerbose, '%s', [Files[f]]);
+       Buffer.Clear;
+       Buffer.LoadFromFile(Files[f]);
+       Perform
+    end;
+  end;
+end;
+
 
 { TCustomEditElement }
 
@@ -330,7 +352,7 @@ begin
     begin
       Dot := l;
       if (Pattern = '') or (Pos(Pattern, Buffer[l]) <> 0) then
-        Dot := Perform(Editor.Buffer, l, l);
+        Dot := Self.Perform(Editor.Buffer, l, l);
     end
   end;
 end;
@@ -408,25 +430,40 @@ end;
 
 { TReadElement }
 
+procedure TReadElement.Init;
+begin
+  inherited Init;
+  RequireAttribute('file');
+end;
+
 function TReadElement.Perform(Buffer: TStrings; FromLine, ToLine: Integer): Integer;
 var
-  S   :TStringList;
-  i   :Integer;
-  pos :Integer;
+  S     :TStringList;
+  i     :Integer;
+  f     :Integer;
+  pos   :Integer;
+  Files :TPaths;
 begin
+  Files := nil;
   Log(vlVerbose, '%s %d %s', [TagName, ToLine, _file]);
   Result := FromLIne;
   S := TStringList.Create;
   try
-     S.LoadFromFile(_file);
      pos := Max(0, 1 + Min(Buffer.Count-1, ToLine));
-     if pos >= Buffer.Count then
-       Buffer.AddStrings(S)
-     else
-       for i := S.Count-1 downto 0 do
-       begin
-         Buffer.Insert(pos, S[i]);
-       end;
+     Files := Wild(_file, BasePath);
+     for f := High(Files) downto Low(Files) do
+     begin
+       Log(vlVerbose, '%s %d %s', [TagName, pos, Files[f]]);
+       S.LoadFromFile(Files[f]);
+       if pos >= Buffer.Count then
+         Buffer.AddStrings(S)
+       else
+         for i := S.Count-1 downto 0 do
+         begin
+           Buffer.Insert(pos, S[i]);
+         end;
+       S.Clear;
+     end;
   finally
     FreeAndNil(S);
   end;

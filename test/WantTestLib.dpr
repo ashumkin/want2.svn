@@ -34,7 +34,7 @@ library WantTestLib;
 
 uses
   TestFramework,
-  DanteClassesTest in 'DanteClassesTest.pas',
+  WantClassesTest in 'WantClassesTest.pas',
   FileSetTests in 'FileSetTests.pas',
   ExecTasksTest in 'ExecTasksTest.pas',
   FileTasksTest in 'FileTasksTest.pas',

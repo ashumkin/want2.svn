@@ -7,7 +7,7 @@
 
 { $Id$ }
 
-unit WantRunner;
+unit ScriptRunner;
 
 interface
 
@@ -34,7 +34,7 @@ uses
   CustomTasks;
 
 type
-  TWant = class(TProject)
+  TScriptRunner = class(TProject)
   public
     procedure DoBuild( ABuildFileName: TPath;
                        Targets:    TStringArray;
@@ -48,7 +48,7 @@ type
     procedure CreateLogManager;
   end;
 
-  TConsoleWant = class(TWant)
+  TConsoleScriptRunner = class(TScriptRunner)
   protected
     FBuildFile   :string;
     FTargets     :TStringArray;
@@ -72,9 +72,9 @@ implementation
 
 
 
-{ TWant }
+{ TScriptRunner }
 
-procedure TWant.DoBuild( ABuildFileName: TPath;
+procedure TScriptRunner.DoBuild( ABuildFileName: TPath;
                           Targets:    TStringArray;
                           Level:      TLogLevel = vlNormal);
 var
@@ -116,17 +116,17 @@ begin
 end;
 
 
-procedure TWant.CreateLogManager;
+procedure TScriptRunner.CreateLogManager;
 begin
   LogManager := TConsoleLogManager.Create;
 end;
 
-procedure TWant.DoBuild(ABuildFileName: TPath; Level: TLogLevel);
+procedure TScriptRunner.DoBuild(ABuildFileName: TPath; Level: TLogLevel);
 begin
   DoBuild(ABuildFileName, nil, Level);
 end;
 
-procedure TWant.DoBuild(ABuildFileName: TPath; Target: string; Level: TLogLevel);
+procedure TScriptRunner.DoBuild(ABuildFileName: TPath; Target: string; Level: TLogLevel);
 var
   T :TStringArray;
 begin
@@ -135,27 +135,27 @@ begin
   DoBuild(ABuildFileName, T, Level);
 end;
 
-{ TConsoleWant }
+{ TConsoleScriptRunner }
 
-constructor TConsoleWant.Create(Owner: TScriptElement);
+constructor TConsoleScriptRunner.Create(Owner: TScriptElement);
 begin
   inherited Create(Owner);
   CreateLogManager;
 end;
 
-destructor TConsoleWant.Destroy;
+destructor TConsoleScriptRunner.Destroy;
 begin
   FreeAndNil(FLogManager);
   inherited Destroy;
 end;
 
-procedure TConsoleWant.Execute;
+procedure TConsoleScriptRunner.Execute;
 begin
   ParseCommandLine;
   DoBuild(FBuildFile, FTargets, FVerbosity)
 end;
 
-function TConsoleWant.ParseOption(Switch: string):boolean;
+function TConsoleScriptRunner.ParseOption(Switch: string):boolean;
 var
   PropName:  string;
   PropValue: string;
@@ -193,7 +193,7 @@ begin
     Result := False;
 end;
 
-procedure TConsoleWant.ParseCommandLine;
+procedure TConsoleScriptRunner.ParseCommandLine;
 var
   p:         Integer;
   Param:     string;
@@ -229,12 +229,12 @@ begin
   end;
 end;
 
-function TConsoleWant.GetUseColor: boolean;
+function TConsoleScriptRunner.GetUseColor: boolean;
 begin
   Result := TConsoleLogManager(LogManager).UseColor;
 end;
 
-procedure TConsoleWant.SetUseColor(Value: boolean);
+procedure TConsoleScriptRunner.SetUseColor(Value: boolean);
 begin
   TConsoleLogManager(LogManager).UseColor := Value;
 end;

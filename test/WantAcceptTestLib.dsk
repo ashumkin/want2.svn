@@ -63,7 +63,8 @@ File_9=SourceModule,'C:\home\want\src\tasks\ExecTasks.pas',0,1,1,1,1,0,0
 
 [Modules]
 Module0=C:\home\want\test\ExternalTests.pas
-Count=1
+Module1=C:\home\want\test\RunnerTests.pas
+Count=2
 EditWindowCount=1
 
 [C:\home\want\test\ExternalTests.pas]
@@ -71,11 +72,16 @@ ModuleType=SourceModule
 FormState=0
 FormOnTop=0
 
-[C:\home\want\test\WantAcceptTestLib.dpr]
+[C:\home\want\test\RunnerTests.pas]
+ModuleType=SourceModule
 FormState=0
 FormOnTop=0
 
 [c:\dvl\bor\d4\ProjectGroup1.bpg]
+FormState=0
+FormOnTop=0
+
+[C:\home\want\test\WantAcceptTestLib.dpr]
 FormState=0
 FormOnTop=0
 
@@ -85,8 +91,8 @@ MessageView=MessageView@EditWindow0
 Create=1
 Visible=1
 State=0
-Left=274
-Top=129
+Left=132
+Top=63
 Width=740
 Height=620
 MaxLeft=-1
@@ -97,12 +103,13 @@ LeftPanelSize=0
 LeftPanelClients=CodeExplorer@EditWindow0
 LeftPanelData=00000400010000000C000000436F64654578706C6F7265720000000000000000000000000000000000FFFFFFFF
 RightPanelSize=0
-BottomPanelSize=118
+BottomPanelSize=0
 BottomPanelClients=MessageView@EditWindow0
-BottomPanelData=000004000000000000000000000000000000000000000000000100000000000000000B0000004D65737361676556696577FFFFFFFF
-ViewCount=1
+BottomPanelData=00000400010000000B0000004D657373616765566965770000000000000000000000000000000000FFFFFFFF
+ViewCount=2
 CurrentView=0
 View0=0
+View1=1
 
 [CodeExplorer@EditWindow0]
 Create=1
@@ -122,7 +129,7 @@ Dockable=1
 
 [MessageView@EditWindow0]
 Create=1
-Visible=1
+Visible=0
 State=0
 Left=11
 Top=0
@@ -138,9 +145,16 @@ Dockable=1
 
 [View0]
 Module=C:\home\want\test\ExternalTests.pas
-CursorX=1
-CursorY=1
-TopLine=1
+CursorX=11
+CursorY=166
+TopLine=140
+LeftCol=1
+
+[View1]
+Module=C:\home\want\test\RunnerTests.pas
+CursorX=27
+CursorY=89
+TopLine=56
 LeftCol=1
 
 [DockHosts]

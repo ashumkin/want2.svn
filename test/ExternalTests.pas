@@ -54,7 +54,7 @@ uses
   Math,
   Windows,
   SysUtils,
-  WantRunner,
+  ScriptRunner,
   JclMiscel,
   JclShell,
   WildPaths,
@@ -154,16 +154,16 @@ end;
 
 procedure TExternalTest.DoTest;
 var
-  Want: TWant;
+  Runner: TScriptRunner;
 begin
-  Want := TWant.Create;
+  Runner := TScriptRunner.Create;
   {$IFNDEF USE_TEXT_RUNNER}
-     Want.CreateLogManager;
+     Runner.CreateLogManager;
   {$ENDIF}
   try
-    Want.DoBuild(FTestExeSetupDir + BuildFileName, vlVerbose);
+    Runner.DoBuild(FTestExeSetupDir + BuildFileName, vlVerbose);
   finally
-    Want.Free;
+    Runner.Free;
   end;
   VerifyFinal;
 end;

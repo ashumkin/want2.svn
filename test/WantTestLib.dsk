@@ -5,11 +5,17 @@ State=0
 Left=0
 Top=0
 Width=812
-Height=108
+Height=105
 MaxLeft=-1
 MaxTop=-1
 ClientWidth=804
-ClientHeight=81
+ClientHeight=78
+
+[BreakpointWindow]
+Column0Width=100
+Column1Width=75
+Column2Width=225
+Column3Width=40
 
 [CallStackWindow]
 Create=1
@@ -22,7 +28,7 @@ Height=161
 MaxLeft=-1
 MaxTop=-1
 ClientWidth=286
-ClientHeight=135
+ClientHeight=137
 TBDockHeight=161
 LRDockWidth=294
 Dockable=1
@@ -38,7 +44,7 @@ Height=303
 MaxLeft=-1
 MaxTop=-1
 ClientWidth=328
-ClientHeight=277
+ClientHeight=279
 TBDockHeight=303
 LRDockWidth=336
 Dockable=1
@@ -55,20 +61,14 @@ File_7=SourceModule,'C:\home\dante\src\elements\PatternSets.pas',0,1,1,1,1,0,0
 File_8=SourceModule,'C:\home\dante\src\DanteClasses.pas',0,1,610,28,625,0,0
 
 [Modules]
-Module0=C:\home\want\src\tasks\ExecTasks.pas
-Module1=C:\home\want\test\WantTestLib.dpr
-Module2=C:\home\want\src\elements\Attributes.pas
+Module0=C:\home\want\test\WantTestLib.dpr
+Module1=C:\home\want\src\elements\Attributes.pas
+Module2=C:\home\want\src\tasks\ExecTasks.pas
 Module3=C:\home\want\test\ExecTasksTest.pas
-Module4=C:\home\want\test\DanteClassesTest.pas
-Module5=c:\lib\pascal\jcl\source\JclSysInfo.pas
-Module6=c:\lib\pascal\jcl\source\JclFileUtils.pas
-Count=7
+Module4=c:\lib\pascal\jcl\source\JclSysInfo.pas
+Module5=c:\lib\pascal\jcl\source\JclFileUtils.pas
+Count=6
 EditWindowCount=1
-
-[C:\home\want\src\tasks\ExecTasks.pas]
-ModuleType=SourceModule
-FormState=0
-FormOnTop=0
 
 [C:\home\want\test\WantTestLib.dpr]
 ModuleType=SourceModule
@@ -80,12 +80,12 @@ ModuleType=SourceModule
 FormState=0
 FormOnTop=0
 
-[C:\home\want\test\ExecTasksTest.pas]
+[C:\home\want\src\tasks\ExecTasks.pas]
 ModuleType=SourceModule
 FormState=0
 FormOnTop=0
 
-[C:\home\want\test\DanteClassesTest.pas]
+[C:\home\want\test\ExecTasksTest.pas]
 ModuleType=SourceModule
 FormState=0
 FormOnTop=0
@@ -100,7 +100,7 @@ ModuleType=SourceModule
 FormState=0
 FormOnTop=0
 
-[C:\dvl\bor\d4\Bin\ProjectGroup1.bpg]
+[c:\dvl\bor\d4\ProjectGroup1.bpg]
 FormState=0
 FormOnTop=0
 
@@ -122,18 +122,17 @@ LeftPanelSize=0
 LeftPanelClients=CodeExplorer@EditWindow0
 LeftPanelData=00000400010000000C000000436F64654578706C6F7265720000000000000000000000000000000000FFFFFFFF
 RightPanelSize=0
-BottomPanelSize=52
+BottomPanelSize=0
 BottomPanelClients=MessageView@EditWindow0
-BottomPanelData=000004000000000000000000000000000000000000000000000100000000000000000B0000004D65737361676556696577FFFFFFFF
-ViewCount=7
-CurrentView=5
+BottomPanelData=00000400010000000B0000004D657373616765566965770000000000000000000000000000000000FFFFFFFF
+ViewCount=6
+CurrentView=2
 View0=0
 View1=1
 View2=2
 View3=3
 View4=4
 View5=5
-View6=6
 
 [CodeExplorer@EditWindow0]
 Create=1
@@ -153,7 +152,7 @@ Dockable=1
 
 [MessageView@EditWindow0]
 Create=1
-Visible=1
+Visible=0
 State=0
 Left=11
 Top=0
@@ -182,34 +181,27 @@ TopLine=1256
 LeftCol=1
 
 [View2]
-Module=C:\home\want\test\DanteClassesTest.pas
-CursorX=1
-CursorY=43
-TopLine=43
-LeftCol=1
-
-[View3]
 Module=C:\home\want\test\WantTestLib.dpr
-CursorX=3
-CursorY=39
+CursorX=27
+CursorY=37
 TopLine=24
 LeftCol=1
 
-[View4]
+[View3]
 Module=C:\home\want\test\ExecTasksTest.pas
 CursorX=3
 CursorY=43
 TopLine=24
 LeftCol=1
 
-[View5]
+[View4]
 Module=C:\home\want\src\tasks\ExecTasks.pas
 CursorX=48
-CursorY=522
-TopLine=512
+CursorY=509
+TopLine=509
 LeftCol=1
 
-[View6]
+[View5]
 Module=C:\home\want\src\elements\Attributes.pas
 CursorX=1
 CursorY=48

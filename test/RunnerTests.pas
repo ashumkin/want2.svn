@@ -16,7 +16,7 @@ uses
   TestFramework,
   WildPaths,
   WantClasses,
-  WantRunner,
+  ScriptRunner,
   WantClassesTest,
   StandardElements,
   StandardTasks;
@@ -27,7 +27,7 @@ type
     FBuildFile: TextFile;
     FBuildFileName: string;
     FCopyOfFileName: string;
-    FWant: TWant;
+    FRunner: TScriptRunner;
     FNewCopyOfFileName: string;
     FNewDir: string;
     FCopyDir: string;
@@ -86,9 +86,9 @@ end;
 procedure TTestWantMain.Setup;
 begin
   inherited;
-  FWant := TWant.Create;
+  FRunner := TScriptRunner.Create;
   {$IFNDEF USE_TEXT_RUNNER}
-  FWant.CreateLogManager;
+  FRunner.CreateLogManager;
   {$ENDIF}
 
   FBuildFileName := FTestDir + '\build.xml';
@@ -100,7 +100,7 @@ end;
 
 procedure TTestWantMain.TearDown;
 begin
-  FWant.Free;
+  FRunner.Free;
   inherited;
 end;
 
@@ -110,7 +110,7 @@ var
 begin
   CurDir := GetCurrentDir;
   MakeTestBuildFile;
-  FWant.DoBuild(FBuildFileName, vlWarnings);
+  FRunner.DoBuild(FBuildFileName, vlWarnings);
 
   { leaving CurrentDir is important for other tests depend on it, because
     TProject.FRootDir defaults to CurrentDir. }
