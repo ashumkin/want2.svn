@@ -102,6 +102,7 @@ type
     FIncludePaths   : TIncludePathElement;
 
     FDefines        : TStrings;
+    FPackages       : TStrings;
 
     FRenamedCFGs    :boolean;
 
@@ -126,6 +127,7 @@ type
     procedure AddResourcePath(Path: TPath);
     procedure AddIncludePath(Path: TPath);
     procedure AddDefine(Name, Value :string);
+    procedure AddPackage(Path :string);
 
     procedure RestoreCFGs;
 
@@ -190,8 +192,8 @@ type
   TUseLibraryPathElement = class(TBooleanAttributeElement);
   TUseCFGElement         = class(TBooleanAttributeElement);
 
-  TDCUOutputElement = class(TPathAttributeElement);
-  TEXEOutputElement = class(TPathAttributeElement);
+  TDCUOutputElement  = class(TPathAttributeElement);
+  TEXEOutputElement  = class(TPathAttributeElement);
 
   TOptionElement = class(TScriptElement)
   protected
@@ -208,6 +210,15 @@ type
   published
     property Name;
     property Value :string read FValue write FValue;
+  end;
+
+  TUsePackageElement = class(TOptionElement)
+  protected
+    FPath :TPath;
+  public
+    procedure Init; override;
+  published
+    property Path :TPath read FPath write FPath;
   end;
 
 
@@ -318,12 +329,14 @@ begin
   FResourcePaths  := TResourcePathElement.Create(Self);
   FIncludePaths   := TIncludePathElement.Create(Self);
   FDefines        := TStringList.Create;
+  FPackages       := TStringList.Create;
   FWarnings       := True;
 end;
 
 destructor TDelphiCompileTask.Destroy;
 begin
   FreeAndNil(FDefines);
+  FreeAndNil(FPackages);
   inherited Destroy;
 end;
 
@@ -383,8 +396,6 @@ begin
 
   Log(vlVerbose, 'sources %s', [ToRelativePath(source)]);
   Sources := WildPaths.Wild(Source, BasePath);
-  if Length(Sources) = 0 then
-    TaskFailure(Format('could not find %s to compile', [PathConcat(BasePath, source)]));
 
   for s := Low(Sources) to High(Sources) do
   begin
@@ -483,6 +494,12 @@ begin
   end;
 
 
+  for p := 0 to FPackages.Count-1 do
+  begin
+    Log(vlVerbose, 'package %s', [FPackages[p]]);
+    Result := Result + PathOpt('LU', FPackages[p]);
+  end;
+
   if useLibraryPath then
   begin
     Log(vlVerbose, 'uselibrarypath=true');
@@ -516,6 +533,9 @@ begin
     Log(vlVerbose, 'includepath %s', [ToRelativePath(Paths[p])]);
     Result := Result + PathOpt('I', Paths[p]);
   end;
+
+  if Length(Sources) = 0 then
+    TaskFailure(Format('could not find %s to compile', [PathConcat(BasePath, source)]));
 end;
 
 procedure TDelphiCompileTask.SetExes(Value: string);
@@ -551,6 +571,11 @@ begin
     FDefines.Values[Name] := Value
   else
     FDefines.Add(Name + '=');
+end;
+
+procedure TDelphiCompileTask.AddPackage(Path: string);
+begin
+  FPackages.Add(Path);
 end;
 
 function TDelphiCompileTask.CreateUnitPath: TUnitPathElement;
@@ -681,6 +706,15 @@ begin
   Result := Owner as TDelphiCompileTask;
 end;
 
+{ TUsePackageElement }
+
+procedure TUsePackageElement.Init;
+begin
+  inherited Init;
+  RequireAttribute('path');
+  dcc.AddPackage(Path);
+end;
+
 initialization
   RegisterTasks( [TDelphiCompileTask, TResourceCompileTask]);
   RegisterElements(TDelphiCompileTask, [
@@ -697,6 +731,8 @@ initialization
                          TUseCFGElement,
 
                          TDCUOutputElement,
-                         TEXEOutputElement
+                         TEXEOutputElement,
+
+                         TUsePackageElement
                          ]);
 end.
