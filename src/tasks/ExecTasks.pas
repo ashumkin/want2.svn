@@ -50,15 +50,19 @@ uses
 type
   TArgElement = class(TScriptElement)
   protected
-    FVAlue :string;
+    FVAlue  :string;
+    FIsPath :boolean;
 
     function Getpath :TPath;
     procedure SetPath(Path :TPath);
   public
     procedure Init; override;
+
+    function ExternalValue :string;
   published
     property value :string read FValue  write FValue;
     property path  :TPath  read GetPath write SetPath;
+    property IsPath :boolean read FIsPath;
   end;
 
   TCustomExecTask = class(TTask)
@@ -219,7 +223,7 @@ begin
   for i := 0 to ChildCount-1 do
   begin
     if Children[i] is TArgElement then
-      Result := Result + ' ' + TArgElement(Children[i]).Value;
+      Result := Result + ' ' + TArgElement(Children[i]).ExternalValue;
   end;
   Result := Trim(Result);
 end;
@@ -422,6 +426,22 @@ end;
 
 { TArgElement }
 
+function TArgElement.ExternalValue :string;
+begin
+  if not IsPath then
+  begin
+     Result := Value
+  end
+  else
+  begin
+     Result := ToSystemPath(ToRelativePath(Path));
+     if Pos(' ', Result) > 0 then
+     begin
+       Result := Format('"%s"', [Result]);
+     end;
+  end;
+end;
+
 function TArgElement.Getpath: TPath;
 begin
    Result := Value;
@@ -429,7 +449,8 @@ end;
 
 procedure TArgElement.SetPath(Path: TPath);
 begin
-   FValue := ToSystemPath(ToRelativePath(Path));
+   Value := Path;
+   FIsPath := true;
 end;
 
 procedure TArgElement.Init;

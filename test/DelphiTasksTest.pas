@@ -53,7 +53,8 @@ begin
         basedir := '../src'
       else if PathIsDir('../../src') then
         basedir := '../../src';
-      source  := 'Want.dpr';
+      SetAttribute('source', 'Want.dpr');
+      source    := 'Want.dpr';
       exeoutput := ToPath(Evaluate('%{temp}/want.test'));
       dcuoutput := ToPath(Evaluate('%{temp}/want.test'));
 

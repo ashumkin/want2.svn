@@ -280,7 +280,7 @@ begin
     T.Depends := 'compile';
     with TShellTask.Create(T) do
     begin
-      Executable := 'copy';
+      SetAttribute('executable', 'copy');
       fname := ExtractFilePath(ParamStr(0)) + 'test\sample.txt';
       ArgumentList.Add(fname);
       fname := ExtractFilePath(fname) + 'new.txt';
