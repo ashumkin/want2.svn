@@ -61,6 +61,7 @@ const
 
 procedure MakeDir(Path :TPath);
 procedure ChangeDir(Path :TPath);
+function  CurrentDir :TPath;
 
 procedure CopyFile(Src, Dst :TPath);
 procedure CopyFiles(const Sources, Dests :TPaths);  overload;
@@ -105,6 +106,12 @@ procedure ChangeDir(Path :TPath);
 begin
   SetCurrentDir(ToSystemPath(Path));
 end;
+
+function  CurrentDir :TPath;
+begin
+  Result := ToPath(SysUtils.GetCurrentDir);
+end;
+
 
 procedure CopyFile(Src, Dst :TPath);
 begin
