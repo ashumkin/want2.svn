@@ -640,7 +640,7 @@ function TScriptElement.SetAttribute(Name, Value: string): boolean;
 begin
   Log(vlDebug, 'attribute %s="%s"', [Name,Value]);
   FAttributes.Values[Name] := Value;
-  Result := SetDelphiProperty(Name, Value);
+  Result := SetDelphiProperty(Name, Evaluate(Value));
 end;
 
 
