@@ -59,11 +59,14 @@ procedure TVersionInfoTask.Execute;
 var
   FclVerRc: TclVersionRc;
 begin
-  Log('Incrementing build in ' + ToRelativePath(FRcFileName));
+  Log(ToRelativePath(RCFileName));
   FclVerRc := TclVersionRc.Create(ToSystemPath(FRcFileName));
   try
     if increment then
+    begin
+      Log(vlVerbose, 'Incrementing build in ' + ToRelativePath(FRcFileName));
       FclVerRc.IncBuild;
+    end;
   finally
     FclVerRc.Free;
   end;
