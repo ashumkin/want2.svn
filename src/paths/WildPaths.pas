@@ -224,11 +224,11 @@ begin
    //!!!AssertIsSystemIndependentPath(BasePath);
 
    Result := MovePath(Path, '', BasePath);
+   if IsWindowsPath(Result) then
+     Delete(Result,1, 1);
    if (Length(Result) >= 1) and (Result[Length(Result)] = '/') then
      Delete(Result,Length(Result), 1);
    Result := StringReplace(Result, '/', SystemPathDelimiter, [rfReplaceAll]);
-   if IsWindowsPath(Path) then
-     Delete(Result,1, 1);
 end;
 
 function ToSystemPaths(const Paths :TPaths; const BasePath :TPath = '') :TSystemPaths;
@@ -468,7 +468,10 @@ begin
   NewBase := BasePath;
   // absorb all non-wildcard patterns
   while (Index < High(Patterns))
-  and (LastDelimiter(WildChars, Patterns[Index]) = 0) do
+  and ((LastDelimiter(WildChars, Patterns[Index]) = 0)
+       or (Patterns[Index] <> '.')
+      ) 
+  do
   begin
     NewBase := PathConcat(NewBase, Patterns[Index]);
     Inc(Index);
@@ -507,7 +510,9 @@ begin
     Inc(i);
     Inc(j);
   end;
-  if j > Length(B) then
+  if B = '.' then
+    Result := True
+  else if j > Length(B) then
     Result := i > Length(A)
   else if i > Length(A) then
     Result := False

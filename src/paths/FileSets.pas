@@ -35,10 +35,10 @@ unit FileSets;
 
 interface
 uses
-  MiniDOM,
-  DanteClasses,
   WildPaths,
   FileOps,
+  DanteClasses,
+  PatternSets,
 
   SysUtils,
   Classes;
