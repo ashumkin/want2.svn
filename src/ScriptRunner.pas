@@ -42,18 +42,15 @@ uses
 
   JclMiscel,
   JclStrings,
-  JclFileUtils,
 
   LogMgr,
   ConsoleLogMgr,
+  WildPaths,
+  DanteBase,
   DanteClasses,
   StandardElements,
   StandardTasks,
   CustomTasks;
-
-const
-  DanteBuildFileName = 'dante.xml';
-  AntBuildFileName   = 'build.xml';
 
 type
   TDante = class(TObject)
@@ -64,9 +61,6 @@ type
 
     procedure SetCommandLineProperties(Project :TProject);
   public
-    class function FindBuildFile(BuildFile: string):string; overload;
-    class function FindBuildFile :string; overload;
-
     procedure DoBuild( ABuildFileName: string;
                        Level: TLogLevel = vlNormal); overload;
     procedure DoBuild( ABuildFileName: string;
@@ -76,17 +70,8 @@ type
     property UseColor :boolean read FUseColor write FUseColor;
   end;
 
-function DefaultBuildFileName: string;
-
 implementation
 
-function DefaultBuildFileName: string;
-var
-  AppName :string;
-begin
-  AppName := ExtractFileName(GetModulePath(hInstance));
-  Result  := ChangeFileExt(LowerCase(AppName),'.xml');
-end;
 
 
 { TDante }
@@ -104,49 +89,23 @@ begin
   Logger.UseColor := Self.UseColor or SysUtils.FindCmdLineSwitch('color', ['/','-'], True);
   Logger.Start;
   try
+    ABuildFileName := ToPath(ABuildFileName);
 
     Project := TProject.Create(nil);
     try
       Project.LogManager := Logger;
 
-      try
-        SetCommandLineProperties(Project);
+      SetCommandLineProperties(Project);
 
-        // only search for build file if name not specified
-        if ABuildFileName = '' then
-           ABuildFileName := FindBuildFile;
-
-        if not FileExists(ABuildFileName) then
+      Project.LoadXML(ABuildFileName);
+      if Targets = '' then
+        Project.Build
+      else begin
+        T := StrToken(Targets, ',');
+        while T <> '' do
         begin
-          Logger.Log(vlErrors, Format('Cannot find build file "%s"',[DefaultBuildFileName]));
-          DanteError;
-        end;
-
-        Logger.Log('buildfile: ' + ABuildFileName);
-        Logger.Log;
-
-        Project.LoadXML(ABuildFileName);
-        if Targets = '' then
-          Project.Build
-        else begin
+          Project.Build(T);
           T := StrToken(Targets, ',');
-          while T <> '' do
-          begin
-            Project.Build(T);
-            T := StrToken(Targets, ',');
-          end;
-        end;
-        Logger.Log;
-        Logger.Log('Build complete.');
-
-      except
-        on E: Exception do
-        begin
-          if not E.ClassType.InheritsFrom(EDanteException) then
-            Logger.Log(vlErrors, E.ClassName + ': ' + E.Message);
-          Logger.Log;
-          Logger.Log(vlErrors, 'BUILD FAILED');
-          raise;
         end;
       end;
     finally
@@ -160,43 +119,6 @@ end;
 procedure TDante.DoBuild(ABuildFileName: string; Level: TLogLevel);
 begin
   DoBuild(ABuildFileName, '', Level);
-end;
-
-class function TDante.FindBuildFile(BuildFile: string): string;
-var
-  Dir: string;
-begin
-  Result := SysUtils.ExpandFileName(BuildFile);
-  Dir    := SysUtils.ExtractFileDir(Result);
-
-  while not FileExists(Result)
-  and (Dir <> '')
-  and (Dir <> ExtractFileDir(Dir))
-  do
-  begin
-    if DirectoryExists(Dir) then
-    begin
-      Result := ExtractFilePath(Dir)+ BuildFile;
-      Dir    := ExtractFileDir(Dir);
-    end
-    else
-      break;
-  end;
-
-  if not FileExists(Result) then
-    Result := BuildFile;
-end;
-
-
-class function TDante.FindBuildFile: string;
-begin
-  Result := FindBuildFile(DefaultBuildFileName);
-  if not FileExists(Result) then
-     Result := FindBuildFile(DanteBuildFileName);
-  if not FileExists(Result) then
-     Result := FindBuildFile(AntBuildFileName);
-  if not FileExists(Result) then
-     Result := DefaultBuildFileName;
 end;
 
 function TDante.RunConsole(CmdLine: string): boolean;

@@ -38,10 +38,10 @@ interface
 uses
   Classes,
   SysUtils,
-  JclFileUtils;
+  JclFileUtils,
+  WildPaths;
 
 const
-  Default_BuildFileName = 'build.xml';
   SwitchChars           = ['-', '/'];
 
   C_EOL = #13#10;

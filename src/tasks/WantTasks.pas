@@ -36,6 +36,7 @@ unit DanteTasks;
 
 interface
 uses
+  DanteBase,
   DanteClasses,
   WildPaths,
   PatternSets,

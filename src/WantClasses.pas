@@ -48,6 +48,7 @@ uses
 
   JclSysInfo,
   JclStrings,
+  JclFileUtils,
   LogMgr,
 
   OwnedTrees;
@@ -56,6 +57,9 @@ uses
 {$M+} { TURN ON RTTI (RunTime Type Information) }
 
 const
+  DanteBuildFileName = 'dante.xml';
+  AntBuildFileName   = 'build.xml';
+
   SupportedPropertyTypes = [
      tkInteger,
      tkEnumeration,
@@ -233,6 +237,10 @@ type
     procedure SetInitialBaseDir(Path: TPath);
 
     class function TagName: string; override;
+
+    class function DefaultBuildFileName: TPath;
+    function FindBuildFile(BuildFile: TPath; SearchUp :boolean = True):TPath; overload;
+    function FindBuildFile(SearchUp :boolean= True) :TPath; overload;
 
     function  ToXML(Dom: IDocument):  IElement; override;
     procedure ParseXMLText(const XML: string);
@@ -464,12 +472,12 @@ end;
 
 procedure DanteError(Msg: string = '');
 begin
-   raise EDanteError.Create('!!! ' + Msg + ' !!!' );
+   raise EDanteError.Create(Msg + '!' );
 end;
 
 procedure TaskError(Msg: string);
 begin
-   raise ETaskError.Create('!!! ' + Msg + ' !!!' );
+   raise ETaskError.Create(Msg + '!' );
 end;
 
 procedure TaskFailure(Msg: string);
@@ -1159,12 +1167,15 @@ begin
         ChangeDir(LastDir);
       end;
     end;
+    Log;
+    Log('Build complete.');
   except
-    on e: ETaskException do
-      raise;
     on e: Exception do
     begin
-      Log(vlErrors, Format('!ERROR: %s', [e.Message]));
+      if not E.ClassType.InheritsFrom(EDanteException) then
+        Log(vlErrors, E.ClassName + ': ' + E.Message);
+      Log;
+      Log(vlErrors, 'BUILD FAILED');
       raise;
     end;
   end;
@@ -1212,11 +1223,23 @@ var
   BuildFile: TPath;
   LastDir:   TPath;
 begin
-  BuildFile := ToAbsolutePath(ToPath(SystemPath));
+  BuildFile := ToPath(SystemPath);
+  if SystemPath = '' then
+    BuildFile := FindBuildFile
+  else
+    BuildFile := FindBuildFile(BuildFile);
+
+  BuildFile := ToAbsolutePath(BuildFile);
   try
+    if not PathIsFile(BuildFile) then
+      DanteError(Format('Cannot find build file "%s"',[BuildFile]));
+
     if not FRootPathSet then
       RootPath := SuperPath(ToAbsolutePath(BuildFile));
     Log(vlDebug, 'Runpath="%s"', [ RootPath ] );
+
+    Log('buildfile: ' + ToRelativePath(BuildFile));
+    Log;
 
     LastDir := CurrentDir;
     try
@@ -1314,6 +1337,54 @@ begin
       FTasks.Remove(Child)
 end;
 
+
+class function TProject.DefaultBuildFileName: TPath;
+var
+  AppName :string;
+begin
+  AppName := ExtractFileName(GetModulePath(hInstance));
+  Result  := ChangeFileExt(LowerCase(AppName),'.xml');
+end;
+
+
+function TProject.FindBuildFile(BuildFile: TPath; SearchUp: boolean): TPath;
+var
+  Dir: TPath;
+begin
+  Result := PathConcat(BasePath, BuildFile);
+  Dir    := SuperPath(BuildFile);
+
+  Log(vlDebug, 'Looking for "%s', [Result]);
+  while not PathIsFile(Result)
+  and SearchUp
+  and (Dir <> '')
+  and (Dir <> SuperPath(Dir))
+  do
+  begin
+    if PathIsDir(Dir) then
+    begin
+      Result := PathConcat(Dir, BuildFile);
+      Dir    := SuperPath(Dir);
+    end
+    else
+      break;
+  end;
+
+  if not PathIsFile(Result) then
+    Result := BuildFile;
+end;
+
+
+function TProject.FindBuildFile(SearchUp: boolean): TPath;
+begin
+  Result := FindBuildFile(DefaultBuildFileName, SearchUp);
+  if not PathIsFile(Result) then
+     Result := FindBuildFile(DanteBuildFileName, SearchUp);
+  if not PathIsFile(Result) then
+     Result := FindBuildFile(AntBuildFileName, SearchUp);
+  if not PathIsFile(Result) then
+     Result := DefaultBuildFileName;
+end;
 
 { TTarget }
 
