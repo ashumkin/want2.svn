@@ -231,7 +231,8 @@ See http://www.suigeneris.org/want/ for details.
 
   <target name="build" >
     <ini file="release.ini" if="want.master" >
-      <write section="releases" key="current" value="${version}" />                  
+      <write section="releases" key="current" value="${version}" />
+      <write section="releases" key="last_date" value="${date.tag}" />
     </ini>
   </target>
 
