@@ -840,7 +840,7 @@ begin
   else if Owner <> nil then
     Result := Owner.PropertyValue(Name)
   else
-    Result := ''
+    Result := '${' + Name + '}'
 end;
 
 function TScriptElement.EnvironmentValue(Name: string): string;
