@@ -154,7 +154,9 @@ end;
 procedure TConsoleScriptRunner.Execute;
 begin
   ParseCommandLine;
-  DoBuild(FBuildFile, FTargets, FVerbosity)
+  if FBuildFile = '' then
+    FBuildFile := FindBuildFile(True);
+  DoBuild(FBuildFile, FTargets, Verbosity)
 end;
 
 function TConsoleScriptRunner.ParseOption(Switch: string):boolean;
@@ -171,7 +173,11 @@ begin
   else if Switch = '-verbose' then
     Verbosity := vlVerbose
   else if Switch = '-debug' then
-    Verbosity := vlDebug
+  begin
+    Verbosity := vlDebug;
+    LogManager.Level := Verbosity;
+    Log(vlDebug, 'Parsing commandline');
+  end
   else if Switch = '-quiet' then
     Verbosity := vlQuiet
   else if Switch = '-color'then
@@ -208,7 +214,7 @@ begin
       if Param = '-buildfile' then
       begin
         Inc(p);
-        FBuildFile := FindBuildFile(ToPath(ParamStr(p)), True);
+        FBuildFile := ToPath(ParamStr(p));
       end
       else if (StrLeft(Param, 1) = '-') then
       begin
