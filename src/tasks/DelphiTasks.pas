@@ -432,7 +432,7 @@ begin
   for s := Low(Sources) to High(Sources) do
   begin
     Log(vlVerbose, 'source %s', [ToRelativePath(Sources[s])]);
-    Result := Result + ToSystemPath(Sources[s]);
+    Result := Result + ToSystemPath(Sources[s]) + ' ';
   end;
 
   if not usecfg then
