@@ -56,9 +56,12 @@ const
 type
   TDante = class(TObject)
   protected
+    FOnLog: TLogMethod;
+    
     function RunConsole(CmdLine: string): boolean;
 
     procedure SetCommandLineProperties(Project :TProject);
+    procedure LogSink(Msg: string; Verbosity: TVerbosityLevel);
 
   public
     class function FindBuildFile(BuildFile: string):string; overload;
@@ -69,6 +72,8 @@ type
     procedure DoBuild( ABuildFileName: string;
                        Targets:        string;
                        Verbosity:      TVerbosityLevel = vlNormal); overload;
+
+    property OnLog: TLogMethod read FOnLog write FOnLog;
   end;
 
 function DefaultBuildFileName: string;
@@ -95,6 +100,7 @@ var
 begin
   Project := TProject.Create(nil);
   try
+    Project.OnLog := Self.LogSink;
     Project.Verbosity := Verbosity;
     SetCommandLineProperties(Project);
 
@@ -161,6 +167,14 @@ begin
      Result := FindBuildFile(AntBuildFileName);
   if not FileExists(Result) then
      Result := DefaultBuildFileName;
+end;
+
+procedure TDante.LogSink(Msg: string; Verbosity: TVerbosityLevel);
+begin
+  if Assigned(FOnLog) then
+    FOnLog(Msg, Verbosity)
+  else if IsConsole then
+    Writeln(Msg);
 end;
 
 function TDante.RunConsole(CmdLine: string): boolean;

@@ -176,9 +176,19 @@ begin
   CheckMatch('/a/b/c/d', '/a/**/*');
   CheckMatch('/a/b/c/d', '/**/*');
   CheckMatch('/a/b/c/d', '/**/d');
+
   CheckNoMatch('/a/b/c/d', '/a/b/c/f');
   CheckNoMatch('/a/b/c/d', '/a/b/x/d');
   CheckNoMatch('/a/b/c/d', '/**/f');
+
+  CheckMatch('/a/b/CVS',       '**/CVS');
+  CheckMatch('/a/b/CVS/Root',  '**/CVS/*');
+
+  CheckMatch('../a/CVS',       '**/CVS');
+  CheckMatch('../a/CVS/Root',  '**/CVS/*');
+
+  CheckMatch('/c:/a/b/CVS',       '**/CVS');
+  CheckMatch('/c:/a/b/CVS/Root',  '**/CVS/*');
 end;
 
 procedure TestMatch(p, s :string);

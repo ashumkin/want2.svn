@@ -74,7 +74,7 @@ begin
       Log(ToSystemPath(basedir));
       Log(CurrentDir);
       source  := 'dante.dpr';
-      exes    := '/tmp';
+      exes    := '/bin/test';
       dcus    := '/tmp';
       build   := true;
       quiet   := true;
@@ -107,6 +107,7 @@ procedure TDelphiCompileTests.TestCompile;
 var
   exe:  string;
 begin
+  MakeDir(FDelphiTask.exes);
   exe := PathConcat(FDelphiTask.exes, 'dante.exe');
   if PathIsFile(exe) then
     DeleteFile(exe);

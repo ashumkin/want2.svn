@@ -34,6 +34,7 @@ program DanteAcceptTest;
 
 uses
   GUITestRunner,
+  TextTestRunner,
   TestFramework,
   DanteMainTest,
   VssTasksTest,
@@ -42,6 +43,9 @@ uses
 {$R *.RES}
 
 begin
-  GUITestRunner.RunRegisteredTests;
+  if IsConsole then
+    TextTestRunner.RunRegisteredTests(rxbHaltOnFailures)
+  else
+    GUITestRunner.RunRegisteredTests;
 end.
 

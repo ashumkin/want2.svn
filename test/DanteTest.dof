@@ -51,10 +51,6 @@ UsePackages=0
 [Parameters]
 RunParams=
 HostApplication=
-[Language]
-ActiveLang=
-ProjectLang=$00000409
-RootDir=
 [Version Info]
 IncludeVerInfo=0
 AutoIncBuild=0

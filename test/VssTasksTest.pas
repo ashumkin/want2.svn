@@ -251,7 +251,8 @@ begin
 end;
 
 initialization
+  {$IFNDEF NO_RUN_VSS_TESTS}
   RegisterTest('Acceptance Suite', TTestVssGetTask);
-
+  {$ENDIF}
 end.
 

@@ -57,6 +57,7 @@ type
 
     procedure SetUp;    override;
     procedure TearDown; override;
+    procedure LogSink(Msg: string; Verbosity: TVerbosityLevel);
   published
   end;
 
@@ -151,9 +152,15 @@ implementation
 
 { TProjectBaseCase }
 
+procedure TProjectBaseCase.LogSink(Msg: string; Verbosity: TVerbosityLevel);
+begin
+  // do nothing !
+end;
+
 procedure TProjectBaseCase.SetUp;
 begin
   FProject := TProject.Create;
+  FProject.OnLog := Self.LogSink;
 end;
 
 procedure TProjectBaseCase.TearDown;

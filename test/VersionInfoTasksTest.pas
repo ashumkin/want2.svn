@@ -3,13 +3,18 @@ unit VersionInfoTasksTest;
 interface
 
 uses
-  TestFramework, VersionInfoTasks, clVersionRcUnitTest, DanteClasses;
+  TestFramework,
+  clVersionRcUnitTest,
+  VersionInfoTasks,
+  DanteClasses;
 
 type
   TTestIncVerRcTask = class(TTestRcUnit)
   private
     FIncVerRcTask: TVersionInfoTask;
-    FProject: TProject;
+    FProject:TProject;
+
+    procedure LogSink(Msg: string; Verbosity: TVerbosityLevel);
   public
     procedure Setup; override;
     procedure TearDown; override;
@@ -19,12 +24,18 @@ type
 
 implementation
 
+procedure TTestIncVerRcTask.LogSink(Msg: string; Verbosity: TVerbosityLevel);
+begin
+  // output nothing
+end;
+
 procedure TTestIncVerRcTask.Setup;
 var
   T: TTarget;
 begin
   inherited;
   FProject := TProject.Create;
+  FProject.OnLog := LogSink;
   T := FProject.AddTarget('update_rc_file');
   FIncVerRcTask := TVersionInfoTask.Create(T);
 end;

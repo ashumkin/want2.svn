@@ -562,7 +562,15 @@ begin
 
   Log(vlDebug, 'Init, BasePath ="%s"', [BasePath]);
   ChangeDir(BasePath);
-  Self.Init;
+
+  try
+    Self.Init;
+  except
+    on e :Exception do
+    begin
+      ParseError(e.Message, Node.LineNo);
+    end;
+  end;
 
   i := Node.Children.Iterator;
   while i.HasNext do
@@ -590,9 +598,9 @@ end;
 
 function TDanteElement.SetAttribute(Name, Value: string): boolean;
 begin
+  Log(vlDebug, 'attribute %s="%s"', [Name,ExpandMacros(Value)]);
   FAttributes.Values[Name] := Value;
   Result := SetDelphiProperty(Name, ExpandMacros(Value));
-  Log(vlDebug, 'attribute %s="%s"', [Name,ExpandMacros(Value)]);
 end;
 
 
@@ -1127,11 +1135,9 @@ end;
 
 procedure TProject.Log(Msg: string; Verbosity: TVerbosityLevel);
 begin
-  if Assigned(FOnLog) then
-    FOnLog(Msg, Verbosity)
-  else if Self.Verbosity >= Verbosity then
+  if (Self.Verbosity >= Verbosity) and Assigned(FOnLog) then
   begin
-    if IsConsole then writeln(Msg);
+    FOnLog(Msg, Verbosity);
   end;
 end;
 

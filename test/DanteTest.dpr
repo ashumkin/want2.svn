@@ -34,6 +34,7 @@ program DanteTest;
 
 uses
   GUITestRunner,
+  TextTestRunner,
   TestFramework,
   DanteClassesTest in 'DanteClassesTest.pas',
   FileSetTests in 'FileSetTests.pas',
@@ -47,6 +48,9 @@ uses
 {$R *.RES}
 
 begin
-  GUITestRunner.RunRegisteredTests;
+  if IsConsole then
+    TextTestRunner.RunRegisteredTests(rxbHaltOnFailures)
+  else
+    GUITestRunner.RunRegisteredTests;
 end.
 
