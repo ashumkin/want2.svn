@@ -37,6 +37,8 @@ type
 
     function  MyFileSet :TFileSet;
 
+    procedure Init; override;
+
     procedure AddDefaultPatterns; virtual;
 
     procedure AddCommaSeparatedIncludes(Value: string);
@@ -136,6 +138,12 @@ begin
   DefaultExcludes := True;
 end;
 
+procedure TFileSetTask.Init;
+begin
+  inherited;
+  AddDefaultPatterns;
+end;
+
 function TFileSetTask.CreateInclude: TIncludeElement;
 begin
   Result := MyFileSet.CreateInclude;
@@ -197,7 +205,7 @@ procedure TFileSetTask.Execute;
 var
   f: Integer;
 begin
-  AddDefaultPatterns;
+  inherited Execute;
   for f := Low(FFileSets) to High(FFileSets) do
   begin
     if FFileSets[f] <> nil then
@@ -270,18 +278,17 @@ end;
 
 procedure TDeleteTask.AddDefaultPatterns;
 begin
-  dir := PathConcat(BasePath, dir);
-  if (dir <> '')
-  and PathIsDir(dir)
-  and (Length(FFileSets) = 0)
-  then
+  if (dir <> '') and (Length(FFileSets) = 0) then
   begin
     // then they wanto to delete the whole directory
     MyFileSet.Include(dir);
     MyFileSet.Include(PathConcat(dir, '**'));
   end
   else
+  begin
+    Self.basedir := dir;
     inherited AddDefaultPatterns;
+  end;
 end;
 
 procedure TDeleteTask.DoFileset(Fileset: TFileSet);
@@ -292,7 +299,6 @@ var
   msg   : string;
 begin
   inherited DoFileSet(Fileset);
-  FileSet.basedir := PathConcat(self.BasePath, dir);
 
   Paths := Fileset.Paths;
 
@@ -334,8 +340,7 @@ end;
 procedure TDeleteTask.Init;
 begin
   inherited Init;
-(*  if (_file = '') and (dir = '') then
-    TaskError('either the file or the dir attribute must be set'); *)
+  RequireAttribute('file|dir');
 end;
 
 { TMoveCopyTask }
