@@ -15,7 +15,7 @@ See http://www.suigeneris.org/want/ for details.
          basedir="."
          default="dist" >
 
-  <property name="version" value="0.1.0.1" />
+  <property name="version" value="0.1.0" />
   <property name="increment.build" value="false" />
 
   <property name="etc"       value="${basedir}/etc" />
@@ -88,7 +88,7 @@ See http://www.suigeneris.org/want/ for details.
 
   <target name="test" depends="internal_tests,acceptance_tests" />
 
-  <target name="internal_tests" depends="clean,prepare">
+  <target name="internal_tests" depends="clean,prepare,versioninfo,resources">
     <property name="test.app" value="WantTestLib" />
     <dcc basedir="${test}" source="${test.app}.dpr" >
       <exeoutput path="${bin}"  />
@@ -111,7 +111,7 @@ See http://www.suigeneris.org/want/ for details.
  </target>
 
 
-  <target name="acceptance_tests" depends="clean,prepare" >
+  <target name="acceptance_tests" depends="clean,prepare,versioninfo,resources" >
     <property name="test.app" value="wantAcceptTestLib" />
     <dcc basedir="${test}" source="${test.app}.dpr" >
       <exeoutput path="${bin}"  />
@@ -133,7 +133,7 @@ See http://www.suigeneris.org/want/ for details.
     <dunit testlib="${bin}/${test.app}" />
  </target>
 
-  <target name="dist" depends="clean,prepare,compile,test" >
+  <target name="dist" depends="clean,prepare,compile,test,changelog" >
     <mkdir dir="${dist}" />
     <property name="zipfile" value="${dist}/want-${version}.zip" />
     <delete file="${zipfile}" />
