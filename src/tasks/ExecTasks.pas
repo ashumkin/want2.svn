@@ -232,6 +232,7 @@ procedure TCustomExecTask.Execute;
 var
   CmdLine :string;
 begin
+  inherited;
   Log(vlDebug, 'currentDir=%s', [CurrentDir] );
   CmdLine := BuildCmdLine;
   Log(vlVerbose, CmdLine);
