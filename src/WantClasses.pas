@@ -72,8 +72,8 @@ type
 
 
   ETaskException    = class(EWantException);
-  ETaskError       = class(ETaskException);
-  ETaskFailure     = class(ETaskException);
+  ETaskError        = class(ETaskException);
+  ETaskFailure      = class(ETaskException);
 
   TScriptElementArray = array of TScriptElement;
 
@@ -107,6 +107,9 @@ type
   private
     FBaseDir: TPath;       // where paths for this object are based
   protected
+    FLine   : Integer;
+    FColumn : Integer;
+    
     FName   : string;
     FId     : string;      // element Id
 
@@ -180,6 +183,9 @@ type
 
     property  Project: TProject      read GetProject;
     property  Owner :  TScriptElement read GetOwner;
+
+    property Line   :Integer read FLine   write FLine;
+    property Column :Integer read FColumn write FColumn;
 
     property id     :    string   read FId         write SetId;
     property basedir:    TPath    read GetBaseDir  write SetBaseDir;
@@ -737,7 +743,7 @@ end;
 
 procedure TScriptElement.AttributeRequiredError(AttName: string);
 begin
-  WantError(Format('"%s" attribute is required', [AttName]));
+  WantError(Format('(%d:%d) <%s>.%s attribute is required', [Line, Column, TagName,AttName]));
 end;
 
 procedure TScriptElement.RequireAttribute(Name: string);

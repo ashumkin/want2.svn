@@ -103,6 +103,8 @@ begin
     Elem := nil;
     try
       Elem   := Parent.SetupChild(Child.Name, Atts);
+      Elem.Line   := Child.Location.LineNumber;
+      Elem.Column := Child.Location.ColumnNumber;
     except
       on e :EWantParseException do
         raise;

@@ -199,6 +199,7 @@ begin
       end;
 
       Project.Configure;
+
       Sched := Project.Schedule(Target);
 
       if Length(Sched) = 0 then
