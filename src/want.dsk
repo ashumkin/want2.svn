@@ -76,9 +76,9 @@ File_6=SourceModule,'C:\home\want\test\WildPathsTest.pas',0,1,25,26,33,0,0
 
 [Modules]
 Module0=C:\home\want\src\win32\WIN32.pas
-Module1=C:\home\want\src\win32\ConsoleListener.pas
-Module2=C:\home\want\test\ExternalTests.pas
-Module3=C:\home\want\test\WantAcceptTestLib.dpr
+Module1=C:\home\want\test\WantAcceptTestLib.dpr
+Module2=C:\home\want\src\win32\ConsoleListener.pas
+Module3=C:\home\want\test\ExternalTests.pas
 Module4=c:\home\dunit\src\TestFramework.pas
 Module5=C:\home\want\src\lib\WildPaths.pas
 Count=6
@@ -89,17 +89,17 @@ ModuleType=SourceModule
 FormState=0
 FormOnTop=0
 
+[C:\home\want\test\WantAcceptTestLib.dpr]
+ModuleType=SourceModule
+FormState=0
+FormOnTop=0
+
 [C:\home\want\src\win32\ConsoleListener.pas]
 ModuleType=SourceModule
 FormState=0
 FormOnTop=0
 
 [C:\home\want\test\ExternalTests.pas]
-ModuleType=SourceModule
-FormState=0
-FormOnTop=0
-
-[C:\home\want\test\WantAcceptTestLib.dpr]
 ModuleType=SourceModule
 FormState=0
 FormOnTop=0
