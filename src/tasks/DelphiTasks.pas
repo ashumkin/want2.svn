@@ -11,6 +11,11 @@
 
 {#(@)$Id$}
 
+{
+  Contributors:
+    Dan Hughes <dan@multiedit.com>
+}
+
 unit DelphiTasks;
 
 interface
@@ -89,7 +94,7 @@ type
     class function ReadUserOption(Key, Name, Ver :string):string;
     class function ReadMachineOption(Key, Name, Ver :string):string;
 
-    class function FindDelphi: TDelphiVersion;
+    class function FindDelphi(V: string): TDelphiVersion;
     class function ToolName :string; virtual;  abstract;
 
     procedure FindTool;
@@ -170,7 +175,7 @@ type
     procedure AddIncludePath(Path: TPath);
     procedure AddObjectPath(Path : TPath);
     procedure AddDefine(Name, Value :string);
-    procedure AddPackage(Path :string);
+    procedure AddPackage(Name :string);
     procedure AddWarning(Name :TWarning; Value :boolean);
 
     procedure RestoreCFGs;
@@ -182,7 +187,7 @@ type
 
     function CreateResourcePath :TResourcePathElement;
     function CreateIncludePath  :TIncludePathElement;
-    function CreateObjectPath   :TObjectPathElement; 
+    function CreateObjectPath   :TObjectPathElement;
 
     // these properties are mapped to XML attributes
     property Arguments;
@@ -205,7 +210,7 @@ type
     property usecfg:   boolean read FUseCFG   write FUseCFG;
 
     property longstrings :boolean read FLongStrings   write FLongStrings default true;
-    
+
     property map       :TMapType read FMap write FMap;
 
     property uselibrarypath : boolean read FUseLibraryPath write FUseLibraryPath;
@@ -252,11 +257,10 @@ type
 
   TUsePackageElement = class(TOptionElement)
   protected
-    FPath :TPath;
   public
     procedure Init; override;
   published
-    property Path :TPath read FPath write FPath;
+    property Name;
   end;
 
   TMapElement = class(TCustomAttributeElement)
@@ -286,17 +290,18 @@ var
 
 { TCustomDelphiTask }
 
-class function TCustomDelphiTask.FindDelphi : TDelphiVersion;
+class function TCustomDelphiTask.FindDelphi(V: string) : TDelphiVersion;
 var
   vers: TStringArray;
-  V     :string;
   i     :Integer;
   Path  :string;
   Tool  :string;
 begin
   FillChar(Result, SizeOf(Result), #0);
   vers := nil;
-  WantUtils.GetEnvironmentVar('delphi_version', V, true);
+  if V = '' then begin
+    WantUtils.GetEnvironmentVar('delphi_version', V, true);
+  end;
   if V = '' then
      V := '10,9,8,7,6,5,4';
 
@@ -324,7 +329,7 @@ end;
 
 procedure TCustomDelphiTask.FindTool;
 begin
-  with FindDelphi do
+  with FindDelphi(versions) do
   begin
     FVersionFound := Version;
     FDelphiDir    := Directory;
@@ -419,7 +424,7 @@ begin
   FResourcePaths  := TResourcePathElement.Create(Self);
   FIncludePaths   := TIncludePathElement.Create(Self);
   FObjectPaths    := TObjectPathElement.Create(Self);
-  
+
   FDefines        := TStringList.Create;
   FPackages       := TStringList.Create;
 
@@ -636,7 +641,7 @@ begin
   for p := 0 to FPackages.Count-1 do
   begin
     Log(vlVerbose, 'package %s', [FPackages[p]]);
-    Result := Result + PathOpt('LU', FPackages[p]);
+    Result := Result + ' -LU' + FPackages[p];
   end;
 
   PS := nil;
@@ -670,8 +675,8 @@ begin
   result := result + OutputPathElements('resourcepath','R',FResourcePaths.Paths);
 
   result := result + OutputPathElements('includepath','I',FIncludePaths.Paths);
-  
-  result := result + OutputPathElements('objectpath','O',FObjectPaths.Paths);  
+
+  result := result + OutputPathElements('objectpath','O',FObjectPaths.Paths);
 
 
   if Length(Sources) = 0 then
@@ -713,9 +718,9 @@ begin
     FDefines.Add(Name + '=');
 end;
 
-procedure TDelphiCompileTask.AddPackage(Path: string);
+procedure TDelphiCompileTask.AddPackage(Name: string);
 begin
-  FPackages.Add(Path);
+  FPackages.Add(Name);
 end;
 
 function TDelphiCompileTask.CreateUnitPath: TUnitPathElement;
@@ -854,8 +859,8 @@ end;
 procedure TUsePackageElement.Init;
 begin
   inherited Init;
-  RequireAttribute('path');
-  dcc.AddPackage(Path);
+  RequireAttribute('name');
+  dcc.AddPackage(Name);
 end;
 
 { TMapElement }
@@ -875,7 +880,7 @@ initialization
                          TUsePackageElement,
                          TWarningElement
                          ]);
-  with TDelphiCompileTask.FindDelphi do
+  with TDelphiCompileTask.FindDelphi('') do
   begin
     JclSysInfo.SetEnvironmentVar('delphi.version', Version);
     JclSysInfo.SetEnvironmentVar('delphi.dir',     Directory);
