@@ -363,6 +363,11 @@ begin
 end;
 
 function TDelphiCompileTask.BuildArguments: string;
+  function PathOpt(Opt :string; Path :TPath) :string;
+  begin
+    Result := Format(' -%s"%s"', [Opt, ToSystemPath(Path)] );
+  end;
+
 var
   Sources: TPaths;
   d      : Integer;
@@ -382,7 +387,7 @@ begin
   for s := Low(Sources) to High(Sources) do
   begin
     Log(vlVerbose, 'source %s', [ToRelativePath(Sources[s])]);
-    Result := Result + ' ' + ToSystemPath(Sources[s]);
+    Result := Result + ' "' + ToSystemPath(Sources[s]) +  '"';
   end;
 
   if not usecfg then
@@ -407,13 +412,13 @@ begin
   if exeoutput <> '' then
   begin
     Log(vlVerbose, 'exeoutput=' + ToRelativePath(exeoutput));
-    Result := Result + ' -E' + ToSystemPath(exeoutput);
+    Result := Result + PathOpt('E', exeoutput);
   end;
 
   if dcuoutput <> '' then
   begin
     Log(vlVerbose, 'dcuoutput=' + ToRelativePath(dcuoutput));
-    Result := Result + ' -N' + ToSystemPath(dcuoutput);
+    Result := Result + PathOpt('N', dcuoutput);
   end;
 
   if console then
@@ -485,25 +490,25 @@ begin
     end;
   end;
 
-  Paths := FUnitPaths.RelativePaths;
+  Paths := FUnitPaths.Paths;
   for p := Low(paths) to High(Paths) do
   begin
     Log(vlVerbose, 'unitpath %s', [ToRelativePath(Paths[p])]);
-    Result := Result + ' -U' + ToSystemPath(Paths[p]);
+    Result := Result + PathOpt('U', Paths[p]);
   end;
 
-  Paths := FResourcePaths.RelativePaths;
+  Paths := FResourcePaths.Paths;
   for p := Low(paths) to High(Paths) do
   begin
     Log(vlVerbose, 'resourcepath %s', [ToRelativePath(Paths[p])]);
-    Result := Result + ' -R' + ToSystemPath(Paths[p]);
+    Result := Result + PathOpt('R', Paths[p]);
   end;
 
-  Paths := FIncludePaths.RelativePaths;
+  Paths := FIncludePaths.Paths;
   for p := Low(paths) to High(Paths) do
   begin
     Log(vlVerbose, 'includepath %s', [ToRelativePath(Paths[p])]);
-    Result := Result + ' -I' + ToSystemPath(Paths[p]);
+    Result := Result + PathOpt('I', Paths[p]);
   end;
 end;
 
