@@ -14,6 +14,7 @@
 library WantTestLib;
 
 uses
+  ShareMem,
   TestFramework,
   Win32Implementations in '..\src\win32\Win32Implementations.pas',
   WantClassesTest in 'WantClassesTest.pas',
@@ -22,7 +23,9 @@ uses
   FileTasksTest in 'FileTasksTest.pas',
   DelphiTasksTest in 'DelphiTasksTest.pas',
   WildPathsTest in 'WildPathsTest.pas',
+  {!!! these tests need a better implementation
   CVSTasksTests in 'CVSTasksTests.pas',
+  }
   RegexpElementsTest in 'RegexpElementsTest.pas',
   WantStandardTasks in '..\src\tasks\WantStandardTasks.pas',
   StandardTasks in '..\src\tasks\StandardTasks.pas',

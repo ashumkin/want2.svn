@@ -14,6 +14,7 @@
 library WantAcceptTestLib;
 
 uses
+  ShareMem,
   TestFramework,
   Win32Implementations in '..\src\win32\Win32Implementations.pas',
   ExternalTests in 'ExternalTests.pas',

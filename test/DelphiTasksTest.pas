@@ -41,7 +41,7 @@ begin
   with FProject do
   begin
     BaseDir := PathConcat(SuperPath(ToPath(GetModulePath(hInstance))), '..');
-    Name := 'delphi_compile';                     
+    Name := 'delphi_compile';
 
     T := AddTarget('compile');
     FDelphiTask := TDelphiCompileTask.Create(T);
@@ -50,14 +50,12 @@ begin
       if PathIsDir('src') then
         basedir := 'src'
       else if PathIsDir('../src') then
-        basedir := 'src'
+        basedir := '../src'
       else if PathIsDir('../../src') then
-        basedir := '../src';
+        basedir := '../../src';
       source  := 'Want.dpr';
       exeoutput := ToPath(Evaluate('%{temp}/want.test'));
       dcuoutput := ToPath(Evaluate('%{temp}/want.test'));
-
-      AddDefine('DUNIT_DLL', '1');
 
       build   := true;
       quiet   := true;

@@ -33,7 +33,7 @@ type
       procedure SetUp; override;
       procedure TearDown; override;
     public
-      function  GetName: shortstring; override;
+      function  GetName: string; override;
   end;
 
   TCvsTests = class(TProjectBaseCase)
@@ -67,17 +67,20 @@ const
   +#10'        compression="3"'
   +#10'        cvsroot="' + CVSROOT + '"'
   +#10'        package="' + CVSMODULE + '"'
-  +#10'        date="2003-09-11"'
+  +#10'        date="2003-09-10"'
   +#10'        hideOutput="false"'
   +#10'       >'
   +#10'    </cvs>'
   +#10'  </target>'
   +#10'</project>'
   +'';
+var
+  bPackage : string;
 begin
   TScriptParser.ParseText(FProject, build_xml);
   RunProject;
-  if not FileExists(ToSystemPath(fTestDirectory+SystemPathDelimiter+CVSFILE))
+  bPackage := FProject.GetTargetByName(FProject.GetAttribute('default')).Tasks[0].GetAttribute('package');
+  if not FileExists(ToSystemPAth(fTestDirectory+SystemPathDelimiter+bPackage))
      then raise Exception.Create('Checkout test not passed');
 end;
 
@@ -137,10 +140,10 @@ const
   +#10'<project basedir="." name="cvschangelog_test" default="cvs-changelog" >'
   +#10'  <target name="cvs-changelog">'
   +#10'    <cvschangelog'
-  +#10'        dir="cvstest/cdata"'
+  +#10'        dir="test/data/amodule"'
   +#10'        destfile="changelog.xml"'
-  +#10'        start="2003-09-1"'
-  +#10'        end="2003-09-30"'
+  +#10'        start="2003-02-1"'
+  +#10'        end="2003-02-28"'
   +#10'        hideOutput="false"'
   +#10'       >'
   +#10'    </cvschangelog>'
@@ -158,7 +161,7 @@ begin
   DeleteFile(ToSystemPath(FProject.RootPath+SystemPathDelimiter+bDestFile));
 end;
 
-function TCvsTestsSetup.GetName: shortstring;
+function TCvsTestsSetup.GetName: string;
 begin
   Result:= 'CVS tests';
 end;

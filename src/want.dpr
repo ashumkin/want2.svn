@@ -26,6 +26,7 @@
 program want;
 
 uses
+  ShareMem,
   SysUtils,
   WIN32 in 'win32\WIN32.pas',
   crt32 in 'win32\CRT32.pas',
@@ -65,8 +66,7 @@ uses
   MSXMLEngineImpl in 'win32\MSXMLEngineImpl.pas',
   {$ENDIF VER130}
   CVSTasks in 'tasks\CVSTasks.pas',
-  GZipTasks in 'tasks\GZipTasks.pas',
-  InnoSetupTasks in 'tasks\InnoSetupTasks.pas';
+  GZipTasks in 'tasks\GZipTasks.pas';
 
 {$APPTYPE CONSOLE}
 

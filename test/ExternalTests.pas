@@ -7,10 +7,6 @@
 
 { $Id$ }
 
-{$IFDEF DUNIT_DLL}
-{$LONGSTRINGS OFF}
-{$ENDIF}
-
 unit ExternalTests;
 
 interface

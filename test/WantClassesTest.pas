@@ -399,8 +399,7 @@ const
   +#10'  <target name="target2">'
   +#10'    <property name="local"  value="2" />'
   +#10'    <property name="global" value="2" />'
-// Todo: This check fails until implemente late execution of property elements, now, all the property element are evaluated and pproperties are global
-//  +#10'    <check expected="2" actual="${local}" />'
+  +#10'    <check expected="2" actual="${local}" />'
   +#10'    <check expected="0" actual="${global}" />'
   +#10'  </target>'
   +#10'  <target name="dotest" depends="target1,target2" />'

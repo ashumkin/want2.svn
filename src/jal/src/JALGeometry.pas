@@ -1,27 +1,15 @@
-(****************************************************************************
- * WANT - A build management tool.                                          *
- * Copyright (c) 1995-2003 Juancarlo Anez, Caracas, Venezuela.              *
- * All rights reserved.                                                     *
- *                                                                          *
- * This library is free software; you can redistribute it and/or            *
- * modify it under the terms of the GNU Lesser General Public               *
- * License as published by the Free Software Foundation; either             *
- * version 2.1 of the License, or (at your option) any later version.       *
- *                                                                          *
- * This library is distributed in the hope that it will be useful,          *
- * but WITHOUT ANY WARRANTY; without even the implied warranty of           *
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU        *
- * Lesser General Public License for more details.                          *
- *                                                                          *
- * You should have received a copy of the GNU Lesser General Public         *
- * License along with this library; if not, write to the Free Software      *
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA *
- ****************************************************************************)
-{
-    @brief 
+{%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%}
+{                                              }
+{   \\\                                        }
+{  -(j)-                                       }
+{    /juanca ®                                 }
+{    ~                                         }
+{  Copyright © 1995-2002 Juancarlo Añez        }
+{  http://www.suigeneris.org/juanca            }
+{  All rights reserved.                        }
+{%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%}
 
-    @author Juancarlo Añez
-}
+{#(@)$Id$}
 
 unit JALGeometry;
 interface
@@ -174,7 +162,7 @@ const
   OriginPoint  :TPoint  = (x:0;y:0);
   OriginVector :TVector = (x:0;y:0;z:0);
 
-function Point(AX, AY: Integer): TPoint;
+function Point(AX :Integer = 0; AY: Integer = 0): TPoint;
 overload;
 function Point(const P :TVector):TPoint;
 overload;
@@ -184,7 +172,7 @@ function Points(const P:TVectors) :TPoints;
 overload;
 
 
-function Vector(X, Y :Float; Z :Float = 0):TVector;
+function Vector(X :Float = 0; Y :Float = 0; Z :Float = 0):TVector;
 overload;
 function Vector(const P :TPoint):TVector;
 overload;
@@ -210,39 +198,43 @@ overload;
 function Cube(const P :TVectors) :TCube;
 overload;
 
-function Segment(X1, Y1, X2, Y2 :Integer) :TSegment;                       
+function Segment(X1, Y1, X2, Y2 :Integer) :TSegment;
 overload;
-function Segment(X1, Y1, X2, Y2 :Float) :TLine;                     
+function Segment(X1, Y1, X2, Y2 :Float) :TLine;
 overload;
-function Segment(const P1, P2 :TPoint) :TSegment;                  
+function Segment(const P1, P2 :TPoint) :TSegment;
 overload;
-function Segment(const P1, P2 :TVector) :TLine;                
+function Segment(const P1, P2 :TVector) :TLine;
 overload;
-function MidSegment(const L :TSegment):TPoint;                             
+function MidSegment(const L :TSegment):TPoint;
 overload;
-function MidSegment(const L :TLine):TVector;                           
-overload;
-
-function SegmentLength(const L:TSegment) :Longint;                         
-overload;
-function SegmentLength(const L:TLine) :Float;                       
+function MidSegment(const L :TLine):TVector;
 overload;
 
-function LineSlope(const L :TSegment) :Float;                           
+function SegmentLength(const L:TSegment) :Longint;
 overload;
-function LineEquation(const L :TSegment) :TLineEquation;                   
+function SegmentLength(const L:TLine) :Float;
 overload;
-function CalcSegmentMove(const P1, P2 :TPoint; E :Float) :TPoint;       
+
+function LineSlope(const L :TSegment) :Float;
 overload;
-function CalcSegmentMove(const P1, P2 :TVector; E :Float) :TVector;     
+function LineEquation(const L :TSegment) :TLineEquation;
 overload;
-function MoveSegment(const L :TSegment; E :Float) :TSegment;            
+function CalcSegmentMove(const P1, P2 :TPoint; E :Float) :TPoint;
 overload;
-function MoveSegment(const L :TLine; E :Float) :TLine;          
+function CalcSegmentMove(const P1, P2 :TVector; E :Float) :TVector;
 overload;
-function LineSlopeVector(const L :TSegment):TPoint;                        
+function MoveSegment(const L :TSegment; const P :TPoint) :TSegment;
 overload;
-function SegmentSlopeVector(const L :TLine):TVector;                   
+function MoveSegment(const L :TSegment; E :Float) :TSegment;
+overload;
+function MoveSegment(const L :TLine; const P :TVector) :TLine;
+overload;
+function MoveSegment(const L :TLine; E :Float) :TLine;
+overload;
+function LineSlopeVector(const L :TSegment):TPoint;
+overload;
+function SegmentSlopeVector(const L :TLine):TVector;
 overload;
 function LineIntersectionParam(const A, B :TSegment):Float;
 overload;
@@ -320,7 +312,7 @@ function DistanceToLine(const p :TPoint; const L :TSegment):Longint;
 overload;
 function DistanceToSegment(const p :TPoint; const L :TSegment):Longint;    
 overload;
-function DistanceToFSegment(const p :TVector; const L :TLine):Float;
+function DistanceToSegment(const p :TVector; const L :TLine):Float;
 overload;
 
 function DistanceToLine2(const p :TPoint; const L :TSegment):Longint;      
@@ -545,85 +537,61 @@ end;
 
 function CalcSegmentMove(const P1, P2 :TPoint; E :Float) :TPoint;
 var
-   Dist,
-   DX, DY,
-   D1X, D1Y  :Float;
+   A :Double;
+   T :ITransf;
 begin
   if E = 0 then
      Result := Point(0, 0)
-  else begin
-     DX := P2.X - P1.X;
-     DY := P2.Y - P1.Y;
-     Dist := Sqrt((1.0*DX * DX) + (1.0*DY * DY));
-     if Dist = 0 then
-        Dist := 0.1;
-
-     D1X := - E * DY / Dist;
-     D1Y := - E * DX / Dist;
-
-     Result := Point(FloatToInt(D1X), FloatToInt(D1Y))
+  else
+  begin
+     A := LineAngle(Segment(P1, P2));
+     T := ZRotation(A + Pi/2);
+     Result := Point(Apply(T, Vector(E, 0, 0)));
   end
 end;
 
 function CalcSegmentMove(const P1, P2 :TVector; E :Float) :TVector;
 var
-   Dist,
-   DX, DY,
-   D1X, D1Y  :Float;
+   A :Double;
+   T :ITransf;
 begin
   if E = 0 then
-     Result := Vector(0.0, 0.0)
-  else begin
-     DX := P2.X - P1.X;
-     DY := P2.Y - P1.Y;
-     Dist := Sqrt((DX * DX) + (DY * DY));
-     if Dist = 0 then
-        Dist := 0.1;
-
-     D1X := - E * DY / Dist;
-     D1Y := - E * DX / Dist;
-
-     Result := Vector(D1X, D1Y)
+     Result := Vector
+  else
+  begin
+     A := LineAngle(Segment(P1, P2));
+     T := ZRotation(A + Pi/2);
+     Result := Apply(T, Vector(E, 0, 0));
   end
 end;
 
+function MoveSegment(const L :TSegment; const P :TPoint) :TSegment;
+begin
+  Result.P1 := PointSum(L.P1, P);
+  Result.P2 := PointSum(L.P2, P);
+end;
 
 function MoveSegment(const L :TSegment; E :Float) :TSegment;
-var
-   D :TPoint;
 begin
-  Result := L;
-  if E <> 0 then begin
-     D := CalcSegmentMove(L.P1, L.P2, E);
-     with Result.P1 do begin
-        X := FloatToInt(1.0*L.P1.X + D.X);
-        Y := FloatToInt(1.0*L.P1.Y - D.Y)
-     end;
-     with Result.P2 do begin
-        X := FloatToInt(1.0*L.P2.X + D.X);
-        Y := FloatToInt(1.0*L.P2.Y - D.Y)
-     end
-  end
+  if E <> 0 then
+     Result := MoveSegment(L, CalcSegmentMove(L.P1, L.P2, E))
+  else
+    Result := L;
+end;
+
+function MoveSegment(const L :TLine; const P :TVector) :TLine;
+begin
+  Result.P1 := PointSum(L.P1, P);
+  Result.P2 := PointSum(L.P2, P);
 end;
 
 function MoveSegment(const L :TLine; E :Float) :TLine;
-var
-   D :TVector;
 begin
-  Result := L;
-  if E <> 0 then begin
-     D := CalcSegmentMove(L.P1, L.P2, E);
-     with Result.P1 do begin
-        X := L.P1.X + D.X;
-        Y := L.P1.Y - D.Y
-     end;
-     with Result.P2 do begin
-        X := L.P2.X + D.X;
-        Y := L.P2.Y - D.Y
-     end
-  end
+  if E <> 0 then 
+     Result := MoveSegment(L, CalcSegmentMove(L.P1, L.P2, E))
+  else
+    Result := L;
 end;
-
 
 
 function LineSlopeVector(const L :TSegment):TPoint;
@@ -906,7 +874,7 @@ begin
             Result := DistanceToLine(P, L)
 end;
 
-function DistanceToFSegment(const p :TVector; const L :TLine):Float;
+function DistanceToSegment(const p :TVector; const L :TLine):Float;
  var
    da, db :TVector;
    s      :Float;
@@ -1216,7 +1184,7 @@ begin
   end;
 end;
 
-function Vector(X, Y :Float; Z :Float = 0):TVector;
+function Vector(X :Float; Y :Float; Z :Float):TVector;
 begin
   Result.X := X;
   Result.Y := Y;

@@ -178,9 +178,15 @@ end;
 { TShellTask }
 
 function TShellTask.BuildExecutable: string;
+const
+  SHELL_VAR = 'COMSPEC';
+var
+  ComSpec :string;
 begin
   Result := inherited BuildExecutable;
-  if IsWinNT then
+  if GetEnvironmentVar(SHELL_VAR, Comspec, false) then
+    Result := ComSpec + ' /c ' + Result
+  else if IsWinNT then
     Result := 'cmd.exe /c ' + Result
   else
     Result := 'command.com /c ' + Result;

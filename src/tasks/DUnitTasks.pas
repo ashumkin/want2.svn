@@ -22,7 +22,6 @@
 
     @author Juancarlo Añez
 }
-{$LONGSTRINGS OFF} // required for tests in DLLs
 
 unit DUnitTasks;
 
@@ -171,7 +170,6 @@ begin
         TaskFailure('tests failed');
     finally
       Test := nil;
-//      UnloadTestModules;
     end;
   except
     on e :EWantException do
@@ -198,4 +196,6 @@ end;
 
 initialization
   RegisterTask(TDUnitTask);
+finalization
+  UnloadTestModules;
 end.
