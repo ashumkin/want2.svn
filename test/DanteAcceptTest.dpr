@@ -36,7 +36,8 @@ uses
   GUITestRunner,
   TestFramework,
   DanteMainTest,
-  VssTasksTest;
+  VssTasksTest,
+  DanteExternalTest in 'DanteExternalTest.pas';
 
 {$R *.RES}
 
