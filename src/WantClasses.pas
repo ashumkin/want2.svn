@@ -48,6 +48,7 @@ uses
 
   JclSysInfo,
   JclStrings,
+  LogMgr,
 
   OwnedTrees;
 
@@ -64,7 +65,17 @@ const
 
   LabeledMsgFormat = '%14s %s';
 
+  vlErrors     = LogMgr.vlErrors;
+  vlWarnings   = LogMgr.vlWarnings;
+  vlVeryQuiet  = LogMgr.vlVeryQuiet;
+  vlQuiet      = LogMgr.vlQuiet;
+  vlNormal     = LogMgr.vlNormal;
+  vlVerbose    = LogMgr.vlVerbose;
+  vlDebug      = LogMgr.vlDebug;
+
 type
+  TLogLevel = LogMgr.TLogLevel;
+
   TDanteElement = class;
   TDanteElementClass = class of TDanteElement;
   TDanteElementClassArray = array of TDanteElementClass;
@@ -97,19 +108,7 @@ type
 
   TTargetArray = array of TTarget;
 
-  TVerbosityLevel = (
-     vlErrors,
-     vlWarnings,
-     vlVeryQuiet,
-     vlQuiet,
-     vlNormal,
-     vlVerbose,
-     vlDebug
-  );
-
   TCreateElementMethod = function: TDanteElement of object;
-  TLogMethod = procedure(Msg: string; Verbosity: TVerbosityLevel) of object;
-
 
   TDanteElement = class(TTree)
   protected
@@ -133,13 +132,13 @@ type
 
     function  GetChildrenTyped(AClass: TDanteElementClass = nil):  TDanteElementArray;
 
-    procedure Log(Msg: string = ''; Verbosity: TVerbosityLevel = vlNormal);           overload; virtual;
-    procedure Log(Verbosity: TVerbosityLevel; Msg: string = ''); overload;
+    procedure Log(Msg: string = ''; Level: TLogLevel = vlNormal);           overload; virtual;
+    procedure Log(Level: TLogLevel; Msg: string = ''); overload;
 
-    function  Log(const Format: string; const Args: array of const; Verbosity: TVerbosityLevel = vlNormal): string; overload;
-    function  Log(Verbosity: TVerbosityLevel; const Format: string; const Args: array of const): string; overload;
+    function  Log(const Format: string; const Args: array of const; Level: TLogLevel = vlNormal): string; overload;
+    function  Log(Level: TLogLevel; const Format: string; const Args: array of const): string; overload;
 
-    procedure Log(Tag: string; Msg: string; Verbosity: TVerbosityLevel = vlNormal);  overload; virtual;
+    procedure Log(Tag: string; Msg: string; Level: TLogLevel = vlNormal);  overload; virtual;
 
     procedure RequireAttribute(Name: string);
     procedure AttributeRequiredError(AttName: string);
@@ -207,12 +206,12 @@ type
   protected
     FTargets:       TList;
     FDefaultTarget: string;
-    FVerbosity:     TVerbosityLevel;
+    FVerbosity:     TLogLevel;
     FRootPath:      TPath;  // root for all path calculations
     FRootPathSet:   boolean;
     FDescription:   string;
 
-    FOnLog: TLogMethod;
+    FLogManager :TLogManager;
 
     procedure InsertNotification(Child :TTree); override;
     procedure RemoveNotification(Child :TTree); override;
@@ -256,14 +255,15 @@ type
     procedure Build(Targets: array of string); overload;
     procedure Build(Target: string = ''); overload;
 
-    procedure Log(Msg: string = ''; Verbosity: TVerbosityLevel = vlNormal); override;
+    procedure Log(Msg: string = ''; Level: TLogLevel = vlNormal);  override;
+    procedure Log(Tag: string; Msg: string; Level: TLogLevel = vlNormal);  override;
 
     property RootPath: TPath read FRootPath write SetRootPath;
 
     property Targets[i: Integer]: TTarget             read GetTarget; default;
     property TargetNames[TargetName: string]: TTarget read GetTargetByName;
 
-    property OnLog: TLogMethod read FOnLog write FOnLog;
+    property LogManager: TLogManager read FLogManager write FLogManager;
   published
     function CreateTarget    : TTarget;
 
@@ -272,7 +272,7 @@ type
 
     property Name stored True;
     property Default:       string          read FDefaultTarget  write FDefaultTarget;
-    property Verbosity:     TVerbosityLevel
+    property Level:     TLogLevel
       read    FVerbosity
       write   FVerbosity
       stored  False
@@ -301,7 +301,7 @@ type
     function TaskCount: Integer;
     procedure Build;
 
-    procedure Log(Msg: string = ''; Verbosity: TVerbosityLevel = vlNormal); override;
+    procedure Log(Msg: string = ''; Level: TLogLevel = vlNormal); override;
 
     property Tasks[i: Integer]: TTask read GetTask; default;
   published
@@ -321,7 +321,7 @@ type
     function Target: TTarget;
 
     procedure Execute; virtual;
-    procedure Log(Msg: string = ''; Verbosity: TVerbosityLevel = vlNormal); override;
+    procedure Log(Msg: string = ''; Level: TLogLevel = vlNormal); override;
 
     property Name stored False;
   published
@@ -778,46 +778,29 @@ begin
   end;
 end;
 
-procedure TDanteElement.Log(Msg: string; Verbosity: TVerbosityLevel);
+procedure TDanteElement.Log(Msg: string; Level: TLogLevel);
 begin
-  Project.Log(Msg, Verbosity);
+  Project.Log(Msg, Level);
 end;
 
-procedure TDanteElement.Log(Verbosity: TVerbosityLevel; Msg: string);
+procedure TDanteElement.Log(Level: TLogLevel; Msg: string);
 begin
-  Log(Msg, Verbosity);
+  Log(Msg, Level);
 end;
 
-procedure TDanteElement.Log(Tag, Msg: string; Verbosity: TVerbosityLevel);
-var
-  Lines: TStrings;
-  i    : Integer;
+procedure TDanteElement.Log(Tag, Msg: string; Level: TLogLevel);
 begin
-  Msg := Msg + ' ';
-  Msg := StringReplace(Msg, #13#10,'@@', [rfReplaceAll]);
-  Msg := StringReplace(Msg, #10#13,'@@', [rfReplaceAll]);
-  Msg := StringReplace(Msg, #13,'@@',    [rfReplaceAll]);
-  Msg := StringReplace(Msg, #10,'@@',    [rfReplaceAll]);
-
-  Msg := WrapText(Msg, '@@   ', [' ',#13,#10,#9,';',','], 64);
-  Lines := TStringList.Create;
-  try
-    JclStrings.StrToStrings(Msg, '@@', Lines);
-    for i := 0 to Lines.Count-1 do
-      Project.Log(Format(LabeledMsgFormat, ['['+ Tag +']', Lines[i]]), Verbosity);
-  finally
-    Lines.Free;
-  end;
+  Project.Log(Tag, Msg, Level);
 end;
 
-function TDanteElement.Log(const Format: string; const Args: array of const; Verbosity: TVerbosityLevel): string;
+function TDanteElement.Log(const Format: string; const Args: array of const; Level: TLogLevel): string;
 begin
-  Log(SysUtils.Format(Format, Args), Verbosity);
+  Log(SysUtils.Format(Format, Args), Level);
 end;
 
-function TDanteElement.Log(Verbosity: TVerbosityLevel; const Format: string; const Args: array of const): string;
+function TDanteElement.Log(Level: TLogLevel; const Format: string; const Args: array of const): string;
 begin
-  Log(Format, Args, Verbosity);
+  Log(Format, Args, Level);
 end;
 
 
@@ -1133,12 +1116,16 @@ begin
   end;
 end;
 
-procedure TProject.Log(Msg: string; Verbosity: TVerbosityLevel);
+procedure TProject.Log(Msg: string; Level: TLogLevel);
 begin
-  if (Self.Verbosity >= Verbosity) and Assigned(FOnLog) then
-  begin
-    FOnLog(Msg, Verbosity);
-  end;
+  if LogManager <> nil then
+    LogManager.Log(Msg, Level);
+end;
+
+procedure TProject.Log(Tag, Msg: string; Level: TLogLevel);
+begin
+  if LogManager <> nil then
+    LogManager.Log(Format('%14s ', [ '['+Tag+']' ]), Msg, Level);
 end;
 
 procedure TProject.Build(Target: string);
@@ -1327,6 +1314,7 @@ begin
       FTasks.Remove(Child)
 end;
 
+
 { TTarget }
 
 procedure TTarget.Build;
@@ -1370,9 +1358,9 @@ begin
   Result := FTasks[Index];
 end;
 
-procedure TTarget.Log(Msg: string; Verbosity: TVerbosityLevel);
+procedure TTarget.Log(Msg: string; Level: TLogLevel);
 begin
-  Project.Log(Format('%s: %s', [Name, Msg]), Verbosity);
+  Project.Log(Format('%s: %s', [Name, Msg]), Level);
 end;
 
 function TTarget.TaskCount: Integer;
@@ -1406,9 +1394,9 @@ end;
 
 { TTask }
 
-procedure TTask.Log(Msg: string; Verbosity: TVerbosityLevel);
+procedure TTask.Log(Msg: string; Level: TLogLevel);
 begin
-  Log(TagName, Msg, Verbosity);
+  Log(TagName, Msg, Level);
 end;
 
 function TTask.Target: TTarget;

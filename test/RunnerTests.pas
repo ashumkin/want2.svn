@@ -57,7 +57,6 @@ type
     FCopyDir: string;
   protected
     procedure MakeTestBuildFile;
-    procedure LogSink(Msg: string; Verbosity: TVerbosityLevel);
   public
     procedure Setup; override;
     procedure TearDown; override;
@@ -70,11 +69,6 @@ implementation
 uses JclFileUtils;
 
 { TTestDanteMain }
-
-procedure TTestDanteMain.LogSink(Msg: string; Verbosity: TVerbosityLevel);
-begin
-  // output nothing
-end;
 
 procedure TTestDanteMain.MakeTestBuildFile;
 const
@@ -117,8 +111,7 @@ procedure TTestDanteMain.Setup;
 begin
   inherited;
   FDante := TDante.Create;
-  FDante.OnLog := LogSink;
-  
+
   FBuildFileName := FTestDir + '\build.xml';
   FCopyOfFileName := FTestDir + '\copyofbuild.xml';
   FNewDir := FTestDir + '\new';
@@ -138,7 +131,7 @@ var
 begin
   CurDir := GetCurrentDir;
   MakeTestBuildFile;
-  FDante.DoBuild(FBuildFileName);
+  FDante.DoBuild(FBuildFileName, vlWarnings);
 
   { leaving CurrentDir is important for other tests depend on it, because
     TProject.FRootDir defaults to CurrentDir. }

@@ -64,7 +64,6 @@ begin
   begin
     BaseDir := PathConcat(SuperPath(ToPath(ParamStr(0))), '..');
     Name := 'delphi_compile';
-    Verbosity := vlDebug;
 
     T := AddTarget('compile');
     FDelphiTask := TDelphiCompileTask.Create(T);

@@ -63,7 +63,8 @@ type
       procedure   OpenLogFile;
       procedure   CloseLogFile;
 
-      procedure   OutputLog(const aLine: String; const aFlush: Boolean);
+      procedure   OutputLog(   const aLine: String; const aFlush: Boolean;   const aLevel: TLogLevel);  virtual;
+      procedure   OutputPrefix(const aPrefix: String; const aFlush: Boolean; const aLevel: TLogLevel);  virtual;
 
     public
       constructor Create;
@@ -134,7 +135,7 @@ begin
 
   FLogLevel := vlNormal;
 
-  FRightMargin := 55;
+  FRightMargin := 78;
 end;
 
 destructor TLogManager.Destroy;
@@ -216,10 +217,8 @@ begin
   FActive := False;
 end;
 
-procedure TLogManager.OutputLog(const aLine: String; const aFlush: Boolean);
+procedure TLogManager.OutputLog(const aLine: String; const aFlush: Boolean; const aLevel: TLogLevel);
 begin
-  WriteLn(aLine);
-
   if EchoToFile then
     begin
       if not FileOpen then
@@ -232,11 +231,26 @@ begin
     end;
 end;
 
+procedure TLogManager.OutputPrefix(const aPrefix : String; const aFlush: Boolean; const aLevel: TLogLevel);
+begin
+  if EchoToFile then
+    begin
+      if not FileOpen then
+        OpenLogFile;
+
+      Write(FLogHandle, aPrefix);
+
+      if aFlush then
+        CloseLogFile;
+    end;
+end;
+
 procedure TLogManager.LogMsg(const aLevel: TLogLevel; const aMsg: String; const aPrefix: String);
 var
   Header: String;
   Lines:  TStringList;
   i:      Integer;
+  Msg:    String;
 begin
   if (Level >= aLevel) and Active then
     begin
@@ -252,28 +266,30 @@ begin
           Header := ShortName + ' ';
 
       if Length(aPrefix) > 0 then
-        Header := Header + '[' + aPrefix + '] ';
+        Header := Header + aPrefix;
 
-      if Length(Header + aMsg) > RightMargin then
+      Lines := TStringList.Create;
+      try
+        Msg := aMsg + ' ';
+        Msg := StringReplace(Msg, #13#10,'@@', [rfReplaceAll]);
+        Msg := StringReplace(Msg, #10#13,'@@', [rfReplaceAll]);
+        Msg := StringReplace(Msg, #13,'@@',    [rfReplaceAll]);
+        Msg := StringReplace(Msg, #10,'@@',    [rfReplaceAll]);
+        JclStrings.StrToStrings(WrapText(Msg, '...@@... ', [' ',#13,#10,#9], RightMargin - Length(Header)),
+                                '@@', Lines);
+
+        for i := 0 to Pred(Lines.Count) do
         begin
-          Lines := TStringList.Create;
+          OutputPrefix(Header, False, aLevel);
+          OutputLog(Lines[i], False,  aLevel);
+        end;
 
-          try
-            JclStrings.StrToStrings(WrapText(aMsg, '...@@... ', [' ',#13,#10,#9], RightMargin - Length(Header)),
-                                    '@@', Lines);
+      finally
+        Lines.Free;
 
-            for i := 0 to Pred(Lines.Count) do
-              OutputLog(Header + Lines[i], False);
-
-          finally
-            Lines.Free;
-
-            if AlwaysFlush then
-              CloseLogFile;
-          end;
-        end
-      else
-        OutputLog(Header + aMsg, AlwaysFlush);
+        if AlwaysFlush then
+          CloseLogFile;
+      end;
     end;
 end;
 
@@ -291,5 +307,6 @@ procedure TLogManager.Log(const aPrefix: String; const aMsg: String; const aLeve
 begin
   LogMsg(aLevel, aMsg, aPrefix);
 end;
+
 
 end.

@@ -165,7 +165,6 @@ end;
 procedure TTestVssGetTask.Setup;
 begin
   inherited;
-  FProject.Verbosity := vlDebug;
   FVssGetTask := TVssGetTask.Create(FProject.AddTarget('test'));
 end;
 
