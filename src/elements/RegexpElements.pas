@@ -12,7 +12,7 @@ unit RegexpElements;
 interface
 uses
   SysUtils,
-  UPerlRE,
+  XPerlRE,
   WantClasses;
 
 type
@@ -54,47 +54,9 @@ begin
 end;
 
 function TRegexpElement.Substitute(Text, Pattern, Subst: string): string;
-var
-  Regexp      :TPerlRE;
-  p           :Integer;
-  i           :Integer;
-  Matched     :TSubExp;
-  Replacement :string;
 begin
-  Result := Text;
-  Regexp := TPerlRE.Create(True);
-  try
-    Regexp.Text   := Text;
-    Regexp.RegExp := Pattern;
-
-    while Regexp.Match do
-    begin
-      Matched := Regexp.SubExp[0];
-      Replacement := '';
-      p := 1;
-      while p <= Length(Subst) do
-      begin
-        if Subst[p] <> '\' then
-          Replacement := Replacement + Subst[p]
-        else begin
-          Inc(p);
-          if not (Subst[p] in ['0'..'9']) then
-            Replacement := Replacement + Subst[p]
-          else
-          begin
-            i := StrToInt(Subst[p]);
-            if i < Regexp.SubExpCount then
-              Replacement := Replacement + Regexp.SubExp[i].Text;
-          end;
-        end;
-        Inc(p);
-      end;
-      System.Delete(Result, Matched.StartP, Matched.Len);
-      System.Insert(Replacement, Result, Matched.StartP);
-    end;
-  finally
-    FreeAndNil(Regexp);
-  end;
+  Log(vlVerbose, 'Replacing /%s/ with /%s/', [Pattern, Subst]);
+  Result := XPerlRe.Replace(Text, Pattern, Subst, True);
 end;
 
 initialization
