@@ -49,7 +49,7 @@ Conditionals=USE_JEDI_JCL
 DebugSourceDirs=
 UsePackages=0
 [Parameters]
-RunParams=-buildfile c:\home\lasalle\src\want.xml cd
+RunParams=-buildfile c:\home\dunit\want.xml dist
 HostApplication=
 [Version Info]
 IncludeVerInfo=0
@@ -86,8 +86,8 @@ Item4=..\src\
 Item5=..\src
 [HistoryLists\hlConditionals]
 Count=4
-Item0=USE_JEDI_JCL
-Item1=USE_JEDI_JCL;NO_RUN_VSS_TESTS
+Item0=USE_JEDI_JCL;NO_RUN_VSS_TESTS
+Item1=USE_JEDI_JCL
 Item2=RUN_VSS_TESTS;USE_JEDI_JCL
 Item3=RUN_VSS_TESTS
 [HistoryLists\hlUnitAliases]
@@ -95,8 +95,8 @@ Count=1
 Item0=WinTypes=Windows;WinProcs=Windows;DbiTypes=BDE;DbiProcs=BDE;DbiErrs=BDE;
 [HistoryLists\hlSearchPath]
 Count=22
-Item0=$(DELPHI)\lib;.\lib;.\elements;.\tasks;.\paths;..\lib\jal;..\lib\jal\xml;..\lib\paszlib;..\lib\paszlib\minizip;..\lib\perlre;c:\home\want\src\taks;c:\home\want\src\elements;..\bin
-Item1=$(DELPHI)\Lib;..\src\;..\src\lib;..\src\elements;..\src\tasks;..\src\win32;..\lib\jcl;..\lib\xml;..\lib\paszlib;..\lib\paszlib\minizip;..\lib\perlre;..\lib\dunit;..\lib\jal\xml;..\lib\jal
+Item0=$(DELPHI)\Lib;..\src\;..\src\lib;..\src\elements;..\src\tasks;..\src\win32;..\lib\jcl;..\lib\xml;..\lib\paszlib;..\lib\paszlib\minizip;..\lib\perlre;..\lib\dunit;..\lib\jal\xml;..\lib\jal
+Item1=$(DELPHI)\lib;.\lib;.\elements;.\tasks;.\paths;..\lib\jal;..\lib\jal\xml;..\lib\paszlib;..\lib\paszlib\minizip;..\lib\perlre;c:\home\want\src\taks;c:\home\want\src\elements;..\bin
 Item2=$(DELPHI)\Lib;..\src\;..\src\lib;..\src\elements;..\src\tasks;..\src\win32;..\lib\jcl;..\lib\xml;..\lib\paszlib;..\lib\paszlib\minizip;..\lib\perlre;..\lib\dunit
 Item3=$(DELPHI)\Lib;..\src\;..\src\tasks;..\src\elements;..\src\lib;..\lib\xml;..\lib\jcl;..\lib\perlre;..\lib\paszlib;..\lib\paszlib\minizip;..\src\win32
 Item4=$(DELPHI)\Lib;..\src\;..\src\lib;..\src\elements;..\src\tasks;..\lib\jcl;..\lib\xml;..\lib\paszlib;..\lib\paszlib\minizip;..\lib\perlre;..\lib\dunit
@@ -123,8 +123,8 @@ Item0=c:\tmp\dcu
 Item1=..\dcu
 [HistoryLists\hlOutputDirectorry]
 Count=3
-Item0=c:\tmp\bin
-Item1=c:\home\want\bin
+Item0=c:\home\want\bin
+Item1=c:\tmp\bin
 Item2=..\bin
 [HistoryLists\hlHostApplication]
 Count=1
