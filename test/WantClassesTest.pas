@@ -61,6 +61,7 @@ type
 
   TTestDirCase = class(TProjectBaseCase)
   protected
+    FLongFNTestDir: string;
     FTestDir: string;
 
     function MakeSampleTextFile: string;
@@ -123,6 +124,16 @@ type
     property actual   :string read FActual   write FActual;
   end;
 
+  TTestDanteElement = class(TProjectBaseCase)
+  private
+    FDanteElement: TDanteElement;
+  public
+    procedure Setup; override;
+    procedure TearDown; override;
+  published
+    procedure TestDanteElementPaths;
+  end;
+
 
 implementation
 
@@ -156,12 +167,15 @@ procedure TTestDirCase.Setup;
 begin
   inherited;
   FTestDir := ExtractFilePath(ParamStr(0)) + 'test';
+  FLongFNTestDir := ExtractFilePath(ParamStr(0)) + 'my test dir';
   JclFileUtils.ForceDirectories(FTestDir);
+  JclFileUtils.ForceDirectories(FLongFNTestDir);
 end;
 
 procedure TTestDirCase.TearDown;
 begin
-  JclShell.SHDeleteFolder(0, FTestDir, [doSilent]);
+  JclShell.SHDeleteFolder(0, FTestDir, [doSilent, doAllowUndo]);
+  JclShell.SHDeleteFolder(0, FLongFNTestDir, [doSilent, doAllowUndo]);
   inherited;
 end;
 
@@ -406,13 +420,39 @@ begin
   FProject.Build;
 end;
 
+{ TTestDanteElement }
+
+procedure TTestDanteElement.Setup;
+begin
+  inherited;
+  FDanteElement := TDanteElement.Create(FProject.AddTarget('test'));
+end;
+
+procedure TTestDanteElement.TearDown;
+begin
+  FDanteElement.Free;
+  inherited;
+end;
+
+procedure TTestDanteElement.TestDanteElementPaths;
+var
+  AbsPath: string;
+begin
+  AbsPath := ExtractFilePath(ParamStr(0));
+  CheckEquals(
+    AbsPath,
+    FDanteElement.ToAbsolutePath(AbsPath),
+    'ToAbsolutePath');
+end;
+
 initialization
   RegisterTasks([TDummyTask1, TDummyTask2, TDummyTask3, TCompareValuesTask]);
 
   RegisterTests('Dante Classes', [
              TSaveProjectTests.Suite,
              TBuildTests.Suite,
-             TPropertyTests.Suite
+             TPropertyTests.Suite,
+             TTestDanteElement.Suite
            ]);
 end.
 
