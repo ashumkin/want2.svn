@@ -178,7 +178,8 @@ procedure TLogManager.LogMsg(const aLevel: TLogLevel; const aMsg: String; const 
 var
   Header: String;
   Lines:  TStringList;
-  i:      Integer;
+  Fragments:TStringList;
+  i,n:    Integer;
   Msg:    String;
 begin
   if (Level >= aLevel) then
@@ -198,23 +199,25 @@ begin
         Header := Header + aPrefix;
 
       Lines := TStringList.Create;
+      Fragments := TStringList.Create;
       try
         Msg := aMsg + ' ';
-        Msg := StringReplace(Msg, #13#10,'@@', [rfReplaceAll]);
-        Msg := StringReplace(Msg, #10#13,'@@', [rfReplaceAll]);
-        Msg := StringReplace(Msg, #13,'@@',    [rfReplaceAll]);
-        Msg := StringReplace(Msg, #10,'@@',    [rfReplaceAll]);
-        JclStrings.StrToStrings(WrapText(Msg, '@@  ', [' ',#13,#10,#9], RightMargin - Length(Header)),
-                                '@@', Lines);
-
-        for i := 0 to Pred(Lines.Count) do
+        Lines.Text := Msg;
+        for i := 0 to Lines.Count-1 do
         begin
-          OutputPrefix(Header, False, aLevel);
-          OutputLog(Lines[i], False,  aLevel);
+          Fragments.Clear;
+          Lines[i] := WrapText(Lines[i], '@@', [' ',#13,#10,#9], RightMargin - Length(Header));
+          JclStrings.StrToStrings(Lines[i], '@@', Fragments);
+          for n := 0 to Fragments.Count-1 do
+          begin
+            OutputPrefix(Header, False, aLevel);
+            OutputLog(Fragments[n], False,  aLevel);
+          end;
         end;
 
       finally
         Lines.Free;
+        Fragments.Free;
       end;
     end;
 end;

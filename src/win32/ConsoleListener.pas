@@ -2,6 +2,7 @@ unit ConsoleLogMgr;
 
 interface
 uses
+  Windows,
   CRT32,
   LogMgr;
 
@@ -51,7 +52,9 @@ begin
   begin
     if UseColor then CRT32.TextColor(MsgColorMap[aLevel]);
     try
-      Writeln(aLine);
+      Write(aLine);
+      ClrEOL;
+      WriteLn;
     finally
       if UseColor then CRT32.Restore;
     end;
@@ -66,6 +69,7 @@ begin
     if UseColor then CRT32.TextColor(PrefixColorMap[aLevel]);
     try
       Write(aPrefix);
+      ClrEOL;
     finally
       if UseColor then CRT32.Restore;
     end;
