@@ -26,20 +26,27 @@ const
   BooleanToString : array[boolean] of string = ('false', 'true');
 
 resourcestring
-  WantUsageText   = 'For licensing info, use the -L switch'                      + C_EOL +
-                                                                                    C_EOL +
-                     'Usage:'                                                     + C_EOL +
-                     '  Want.exe [options] [target]'                             + C_EOL +
-                                                                                    C_EOL +
-                     'Options:'                                                   + C_EOL +
-                     '  -h, -H, -?          Displays this help text.'             + C_EOL +
-                     '  -buildfile <file>   Specifies the build file. Default is' + C_EOL +
-                     '                      build.xml'                            + C_EOL +
-                     '  -Dname=value        Define property "name".'              + C_EOL +
-                     '  -quiet              Be very quiet..'                      + C_EOL +
-                     '  -verbose            Be extra verbose.'                    + C_EOL +
-                     '  -debug              Print debugging information.'         + C_EOL +
-                     '  -color              Output to console using color.'       + C_EOL;
+  CopyrightText =
+             'WANT - A build management tool.'
+   + C_EOL + 'Copyright (c) 2001 Juancarlo Anez, Caracas, Venezuela.'
+   + C_EOL + 'All rights reserved.'
+   + C_EOL;
+
+  WantUsageText   =
+             'Usage:'                                                     + C_EOL +
+             '  Want.exe [options] [target]'                             + C_EOL +
+                                                                            C_EOL +
+             'Options:'                                                   + C_EOL +
+             '  -h, -H, -?          Displays this help text.'             + C_EOL +
+             '  -L                  Displays licensing information.'      + C_EOL +
+             '  -buildfile <file>   Specifies the build file. Default is want.xml' + C_EOL +
+             '  -Dname=value        Define property "name".'              + C_EOL +
+             '  -quiet              Be very quiet. '                      + C_EOL +
+             '  -verbose            Be extra verbose.'                    + C_EOL +
+             '  -debug              Print debugging information.'         + C_EOL +
+             '  -color              Output to console using color.'       + C_EOL;
+
+
 
   F_WantStartupFailed        = 'Want startup failed';
 
@@ -71,10 +78,11 @@ procedure RaiseLastSystemError(Msg :string = '');
 
 function ConvertToBoolean(const aValue: String): Boolean;
 
-function  WantHeader: string;
+function  Copyright: string;
 function  License :string;
 procedure Usage;
 function  GetVersionString: string;
+function  GetStringResource(Name :string):string;
 
 implementation
 
@@ -118,14 +126,7 @@ begin
 end;
 
 
-function WantHeader: string;
-begin
-  Result :=
-    'Want ' + GetVersionString + ' Build Management tool'              + C_EOL +
-    'Copyright (c) 2001, Juancarlo Anez, Caracas, Venezuela.'          + C_EOL ;
-end;
-
-function License: string;
+function GetStringResource(Name :string):string;
 var
   FindHandle: THandle;
   ResHandle: THandle;
@@ -137,7 +138,7 @@ var
       '[WantBase.License]');
   end;
 begin
-  FindHandle := FindResource(HInstance, PChar('LICENSE'), 'TEXT');
+  FindHandle := FindResource(HInstance, PChar(Name), 'TEXT');
   if FindHandle <> 0 then
   begin
     ResHandle := LoadResource(HInstance, FindHandle);
@@ -162,6 +163,24 @@ begin
   end
   else
     RaiseError('FindResource failed');
+end;
+
+function Copyright: string;
+begin
+  try
+    Result := GetStringResource('COPYRIGHT');
+  except
+    Result := CopyrightText;
+  end;
+end;
+
+function License :string;
+begin
+  try
+    Result := GetStringResource('LICENSE');
+  except
+    Result := CopyrightText;
+  end;
 end;
 
 procedure Usage;
