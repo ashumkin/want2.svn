@@ -47,7 +47,12 @@ begin
     FDelphiTask := TDelphiCompileTask.Create(T);
     with FDelphiTask do
     begin
-      basedir := 'src';
+      if PathIsDir('src') then
+        basedir := 'src'
+      else if PathIsDir('../src') then
+        basedir := '../src'
+      else if PathIsDir('../../src') then
+        basedir := '../../src';
       source  := 'Want.dpr';
       exeoutput := ToPath(Evaluate('%{temp}/want.test'));
       dcuoutput := ToPath(Evaluate('%{temp}/want.test'));
