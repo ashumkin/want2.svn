@@ -73,6 +73,7 @@ See http://www.suigeneris.org/want/ for details.
       <dcuoutput path="${dcu}"      />
       <build     value="true" />
       <optimize  value="true" />
+      <console   value="true" />
 
       <unitpath     refid="sources"   />
       <includepath  refid="sources"   />
