@@ -74,7 +74,7 @@ constructor TXmlPropertyTask.Create(Owner: TScriptElement);
 begin
   inherited;
   FKeepRoot           := True;
-  FValidate           := False;
+//  FValidate           := False;
   FCollapseAttributes := False;
 end;
 
