@@ -36,7 +36,7 @@ unit DanteMainTest;
 interface
 
 uses
-  TestFramework, DanteMain, DanteTestUtil, SysUtils;
+  TestFramework, DanteMain, DanteClassesTest, SysUtils;
 
 type
   TTestDanteMain = class(TTestDirCase)
