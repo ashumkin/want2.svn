@@ -36,7 +36,7 @@ unit DanteUnitTest;
 interface
 
 uses
-  TestFramework, DanteUnit, SysUtils, JclFileUtils, JclShell;
+  TestFramework, DanteUnit, SysUtils, JclFileUtils, JclShell, JclSysInfo;
 
 type
   TTestDanteUnit = class(TTestCase)
@@ -80,7 +80,10 @@ begin
 
   AssignFile(FBuildFile, FBuildFileName);
   Rewrite(FBuildFile);
-  WriteLn(FBuildFile, 'copy ' + FBuildFileName + ' ' + FCopyOfFileName);
+  if IsWinNT then
+    WriteLn(FBuildFile, 'cmd.exe /c copy ' + FBuildFileName + ' ' + FCopyOfFileName)
+  else
+    WriteLn(FBuildFile, 'command.com /c copy ' + FBuildFileName + ' ' + FCopyOfFileName);
   CloseFile(FBuildFile);
 
   FDante.DoBuild(FBuildFileName);
@@ -92,4 +95,4 @@ initialization
   RegisterTest('', TTestDanteUnit);
 
 end.
- 
+

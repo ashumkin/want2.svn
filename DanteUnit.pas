@@ -35,20 +35,46 @@ unit DanteUnit;
 
 interface
 
+uses Windows, SysUtils, JclMiscel;
+
 type
   TDante = class(TObject)
+  protected
+    function RunConsole(CmdLine: string): boolean;
   public
     procedure DoBuild(ABuildFileName: string);
   end;
 
 implementation
 
+
 { TDante }
 
 procedure TDante.DoBuild(ABuildFileName: string);
+var
+  F: TextFile;
+  CmdLine: string;
 begin
+  AssignFile(F, ABuildFileName);
+  Reset(F);
+  try
+    while not Eof(F) do
+    begin
+      ReadLn(F, CmdLine);
+      if not RunConsole(CmdLine) then
+        // need to report errors somehow
+        RaiseLastWin32Error;
+    end;
+  finally
+    CloseFile(F);
+  end;
+end;
 
+function TDante.RunConsole(CmdLine: string): boolean;
+begin
+  Result := (WinExec32AndWait(CmdLine, SW_HIDE) = 0);
 end;
 
 end.
- 
+
+
