@@ -57,12 +57,13 @@ type
   end;
 
   TMkDirTask = class(TFileTask)
+  protected
+    FDir :TPath;
   public
     procedure Init; override;
     procedure Execute;  override;
   published
-    // dir is an alias for basedir
-    property dir:TPath read FBaseDir write FBaseDir;
+    property dir:TPath read FDir write FDir;
   end;
 
   TTouchTask = class(TFileTask)
@@ -78,6 +79,7 @@ type
   TDeleteTask = class(TFileSetTask)
   protected
     FDeleteReadOnly: boolean;
+    FDir:  TPath;
     FFile: TPath;
 
     procedure AddDefaultPatterns; override;
@@ -90,9 +92,7 @@ type
   published
     property basedir;
     property _File: TPath  read FFile write SetFile stored True;
-
-    // dir is an alias for basedir
-    property dir  : TPath  read FBaseDir write FBaseDir;
+    property dir  : TPath  read FDir write FDir;
 
     property DeleteReadOnly: boolean read FDeleteReadOnly write FDeleteReadOnly;
   end;
@@ -186,12 +186,11 @@ begin
 
   SetLength(FFileSets, 1 + Length(FFileSets));
   FFileSets[High(FFileSets)] := Result;
-  Result.basedir := self.basedir;
 end;
 
 procedure TFileSetTask.DoFileset(Fileset: TFileSet);
 begin
-
+  FileSet.basedir := self.BasePath;
 end;
 
 procedure TFileSetTask.Execute;
@@ -240,9 +239,12 @@ begin
     if PathExists(dir) then
       TaskFailure(Format('cannot create dir %s. A file is in the way.', [dir]));
     Log(ToRelativePath(dir));
-    WildPaths.MakeDir(ToAbsolutePath(dir));
-    if not PathIsDir(dir) then
-      TaskFailure(Format('cannot create dir %s.', [dir]));
+    if not NoChanges then
+    begin
+      WildPaths.MakeDir(ToAbsolutePath(dir));
+      if not PathIsDir(dir) then
+        TaskFailure(Format('cannot create dir %s.', [dir]));
+    end;
   end;
 end;
 
@@ -267,21 +269,16 @@ end;
 { TDeleteTask }
 
 procedure TDeleteTask.AddDefaultPatterns;
-var
-  RelDir: TPath;
 begin
+  dir := PathConcat(BasePath, dir);
   if (dir <> '')
   and PathIsDir(dir)
   and (Length(FFileSets) = 0)
   then
   begin
     // then they wanto to delete the whole directory
-    RelDir := ToRelativePath(dir);
-    with MyFileSet do
-    begin
-      Include(RelDir);
-      Include(PathConcat(RelDir, '**'));
-    end;
+    MyFileSet.Include(dir);
+    MyFileSet.Include(PathConcat(dir, '**'));
   end
   else
     inherited AddDefaultPatterns;
@@ -294,6 +291,9 @@ var
   path  : string;
   msg   : string;
 begin
+  inherited DoFileSet(Fileset);
+  FileSet.basedir := PathConcat(self.BasePath, dir);
+
   Paths := Fileset.Paths;
 
   if Paths = nil then
@@ -311,12 +311,15 @@ begin
       path := Paths[p];
       Log(vlVerbose, 'del ' + ToSystemPath(path));
       AboutToScratchPath(path);
-      WildPaths.DeleteFile(path, FDeleteReadOnly);
-      if PathExists(path) then
+      if not NoChanges then
       begin
-        paths := nil;
-        msg := Format('Could not delete %s', [  ToSystemPath(path) ]);
-        TaskFailure( msg );
+        WildPaths.DeleteFile(path, FDeleteReadOnly);
+        if PathExists(path) then
+        begin
+          paths := nil;
+          msg := Format('Could not delete %s', [  ToSystemPath(path) ]);
+          TaskFailure( msg );
+        end;
       end;
     end;
   end;
@@ -358,7 +361,7 @@ var
   FromPaths,
   ToPaths  : TPaths;
 begin
-  AddDefaultPatterns;
+  inherited DoFileSet(Fileset);
 
   FromPaths := Fileset.Paths;
   ToPaths   := Fileset.MovePaths(todir);
@@ -387,9 +390,12 @@ begin
   if not PathIsDir(FromPath) then
   begin
     MakeDir(SuperPath(ToPath));
-    WildPaths.CopyFile(FromPath, ToPath);
-    if not PathExists(ToPath) then
-      TaskFailure(Format('could not copy %s to %s', [ToRelativepath(FromPath), ToRelativepath(ToPath)]));
+    if not NoChanges then
+    begin
+      WildPaths.CopyFile(FromPath, ToPath);
+      if not PathExists(ToPath) then
+        TaskFailure(Format('could not copy %s to %s', [ToRelativepath(FromPath), ToRelativepath(ToPath)]));
+      end;
   end;
 end;
 
@@ -409,9 +415,12 @@ begin
   if not PathIsDir(FromPath) then
   begin
     MakeDir(SuperPath(ToPath));
-    WildPaths.MoveFile(FromPath, ToPath);
-    if not PathExists(ToPath) then
-      TaskFailure(Format('Could not move %s to %s', [ToRelativepath(FromPath), ToRelativepath(ToPath)]));
+    if not NoChanges then
+    begin
+      WildPaths.MoveFile(FromPath, ToPath);
+      if not PathExists(ToPath) then
+        TaskFailure(Format('Could not move %s to %s', [ToRelativepath(FromPath), ToRelativepath(ToPath)]));
+    end;
   end;
 end;
 

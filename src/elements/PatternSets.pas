@@ -160,6 +160,7 @@ end;
 
 procedure TPatternSet.Include(Pattern: TPath);
 begin
+  Assert(Pattern <> '');
   FIncludes.Add(Pattern);
 end;
 

@@ -124,7 +124,7 @@ type
     FBaseDir: TPath;       // where paths for this object are based
     FLine   : Integer;
     FColumn : Integer;
-    
+
     FName   : string;
     FId     : string;      // element Id
 
@@ -162,6 +162,8 @@ type
     procedure AttributeRequiredError(AttName: string);
 
     procedure Init;   virtual;
+
+    function GetNoChanges :boolean; virtual;
   public
     constructor Create(Owner: TScriptElement); reintroduce; overload; virtual;
     destructor Destroy; override;
@@ -193,7 +195,7 @@ type
     function  HasDelphiProperty(Name :string):boolean;
 
     // use this to get the fully qualified base path
-    function  BasePath: string; virtual;
+    function  BasePath: TPath; virtual;
     // use this function in Tasks to let the user specify relative
     // directories that work consistently
     function  ToSystemPath(const Path: TPath; const Base: TPath = ''):string; virtual;
@@ -215,6 +217,8 @@ type
     property Name:       string   read FName       write FName stored True;
 
     property Children[i :Integer] :TScriptElement read GetChild;
+
+    property NoChanges :boolean read GetNoChanges;
   published
     property Tag :  string        read TagName stored False;
     property Description: string  read FDescription write FDescription;
@@ -236,6 +240,7 @@ type
     FRootPathSet:   boolean;
 
     FListener :TBuildListener;
+    FNoChanges: boolean;
 
     procedure InsertNotification(Child :TTree); override;
     procedure RemoveNotification(Child :TTree); override;
@@ -248,6 +253,8 @@ type
     procedure SetRootPath(const Path :TPath);
 
     procedure BuildSchedule(TargetName: string; Seen, Sched: TList);
+
+    function GetNoChanges :boolean; override;
   public
     constructor Create(Owner: TScriptElement = nil); override;
     destructor  Destroy; override;
@@ -259,7 +266,7 @@ type
     function  FindChild(Id: string; ChildClass: TClass = nil): TScriptElement;
 
     // use this to get the fully qualified base path
-    function  BasePath: string; override;
+    function  BasePath: TPath; override;
     // use this function in Tasks to let the user specify relative
     // directories that work consistently
 
@@ -277,6 +284,8 @@ type
     property TargetNames[TargetName: string]: TTarget read GetTargetByName;
 
     property Listener :TBuildListener read FListener write FListener;
+
+    property NoChanges :boolean read GetNoChanges write FNoChanges;
   published
     function CreateTarget    : TTarget;
 
@@ -697,7 +706,7 @@ begin
   end;
 end;
 
-function TScriptElement.BasePath: string;
+function TScriptElement.BasePath: TPath;
 begin
   if (Owner = nil) or PathIsAbsolute(FBaseDir) then
     Result := FBaseDir
@@ -823,7 +832,7 @@ end;
 procedure TScriptElement.SetBaseDir(const Value: TPath);
 begin
   FBaseDir := Value;
-  //!!!SetProperty('basedir', BasePath);
+  SetProperty('basedir', BasePath);
 end;
 
 procedure TScriptElement.SetID(Value: string);
@@ -1100,6 +1109,11 @@ begin
    raise EWantError.Create(Msg) at Addr
 end;
 
+function TScriptElement.GetNoChanges: boolean;
+begin
+  Result := (Owner <> nil) and Owner.NoChanges;
+end;
+
 { TProject }
 
 constructor TProject.Create(Owner: TScriptElement);
@@ -1186,7 +1200,7 @@ begin
   Result := 'project';
 end;
 
-function TProject.BasePath: string;
+function TProject.BasePath: TPath;
 begin
   if PathIsAbsolute(BaseDir) then
     Result := BaseDir
@@ -1292,6 +1306,11 @@ begin
   end;
 end;
 
+
+function TProject.GetNoChanges: boolean;
+begin
+  Result := FNoChanges;
+end;
 
 { TTarget }
 
