@@ -71,12 +71,12 @@ See http://dante.sourceforge.net for details
   </target>
 
   <target name="clean" >
-    <delete dir="${dist}" />
-    <delete dir="${dcu}" />
-    <delete dir="${bin}" />
+    <!-- delete dir="${dist}" / -->
+    <delete dir="${dcu}/**" />
+    <delete dir="${bin}/**" />
   </target>
 
-  <target name="compile" depends="prepare">
+  <target name="compile" depends="clean,prepare">
     <versioninfo rcfilename="${src}/dantever.rc"
 	              increment="${increment.build}"
 	 />
@@ -113,7 +113,7 @@ See http://dante.sourceforge.net for details
 
   <target name="test" depends="internal_tests,acceptance_tests" />
 
-  <target name="internal_tests" >
+  <target name="internal_tests" depends="clean,prepare">
     <property name="test.app" value="DanteTest" />
     <dcc basedir="${test}"
          source="${test.app}.dpr"
@@ -124,7 +124,7 @@ See http://dante.sourceforge.net for details
          optimize="false"
          debug="true"
          console="true"
-         uselibrarypath="true"
+         uselibrarypath="false"
     >
       <define name="USE_TEXT_RUNNER" />
       <unit>
@@ -142,7 +142,7 @@ See http://dante.sourceforge.net for details
  </target>
 
 
-  <target name="acceptance_tests" >
+  <target name="acceptance_tests" depends="clean,prepare" >
     <property name="test.app" value="DanteAcceptTest" />
     <dcc basedir="${test}"
          source="${test.app}.dpr"
@@ -153,7 +153,7 @@ See http://dante.sourceforge.net for details
          optimize="false"
          debug="true"
          console="true"
-         uselibrarypath="true"
+         uselibrarypath="false"
   >
       <define name="USE_TEXT_RUNNER" />
       <define name="NO_RUN_VSS_TESTS" />
@@ -171,7 +171,7 @@ See http://dante.sourceforge.net for details
     <exec executable="${bin}/${test.app}.exe" />
  </target>
 
-  <target name="dist" depends="prepare,compile,test" >
+  <target name="dist" depends="clean,prepare,compile,test" >
     <mkdir dir="${dist}" />
     <property name="zipfile" value="${dist}/dante-${version}.${build}.zip" />
     <delete file="${zipfile}" />
@@ -192,11 +192,10 @@ See http://dante.sourceforge.net for details
          <include name="**/*.jpeg" />
          <include name="**/*.txt" />
 
-         <include name="${lib}/paszlib*.zip" />
-         <exclude name="${lib}/paszlib/**"   />
-         <include name="${lib}/jcl*.zip" />
-         <exclude name="${lib}/jcl/**"   />
-         <exclude name="${src}/jcl/**"   />
+         <include name="${test}/data/**" />
+         
+         <include name="${lib}/*.zip" />    <!-- include third party library .zips -->
+         <exclude name="${lib}/*/**"   />   <!-- exclude subdirectories -->
          <exclude name="${basedir}/private/**" />
     </zip>
   </target>
