@@ -77,16 +77,17 @@ begin
 
   Content :=
     CR+
-    '<project name="test_project" default="main">'                                + CR +
-    '  <target name="main">'                                                      + CR +
-    '    <shell executable="mkdir ' + FNewDir + '" />'                            + CR +
+    '<project name="test_project" default="main">'                     + CR +
+    '  <property name="test" value="sample" />'                        + CR +
+    '  <target name="main">'                                           + CR +
+    '    <shell executable="mkdir ' + FNewDir + '" />'                 + CR +
     '    <shell executable="copy '
-             + FBuildFileName + ' ' + FCopyOfFileName + '" />'                    + CR +
+             + FBuildFileName + ' ' + FCopyOfFileName + '" />'         + CR +
     '    <shell executable="copy '
-             + FBuildFileName + ' ' + FNewCopyOfFileName + '" />'                 + CR +
-    '    <delete dir="' + ToPath(FNewDir) + '" />'                                + CR +
-    '  </target>'                                                                 + CR +
-    '</project>'                                                                  + CR;
+             + FBuildFileName + ' ' + FNewCopyOfFileName + '" />'      + CR +
+    '    <delete dir="' + ToPath(FNewDir) + '" />'                     + CR +
+    '  </target>'                                                      + CR +
+    '</project>'                                                       + CR;
 
   WriteLn(FBuildFile, Content);
   CloseFile(FBuildFile);
