@@ -137,7 +137,7 @@ See http://dante.sourceforge.net for details
 
   <target name="changelog" >
      <shell executable="perl tools/cvs2cl.pl" >
-			<arg value="--file FullChangeLog" />
+			<arg value="--file ChangeLog" />
 			<arg value="--tags" />
 			<arg value="--utc" /> 
 			<arg value="--window 604800" />
