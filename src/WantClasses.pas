@@ -37,16 +37,20 @@ unit DanteClasses;
 
 interface
 uses
+  Windows,
+  SysUtils,
+  Classes,
+  TypInfo,
+
   WildPaths,
   FileOps,
-  FileSets,
 
   Collections,
   MiniDom,
 
-  SysUtils,
-  Classes,
-  TypInfo;
+  JclSysInfo,
+  JclStrings;
+
 
 const
   BuildFileName = 'build.xml';
@@ -58,7 +62,12 @@ const
      tkLString,
      tkWString];
 
+  LabeledMsgFormat = '%12s %s';
+  
 type
+  TDanteElement = class;
+  TDanteElementClass = class of TDanteElement;
+
   TProject    = class;
   TTarget     = class;
   TTask       = class;
@@ -82,6 +91,8 @@ type
 
   TStringArray = array of string;
 
+  TDanteElementArray = array of TDanteElement;
+
   TTargetArray = array of TTarget;
 
   TVerbosityLevel = (
@@ -94,39 +105,61 @@ type
      vlDebug
   );
 
+  TCreateElementMethod = function :TDanteElement of object;
 
-  TDanteComponent = class(TComponent)
+
+  TDanteElement = class(TComponent)
   protected
+    FName :string; // ditch TComponent.Name
+
     function GetOwner: TPersistent; override;
     function GetProject: TProject;
     function NewName: string;
 
     procedure GetChildren(Proc: TGetChildProc; Root: TComponent); override;
-    function GetChildOwner: TComponent; override;
+    function  GetChildOwner: TComponent; override;
+    function  GetChildrenTyped(AClass :TDanteElementClass) : TDanteElementArray;
 
+    procedure Log(Msg :string = ''; Verbosity :TVerbosityLevel = vlNormal); overload; virtual;
+    procedure Log(Verbosity :TVerbosityLevel; Msg :string = ''); overload;
+    procedure Log(Tag :string; Msg :string; Verbosity :TVerbosityLevel = vlNormal); overload; virtual;
   public
-    constructor Create(Owner: TComponent); override;
+    constructor Create(Owner: TComponent);    overload; override;
+    constructor Create(Owner: TDanteElement); reintroduce; overload; virtual;
 
     class function XMLTag :string; virtual;
-    procedure ParseXML(Node :MiniDom.IElement); virtual;
+    procedure ParseXML(Node :MiniDom.IElement);      virtual;
+    function  ParseXMLChild(Child :MiniDom.IElement):boolean; virtual;
+    procedure ParseError(Msg :string; Line :Integer);
+
     function  AsXML     :string;                virtual;
     function  ToXML(Dom :IDocument) : IElement; virtual;
+
+    procedure SetProperty(Name, Value :string);          virtual;
+    function  PropertyDefined(Name :string): boolean;    virtual;
+    function  PropertyValue(Name :string) :string;       virtual;
+    function  EnvironmentValue(Name :string): string;    virtual;
+    function  ExpandMacros(Value :string) :string;       virtual;
+
+    function  SetAttribute(Name, Value :string) :boolean; virtual;
 
     // use this to get the fully qualified base path
     function  BasePath :string; virtual;
     // use this function in Tasks to let the user specify relative
     // directories that work consistently
-    function  RelativePath(SubPath :string) :string; virtual;
+    function  ToSystemPath(Path :string):string;
+    function  ToDantePath(Path :string) :string;
+    function  ToAbsolutePath(Path :string) :string; virtual;
+    function  ToRelativePath(Path :string) :string; virtual;
+    procedure AboutToScratchPath(Path :TPath);
 
     property Project: TProject read GetProject;
     property Tag stored False;
   published
-    property Name stored False;
+    property Name : string read FName write FName stored True;
   end;
 
-
-
-  TProject = class(TDanteComponent)
+  TProject = class(TDanteElement)
   protected
     FTargets:       TList;
     FDefaultTarget: string;
@@ -136,22 +169,18 @@ type
     FDescription:   string;
     FProperties:    TStrings;
 
+    procedure Notification(AComponent: TComponent; Operation: TOperation); override;
     function  GetTarget(Index: Integer):TTarget;
-
     procedure BuildSchedule(TargetName :string; Sched :TList);
-
     procedure DoParseXML(Node :MiniDom.IElement);
-
     procedure SetBaseDir(Path :TPath);
     function  GetBaseDir :TPath;
 
-    procedure Notification(AComponent: TComponent; Operation: TOperation); override;
   public
-    constructor Create(Owner: TComponent = nil);  override;
+    constructor Create(Owner: TDanteElement = nil); override;
     destructor  Destroy; override;
 
     class function XMLTag :string; override;
-    procedure ParseXML(Node :MiniDom.IElement); override;
     function  ToXML(Dom :IDocument) : IElement; override;
 
     procedure Parse(const Image: string);
@@ -165,27 +194,36 @@ type
     function  BasePath :string; override;
     // use this function in Tasks to let the user specify relative
     // directories that work consistently
-    function  RelativePath(SubPath :string) :string; override;
+    function  ToAbsolutePath(SubPath :string) :string; override;
 
-    function  AsString: string;
-    function  AddTarget(Name: string = ''): TTarget;
-    function  TargetCount: Integer;
+    function  AsString:     string;
+    function  AddTarget(Name :string) :TTarget;
+    function  TargetCount:  Integer;
 
     function  GetTargetByName(Name :string):TTarget;
 
+    procedure SetProperty(Name, Value :string);          override;
+    function  PropertyDefined(Name :string): boolean;    override;
+    function  PropertyValue(Name :string) :string;       override;
+    function  EnvironmentValue(Name :string): string;    override;
+    function  ExpandMacros(Value :string) :string;       override;
+
     procedure SetProperties(Value :TStrings);
-    procedure SetProperty(Name, Value :string);
-    function  PropertyDefined(Name :string): boolean;
 
-    function  Schedule(TargetName :string) :TTargetArray;
-    procedure Build(TargetName :string = '');
+    function  Schedule(Target :string) :TTargetArray;
+    procedure Build(Targets :array of string); overload;
+    procedure Build(Target :string = ''); overload;
 
-    procedure Log(Msg :string = ''; Verbosity :TVerbosityLevel = vlNormal);
+    procedure Log(Msg :string = ''; Verbosity :TVerbosityLevel = vlNormal); override;
 
+    property RunPath :string read FRunPath;
     property Targets[i: Integer]: TTarget read GetTarget; default;
     property Names[TargetName :string] :TTarget read GetTargetByName;
 
   published
+    function  CreateTarget: TTarget;
+
+    property Name stored True;
     property BaseDir :string read GetBaseDir write SetBaseDir;
     property Default:       string          read FDefaultTarget  write FDefaultTarget;
     property Verbosity:     TVerbosityLevel
@@ -197,53 +235,50 @@ type
     property Description:   string          read FDescription    write FDescription;
   end;
 
-  TTarget = class(TDanteComponent)
+
+
+  TTarget = class(TDanteElement)
   protected
     FTasks:   TList;
     FDepends: string;
 
-    function GetTask(Index: Integer):TTask;
     procedure Notification(AComponent: TComponent; Operation: TOperation); override;
-
+    function GetTask(Index: Integer):TTask;
   public
-    constructor Create(Owner: TComponent); override;
+    constructor Create(Owner: TDanteElement); override;
     destructor  Destroy; override;
 
     class function XMLTag :string; override;
-    procedure ParseXML(Node :MiniDom.IElement); override;
+    function  ParseXMLChild(Child :MiniDom.IElement):boolean; override;
     function  ToXML(Dom :IDocument) : IElement; override;
 
     function TaskCount: Integer;
     procedure Build;
 
-    procedure Log(Msg :string = ''; Verbosity :TVerbosityLevel = vlNormal);
+    procedure Log(Msg :string = ''; Verbosity :TVerbosityLevel = vlNormal); override;
 
     property Tasks[i: Integer]: TTask read GetTask; default;
   published
+    property Name stored True;
     property Depends: string read FDepends write FDepends;
   end;
 
-  TTask = class(TDanteComponent)
+
+
+  TTask = class(TDanteElement)
   protected
-    function GetName :string;
     procedure DoExecute;
+
   public
+    class function XMLTag :string; override;
+
     function Target :TTarget;
 
     procedure Execute; virtual; abstract;
-    procedure Log(Msg :string = ''; Verbosity :TVerbosityLevel = vlNormal);
+    procedure Log(Msg :string = ''; Verbosity :TVerbosityLevel = vlNormal); override;
 
-    property Name :string read GetName stored False;
+    property Name stored False;
   published
-  end;
-
-
-  // for properties
-  TWriteOnceStringList = class(TStringList)
-  public
-    constructor Create;
-    function Add(const S: string): Integer; override;
-    procedure Insert(Index: Integer; const S: string); override;
   end;
 
 
@@ -252,8 +287,22 @@ procedure RegisterTask(TaskClass :TTaskClass);
 procedure RegisterTasks(TaskClasses :array of TTaskClass);
 
 function CommaTextToArray(Text :string) :TStringArray;
+function StringsToSystemPathList(List: TStrings): string;
+
+procedure RaiseLastSystemError(Msg :string = '');
+procedure TaskError(Msg :string = '');
+procedure TaskFailure(Msg :string = '');
 
 implementation
+
+var
+  __TaskRegistry :TStringList = nil;
+
+
+procedure RaiseLastSystemError(Msg :string = '');
+begin
+  raise ETaskError.Create(SysErrorMessage(GetLastError) + Msg)
+end;
 
 function CommaTextToArray(Text :string) :TStringArray;
 var
@@ -271,23 +320,52 @@ begin
   end;
 end;
 
+
+function StringsToSystemPathList(List: TStrings): string;
 var
-  __TaskRegistry :TStringList;
-
-{ TDanteComponent }
-
-constructor TDanteComponent.Create(Owner: TComponent);
+  i, p  :Integer;
+  Paths :TStringArray;
 begin
-  inherited Create(Owner);
-  //!!!Name := NewName;
+  Result := '';
+  Paths  := nil;
+  for i := 0 to List.Count-1 do
+  begin
+    Paths := CommaTextToArray(List[i]);
+    for p := Low(Paths) to High(Paths) do
+      Result := Result + ';' + ToSystemPath(Paths[p]);
+  end;
 end;
 
-function TDanteComponent.GetChildOwner: TComponent;
+
+procedure TaskError(Msg :string);
+begin
+   raise ETaskError.Create('!!! ' + Msg + ' !!!' );
+end;
+
+procedure TaskFailure(Msg :string);
+begin
+   raise ETaskFailure.Create(Msg);
+end;
+
+
+{ TDanteElement }
+
+constructor TDanteElement.Create(Owner: TDanteElement);
+begin
+  inherited Create(Owner);
+end;
+
+constructor TDanteElement.Create(Owner: TComponent);
+begin
+  Self.Create(Owner as TDanteElement);
+end;
+
+function TDanteElement.GetChildOwner: TComponent;
 begin
   Result := self;
 end;
 
-procedure TDanteComponent.GetChildren(Proc: TGetChildProc; Root: TComponent);
+procedure TDanteElement.GetChildren(Proc: TGetChildProc; Root: TComponent);
 var
   I: Integer;
 begin
@@ -299,31 +377,38 @@ begin
 end;
 
 
-function TDanteComponent.GetOwner: TPersistent;
+function TDanteElement.GetOwner: TPersistent;
 begin
   Result := inherited GetOwner;
 end;
 
-function TDanteComponent.GetProject: TProject;
+function TDanteElement.GetProject: TProject;
 begin
   if self is TProject then
      Result := TProject(self)
   else if Owner is TProject then
     Result := TProject(Owner)
-  else if Owner is TDanteComponent then
-    Result := TDanteComponent(Owner).Project
+  else if Owner is TDanteElement then
+    Result := TDanteElement(Owner).Project
   else
     Result := nil;
 end;
 
-class function TDanteComponent.XMLTag: string;
+class function TDanteElement.XMLTag: string;
+const
+  Comp = 'component';
+  Elem = 'element';
 begin
   Result := copy(ClassName, 2, 255);
   Result := LowerCase(Result);
+  if Pos(Comp, Result) = (1 + Length(Result) - Length(Comp)) then
+    Result := StringReplace(Result, Comp, '', [])
+  else if Pos(Elem, Result) = (1 + Length(Result) - Length(Elem)) then
+    Result := StringReplace(Result, Elem, '', []);
 end;
 
 
-function TDanteComponent.NewName: string;
+function TDanteElement.NewName: string;
 var
   i:   Integer;
 begin
@@ -335,64 +420,129 @@ begin
   end;
 end;
 
-procedure TDanteComponent.ParseXML(Node: IElement);
+procedure TDanteElement.ParseXML(Node: IElement);
 var
-  i        :IIterator;
-  att:     IAttribute;
-  AName    :string;
-  prop     :IElement;
-  TypeInfo :PTypeInfo;
-  PropInfo :PPropInfo;
+  i     :IIterator;
+  valid :boolean;
+  child :MiniDom.INode;
+  elem  :MiniDom.IElement;
+  text  :MiniDom.ITextNode;
 begin
   if Node.Name <> Self.XMLTag then
-    raise EDanteParseException.Create(Format('expected <%s>', [Self.XMLTag]) );
-
-  TypeInfo := Self.ClassInfo;
+    ParseError(Format('XML tag of class <%s> is <%s> but found <%s>',
+                      [ClassName, XMLTag, NOde.Name]
+                      ), Node.LineNo);
 
   i := Node.Attributes;
   while i.HasNext do
   begin
-    att := i.Next as IAttribute;
-    AName := att.Name;
-    PropInfo := GetPropInfo(TypeInfo, AName);
-    if PropInfo = nil then
-      raise EDanteParseException.Create( Format('Unknown attribute %s.%s', [XMLTag, AName]) )
-    else if not IsStoredProp(Self, PropInfo) then
-      continue
-    else
+    with i.Next as IAttribute do
     begin
+      valid := False;
       try
-        with PropInfo^, PropType^^ do
-          if Kind in [tkString, tkLString, tkWString] then
-            SetStrProp(Self, PropInfo, att.Value)
-          else if Kind in [tkInteger] then
-            SetOrdProp(Self, PropInfo, StrToInt(att.Value))
-          else if Kind in [tkEnumeration] then
-            SetOrdProp(Self, PropInfo, GetEnumValue(PropType^, att.Value))
-          else
-            raise EDanteParseException.Create(Format('Cannot handle type of attribute %s.%s', [Name, AName]) )
+        valid := Self.SetAttribute(Name, ExpandMacros(Value));
       except
         on e :Exception do
-          raise EDanteParseException.Create(Format('Error %s setting value of attribute %s.%s', [e.Message, Name, AName]) );
+          ParseError(e.Message, Node.LineNo);
       end;
+      if not valid then
+        ParseError(Format('Unknown attribute <%s>.%s', [XMLTag, Name]), Node.LineNo);
     end;
   end;
 
-  i := Node.Children('property').Iterator;
+  i := Node.Children.Iterator;
   while i.HasNext do
   begin
-    prop := i.Next as IElement;
-    Project.SetProperty(prop.attributeValue('name'), prop.attributeValue('value'));
+    child := i.Next as INode;
+    if 0 = child.QueryInterface(IElement, elem)  then
+    begin
+      if not ParseXMLChild(elem) then
+        ParseError(Format('Unknown element <%s><%s>', [XMLTag, elem.Name] ), Child.LineNo);
+    end
+    else if 0 = child.QueryInterface(ITextNode, text)  then
+    begin
+      if not SetAttribute('text', trim(text.text)) then
+        ParseError(Format('Element <%s> does not accept text', [XMLTag]), Child.LineNo);
+    end;
   end;
-
 end;
 
-function TDanteComponent.AsXML: string;
+function TDanteElement.SetAttribute(Name, Value: string): boolean;
+var
+  TypeInfo :PTypeInfo;
+  PropInfo :PPropInfo;
+begin
+  Result := True;
+
+  TypeInfo := Self.ClassInfo;
+  PropInfo := GetPropInfo(TypeInfo, Name);
+  if PropINfo = nil then
+    PropInfo := GetPropInfo(TypeInfo, '_' + Name);
+  if PropInfo = nil then
+     Result := False
+  else if not IsStoredProp(Self, PropInfo) then
+    Result := True
+  else begin
+    try
+      with PropInfo^, PropType^^ do
+      begin
+        if Kind in [tkString, tkLString, tkWString] then
+          SetStrProp(Self, PropInfo, Value)
+        else if Kind in [tkInteger] then
+          SetOrdProp(Self, PropInfo, StrToInt(Value))
+        else if Kind in [tkEnumeration] then
+          SetOrdProp(Self, PropInfo, GetEnumValue(PropType^, Value))
+        else
+          Result := False;
+      end;
+    except
+      on e :EDanteParseException do
+        raise;
+      on e :Exception do
+        raise EDanteException.Create(Format('ERROR: "%s", setting value of attribute %s.%s', [e.Message, XMLTag, Name]));
+    end;
+  end;
+end;
+
+function TDanteElement.ParseXMLChild(Child: IElement) :boolean;
+var
+  MethodName :string;
+  Method     :TMethod;
+  Comp       :TDanteElement;
+begin
+  Result := true;
+  if Child.Name = 'property' then
+    SetProperty(Child.attributeValue('name'), Child.attributeValue('value'))
+  else if Child.Name = 'echo' then
+    Log('echo', ExpandMacros(Child.attributeValue('message')))
+  else
+  begin
+    Method.Data  := Self;
+    MethodName   := 'Create' + Child.Name;
+    Method.Code  := MethodAddress(MethodName);
+    if Method.Code = nil then
+      Result := False
+    else begin
+      Comp := TCreateElementMethod(Method)();
+      if Comp <> nil then
+        Comp.ParseXML(Child)
+      else
+        Result := false;
+    end;
+  end;
+end;
+
+procedure TDanteElement.ParseError(Msg: string; Line :Integer);
+begin
+  raise EDanteParseException.Create(Format('(%d): %s',[Line, Msg]));
+end;
+
+function TDanteElement.AsXML: string;
 begin
   Result := toXML(TDocument.Create).toString;
 end;
 
-function TDanteComponent.ToXML(Dom :MiniDom.IDocument) :MiniDom.IElement;
+function TDanteElement.ToXML(Dom :MiniDom.IDocument) :MiniDom.IElement;
 var
   TypeInfo:  PTypeInfo;
   PropList:  PPropList;
@@ -443,23 +593,121 @@ begin
   end;
 end;
 
-function TDanteComponent.BasePath: string;
+function TDanteElement.BasePath: string;
 begin
   Result := Project.BasePath;
 end;
 
-function TDanteComponent.RelativePath(SubPath: string): string;
+function TDanteElement.ToAbsolutePath(Path: string): string;
 begin
-  Result := Project.RelativePath(SubPath);
+  Result := Project.ToAbsolutePath(Path);
+end;
+
+function TDanteElement.ToRelativePath(Path: string): string;
+begin
+  Result := WildPaths.ToRelativePath(Path, BasePath);
+end;
+
+procedure TDanteElement.AboutToScratchPath(Path: TPath);
+begin
+  if  PathExists(Path)
+  and PathIsAbsolute(ToRelativePath(Path))
+  then
+    TaskError(Format('Will not scratch %s outside of %s',
+                         [ToSystemPath(Path), ToSystemPath(BasePath)]
+                         ));
+end;
+
+function TDanteElement.GetChildrenTyped(AClass: TDanteElementClass): TDanteElementArray;
+var
+  List :TList;
+  C    :TComponent;
+  i    :Integer;
+begin
+  List := TList.Create;
+  try
+    for i := 0 to ComponentCount-1 do
+    begin
+      C := Components[i];
+      if C.InheritsFrom(AClass) then
+        List.Add(C);
+    end;
+    SetLength(Result, List.Count);
+    for i := 0 to List.Count-1 do
+      Result[i] := List[i];
+    finally
+    List.Free
+  end;
+end;
+
+procedure TDanteElement.Log(Msg: string; Verbosity: TVerbosityLevel);
+begin
+  Project.Log(Msg, Verbosity);
+end;
+
+procedure TDanteElement.Log(Verbosity: TVerbosityLevel; Msg: string);
+begin
+  Log(Msg, Verbosity);
+end;
+
+procedure TDanteElement.Log(Tag, Msg: string; Verbosity: TVerbosityLevel);
+var
+  Lines :TStrings;
+  i     :Integer;
+begin
+  Msg := WrapText(Msg, '...@@... ', [' ',#13,#10,#9], 55);
+  Lines := TStringList.Create;
+  try
+    JclStrings.StrToStrings(Msg, '@@', Lines);
+    for i := 0 to Lines.Count-1 do
+      Project.Log(Format(LabeledMsgFormat, ['['+ Tag +']', Lines[i]]), Verbosity);
+  finally
+    Lines.Free;
+  end;
+end;
+
+function TDanteElement.PropertyDefined(Name: string): boolean;
+begin
+  Result := Project.PropertyDefined(Name);
+end;
+
+function TDanteElement.PropertyValue(Name: string): string;
+begin
+  Result := Project.PropertyValue(Name);
+end;
+
+procedure TDanteElement.SetProperty(Name, Value: string);
+begin
+  Project.SetProperty(Name, Value);
+end;
+
+function TDanteElement.ExpandMacros(Value: string): string;
+begin
+  Result := Project.ExpandMacros(Value);
+end;
+
+function TDanteElement.EnvironmentValue(Name: string): string;
+begin
+  Result := Project.EnvironmentValue(Name);
+end;
+
+function TDanteElement.ToDantePath(Path: string): string;
+begin
+  Result := WildPaths.ToPath(Path, BasePath);
+end;
+
+function TDanteElement.ToSystemPath(Path: string): string;
+begin
+  Result := WildPaths.ToSystemPath(Path, BasePath);
 end;
 
 { TProject }
 
-constructor TProject.Create(Owner: TComponent);
+constructor TProject.Create(Owner: TDanteElement);
 begin
   inherited Create(Owner);
   FTargets    := TList.Create;
-  FProperties := TWriteOnceStringList.Create;
+  FProperties := TStringList.Create;
   FVerbosity  := vlNormal;
   FRunPath    := ToPath(GetCurrentDir);
 end;
@@ -513,26 +761,20 @@ begin
 end;
 
 
-function TProject.AddTarget(Name: string): TTarget;
+function TProject.CreateTarget: TTarget;
 begin
   Result := TTarget.Create(self);
-  if Name <> '' then
-    Result.Name := Name;
+end;
+
+function TProject.AddTarget(Name: string): TTarget;
+begin
+  Result := CreateTarget;
+  Result.Name := Name;
 end;
 
 function TProject.GetTarget(Index: Integer): TTarget;
 begin
   Result := FTargets[Index];
-end;
-
-procedure TProject.Notification(AComponent: TComponent; Operation: TOperation);
-begin
-  inherited Notification(AComponent, Operation);
-  if AComponent is TTarget then
-    if Operation = opRemove then
-      FTargets.Remove(AComponent)
-    else
-      FTargets.Add(AComponent)
 end;
 
 function TProject.TargetCount: Integer;
@@ -568,8 +810,18 @@ end;
 
 
 function TProject.GetTargetByName(Name: string): TTarget;
+var
+  t :Integer;
 begin
-  Result := self.FindComponent(Name) as TTarget;
+  Result := nil;
+  for t := 0 to FTargets.Count-1 do
+  begin
+    if TTarget(FTargets[t]).Name = Name then
+    begin
+      Result := FTargets[t];
+      break;
+    end;
+  end;
   if Result = nil then
     raise ETargetNotFoundException.Create(Name);
 end;
@@ -593,14 +845,14 @@ begin
   Sched.Add(Target);
 end;
 
-function TProject.Schedule(TargetName: string): TTargetArray;
+function TProject.Schedule(Target :string): TTargetArray;
 var
   Sched :TList;
   i     :Integer;
 begin
   Sched := TList.Create;
   try
-    BuildSchedule(TargetName, Sched);
+    BuildSchedule(Target, Sched);
     SetLength(Result, Sched.Count);
     for i := 0 to Sched.Count-1 do
       Result[i] := Sched[i];
@@ -611,47 +863,65 @@ end;
 
 procedure TProject.Log(Msg: string; Verbosity :TVerbosityLevel);
 begin
-  // bare bones implementation
-  // something smarter can be thought of later
   if Self.Verbosity >= Verbosity then
     writeln(Msg);
 end;
 
-procedure TProject.Build(TargetName: string);
+procedure TProject.Build(Target: string);
 var
   i     :Integer;
   Sched :TTargetArray;
 begin
-  if TargetName = '' then
+  if Target = '' then
   begin
     if Default = '' then
-      raise ENoDefaultTargetError.Create('No default target')
+       raise ENoDefaultTargetError.Create('No default target')
     else
-      TargetName := Default;
+      Target := Default;
   end;
-  Sched := Schedule(Targetname);
+  Sched := nil;
   try
-    try
-      for i := Low(Sched) to High(Sched) do
-      begin
+    Sched := Schedule(Target);
+    for i := Low(Sched) to High(Sched) do
+    begin
+      try
         Sched[i].Build;
         Log;
+      finally
+        ChangeDir(FRunpath);
       end;
-    finally
-      ChangeDir(FRunpath);
     end;
   except
+    on e :ETaskException do
+      raise;
+    on e :ETargetException do
+      raise;
     on e :Exception do
     begin
-      Log(Format('%s: %s', [e.ClassName, e.Message]), vlErrors);
+      Log(vlErrors, Format('%s: %s', [e.ClassName, e.Message]));
       raise;
     end;
   end;
 end;
 
-function TProject.RelativePath(SubPath: string): string;
+
+procedure TProject.Build(Targets :array of string);
+var
+  t     :Integer;
+  Sched :TTargetArray;
 begin
-  Result := BasePath + SubPath;
+  Sched := nil;
+  if Length(Targets) = 0 then
+    Build
+  else begin
+    for t := Low(Targets) to High(Targets) do
+      Build(Targets[t])
+  end;
+end;
+
+function TProject.ToAbsolutePath(SubPath: string): string;
+begin
+  Result := PathConcat(Self.BasePath, SubPath);
 end;
 
 procedure TProject.SetProperties(Value: TStrings);
@@ -670,6 +940,16 @@ begin
            or (Properties.IndexOfName(Name) >= 0)
 end;
 
+function TProject.PropertyValue(Name: string): string;
+begin
+  Result := ExpandMacros(Properties.Values[Name]);
+end;
+
+function TProject.EnvironmentValue(Name: string): string;
+begin
+  JclSysInfo.GetEnvironmentVar(Name, Result, True);
+end;
+
 
 // XML handling
 
@@ -677,8 +957,21 @@ procedure TProject.LoadXML(const SystemPath: string);
 var
   Dom :IDocument;
 begin
-  Dom := MiniDom.ParseToDom(SystemPath);
-  Self.DoParseXML(Dom.Root);
+  try
+    Dom := MiniDom.ParseToDom(SystemPath);
+    Self.DoParseXML(Dom.Root);
+  except
+    on e:EDanteParseException do
+    begin
+      Log(vlErrors, Format('%s %s', [SystemPath, e.Message]));
+      raise;
+    end;
+    on e:Exception do
+    begin
+      Log(vlErrors, Format('%s %s', [SystemPath, e.Message]));
+      ParseError(e.Message, 0);
+    end;
+  end;
 end;
 
 class function TProject.XMLTag: string;
@@ -686,32 +979,17 @@ begin
   Result := 'project';
 end;
 
-procedure TProject.ParseXML(Node: IElement);
-var
-  i     :IIterator;
-  child :IElement;
-begin
-  inherited ParseXML(Node);
-  Self.Name := Node.attributeValue('name');
-
-  i := Node.Children(TTarget.XMLTag).Iterator;
-  while i.HasNext do
-  begin
-    child := i.Next as IElement;
-    AddTarget(child.attributeValue('name')).ParseXML(child);
-  end;
-end;
-
-
 procedure TProject.DoParseXML(Node: IElement);
 begin
   try
     ParseXML(Node);
   except
+    on e :EDanteParseException do
+      raise;
     on e :Exception do
     begin
-      Log(e.Message);
-      raise;
+      Log(vlErrors, e.Message);
+      ParseError(e.Message, Node.LineNo);
     end;
   end;
 end;
@@ -726,7 +1004,6 @@ var
   i :Integer;
 begin
   Result := inherited ToXML(Dom);
-  Result.setAttribute('name', Self.Name);
   for i := 0 to TargetCount-1 do
     Result.Add(Targets[i].toXML(Dom));
 end;
@@ -741,12 +1018,60 @@ end;
 
 function TProject.GetBaseDir: string;
 begin
-  Result := AbsoluteToRelativePath(FBaseDir, FRunPath);
+  Result := WildPaths.ToRelativePath(FBaseDir, FRunPath);
 end;
 
 procedure TProject.SetBaseDir(Path: TPath);
 begin
-  FBaseDir := AbsoluteToRelativePath(Path, FRunPath);
+  FBaseDir := WildPaths.ToRelativePath(Path, FRunPath);
+end;
+
+
+function TProject.ExpandMacros(Value: string): string;
+type
+  TMacroExpansion = function(Name :string) :string of object;
+
+  function Expand(StartPat, EndPat, Val :string; MacroExpansion : TMacroExpansion) :string;
+  var
+    MacroStart,
+    MacroEnd    :Integer;
+    SubPropName :string;
+  begin
+    Result := Val;
+    MacroStart := StrSearch(StartPat, Result);
+    while MacroStart <> 0 do
+    begin
+      MacroEnd := StrSearch(EndPat, Result, macroStart+1);
+      if MacroEnd =0  then
+        break
+      else begin
+        SubPropName := StrMid(Result, MacroStart+2, -2 + MacroEnd-MacroStart);
+        Delete(Result, MacroStart, 3 + Length(SubPropName));
+        Insert(MacroExpansion(SubPropName), Result, MacroStart);
+        MacroStart := StrSearch(StartPat, Result);
+      end;
+    end;
+  end;
+
+begin
+  Properties.Values['basedir'] := BasePath;
+  Result := Value;
+  Result := Expand('%{', '}', Result, EnvironmentValue);
+  Result := Expand('${', '}', Result, PropertyValue);
+end;
+
+
+
+procedure TProject.Notification(AComponent: TComponent; Operation: TOperation);
+begin
+  inherited Notification(AComponent, Operation);
+  if AComponent is TTarget then
+  begin
+    if Operation = opInsert then
+      FTargets.Add(AComponent)
+    else
+      FTargets.Remove(AComponent)
+  end;
 end;
 
 { TTarget }
@@ -755,12 +1080,13 @@ procedure TTarget.Build;
 var
   i :Integer;
 begin
+  Project.Log;
   Log;
   for i := 0 to TaskCount-1 do
     Tasks[i].DoExecute;
 end;
 
-constructor TTarget.Create(Owner: TComponent);
+constructor TTarget.Create(Owner: TDanteElement);
 begin
   inherited Create(Owner);
   FTasks   := TList.Create;
@@ -788,55 +1114,51 @@ begin
   Project.Log(Format('%s: %s', [Name, Msg]), Verbosity);
 end;
 
-procedure TTarget.Notification(AComponent: TComponent; Operation: TOperation);
-begin
-  inherited Notification(AComponent, Operation);
-  if AComponent is TTask then
-    if Operation = opRemove then
-      FTasks.Remove(AComponent)
-    else
-      FTasks.Add(AComponent)
-end;
-
 function TTarget.TaskCount: Integer;
 begin
   Result := FTasks.Count;
 end;
 
 
-procedure TTarget.ParseXML(Node: IElement);
+function TTarget.ParseXMLChild(Child: IElement): boolean;
 var
-  i         :IIterator;
-  child     :IElement;
-  Task      :TTask;
+  Task :TTask;
 begin
-  inherited ParseXML(Node);
-
-  i := Node.Children.Iterator;
-  while i.HasNext do
+  Result := inherited ParseXMLChild(Child);
+  if not Result then
   begin
-    child := i.Next as IElement;
-    Task := FindTask(child.Name).Create(Self);
+    Task := FindTask(Child.Name).Create(Self);
     Task.ParseXML(child);
+    Result := true;
   end;
 end;
-
 
 function TTarget.ToXML(Dom: IDocument): IElement;
 var
   i :Integer;
 begin
   Result := inherited ToXML(Dom);
-  Result.setAttribute('name', Self.Name);
   for i := 0 to TaskCount-1 do
     Result.Add(Tasks[i].toXML(Dom));
+end;
+
+procedure TTarget.Notification(AComponent: TComponent; Operation: TOperation);
+begin
+  inherited Notification(AComponent, Operation);
+  if AComponent is TTask then
+  begin
+    if Operation = opInsert then
+      FTasks.Add(AComponent)
+    else
+      FTasks.Remove(AComponent)
+  end;
 end;
 
 { TTask }
 
 procedure TTask.Log(Msg: string; Verbosity :TVerbosityLevel);
 begin
-  Project.Log(Format('%12s %s', ['['+XMLTag+']', Msg]), Verbosity);
+  Project.Log(XMLTag, Msg, Verbosity);
 end;
 
 function TTask.Target: TTarget;
@@ -848,64 +1170,56 @@ procedure TTask.DoExecute;
 begin
   try
     try
-      ChangeDir(Project.BasePath);
+      ChangeDir(BasePath);
       Execute;
     except
       on e :Exception do
       begin
-        Log(Format('%s: %s', [e.ClassName, e.Message]), vlErrors);
+        Log(vlErrors, e.Message);
         raise;
       end;
     end;
   finally
-    ChangeDir(Project.BasePath);
+    ChangeDir(BasePath);
   end;
 end;
 
-function TTask.GetName: string;
+class function TTask.XMLTag: string;
 begin
-  Result := inherited Name;
+  Result := copy(ClassName, 2, 255);
+  Result := LowerCase(Result);
+  Result := StringReplace(Result, 'task', '', []);
 end;
 
-{ TWriteOnceStringList }
 
-function TWriteOnceStringList.Add(const S: string): Integer;
-begin
-  Result := IndexOf(S);
-  if Result < 0 then
-    Result := inherited Add(S);
-end;
-
-constructor TWriteOnceStringList.Create;
-begin
-  inherited Create;
-  Sorted := true;
-  Duplicates := dupError;
-end;
-
-procedure TWriteOnceStringList.Insert(Index: Integer; const S: string);
-begin
-  if IndexOf(S) < 0 then
-    inherited Insert(Index, S);
-end;
+{ TaskRegistry }
 
 function FindTask(Tag :string) :TTaskClass;
 var
   Index :Integer;
 begin
+  Result := nil;
   Index := __TaskRegistry.IndexOf(Tag);
   if Index < 0 then
-    raise ETaskError.Create( Format('Task class <%s> not found', [Tag]) )
+    TaskError(Format('Task class <%s> not found', [Tag]) )
   else
     Result := Pointer(__TaskRegistry.Objects[Index])
 end;
 
 
 procedure RegisterTask(TaskClass :TTaskClass);
+var
+  Index :Integer;
 begin
-  __TaskRegistry.AddObject(TaskClass.XMLTag, Pointer(TaskClass));
-  if GetClass(TaskClass.ClassName) = nil then
-    RegisterClass(TaskClass);
+  Index :=__TaskRegistry.IndexOf(TaskClass.XMLTag);
+  if Index >= 0 then
+    TaskError(Format('Duplicate task tag <%s> in class <%s>', [TaskClass.XMLTag, TaskClass.ClassName]))
+  else
+  begin
+    __TaskRegistry.AddObject(TaskClass.XMLTag, Pointer(TaskClass));
+    if GetClass(TaskClass.ClassName) = nil then
+      RegisterClass(TaskClass);
+  end;
 end;
 
 procedure RegisterTasks(TaskClasses :array of TTaskClass);

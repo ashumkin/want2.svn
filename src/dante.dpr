@@ -37,14 +37,16 @@ program dante;
 
 uses
   SysUtils,
+  JclStrings,
   clUtilConsole,
   DanteClasses,
   StandardTasks,
+  CustomTasks,
   DanteMain;
 
 function DanteHeader: string;
 begin
-  Result := 'Dante v0.0.0 Build 0. Build Management tool for Delphi'#13#10;
+  Result := 'Dante v0.0.0 Build Management tool';
 end;
 
 function License: string;
@@ -111,17 +113,34 @@ end;
 procedure Run;
 var
   BuildFile: string;
+  Targets:   string;
   ADante:    TDante;
   p:         Integer;
+  VLevel:    TVerbosityLevel;
 begin
   BuildFile := '';
+  Targets   := '';
+  VLevel    := vlNormal;
   p := 1;
   while p <= ParamCount do
   begin
-    if ParamStr(p) = '-buildfile' then
+    if ParamStr(p)[1] <> '-' then
+    begin
+      if Targets = '' then
+        Targets := ParamStr(p)
+      else
+        Targets := Targets + ',' + ParamStr(p);
+    end
+    else if ParamStr(p) = '-buildfile' then
     begin
       Inc(p);
       BuildFile := ParamStr(p);
+    end
+    else if ParamStr(p) = '-verbose' then
+      VLevel := vlVerbose
+    else if ParamStr(p) = '-debug' then
+      VLevel := vlDebug
+    else begin
     end;
     Inc(p);
   end;
@@ -129,20 +148,25 @@ begin
   if BuildFile = '' then
     BuildFile := FindBuildFile(BuildFileName);
   if not FileExists(BuildFile) then
-  begin
-    // in the future add -find support and -buildfile support
-    WriteLn('Cannot find ' + ExtractFileName(BuildFile));
-  end
+    WriteLn('Cannot find ' + ExtractFileName(BuildFile))
   else
   begin
     ADante := TDante.Create;
     try
       try
-        ADante.DoBuild(BuildFile);
+        Writeln('buildfile: ', BuildFile);
+        Writeln;
+        ADante.DoBuild(BuildFile, Targets, VLevel);
+        Writeln;
         WriteLn('Build complete.');
       except
         on E: Exception do
-          WriteLn(E.message);
+        begin
+          if not E.ClassType.InheritsFrom(EDanteException) then
+            Writeln(E.ClassName + ': ' + E.Message);
+          Writeln;
+          WriteLn('BUILD FAILED');
+        end;
       end;
     finally
       ADante.Free;
@@ -161,18 +185,21 @@ begin
     WriteLn('  -h, -H, -?          Displays this help text.');
     WriteLn('  -buildfile [file]   Specifies the build file. Default is');
     WriteLn('                      build.xml');
+    WriteLn('  -verbose            Be extra verbose.');
+    WriteLn('  -debug              Print debugging information.');
 end;
 
 begin
-  WriteLn(DanteHeader);
   if FindCmdLineSwitch('?', SwitchChars, true) or
      FindCmdLineSwitch('h', SwitchChars, true) then
   begin
+    WriteLn(DanteHeader);
     Usage;
   end
   else if FindCmdLineSwitch('L', SwitchChars, false) then
   begin
     // need to add More functionality ... going to add it in clUtilConsole
+    WriteLn(DanteHeader);
     WriteLn(License);
   end
   else

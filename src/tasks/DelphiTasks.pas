@@ -59,41 +59,79 @@ type
   EDelphiNotFoundError   = class(EDelphiTaskError);
   ECompilerNotFoundError = class(EDelphiTaskError);
 
+  TPathComponent = class(TDanteElement)
+  protected
+    FPath :string;
+
+    procedure SetPath(Value :string); virtual; abstract;
+  published
+    property Path :string write SetPath;
+  protected
+  end;
+
+  TUnitComponent     = class(TPathComponent)
+    procedure SetPath(Value :string); override;
+  end;
+
+  TResourceComponent  = class(TPathComponent)
+    procedure SetPath(Value :string); override;
+  end;
+
+  TIncludeComponent  = class(TPathComponent)
+    procedure SetPath(Value :string); override;
+  end;
+
   TDelphiCompileTask = class(TCustomExecTask)
   protected
-    FOutputPath      :string;
-    FUnitOutputPath  :string;
+    FExesPath      :string;
+    FDCUPath  :string;
     FSource          :string;
+
     FQuiet           :boolean;
     FMake            :boolean;
     FBuild           :boolean;
+    FOptimize        :boolean;
+    FDebug           :boolean;
 
-    FUnitPaths     :TStrings;
+    FUnitPaths       :TStrings;
+    FResourcePaths   :TStrings;
+    FIncludePaths    :TStrings;
 
-    function BuildCmdLine: string; override;
+    function BuildArguments: string; override;
     function FindDelphiDir :string;
     function FindCompiler :string;
+
+    procedure SetExes(Value :string);
+
   public
-    constructor Create(owner :TComponent); override;
+    constructor Create(owner :TDanteElement); override;
     destructor  Destroy; override;
 
     class function XMLTag :string; override;
-    procedure ParseXML(Node :MiniDom.IElement); override;
-
 
     procedure Execute; override;
   published
 
+    // published methods for creating sub components
+    // these methods are mapped to XML elements
+    function CreateUnit     :TUnitComponent;
+    function CreateResource :TResourceComponent;
+    function CreateInclude  :TIncludeComponent;
+
+    // these properties are mapped to XML attributes
     property Arguments;
     property ArgumentList stored False;
     property SkipLines :Integer     read FSkipLines   write FSkipLines;
 
-    property exes :string    read FOutputPath     write FOutputPath;
-    property dcus :string    read FUnitOutputPath write FUnitOutputPath;
+    property exes :string    read FExesPath   write SetExes;
+    property dcus :string    read FDCUPath    write FDCUPath;
 
-    property quiet :boolean read FQuiet write FQuiet default true;
-    property make  :boolean read FMake  write FMake;
-    property build :boolean read FBuild write FBuild;
+    property quiet    :boolean read FQuiet    write FQuiet default true;
+    property make     :boolean read FMake     write FMake;
+    property build    :boolean read FBuild    write FBuild;
+
+    property optimize :boolean read FOptimize write FOptimize;
+    property debug    :boolean read FDebug    write FDebug;
 
     property source :string read FSource write FSource;
   end;
@@ -102,53 +140,28 @@ implementation
 
 { TDelphiCompileTask }
 
-function TDelphiCompileTask.BuildCmdLine: string;
-var
-  Paths: string;
-  i:     Integer;
-begin
-  Result := inherited BuildCmdLine;
-
-  if source <> '' then
-    Result := Result + ' ' + ToSystemPath(source);
-
-  if exes <> '' then
-    Result := Result + ' -E' + ToSystemPath(exes);
-  if dcus <> '' then
-    Result := Result + ' -N' + ToSystemPath(dcus);
-  if quiet then
-    Result := Result + ' -Q';
-
-  if build then
-    Result := Result + ' -B'
-  else if make then
-    Result := Result + ' -M';
-
-  if FUnitPaths.Count > 0 then
-  begin
-    Paths := '';
-    for i := 0 to FUnitPaths.Count-1 do
-      Paths := Paths + ';' + ToSystemPath(FUnitPaths[i]);
-    Result := Result + ' -U' + Paths;
-  end;
-end;
-
-constructor TDelphiCompileTask.Create(owner: TComponent);
+constructor TDelphiCompileTask.Create(owner: TDanteElement);
 begin
   inherited Create(owner);
-  FUnitPaths := TStringList.Create;
-  SkipLines  := 2;
+  SkipLines  := 1;
   quiet      := true;
+
+  FUnitPaths      := TStringList.Create;
+  FResourcePaths  := TStringList.Create;
+  FIncludePaths   := TStringList.Create;
 end;
 
 destructor TDelphiCompileTask.Destroy;
 begin
   FUnitPaths.Free;
+  FResourcePaths.Free;
+  FIncludePaths.Free;
   inherited Destroy;
 end;
 
 procedure TDelphiCompileTask.Execute;
 begin
+  Log(ToRelativePath(Source));
   self.Executable := FindCompiler;
   inherited Execute;
 end;
@@ -186,27 +199,90 @@ begin
   raise EDelphiNotFoundError.Create('');
 end;
 
-procedure TDelphiCompileTask.ParseXML(Node: IElement);
-var
-  i:    IIterator;
-  paths :TStringArray;
-  p:    Integer;
-begin
-  inherited ParseXML(Node);
-
-  paths := nil;
-  i := Node.Children('unit').Iterator;
-  while i.HasNext do
-  begin
-    paths := CommaTextToArray((i.Next as IElement).attributeValue('path') );
-    for p := Low(paths) to High(paths) do
-      FUnitPaths.Add(paths[p]);
-  end;
-end;
-
 class function TDelphiCompileTask.XMLTag: string;
 begin
   Result := 'dcc';
+end;
+
+function TDelphiCompileTask.BuildArguments: string;
+begin
+  Result := inherited BuildArguments;
+
+  if source <> '' then
+    Result := Result + ' ' + ToSystemPath(source);
+
+  if exes <> '' then
+    Result := Result + ' -E' + ToSystemPath(exes);
+  if dcus <> '' then
+    Result := Result + ' -N' + ToSystemPath(dcus);
+  if quiet then
+    Result := Result + ' -Q';
+
+  if build then
+    Result := Result + ' -B'
+  else if make then
+    Result := Result + ' -M';
+
+  if optimize then
+    Result := Result + ' -$O+'
+  else
+    Result := Result + ' -$O-';
+
+  if debug then
+    Result := Result + ' -V -$D+ -$L+ -GD'
+  else
+    Result := Result + ' -V- -$D-';
+
+
+  if FUnitPaths.Count > 0 then
+    Result := Result + ' -U' + StringsToSystemPathList(FUnitPaths);
+
+  if FResourcePaths.Count > 0 then
+    Result := Result + ' -R' + StringsToSystemPathList(FResourcePaths);
+
+  if FIncludePaths.Count > 0 then
+    Result := Result + ' -R' + StringsToSystemPathList(FIncludePaths);
+end;
+
+function TDelphiCompileTask.createUnit: TUnitComponent;
+begin
+  Result := TUnitComponent.Create(Self);
+end;
+
+function TDelphiCompileTask.CreateResource: TResourceComponent;
+begin
+  Result := TResourceComponent.Create(Self);
+end;
+
+function TDelphiCompileTask.CreateInclude: TIncludeComponent;
+begin
+  Result := TIncludeComponent.Create(Self);
+end;
+
+procedure TDelphiCompileTask.SetExes(Value: string);
+begin
+  FExesPath := Value;
+end;
+
+{ TUnitComponent }
+
+procedure TUnitComponent.SetPath(Value: string);
+begin
+  (Owner as TDelphiCompileTask).FUnitPaths.Add(Value);
+end;
+
+{ TResourceComponent }
+
+procedure TResourceComponent.SetPath(Value: string);
+begin
+  (Owner as TDelphiCompileTask).FResourcePaths.Add(Value);
+end;
+
+{ TIncludeComponent }
+
+procedure TIncludeComponent.SetPath(Value: string);
+begin
+  (Owner as TDelphiCompileTask).FIncludePaths.Add(Value);
 end;
 
 initialization

@@ -35,6 +35,7 @@ unit FileSets;
 
 interface
 uses
+  DanteClasses,
   WildPaths,
   FileOps,
 
@@ -42,47 +43,64 @@ uses
   Classes;
 
 type
-  EFileSetException = class(Exception);
+  EFileSetException = class(EDanteException);
   EFileSetError     = class(EFileSetException);
 
-  TFileSet = class(TPersistent)
+  TFileSetPart = class(TDanteElement)
   protected
-    FRootPath: TPath;
-    FBasePath: TPath;
+    procedure SetValue(Value :string); virtual; abstract;
+  published
+    property name :string write SetValue;
+  end;
+
+  TIncludeComponent = class(TFileSetPart)
+    procedure SetValue(Value :string); override;
+  end;
+
+  TExcludeComponent = class(TFileSetPart)
+    procedure SetValue(Value :string); override;
+  end;
+
+  TFileSet = class(TDanteElement)
+  protected
+    FDir:      TPath;    // prefix for all wildcards
     FIncludes: TStrings;
     FExcludes: TStrings;
     FPaths:    TPaths;
 
-    procedure SetBasePath(Value :TPath);
+    FIncluder: TIncludeComponent;
+    FExcluder: TExcludeComponent;
+
+    procedure SetDir(Value :TPath);
 
     procedure SetChanged;
 
     procedure SetIncludes(Value :TStrings);
     procedure SetExcludes(Value :TStrings);
 
-    procedure DoInclude(Files :TStrings; Spec :TPath);
-    procedure DoExclude(Files :TStrings; Spec :TPath);
+    procedure DoInclude(Files :TStrings; Pattern :TPath);
+    procedure DoExclude(Files :TStrings; Pattern :TPath);
   public
-    constructor Create(RootPath :TPath; DefaultExcludes :boolean = true);
+    constructor Create(Owner :TDanteElement); override; 
     destructor  Destroy; override;
 
-    procedure Include(Spec :TPath);
-    procedure Exclude(Spec :TPath);
+    procedure Include(Pattern :TPath);
+    procedure Exclude(Pattern :TPath);
 
     function Paths   :TPaths;
     function SystemPaths :TPaths;
     function RelativePaths :TPaths;
+    function MovePaths(ToBase :TPath) :TPaths;
 
-    procedure DeleteFiles;
-    procedure CopyFiles(ToBase :TPath);
-    procedure MoveFiles(ToBase :TPath);
+    function  AbsoluteDir :TPath;
 
-    function  FullBasePath :TPath;
-    property  RootPath :TPath read FRootPath;
-  published
-    property BasePath: TPath read FBasePath write SetBasePath;
     property Includes: TStrings read FIncludes;
     property Excludes: TStrings read FExcludes;
+  published
+    function createInclude :TIncludeComponent;
+    function createExclude :TExcludeComponent;
+
+    property dir:      TPath read FDir write SetDir;
   end;
 
 
@@ -90,30 +108,11 @@ implementation
 
 { TFileSet }
 
-constructor TFileSet.Create(RootPath: TPath; DefaultExcludes: boolean);
+constructor TFileSet.Create(Owner :TDanteElement);
 begin
-  inherited Create;
-  if not PathIsAbsolute(RootPath) then
-    raise EFileSetError.Create(Format('Danger, Will Robinson! Root path %s is relative!', [RootPath]));
-  FRootPath := RootPath;
-
+  inherited Create(Owner);
   FIncludes := TStringList.Create;
   FExcludes := TStringList.Create;
-
-  if DefaultExcludes then
-  begin
-    // add the default Ant excludes
-    Exclude('**/*~');
-    Exclude('**/#*#');
-    Exclude('**/%*%');
-    Exclude('**/CVS');
-    Exclude('**/CVS/*');
-    Exclude('**/.cvsignore');
-
-    // Some additional excludes
-    Exclude('**/*.*~*');
-    Exclude('**/*.bak');
-  end;
 end;
 
 destructor TFileSet.Destroy;
@@ -139,29 +138,29 @@ begin
   FPaths := nil;
 end;
 
-procedure TFileSet.Include(Spec: TPath);
+procedure TFileSet.Include(Pattern: TPath);
 begin
-  FIncludes.Add(Spec);
+  FIncludes.Add(WildPaths.ToRelativePath(Pattern, Dir));
   SetChanged;
 end;
 
-procedure TFileSet.Exclude(Spec: TPath);
+procedure TFileSet.Exclude(Pattern: TPath);
 begin
-  FExcludes.Add(Spec);
+  FExcludes.Add(WildPaths.ToRelativePath(Pattern, Dir));
   SetChanged;
 end;
 
-procedure TFileSet.DoInclude(Files: TStrings; Spec: TPath);
+procedure TFileSet.DoInclude(Files: TStrings; Pattern: TPath);
 begin
-  Wild(Files, Spec, FullBasePath);
+  Wild(Files, Pattern, AbsoluteDir);
 end;
 
-procedure TFileSet.DoExclude(Files :TStrings; Spec: TPath);
+procedure TFileSet.DoExclude(Files :TStrings; Pattern: TPath);
 var
   Excluded :TPaths;
   f        :Integer;
 begin
-  Excluded := SplitPath(PathConcat(FullBasePath, Spec));
+  Excluded := SplitPath(PathConcat(AbsoluteDir, Pattern));
   for f := Files.Count-1 downto 0 do
     if IsMatch(SplitPath(Files[f]), Excluded) then
       Files.Delete(f);
@@ -174,7 +173,12 @@ end;
 
 function TFileSet.RelativePaths: TPaths;
 begin
-  Result := AbsoluteToRelativePaths(Paths, FullBasePath);
+  Result := ToRelativePaths(Paths, AbsoluteDir);
+end;
+
+function TFileSet.MovePaths(ToBase: TPath): TPaths;
+begin
+  Result := WildPaths.MovePaths(Paths, AbsoluteDir, ToBase);
 end;
 
 function TFileSet.Paths: TPaths;
@@ -199,39 +203,43 @@ begin
   Result := FPaths;
 end;
 
-procedure TFileSet.DeleteFiles;
+function TFileSet.AbsoluteDir: TPath;
 begin
-  FileOps.DeleteFiles(Paths);
+  Result := PathConcat(BasePath, dir);
 end;
 
-procedure TFileSet.CopyFiles(ToBase: TPath);
+procedure TFileSet.SetDir(Value: TPath);
 begin
-  FileOps.CopyFiles(Paths, FullBasePath, ToBase);
-end;
-
-procedure TFileSet.MoveFiles(ToBase: TPath);
-begin
-  FileOps.MoveFiles(Paths, FullBasePath, ToBase);
-end;
-
-function TFileSet.FullBasePath: TPath;
-begin
-  Result := PathConcat(FRootPath, FBasePath);
-end;
-
-procedure TFileSet.SetBasePath(Value: TPath);
-begin
-  if not PathIsAbsolute(Value) then
-    FBasePath := Value
-  else
-  begin
-    raise EFileSetError.Create(Format('Danger, Will Robinson! Base path %s is relative!', [RootPath]));
-    (*
-    FRootPath := Value;
-    FBasePath := '';
-    *)
-  end;
+  FDir := ToRelativePath(Value);
   SetChanged;
+end;
+
+function TFileSet.createInclude: TIncludeComponent;
+begin
+  if FIncluder = nil then
+    FIncluder := TIncludeComponent.Create(Self);
+  Result := FIncluder;
+end;
+
+function TFileSet.createExclude: TExcludeComponent;
+begin
+  if FExcluder = nil then
+    FExcluder := TExcludeComponent.Create(Self);
+  Result := FExcluder;
+end;
+
+{ TIncludeComponent }
+
+procedure TIncludeComponent.SetValue(Value: string);
+begin
+ (Owner as TFileSet).Include(Value);
+end;
+
+{ TExcludeComponent }
+
+procedure TExcludeComponent.SetValue(Value: string);
+begin
+ (Owner as TFileSet).Exclude(Value);
 end;
 
 end.

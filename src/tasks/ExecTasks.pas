@@ -44,6 +44,7 @@ uses
   JclSysInfo,
   JclSecurity,
 
+  Math,
   Windows,
   SysUtils,
   Classes;
@@ -59,7 +60,9 @@ type
     FArguments : TStrings;
     FSkipLines : Integer;
 
-    function BuildCmdLine: string; virtual;
+    function BuildExecutable :string; virtual;
+    function BuildArguments  :string; virtual;
+    function BuildCmdLine    :string; virtual;
 
     function  GetArguments :string;
     procedure SetArguments(Value :string);
@@ -68,9 +71,8 @@ type
     procedure Run(CmdLine: string);
     procedure HandleOutput(Child :TChildProcess);
   public
-    constructor Create(Owner: TComponent); override;
+    constructor Create(Owner: TDanteElement);  override; 
     destructor Destroy; override;
-    class function XMLTag :string; override;
 
     procedure Execute; override;
   protected
@@ -83,7 +85,7 @@ type
 
   TExecTask = class(TCustomExecTask)
   public
-    class function XMLTag :string; override;
+    procedure Execute; override;
   published
     property Arguments;
     property ArgumentList stored False;
@@ -93,20 +95,20 @@ type
   end;
 
   // this class will pass commands through the command processor
-  TShellExecTask = class(TExecTask)
+  TShellTask = class(TExecTask)
   protected
-    function BuildCmdLine: string; override;
-  public
-    class function XMLTag :string; override;
+    function BuildExecutable :string; override;
   end;
 
   TChildProcess = class
   protected
-    function  Launch(const CmdLine: string; hInput, hOutput, hError: THandle): THandle;
-  public
     hChild,
     hOutputRead :THandle;
     FExitCode   :Cardinal;
+    FLine       :String;
+
+    function  Launch(const CmdLine: string; hInput, hOutput, hError: THandle): THandle;
+    function  __Read(Count :Integer = 80)   :string;
   public
     destructor Destroy; override;
 
@@ -114,54 +116,57 @@ type
 
     function ExitCode :Cardinal;
 
-    function Read :string;
+    function EOF  :boolean;
+    function Read(Count :Integer = 80)   :string;
+    function ReadLn :string;
   end;
 
 
 implementation
 
-procedure SystemError(Msg :string = '');
-begin
-  raise ETaskError.Create(SysErrorMessage(GetLastError) + Msg)
-end;
-
 { TExecTask }
 
-class function TExecTask.XMLTag: string;
+procedure TExecTask.Execute;
 begin
-  result := 'exec';
+  Log(Executable);
+  Log(vlVerbose, BuildArguments);
+  inherited Execute;
 end;
 
+{ TShellTask }
 
-{ TShellExecTask }
-
-function TShellExecTask.BuildCmdLine: string;
+function TShellTask.BuildExecutable: string;
 begin
-  Result := inherited BuildCmdLine;
+  Result := inherited BuildExecutable;
   if IsWinNT then
     Result := 'cmd.exe /c ' + Result
   else
     Result := 'command.com /c ' + Result;
 end;
 
-class function TShellExecTask.XMLTag: string;
-begin
-  Result := 'shell';
-end;
-
 { TCustomExecTask }
 
+function TCustomExecTask.BuildExecutable: string;
+begin
+  Result := Executable;
+end;
+
 function TCustomExecTask.BuildCmdLine: string;
+begin
+  Result := BuildExecutable + BuildArguments;
+end;
+
+function TCustomExecTask.BuildArguments: string;
 var
   i: Integer;
 begin
-  Result := Executable;
+  Result := '';
   { Arguments.CommaText screws with the contents. See unit test }
   for i := 0 to ArgumentList.Count - 1 do
     Result := Result + ' ' + ArgumentList[i];
 end;
 
-constructor TCustomExecTask.Create(Owner: TComponent);
+constructor TCustomExecTask.Create(Owner: TDanteElement);
 begin
   inherited Create(Owner);
   FArguments := TStringList.Create;
@@ -178,7 +183,7 @@ var
   CmdLine :string;
 begin
   CmdLine := BuildCmdLine;
-  Log(CmdLine, vlVerbose);
+  Log(vlDebug, CmdLine);
   Run(CmdLine);
 end;
 
@@ -196,11 +201,6 @@ end;
 procedure TCustomExecTask.SetArgumentList(Value: TStrings);
 begin
   FArguments.Assign(Value);
-end;
-
-class function TCustomExecTask.XMLTag: string;
-begin
-  result := 'custom_exec';
 end;
 
 procedure TCustomExecTask.Run(CmdLine :string);
@@ -224,33 +224,16 @@ const
   TimeOutMillis = 100;
 var
   Line          :String;
-  Buffer        :string;
-  p             :Integer;
   LineNo        :Integer;
 begin
   LineNo := 0;
-  Line   := '';
-  Buffer := Child.Read;
-  while Buffer <> '' do
+  while not Child.EOF do
   begin
-    for p := 1 to Length(Buffer) do
-    begin
-      if not (Buffer[p] in [#10, #13])  then
-        Line := Line + Buffer[p]
-      else begin
-        Inc(LineNo);
-        if LineNo > SkipLines then
-          if Buffer[p] = #13 then
-            Log(Line + #13)
-          else
-            Log(Line);
-        Line := '';
-      end;
-    end;
-    Buffer := Child.Read;
+    Line := Child.ReadLn;
+    Inc(LineNo);
+    if LineNo > SkipLines then
+      Log(LIne);
   end;
-  if (Line <> '') and (LineNo >= SkipLines) then
-    Log(Line);
 end;
 
 { TChildProcess }
@@ -259,19 +242,24 @@ destructor TChildProcess.Destroy;
 begin
   if (hOutputRead <> 0)
   and not CloseHandle(hOutputRead) then
-    SystemError('CloseHandle');
+    RaiseLastSystemError('CloseHandle');
   if (hChild <> 0) and not CloseHandle(hChild) then
-    SystemError('CloseHandle');
+    RaiseLastSystemError('CloseHandle');
   inherited Destroy;
 end;
 
+
+function TChildProcess.EOF: boolean;
+begin
+  Result := (hOutputRead = 0);
+end;
 
 function TChildProcess.ExitCode: Cardinal;
 begin
   if WaitForSingleObject(hChild, INFINITE) = WAIT_OBJECT_0 then
   begin
     if not GetExitCodeProcess(hChild, Result) then
-      SystemError
+      RaiseLastSystemError
   end;
 end;
 
@@ -295,7 +283,7 @@ begin
     NORMAL_PRIORITY_CLASS, nil, nil, StartupInfo,
     ProcessInfo);
   if not Success then
-    SystemError
+    RaiseLastSystemError
   else begin
     WaitForInputIdle(ProcessInfo.hProcess, INFINITE);
     CloseHandle(ProcessInfo.hThread);
@@ -303,24 +291,64 @@ begin
   end
 end;
 
-function TChildProcess.Read: string;
+function TChildProcess.Read(Count :Integer): string;
+begin
+  if FLine <> '' then
+  begin
+    Result := FLine;
+    FLIne  := '';
+  end
+  else
+    Result := __Read(Count);
+end;
+
+function TChildProcess.__Read(Count: Integer): string;
 var
   BytesRead     :DWORD;
 begin
   repeat
-    SetLength(Result, 80);
+    SetLength(Result, Max(Count, 1));
     if not ReadFile(hOutputRead, Result[1], Length(Result), BytesRead, nil)
     or (BytesRead = 0) then
     begin
-      if GetLastError = ERROR_BROKEN_PIPE then
+      if GetLastError <> ERROR_BROKEN_PIPE then
+         RaiseLastSystemError('ReadFile') // Something bad happened.
+      else begin
+         CloseHandle(hOutputRead);
+         hOutputRead := 0;
          break // pipe done - normal exit path.
-      else
-         SystemError('ReadFile'); // Something bad happened.
+      end
     end
   until BytesRead > 0;
   SetLength(Result, BytesRead);
 end;
 
+
+function TChildProcess.ReadLn: string;
+var
+  c             :Char;
+  p             :Integer;
+begin
+  Result := '';
+  p := 0;
+  while not EOF do
+  begin
+    FLine := FLine + __Read;
+    while p < Length(FLine) do
+    begin
+      Inc(p);
+      c := FLine[p];
+      if c in [#10,#13] then
+      begin
+        Result := Copy(FLine, 1, p-1);
+        if (c = #13) and (p < Length(FLine)) and (FLine[p+1] = #10) then
+          Inc(p);
+        Delete(FLine, 1, p);
+        Exit;
+      end;
+    end;
+  end;
+end;
 
 procedure TChildProcess.Run(CmdLine: string);
 var
@@ -339,13 +367,13 @@ begin
 
   // Create the child output pipe.
   if not CreatePipe(hOutputReadTmp, hOutputWrite, @sa, 0) then
-     SystemError('CreatePipe');
+     RaiseLastSystemError('CreatePipe');
 
   // Create child input handle
   if not DuplicateHandle(hCurrentProcess, GetStdHandle(STD_INPUT_HANDLE),
                          hCurrentProcess, @hInputRead,0,
                        TRUE,DUPLICATE_SAME_ACCESS) then
-     SystemError('DuplicateHandle');
+     RaiseLastSystemError('DuplicateHandle');
 
   // Create a duplicate of the output write handle for the std error
   // write handle. This is necessary in case the child application
@@ -353,7 +381,7 @@ begin
   if not DuplicateHandle(hCurrentProcess,hOutputWrite,
                        hCurrentProcess,  @hErrorWrite,0,
                        TRUE,DUPLICATE_SAME_ACCESS) then
-     SystemError('DuplicateHandle');
+     RaiseLastSystemError('DuplicateHandle');
 
 
   // Create new output read handle. Set
@@ -365,12 +393,12 @@ begin
                        @hOutputRead, // Address of new handle.
                        0,FALSE, // Make it uninheritable.
                        DUPLICATE_SAME_ACCESS) then
-     SystemError('DupliateHandle');
+     RaiseLastSystemError('DupliateHandle');
 
 
   // Close inheritable copies of the handles you do not want to be
   // inherited.
-  if not CloseHandle(hOutputReadTmp) then SystemError('CloseHandle');
+  if not CloseHandle(hOutputReadTmp) then RaiseLastSystemError('CloseHandle');
 
   hChild := Launch(CmdLine, hInputRead, hOutputWrite, hErrorWrite);
 
@@ -379,13 +407,13 @@ begin
   // You need to make sure that no handles to the write end of the
   // output pipe are maintained in this process or else the pipe will
   // not close when the child process exits and the ReadFile will hang.
-  if not CloseHandle(hOutputWrite) then SystemError('CloseHandle');
-  if not CloseHandle(hInputRead )  then SystemError('CloseHandle');
-  if not CloseHandle(hErrorWrite)  then SystemError('CloseHandle');
+  if not CloseHandle(hOutputWrite) then RaiseLastSystemError('CloseHandle');
+  if not CloseHandle(hInputRead )  then RaiseLastSystemError('CloseHandle');
+  if not CloseHandle(hErrorWrite)  then RaiseLastSystemError('CloseHandle');
 end;
 
 
 initialization
-  RegisterTasks([TCustomExecTask, TExecTask, TShellExecTask]);
+  RegisterTasks([TCustomExecTask, TExecTask, TShellTask]);
 end.
 

@@ -83,13 +83,13 @@ function SplitPath(Path :TPath) :TPaths;
 
 function  MovePath(Path :TPath; FromBase :TPath; ToBase :TPath = '') :TPath;
 function  MovePaths(Paths :TPaths; FromBase :TPath; ToBase :TPath = '') :TPaths;
-function  AbsoluteToRelativePath(Path, BasePath :TPath):TPath;
-function  AbsoluteToRelativePaths(Paths :TPaths; BasePath :TPath):TPaths;
+function  ToRelativePath(Path, BasePath :TPath):TPath;
+function  ToRelativePaths(Paths :TPaths; BasePath :TPath):TPaths;
 function  PathIsAbsolute(Path :TPath) :boolean;
 procedure ForceRelativePath(var Path, BasePath :TPath);
 
 // use JCL for this
-function FindPaths(Path: TPath; BasePath: string;
+function FindPaths(Path: TPath; BasePath: string = '';
                    IncludeAttr :Integer = faAnyFile;
                    ExcludeAttr :Integer = 0): TPaths;
 function FindFiles(Path: TPath; BasePath: string = ''): TPaths;
@@ -102,6 +102,7 @@ procedure Wild(Files :TStrings; Pattern :TPath; BasePath :string = ''); overload
 function IsMatch(Path, Pattern :TPath):boolean; overload;
 function IsMatch(Paths :TPaths; Patterns :TPatterns; p :Integer = 0; s :Integer = 0):boolean; overload;
 
+function  PathExists(Path :TPath):boolean;
 function  IsDir(Path :TPath):boolean;
 function  IsFile(Path :TPath):boolean;
 function  SuperPath(Path :TPath) :TPath;
@@ -114,16 +115,32 @@ procedure Wild(Files :TStrings; Patterns :TPatterns; BasePath: TPath = ''; Index
 
 
 function PathConcat(P1, P2 :TPath) :TPath;
+var
+  Parts :TPaths;
+  i     :Integer;
 begin
+   Parts := nil;
    if (Length(P1) = 0)
+   or (P1 = '.')
    or PathIsAbsolute(P2) then
      Result := P2
    else if Length(P2) = 0 then
      Result := P1
-   else if P1[Length(P1)] = '/' then
-     Result := P1 + P2
-   else
-     Result := P1 + '/' + P2;
+   else begin
+      if P1[Length(P1)] = '/' then
+        Delete(P1, Length(P1), 1);
+      Result := P1;
+      Parts := SplitPath(P2);
+      for i := Low(Parts) to High(Parts) do
+      begin
+        if Parts[i] = '..' then
+          Result := SuperPath(Result)
+        else if Parts[i] = '.' then
+          // do nothing
+        else
+          Result := Result + '/' + Parts[i];
+      end;
+   end;
 end;
 
 function ToPath(SystemPath: string; BasePath :string): TPath;
@@ -262,12 +279,17 @@ begin
      Result[i] := MovePath(Paths[i], FromBase, ToBase);
 end;
 
-function  AbsoluteToRelativePath(Path, BasePath :TPath):TPath;
+function  ToRelativePath(Path, BasePath :TPath):TPath;
 begin
-  Result := MovePath(Path, BasePath, '');
+  if not PathIsAbsolute(Path) then
+    Result := Path
+  else
+    Result := MovePath(Path, BasePath, '');
+  if Result = '' then
+    Result := '.';
 end;
 
-function  AbsoluteToRelativePaths(Paths :TPaths; BasePath :TPath):TPaths;
+function  ToRelativePaths(Paths :TPaths; BasePath :TPath):TPaths;
 begin
   Result := MovePaths(Paths, BasePath, '');
 end;
@@ -276,6 +298,7 @@ function  PathIsAbsolute(Path :TPath) :boolean;
 begin
    Result :=    (Length(Path) > 0) and (Path[1] = '/')
              or (Length(Path) >= 3) and (Path[2] = ':') and (Path[3] = '/')
+             and (Path[1] <> '.')
 end;
 
 procedure ForceRelativePath(var Path, BasePath :TPath);
@@ -284,6 +307,7 @@ var
 begin
   if PathIsAbsolute(Path) then
   begin
+    BasePath := '';
     p := Pos('/', Path);
     BasePath := BasePath + Copy(Path, 1, p);
     Delete(Path, 1, p);
@@ -404,6 +428,11 @@ end;
 function IsMatch(Path, Pattern :TPath):boolean;
 begin
   Result := IsMatch(SplitPath(Path), SplitPath(Pattern));
+end;
+
+function  PathExists(Path :TPath):boolean;
+begin
+  Result := Length(FindPaths(Path)) >= 1;
 end;
 
 function  IsDir(Path :TPath):boolean;

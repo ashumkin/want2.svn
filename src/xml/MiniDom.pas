@@ -44,13 +44,18 @@ const
   rcs_id :string = '@(#)$Id$';
 
 type
-  IAttribute = interface(IObject)
+  IMiniDomObject = interface(IObject)
+  ['{C13B66E0-2263-11D5-8DC7-B0FF333FE70A}']
+    function LineNo :Integer;
+  end;
+
+  IAttribute = interface(IMiniDomObject)
   ['{CD2605D8-4108-4372-B28E-8EED1C09A42C}']
     function name  :string;
     function value :string;
   end;
 
-  INode = interface(IObject)
+  INode = interface(IMiniDomObject)
   ['{C646E358-DE27-4BB5-8897-DC8F6B3E1413}']
     function toPrefixedString(prefix :string):string;
   end;
@@ -75,30 +80,38 @@ type
   IDocument = interface(INode)
   ['{1539F033-50A0-4F82-B8E9-E9D6B7A71291}']
 
-    function newElement(name :string; attributes :IMap = nil)  :IElement;
-    function newTextNode(text :string) :ITextNode;
-    function newAttribute(name, value :string) :IAttribute;
+    function newElement(name :string; LineNo :Integer = -1; attributes :IMap = nil)  :IElement;
+    function newTextNode(text :string; LineNo :Integer = -1) :ITextNode;
+    function newAttribute(name, value :string; LineNo :Integer = -1) :IAttribute;
     function root :IElement;
-    function newRoot(name :string; attributes :IMap) :IElement;
+    function newRoot(name :string; LineNo :Integer; attributes :IMap = nil) :IElement;
   end;
 
+  TMiniDomObject = class(TAbstractObject, IMiniDomObject)
+  protected
+    _lineNo :Integer;
+  public
+    constructor Create(LineNo :Integer);
 
-  TAttribute = class(TAbstractObject, IAttribute)
+    function LineNo :Integer; 
+  end;
+
+  TAttribute = class(TMiniDomObject, IAttribute)
   protected
     _name  :string;
     _value :string;
   public
-    constructor create(name, value :string);
+    constructor create(name, value :string; LineNo :Integer);
     function name  :string;  virtual;
     function value :string;  virtual;
 
     function toString :string; override;
   end;
 
-  TNode = class(TAbstractObject, INode)
+  TNode = class(TMiniDomObject, INode)
   protected
   public
-    constructor create;
+    constructor Create(LineNo :Integer);
     function toPrefixedString(prefix :string):string; virtual;
   end;
 
@@ -106,7 +119,7 @@ type
   protected
     _text :string;
   public
-    constructor create(value :string);
+    constructor create(value :string; LineNo :Integer);
     function text :string;
 
     function toString :string; override;
@@ -118,7 +131,7 @@ type
     _children   :IList;
     _attributes :IMap;
   public
-    constructor create(name :string; attributes :IMap = nil);
+    constructor create(name :string; LineNo :Integer = -1; attributes :IMap = nil);
     function name :string;                   virtual;
     function children :IList;                overload; virtual;
     function children(name :string) :IList;  overload; virtual;
@@ -137,11 +150,12 @@ type
   TDocument = class(TNode, IDocument)
     _root :IElement;
   public
-    function newElement(name :string; attributes :IMap)  :IElement;   virtual;
-    function newTextNode(text :string) :ITextNode;                     virtual;
-    function newAttribute(name, value :string) :IAttribute;            virtual;
-    function root :IElement;                                           virtual;
-    function newRoot(name :string; attributes :IMap) :IElement;       virtual;
+    constructor Create;
+    function newElement(name :string; LineNo :Integer; attributes :IMap)  :IElement;    virtual;
+    function newTextNode(text :string; LineNo :Integer) :ITextNode;                     virtual;
+    function newAttribute(name, value :string; LineNo :Integer) :IAttribute;            virtual;
+    function root :IElement;                                                            virtual;
+    function newRoot(name :string; LineNo :Integer; attributes :IMap) :IElement;        virtual;
 
     function toString :string; override;
   end;
@@ -169,6 +183,8 @@ type
     override;
     procedure fatalError (exception :SAXParseException);
     override;
+
+    function LineNo :Integer;
   protected
     _dom        :IDocument;
     _nodes      :IStack;
@@ -185,11 +201,23 @@ implementation
 uses
   XMLParser;
 
+{ TMiniDomObject }
+
+constructor TMiniDomObject.Create(LineNo: Integer);
+begin
+  inherited Create;
+  _lineNo := LineNO;  
+end;
+function TMiniDomObject.LineNo: Integer;
+begin
+  Result := _LineNo;
+end;
+
 { TNode }
 
-constructor TNode.create;
+constructor TNode.create(LineNo :Integer);
 begin
-  inherited create;
+  inherited create(LineNo);
 end;
 
 function TNode.toPrefixedString(prefix: string): string;
@@ -199,9 +227,9 @@ end;
 
 { TTextNode }
 
-constructor TTextNode.create(value: string);
+constructor TTextNode.create(value: string; LineNo :Integer);
 begin
-  inherited create;
+  inherited create(LineNo);
   _text := value;
 end;
 
@@ -217,9 +245,9 @@ end;
 
 { TElement }
 
-constructor TElement.create(name :string; attributes :IMap);
+constructor TElement.create(name :string; LineNo :Integer; attributes :IMap);
 begin
-  inherited create;
+  inherited create(LineNo);
   self._name  := name;
   if attributes <> nil then
     _attributes := attributes
@@ -287,7 +315,7 @@ end;
 
 function TElement.setAttribute(Name, Value: string): IAttribute;
 begin
-  Result := TAttribute.Create(Name, Value);
+  Result := TAttribute.Create(Name, Value, -1);
   _attributes.put(iref(Name), Result);
 end;
 
@@ -321,15 +349,15 @@ end;
 
 { TDocument }
 
-function TDocument.newElement(name: string; attributes :IMap): IElement;
+function TDocument.newElement(name: string; LineNo :Integer; attributes :IMap): IElement;
 begin
-  result := TElement.create(name, attributes);
+  result := TElement.create(name, LineNo, attributes);
 end;
 
-function TDocument.newRoot(name: string; attributes :IMap): IElement;
+function TDocument.newRoot(name: string; LineNo :Integer; attributes :IMap): IElement;
 begin
   assert(_root = nil);
-  _root := newElement(name, attributes);
+  _root := newElement(name, LineNo, attributes);
   result := _root;
 end;
 
@@ -338,19 +366,24 @@ begin
   result := _root;
 end;
 
-function TDocument.newTextNode(text: string): ITextNode;
+function TDocument.newTextNode(text: string; LineNo :Integer): ITextNode;
 begin
-  result := TTextNode.create(text);
+  result := TTextNode.create(text, LineNo);
 end;
 
-function TDocument.newAttribute(name, value: string): IAttribute;
+function TDocument.newAttribute(name, value: string; LineNo :Integer): IAttribute;
 begin
-  result := TAttribute.create(name, value);
+  result := TAttribute.create(name, value, LineNo);
 end;
 
 function TDocument.toString: string;
 begin
   Result := Root.toString;
+end;
+
+constructor TDocument.Create;
+begin
+  inherited Create(0);
 end;
 
 { TSAXtoDOMHandler }
@@ -370,11 +403,16 @@ var
 begin
   amap := TTreeMap.create;
   for i := 0 to atts.getLength-1 do
-    amap.put(iref(atts.getName(i)), _dom.newAttribute(atts.getName(i), atts.getValue(i) ));
+    amap.put( iref(atts.getName(i)),
+              _dom.newAttribute( atts.getName(i),
+                                 atts.getValue(i),
+                                 LineNo
+                                 )
+              );
   if _nodes.isEmpty then
-    n := _dom.newRoot(name, amap)
+    n := _dom.newRoot(name, LineNo, amap )
   else
-    n := (_nodes.top as IElement).add(_dom.newElement(name, amap));
+    n := (_nodes.top as IElement).add(_dom.newElement(name, LineNo, amap));
   _nodes.push(n);
 end;
 
@@ -385,7 +423,7 @@ end;
 
 procedure TSAXtoDOMHandler.characters(ch: WideString; start, length: Integer);
 begin
-  (_nodes.top as IElement).add(_dom.newTextNode(copy(ch, start, length)));
+  (_nodes.top as IElement).add(_dom.newTextNode(copy(ch, start, length), LineNo));
 end;
 
 procedure TSAXtoDOMHandler.error(exception: SAXParseException);
@@ -421,11 +459,16 @@ procedure TSAXtoDOMHandler.startDocument;
 begin
 end;
 
+function TSAXtoDOMHandler.LineNo: Integer;
+begin
+  Result := 1+_locator.getLineNumber;
+end;
+
 { TAttribute }
 
-constructor TAttribute.create(name, value: string);
+constructor TAttribute.create(name, value: string; LineNo :Integer);
 begin
-  inherited create;
+  inherited create(LineNo);
   _name  := name;
   _value := value;
 end;
@@ -499,6 +542,7 @@ begin
     s.free;
   end;
 end;
+
 
 
 end.

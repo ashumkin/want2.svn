@@ -2204,11 +2204,11 @@ constructor SAXParseException.Create(message: WideString; locator: TLocator);
 begin
     self.lineNumber_   := locator.getLineNumber;
     self.columnNumber_ := locator.getColumnNumber;
-    inherited Create(format('%s[%d:%d]: %s', [locator.getSystemId,
-                                             locator.getLineNumber,
-                                             locator.getColumnNumber,
-                                              message]
-                                              ));
+    inherited Create(format('%s(%d:%d): %s', [locator.getSystemId,
+                                              1+locator.getLineNumber,
+                                              locator.getColumnNumber,
+                                              message
+                                              ]));
 end;
 
 constructor SAXParseException.Create(message, publicId,

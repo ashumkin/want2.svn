@@ -35,10 +35,16 @@ unit FileOps;
 
 interface
 uses
-  WildPaths,
-
+  Windows,
   SysUtils,
-  Math;
+  Math,
+
+  JclBase,
+
+  WildPaths;
+
+type
+  EFileOpException = class(Exception);
 
 procedure MakeDir(Path :TPath);
 procedure ChangeDir(Path :TPath);
@@ -69,7 +75,7 @@ begin
   and not IsDir(Path) then
   begin
     MakeDir(SuperPath(Path));
-    writeln('mkdir ',ToSystemPath(Path));
+    SysUtils.CreateDir(ToSystemPath(Path));
   end;
 end;
 
@@ -81,7 +87,11 @@ end;
 procedure CopyFile(Src, Dst :TPath);
 begin
    MakeDir(SuperPath(Dst));
-   writeln('copy ',ToSystemPath(Src), '->', ToSystemPath(Dst));
+   if not Windows.CopyFile( PChar(ToSystemPath(Src)),
+                            PChar(ToSystemPath(Dst)),
+                            False)
+   then
+     raise EFileOpException.Create(SysErrorMessage(GetLastError));
 end;
 
 procedure CopyFiles(Pattern :TPattern; FromPath, ToPath :TPath);
@@ -133,9 +143,9 @@ end;
 procedure DeleteFile(Path :TPath);
 begin
   if not IsDir(Path) then
-    writeln('del ' + ToSystemPath(Path))
+    SysUtils.DeleteFile(ToSystemPath(Path))
   else
-    writeln('rmdir ' + ToSystemPath(Path));
+    SysUtils.RemoveDir(ToSystemPath(Path));
 end;
 
 procedure DeleteFiles(Pattern :TPath; BasePath :TPath);
@@ -157,7 +167,7 @@ end;
 
 procedure TouchFile(Path :TPath; When :string);
 begin
-  //!!! StrToDateTime changes with Local and platform!!
+  //!!! StrToDateTime changes with locale and platform!!
   TouchFile(Path, StrToDateTime(When));
 end;
 
@@ -166,19 +176,20 @@ procedure TouchFile(Path :TPath; When :TDateTime);
 var
   Handle :Integer;
 begin
+   if When = 0 then
+     When := Now;
+
+   MakeDir(SuperPath(Path));
+   
    Handle := FileOpen(ToSystemPath(Path), fmOpenWrite or fmShareDenyNone);
    if Handle < 0 then
      Handle := FileCreate(ToSystemPath(Path));
    try
-     if When <> 0 then
-       FileSetDate(Handle, DateTimeToFileDate(When))
-     else
-       FileSetDate(Handle, DateTimeToFileDate(Now))
+     FileSetDate(Handle, DateTimeToFileDate(When))
    finally
      FileClose(Handle);
    end;
 end;
-
 
 
 end.

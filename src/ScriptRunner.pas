@@ -35,31 +35,61 @@ unit DanteMain;
 
 interface
 
-uses Windows, SysUtils, JclMiscel, DanteClasses;
+uses
+  Windows,
+  SysUtils,
+
+  JclMiscel,
+  JclStrings,
+
+  DanteClasses;
+
 
 type
   TDante = class(TObject)
   protected
     function RunConsole(CmdLine: string): boolean;
   public
-    procedure DoBuild(ABuildFileName: string);
+    procedure DoBuild( ABuildFileName: string;
+                       Verbosity: TVerbosityLevel = vlNormal); overload;
+    procedure DoBuild( ABuildFileName: string;
+                       Targets:        string;
+                       Verbosity:      TVerbosityLevel = vlNormal); overload;
   end;
 
 implementation
 
 { TDante }
 
-procedure TDante.DoBuild(ABuildFileName: string);
+procedure TDante.DoBuild( ABuildFileName: string;
+                          Targets:        string;
+                          Verbosity:      TVerbosityLevel = vlNormal);
 var
   Project: TProject;
+  T:       string;
 begin
   Project := TProject.Create(nil);
   try
     Project.LoadXML(ABuildFileName);
-    Project.Build;
+    Project.Verbosity := Verbosity;
+    if Targets = '' then
+      Project.Build
+    else begin
+      T := StrToken(Targets, ',');
+      while T <> '' do
+      begin
+        Project.Build(T);
+        T := StrToken(Targets, ',');
+      end;
+    end;
   finally
     Project.Free;
   end;
+end;
+
+procedure TDante.DoBuild(ABuildFileName: string; Verbosity: TVerbosityLevel);
+begin
+  DoBuild(ABuildFileName, '', Verbosity);
 end;
 
 function TDante.RunConsole(CmdLine: string): boolean;

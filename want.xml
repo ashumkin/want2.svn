@@ -4,32 +4,72 @@
          basedir=".."
          default="dist" >
 
-  <target name="clean" >
-    <delete dir=".\dist" />
+  <echo message="${basedir}" />
+  <echo message="The base directory is ${basedir}." />
+
+  <property name="src"  value="${basedir}/src" />
+  <property name="dist" value="${basedir}/dist" />
+  <property name="res"  value="${basedir}/res" />
+
+  <property name="bin" value="${basedir}/bin" />
+  <property name="dcu" value="${basedir}/dcu" />
+
+  <property name="jcl" value="${src}/jcl" />
+
+  <echo message="The source directory is ${src}." />
+  <echo message="The default command processor is %{comspec}." />
+
+  <target name="prepare" >
+    <mkdir dir="${dist}" />
+    <log file="test.log" >
+      <info code="66">
+        Logger task test
+      </info>
+    </log>
   </target>
 
-  <target name="prepare" depends="clean" >
+  <target name="clean" >
+    <delete dir="${dist}" />
+    <!--
+    <delete dir="${dcu}" />
+    <delete dir="${bin}" />
+    -->
   </target>
 
   <target name="compile" depends="prepare" >
-    <dcc source="./src/dante.dpr"
-      exes="."
-      dcus="./dcu"
-      quiet="true"
-      build="true"
+    <!-- Delete dante.cfg first to get a reproducible build.
+         (Should this be automated?)
+    -->
+    <touch  file="${src}/dante.cfg"  />
+    <delete file="${src}/dante.cfg" />
+    <dcc source="${src}/dante.dpr"
+         exes="${basedir}"
+         dcus="${dcu}"
+         quiet="true"
+         build="true"
+         optimize="true"
     >
-      <unit path="./src" />
-      <unit path="./src/tasks" />
-      <unit path="./src/jcl" />
-      <unit path="./src/xml" />
-      <unit path="./src/paths" />
+      <unit path="${jcl}" />
+      <unit path="${src}" />
+      <unit path="${src}/tasks" />
+      <unit path="${src}/xml" />
+      <unit path="${src}/paths" />
+
+      <include path="${jcl}" />
+      
+      <resource path="${src}" />
+      <resource path="${res}" />
     </dcc>
   </target>
 
-  <target name="dist" depends="compile" >
-    <shell executable="mkdir" arguments=".\dist" />
-    <shell executable="copy"  arguments=".\src\dante.exe .\dist\dante.exe"  />
+  <target name="dist" depends="prepare,compile" >
+    <mkdir dir="${dist}" />
+    <copy todir="${dist}" >
+      <include name="**/*.html" />
+      <include name="**/*.exe"  />
+      <exclude name="**/*Test*" />
+   </copy>
     <exec executable=".\make\zip.exe" arguments="-m .\make\dante.zip .\dist\dante.exe" />
   </target>
-
+  
 </project>
