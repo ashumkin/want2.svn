@@ -35,6 +35,8 @@ type
     FFileSets: array of TFileSet;
     FDefaultExcludes: boolean;
 
+    function  MyFileSet :TFileSet;
+
     procedure AddDefaultPatterns; virtual;
 
     procedure AddCommaSeparatedIncludes(Value: string);
@@ -129,17 +131,17 @@ constructor TFileSetTask.Create(Owner: TScriptElement);
 begin
   inherited Create(Owner);
   DefaultExcludes := True;
-  CreateFileSet;
+  SetLength(FFileSets, 1);
 end;
 
 function TFileSetTask.CreateInclude: TIncludeElement;
 begin
-  Result := FFileSets[0].CreateInclude;
+  Result := MyFileSet.CreateInclude;
 end;
 
 function TFileSetTask.CreateExclude: TExcludeElement;
 begin
-  Result := FFileSets[0].CreateExclude;
+  Result := MyFileSet.CreateExclude;
 end;
 
 procedure TFileSetTask.AddDefaultPatterns;
@@ -149,7 +151,8 @@ begin
   if DefaultExcludes then
   begin
     for i := Low(FFileSets) to High(FFileSets) do
-      FFileSets[i].AddDefaultPatterns;
+      if FFileSets[i] <> nil then
+        FFileSets[i].AddDefaultPatterns;
   end;
 end;
 
@@ -160,7 +163,7 @@ var
 begin
   Paths := StringToArray(Value);
   for p := Low(Paths) to High(Paths) do
-    FFileSets[0].Include(Paths[p]);
+    MyFileSet.Include(Paths[p]);
 end;
 
 procedure TFileSetTask.AddCommaSeparatedExcludes(Value: string);
@@ -170,7 +173,7 @@ var
 begin
   Paths := StringToArray(Value);
   for p := Low(Paths) to High(Paths) do
-    FFileSets[0].Exclude(Paths[p]);
+    MyFileSet.Exclude(Paths[p]);
 end;
 
 
@@ -192,11 +195,27 @@ procedure TFileSetTask.Execute;
 var
   f: Integer;
 begin
+  AddDefaultPatterns;
   for f := Low(FFileSets) to High(FFileSets) do
   begin
-    ChangeDir(FFileSets[f].BasePath);
-    Self.DoFileset(FFileSets[f]);
+    if FFileSets[f] <> nil then
+    begin
+      if not PathIsDir(FFileSets[f].BasePath) then
+        TaskError(Format('%s directory does not exist', [ToRelativePath(FFileSets[f].BasePath)]))
+      else
+      begin
+        ChangeDir(FFileSets[f].BasePath);
+        Self.DoFileset(FFileSets[f]);
+      end;
+    end;
   end;
+end;
+
+function TFileSetTask.MyFileSet :TFileSet;
+begin
+  if FFileSets[0] = nil then
+    FFileSets[0] := TFileSet.Create(Self);
+  Result := FFileSets[0];
 end;
 
 { TMkDirTask }
@@ -253,7 +272,7 @@ begin
   if dir <> '' then
   begin
     RelDir := ToRelativePath(dir);
-    with FFileSets[0] do
+    with MyFileSet do
     begin
       Include(RelDir);
       Include(PathConcat(RelDir, '**'));
@@ -266,14 +285,10 @@ var
   Paths : TPaths;
   p     : Integer;
 begin
-  if dir <> '' then
-    AddDefaultPatterns;
-
-
   Paths := Fileset.Paths;
 
   if Paths = nil then
-    Log(vlWarnings, 'nothing to delete')
+    Log(vlVerbose, 'nothing to delete')
   else begin
     if _file <> '' then
       Log(ToRelativePath(_file))
@@ -296,7 +311,7 @@ end;
 procedure TDeleteTask.SetFile(Value: string);
 begin
   FFile := Value;
-  FFileSets[0].Include(Value);
+  MyFileSet.Include(Value);
 end;
 
 procedure TDeleteTask.Init;
