@@ -1,7 +1,7 @@
 <!--
 ********************************************************************
-*  WANT - A build management tool.                                 *
-*  Copyright (c) 2001 Juancarlo Anez, Caracas, Venezuela.          *
+*  WANT - A Delphi friendly build management tool.                 *
+*  Copyright (c) 2001-2003 Juancarlo Añez, Caracas, Venezuela.     *
 *  All rights reserved.                                            *
 *                                                                  *
 ********************************************************************
@@ -13,7 +13,7 @@ See http://www.suigeneris.org/want/ for details.
 -->
 <project name="want"
          basedir="."
-         default="dist" >
+         default="compile" >
 
   <property name="want.master" value="%{want_master}" />
 
@@ -93,13 +93,12 @@ See http://www.suigeneris.org/want/ for details.
     <brcc file="${src}/wantver.rc" output="${src}/wantver.res" />
   </target>
 
-  <target name="compile" depends="clean,prepare,versioninfo,resources,build">
-
-    <dcc basedir="${src}" source="want.dpr"  >
-      <exeoutput path="${bin}"  />
-      <dcuoutput path="${dcu}"      />
-      <build     value="true" />
+  <target name="compile-want"  depends="prepare,versioninfo,resources,build">
+    <dcc basedir="${src}" source="want.dpr">
+      <exeoutput path="${bin}" />
+      <dcuoutput path="${dcu}" />
       <!-- optimize  value="true" / -->
+
       <debug     value="true" />
       <console   value="true" />
 
@@ -114,11 +113,27 @@ See http://www.suigeneris.org/want/ for details.
       <resourcepath refid="resources" />
     </dcc>
   </target>
+  <target name="compile" depends="compile-want,compile-dof2want">
+  </target>
+  <target name="compile-dof2want"  depends="prepare,versioninfo,resources,build">
+    <dcc basedir="dof2want" source="dof2want.dpr">
+      <exeoutput path="${bin}" />
+      <dcuoutput path="${dcu}" />
+      <!-- optimize  value="true" / -->
+      <debug     value="true" />
+      <console   value="true" />
+
+      <hugestrings value="true" />
+
+      <define name="SUPPORTS_WIDESTRING" />
+
+    </dcc>
+  </target>
 
 
   <target name="test" depends="internal_tests,acceptance_tests" />
 
-  <target name="internal_tests" depends="clean,prepare,versioninfo,resources">
+  <target name="internal_tests" depends="prepare,versioninfo,resources">
     <property name="test.app" value="WantTestLib" />
     <dcc basedir="${test}" source="${test.app}.dpr" >
       <exeoutput path="${bin}"  />
@@ -145,7 +160,7 @@ See http://www.suigeneris.org/want/ for details.
  </target>
 
 
-  <target name="acceptance_tests" depends="clean,prepare,versioninfo,resources" >
+  <target name="acceptance_tests"  depends="prepare,versioninfo,resources">
     <property name="test.app" value="wantAcceptTestLib" />
     <dcc basedir="${test}" source="${test.app}.dpr" >
       <exeoutput path="${bin}"  />
@@ -220,7 +235,7 @@ See http://www.suigeneris.org/want/ for details.
     </ini>
   </target>
 
-  <target name="changelog" >
+  <!--target name="changelog" >
      <exec executable="perl" >
          <arg path="tools/cvs2cl.pl" />
          <arg value="--file ChangeLog" />
@@ -229,20 +244,31 @@ See http://www.suigeneris.org/want/ for details.
          <arg value="--window 604800" />
          <arg value="--prune" />
      </exec>
+  </target-->
+
+  <target name="changelog">
+    <cvschangelog
+        destfile="changelog.xml"
+        start="?{release.ini:releases:last_date}"
+       >       
+    </cvschangelog>
+    <style in="changelog.xml" out="changelog.html" style="changelog.xsl">
+      <param name="title" expression="Want ChangeLog"/>
+      <param name="module" expression="want"/>
+      <param name="cvsweb" expression="http://cvs.sourceforge.net/cgi-bin/viewcvs.cgi/"/>
+    </style>
   </target>
 
   <target name="tag">
-     <regexp   property="cvs.tag" text="build_${version}" pattern="\." subst="_" />
-     <exec  executable="cvs rtag -R -F ${cvs.tag} ." />
+    <regexp property="cvs.tag" text="build_${version}" pattern="\."   subst="_" />
+    <cvs command="rtag -R -F ${cvs.tag} ." />
   </target>
 
-
-  <target name="tarball" >
+  <target name="tarball">
     <exec executable="wget">
       <arg value="--quiet" />
       <arg value="--output-document=@{want-cvs-${date.tag}.tar.gz}" />
       <arg value="http://cvs.sourceforge.net/cvstarballs/want-cvsroot.tar.gz" />
     </exec>
   </target>
-
 </project>
