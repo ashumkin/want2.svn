@@ -358,6 +358,7 @@ begin
       Arguments.Add('/Q');
       Arguments.Add('/E..\bin');
       Arguments.Add('/N..\dcu');
+      Arguments.Add('/U..\src\jcl');
     end;
   end;
 end;
