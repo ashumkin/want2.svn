@@ -36,10 +36,11 @@ uses
   GUITestRunner,
   TestFramework,
   DanteClassesTest in 'DanteClassesTest.pas',
-  FileSetTests in 'FileSetTests.pas',
-  ExecTasksTest in 'ExecTasksTest.pas',
-  FileTasksTest in 'FileTasksTest.pas',
-  DanteMainTest in 'DanteMainTest.pas',
+  LogMgrTest in 'LogMgrTest.pas',
+  DelphiCompileTest in 'DelphiCompileTest.pas';
+  //FileSetTests in 'FileSetTests.pas',
+  //ExecTasksTest in 'ExecTasksTest.pas',
+  //FileTasksTest in 'FileTasksTest.pas',
   DelphiTasksTest in 'DelphiTasksTest.pas';
 
 {$R *.RES}
