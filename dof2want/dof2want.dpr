@@ -30,13 +30,16 @@ program dof2want;
 
 uses
   SysUtils,
-  dofCompilerFlags,
-  dofDirectoriesFlags,
-  dofLinkerFlags,
+  dofDirectoriesFlags in 'dofDirectoriesFlags.pas',
+  dofFlagExtractor in 'dofFlagExtractor.pas',
+  dofLinkerFlags in 'dofLinkerFlags.pas',
   dofreader in 'dofreader.pas',
   wantWriter in 'wantWriter.pas',
   typ_dofReader in 'typ_dofReader.pas',
-  const_dofReader in 'const_dofReader.pas';
+  const_dofReader in 'const_dofReader.pas',
+  dccFlags in 'DCCFlags.pas',
+  dofCompilerFlags in 'dofCompilerFlags.pas',
+  tokenizer in 'tokenizer.pas';
 
 procedure outputStr(str : string);
   begin
