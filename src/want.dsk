@@ -75,14 +75,31 @@ File_5=SourceModule,'C:\home\want\src\ScriptRunner.pas',0,1,207,2,222,0,0
 File_6=SourceModule,'C:\home\want\test\WildPathsTest.pas',0,1,25,26,33,0,0
 
 [Modules]
-Module0=C:\home\want\test\ExternalTests.pas
-Module1=c:\home\dunit\src\TestFramework.pas
-Module2=C:\home\want\src\lib\WildPaths.pas
+Module0=C:\home\want\src\win32\WIN32.pas
+Module1=C:\home\want\src\win32\ConsoleListener.pas
+Module2=C:\home\want\test\ExternalTests.pas
 Module3=C:\home\want\test\WantAcceptTestLib.dpr
-Count=4
+Module4=c:\home\dunit\src\TestFramework.pas
+Module5=C:\home\want\src\lib\WildPaths.pas
+Count=6
 EditWindowCount=1
 
+[C:\home\want\src\win32\WIN32.pas]
+ModuleType=SourceModule
+FormState=0
+FormOnTop=0
+
+[C:\home\want\src\win32\ConsoleListener.pas]
+ModuleType=SourceModule
+FormState=0
+FormOnTop=0
+
 [C:\home\want\test\ExternalTests.pas]
+ModuleType=SourceModule
+FormState=0
+FormOnTop=0
+
+[C:\home\want\test\WantAcceptTestLib.dpr]
 ModuleType=SourceModule
 FormState=0
 FormOnTop=0
@@ -93,11 +110,6 @@ FormState=0
 FormOnTop=0
 
 [C:\home\want\src\lib\WildPaths.pas]
-ModuleType=SourceModule
-FormState=0
-FormOnTop=0
-
-[C:\home\want\test\WantAcceptTestLib.dpr]
 ModuleType=SourceModule
 FormState=0
 FormOnTop=0
@@ -135,12 +147,14 @@ RightPanelSize=0
 BottomPanelSize=0
 BottomPanelClients=MessageView@EditWindow0,LocalVarsWindow
 BottomPanelData=00000400020000000B0000004D657373616765566965770F0000004C6F63616C5661727357696E646F77F602000000000000009500000000000000FFFFFFFF
-ViewCount=4
-CurrentView=1
+ViewCount=6
+CurrentView=3
 View0=0
 View1=1
 View2=2
 View3=3
+View4=4
+View5=5
 
 [CodeExplorer@EditWindow0]
 Create=1
@@ -189,13 +203,27 @@ TopLine=175
 LeftCol=1
 
 [View2]
+Module=C:\home\want\src\win32\ConsoleListener.pas
+CursorX=2
+CursorY=124
+TopLine=105
+LeftCol=1
+
+[View3]
+Module=C:\home\want\src\win32\WIN32.pas
+CursorX=1
+CursorY=30
+TopLine=16
+LeftCol=1
+
+[View4]
 Module=c:\home\dunit\src\TestFramework.pas
 CursorX=1
 CursorY=81
 TopLine=81
 LeftCol=1
 
-[View3]
+[View5]
 Module=C:\home\want\src\lib\WildPaths.pas
 CursorX=1
 CursorY=489

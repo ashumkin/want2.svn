@@ -133,7 +133,11 @@ begin
     Write(Prefix);
     ClrEOL;
   finally
-    if UseColor then CRT32.Restore;
+    if UseColor then
+    begin
+      CRT32.Restore;
+      ClrEOL;
+    end;
   end;
 end;
 
