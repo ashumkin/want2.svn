@@ -98,7 +98,8 @@ type
 
   TMoveCopyTask = class(TFileSetTask)
   protected
-    FToDir : string;
+    FToDir:  string;
+    FToFile: string;
 
     procedure DoFileset(Fileset: TFileSet); override;
 
@@ -109,6 +110,7 @@ type
     procedure Execute; override;
   published
     property todir : string read FToDir  write FToDir;
+    property tofile: string read FToFile write FToFile;
   end;
 
   TCopyTask = class(TMoveCopyTask)
@@ -334,10 +336,16 @@ end;
 procedure TMoveCopyTask.DoPaths(Fileset: TFileSet; FromPaths, ToPaths: TPaths);
 var
   p      : Integer;
+  ToPath :string;
 begin
   Assert(Length(FromPaths) = Length(ToPaths));
   for p := Low(FromPaths) to High(FromPaths) do
-    DoFiles(Fileset, FromPaths[p], ToPaths[p]);
+  begin
+    ToPath := ToPaths[p];
+    if FToFile <> '' then
+       ToPath := PathConcat(SuperPath(ToPath), TPath(ToFile));
+    DoFiles(Fileset, FromPaths[p], ToPath);
+  end;
 end;
 
 procedure TMoveCopyTask.DoFileset(Fileset: TFileSet);
@@ -356,7 +364,7 @@ end;
 procedure TMoveCopyTask.Init;
 begin
   inherited Init;
-  RequireAttribute('todir');
+  RequireAttribute('todir|tofile');
 end;
 
 procedure TMoveCopyTask.Execute;
