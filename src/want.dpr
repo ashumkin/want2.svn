@@ -73,7 +73,10 @@ begin
     on e :EWantException do
       Halt(1);
     on e :Exception do
-      raise;
+    begin
+      Writeln(e.Message);
+      Halt(2);
+    end;
   end;
 end;
 
