@@ -78,6 +78,8 @@ begin
   Content :=
     CR+
     '<project name="test_project" default="main">'                     + CR +
+{    '  <echo message="Test message with ""quotes"" in it" />'          + CR +
+     this fails -- should it? I'm not up on DOM/SAX reqs                 }
     '  <property name="test" value="sample" />'                        + CR +
     '  <target name="main">'                                           + CR +
     '    <shell executable="mkdir ' + FNewDir + '" />'                 + CR +
