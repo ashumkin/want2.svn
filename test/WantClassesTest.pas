@@ -22,6 +22,8 @@ uses
   WantClasses,
   ScriptParser,
   StandardElements,
+
+  Properties,
   ExecTasks,
   DelphiTasks,
   ConsoleLogMgr,
@@ -188,23 +190,6 @@ end;
 
 const
   CR = #13#10;
-
-  Expected =
-    'object my_project: TProject'                                          + CR +
-    '  BaseDir = ''..'''                                                   + CR +
-    '  object prepare: TTarget'                                            + CR +
-    '    object TDummyTask1'                                               + CR +
-    '    end'                                                              + CR +
-    '  end'                                                                + CR +
-    '  object compile: TTarget'                                            + CR +
-    '    object TDummyTask2'                                               + CR +
-    '    end'                                                              + CR +
-    '    object TDummyTask3'                                               + CR +
-    '      AProp = ''aValue'''                                             + CR +
-    '    end'                                                              + CR +
-    '  end'                                                                + CR +
-    'end'                                                                  + CR;
-
 
   ExpectedXML =
     CR+
@@ -380,23 +365,34 @@ procedure TPropertyTests.TestLocalProperties;
 const
   build_xml = ''
   +#10'<project name="test" default="dotest" >'
-  +#10'  <property name="global" value="0" />'
+  +#10'  <property name="global"   value="0" />'
+  +#10'  <property name="derived"  value="_${global}_" />'
   +#10'  <target name="target1">'
-  +#10'    <property name="local" value="1" />'
+  +#10'    <property name="local"  value="1" />'
+  +#10'    <property name="global" value="1" />'
   +#10'    <check expected="1" actual="${local}" />'
   +#10'    <check expected="0" actual="${global}" />'
   +#10'  </target>'
   +#10'  <target name="target2">'
-  +#10'    <property name="local" value="2" />'
+  +#10'    <property name="local"  value="2" />'
+  +#10'    <property name="global" value="2" />'
   +#10'    <check expected="2" actual="${local}" />'
   +#10'    <check expected="0" actual="${global}" />'
   +#10'  </target>'
   +#10'  <target name="dotest" depends="target1,target2" />'
   +#10'</project>'
   +'';
+var
+  P :TPropertyElement;
 begin
   TScriptParser.ParseText(FProject, build_xml);
+  P := (FProject.Children[1] as TPropertyElement);
+
+  CheckEquals('_${global}_', P.Value);
+  FProject.Initialize;
+  CheckEquals('_0_', P.Value);
   FProject.Build;
+  CheckEquals('_0_', P.Value);
 end;
 
 procedure TPropertyTests.TestValidPath;
