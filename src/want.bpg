@@ -9,7 +9,7 @@ MAKE = $(ROOT)\bin\make.exe -$(MAKEFLAGS) -f$**
 DCC = $(ROOT)\bin\dcc32.exe $**
 BRCC = $(ROOT)\bin\brcc32.exe $**
 #------------------------------------------------------------------------------
-PROJECTS = want.exe WantAcceptTestLib.dll WantTestLib.dll WantTests.exe
+PROJECTS = want.exe WantAcceptTestLib.dll WantTestLib.dll WantTests.exe dof2want.exe
 #------------------------------------------------------------------------------
 default: $(PROJECTS)
 #------------------------------------------------------------------------------
@@ -24,6 +24,9 @@ WantTestLib.dll: ..\test\WantTestLib.dpr
   $(DCC)
 
 WantTests.exe: ..\test\WantTests.dpr
+  $(DCC)
+
+dof2want.exe: ..\dof2want\dof2want.dpr
   $(DCC)
 
 
