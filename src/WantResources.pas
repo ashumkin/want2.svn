@@ -125,7 +125,7 @@ resourcestring
                       ' Redistribution and use in source and binary forms, with or without       ' + C_EOL +
                       ' modification, are permitted provided that the following conditions       ' + C_EOL +
                       ' are met:                                                                 ' + C_EOL +
-                      '                                                                          ';
+                      '                                                                          ' + C_EOL;
   DanteLicenseText2 = ' 1. Redistributions of source code must retain the above copyright        ' + C_EOL +
                       '    notice, this list of conditions and the following disclaimer.         ' + C_EOL +
                       '                                                                          ' + C_EOL +
@@ -138,7 +138,7 @@ resourcestring
                       '    names of other contributors to this software may not be used to       ' + C_EOL +
                       '    endorse or promote products derived from this software without        ' + C_EOL +
                       '    specific prior written permission.                                    ' + C_EOL +
-                      '                                                                          ';
+                      '                                                                          ' + C_EOL;
   DanteLicenseText3 = '  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS     ' + C_EOL +
                       '  ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT     ' + C_EOL +
                       '  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS       ' + C_EOL +
@@ -149,7 +149,7 @@ resourcestring
                       '  OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND  ' + C_EOL +
                       '  ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR   ' + C_EOL +
                       '  TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE  ' + C_EOL +
-                      '  USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.';
+                      '  USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.' + C_EOL;
   DanteLicenseText4 = '                                                                          ' + C_EOL +
                       '--------------------------------------------------------------------------' + C_EOL +
                       ' The JCL (JEDI Code Library) used in Dante is governed by                 ' + C_EOL +
@@ -160,7 +160,7 @@ resourcestring
                       ' http://delphi-jedi.org/Jedi:CODELIBJCL.                                  ' + C_EOL +
                       '--------------------------------------------------------------------------' + C_EOL +
                       ' (based on BSD Open Source License)                                       ' + C_EOL +
-                      '--------------------------------------------------------------------------';
+                      '--------------------------------------------------------------------------' + C_EOL;
 
   F_DanteStartupFailed        = 'Dante startup failed';
 
