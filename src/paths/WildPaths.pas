@@ -77,8 +77,11 @@ type
   EWildPathsException = class(Exception);
   EWildPathsError     = class(EWildPathsException);
 
-function IsSystemIndependentPath(const Path :TPath) :boolean;
+function  IsSystemIndependentPath(const Path :TPath) :boolean;
 procedure AssertIsSystemIndependentPath(const Path :TPath);
+
+function IsWindowsPath(const Path :TPath):boolean;
+function PathDrive(const Path :TPath) :TPath;
 
 function PathConcat(const Path1, Path2 :TPath) :TPath;
 
@@ -132,6 +135,19 @@ procedure Wild(Files :TStrings; const Patterns :TPatterns; const BasePath: TPath
 function IsSystemIndependentPath(const Path :TPath) :boolean;
 begin
   Result := ( Pos(SystemPathDelimiter, Path) = 0 );
+end;
+
+function IsWindowsPath(const Path :TPath):boolean;
+begin
+  Result := (Length(Path) >= 3) and (Path[1] = '/') and (Path[3] = ':');
+end;
+
+function PathDrive(const Path :TPath) :TPath;
+begin
+  if IsWindowsPath(Path) then
+    Result := Copy(Path, 2, 1)
+  else
+    Result := '';
 end;
 
 procedure AssertIsSystemIndependentPath(const Path :TPath);
@@ -211,7 +227,7 @@ begin
    if (Length(Result) >= 1) and (Result[Length(Result)] = '/') then
      Delete(Result,Length(Result), 1);
    Result := StringReplace(Result, '/', SystemPathDelimiter, [rfReplaceAll]);
-   if (Length(Result) >= 3) and (Result[3] = ':') and (Result[1] = '\') then
+   if IsWindowsPath(Path) then
      Delete(Result,1, 1);
 end;
 
@@ -335,11 +351,13 @@ var
 begin
   AssertIsSystemIndependentPath(Path);
   AssertIsSystemIndependentPath(BasePath);
-  
+
   P := nil;
   B := nil;
   if not PathIsAbsolute(Path)
-  or not PathIsAbsolute(BasePath) then
+  or not PathIsAbsolute(BasePath)
+  or (PathDrive(Path) <> PathDrive(BasePath))
+  then
     Result := Path
   else
   begin
