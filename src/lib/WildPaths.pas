@@ -569,15 +569,24 @@ begin
 end;
 
 procedure Wild(Files :TStrings; const Pattern :TPath; const BasePath :TPath = '');
+var
+  Pats :string;
+  Pat  :TPath;
 begin
   AssertIsSystemIndependentPath(Pattern);
   AssertIsSystemIndependentPath(BasePath);
 
-  //ForceRelativePath(Pattern, BasePath);
-  if PathIsAbsolute(Pattern) then
-    Wild(Files, SplitPath(Pattern), '')
-  else
-    Wild(Files, SplitPath(Pattern), BasePath);
+  Pats := Pattern;
+  Pat  := StrToken(Pats, ',');
+  while Pat <> '' do
+  begin
+    //ForceRelativePath(Pattern, BasePath);
+    if PathIsAbsolute(Pattern) then
+      Wild(Files, SplitPath(Pat), '')
+    else
+      Wild(Files, SplitPath(Pat), BasePath);
+    Pat  := StrToken(Pats, ',');
+  end;
 end;
 
 procedure Wild(Files :TStrings; const Patterns: TPatterns; const BasePath: TPath; Index: Integer);
