@@ -269,7 +269,7 @@ var
 begin
   CurrentFileName := MakeSampleTextFile;
   NewFileName := ExtractFilePath(CurrentFileName) + 'new.txt';
-  FExecTask.ArgumentList.Add('copy');
+  FExecTask.Executable := 'copy';
   FExecTask.ArgumentList.Add(CurrentFileName);
   FExecTask.ArgumentList.Add(NewFileName);
   FExecTask.Execute;
