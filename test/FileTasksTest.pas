@@ -70,7 +70,7 @@ begin
   Check(DirectoryExists(FTestDir), 'no directory to start with');
   FDeleteTask.Dir := FTestDir;
 
-  FDeleteTask.Init;
+  FDeleteTask.Configure;
 
   FDeleteTask.DoExecute;
 
