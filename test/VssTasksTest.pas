@@ -36,19 +36,25 @@ interface
 
 uses
   VssTasks, TestFramework, DanteClassesTest, JclMiscel, SysUtils, JclShell,
-  DanteClasses;
+  DanteClasses, JclSysInfo, Classes;
 
 type
   TTestVssTasksBase = class(TTestDirCase)
+  private
+    function GetTestFileName(Index: Integer): string;
   protected
     FRevOneContents: string;
     FRevTwoContents: string;
-    FSampleFileName: string;
-    FSamplePathFileName: string;
+    //FSampleFileName: string;
+    //FSamplePathFileName: string;
+    FTestPathFileNames: TStringList;
     FUserPwd: string;
     FVssPath: string;
 
+    procedure AddTestFile;
     function CompareSampleContents(Contents: string): boolean;
+    procedure DeleteTestFiles;
+    procedure Exec(Cmd: string);
     procedure MakeSample(Contents: string);
     procedure MakeSampleRevOne;
     procedure MakeSampleRevTwo;
@@ -56,6 +62,8 @@ type
   public
     procedure Setup; override;
     procedure TearDown; override;
+
+    property TestFileNames[Index: Integer]: string read GetTestFileName;
   end;
 
   TTestVssGetTask = class(TTestVssTasksBase)
@@ -70,11 +78,41 @@ type
     procedure TestVssGetTaskRelPath;
   end;
 
+  TTestVssCheckoutTask = class(TTestVssTasksBase)
+  private
+    FVssCheckoutTask: TVssCheckoutTask;
+  public
+    procedure Setup; override;
+    procedure TearDown; override;
+  published
+    procedure TestVssCheckoutTask;
+  end;
+
+  TTestVssCheckinTask = class(TTestVssTasksBase)
+  private
+    FVssCheckinTask: TVssCheckinTask;
+  public
+    procedure Setup; override;
+    procedure TearDown; override;
+  published
+    procedure TestVssCheckinTask;
+  end;
+
 implementation
 
 uses Windows;
 
 { TTestVssTasksBase }
+
+procedure TTestVssTasksBase.AddTestFile;
+var
+  PathFileName: string;
+begin
+  PathFileName := MakeSampleTextFile;
+  Exec('ss CP "' + FVssPath + '" -I- -Y' + FUserPwd);
+  Exec('ss Add "' + PathFileName + '" -I- -Y' + FUserPwd);
+  FTestPathFileNames.Add(PathFileName);
+end;
 
 function TTestVssTasksBase.CompareSampleContents(
   Contents: string): boolean;
@@ -82,11 +120,52 @@ begin
   Result := (Contents = ReadSampleContents);
 end;
 
+procedure TTestVssTasksBase.DeleteTestFiles;
+var
+  i: Integer;
+
+  procedure DeleteFileInVss(FileName: string);
+  begin
+    if FileName <> '' then
+    begin
+      { -I-Y needed in TestVssCheckoutTask to override deleting a checked out
+        file }
+      Exec('ss Delete "' + FVssPath + '/' + FileName +
+        '" -I-Y -Y' + FUserPwd);
+      Exec('ss Purge "' + FVssPath + '/' + FileName +
+        '" -I- -Y' + FUserPwd);
+    end;
+  end;
+
+  procedure DeleteFileOnDisk(PathFileName: string);
+  begin
+    if PathFileName <> '' then
+      JclShell.SHDeleteFiles(0, PathFileName, [doSilent, doAllowUndo]);
+  end;
+begin
+  for i := 0 to FTestPathFileNames.Count - 1 do
+  begin
+    DeleteFileInVss(TestFileNames[i]);
+    DeleteFileOnDisk(FTestPathFileNames[i]);
+  end;
+end;
+
+procedure TTestVssTasksBase.Exec(Cmd: string);
+begin
+  if WinExec32AndWait(Cmd, 0) <> 0 then
+    raise Exception.Create('Internal error: WinExec call failed: ' + Cmd);
+end;
+
+function TTestVssTasksBase.GetTestFileName(Index: Integer): string;
+begin
+  Result := ExtractFileName(FTestPathFileNames[Index]);
+end;
+
 procedure TTestVssTasksBase.MakeSample(Contents: string);
 var
   F: TextFile;
 begin
-  AssignFile(F, FSamplePathFileName);
+  AssignFile(F, FTestPathFileNames[0]);
   Rewrite(F);
   WriteLn(F, Contents);
   CloseFile(F);
@@ -110,7 +189,7 @@ var
   ReadContents: string;
   ReadLine: string;
 begin
-  AssignFile(F, FSamplePathFileName);
+  AssignFile(F, FTestPathFileNames[0]);
   Reset(F);
   ReadContents := '';
   while not Eof(F) do
@@ -130,32 +209,54 @@ begin
     'currently require an actual VSS installation in place. If you''d like ' +
     'to execute these tests, look at VssTasksTest.pas');
   {$ELSE}
-    { to run these tests, you must change the following settings for your
-      specific installation. Make sure the VssPath is set to an empty project }
-    FVssPath := '$/Front Office Development/DanteVssTaskTest';
-    FUserPwd := 'chrism,saltnpepper';
+    { TO RUN THESE TESTS: you must change the following setup to work for your
+      specific installation. Set the SSDIR environment variable to a
+      valid srcsafe.ini. Also, change the FVssPath to a valid path and the
+      FUserPwd to a valid user/password combination.
 
-    FSamplePathFileName := MakeSampleTextFile;
-    FSampleFileName := ExtractFileName(FSamplePathFileName);
-    WinExec32AndWait('ss CP "' + FVssPath + '" -I- -Y' + FUserPwd, 0);
-    WinExec32AndWait('ss Add "' + FSamplePathFileName + '" -I- -Y' + FUserPwd, 0);
-    if FSamplePathFileName <> '' then
-      JclShell.SHDeleteFiles(0, FSamplePathFileName, [doSilent, doAllowUndo]);
+      These tests were built against a VSS version 5 database.
+
+      NOTE: It is HIGHLY recommended you DO NOT run these tests on a production
+      Visual SourceSafe database. TearDown will issue a Delete and Purge
+      command on the test file. If there's any bug introduced in any of this
+      code, you run the risk of purging production data. Please re-read the
+      disclaimer contained within the Dante license. }
+
+    { sets SSDIR env variable for this session to a path containing a
+      srcsafe.ini file which has the settings indicating which VSS database
+      is to be used. This allows you to point to a test VSS db and not
+      disturb your normal client settings.
+
+      If you don't set this, ss.exe attempts to find a srcsafe.ini in its
+      parent directory. }
+    if not JclSysInfo.SetEnvironmentVar('SSDIR', 'D:\Dev\ssafe') then
+      raise Exception.Create('Internal error: could not set SSDIR env var. ' +
+        '[TTestVssTasksBase.Setup]');
+
+    FVssPath := '$/test';
+
+    { if the test user you use has a password, set it like so:
+        FUserPwd := 'dante,password'; }
+    FUserPwd := 'dante';
+
+    FTestPathFileNames := TStringList.Create;
+    AddTestFile;
+
+    FProject.Level := vlDebug;
   {$ENDIF}
 end;
 
 procedure TTestVssTasksBase.TearDown;
 begin
   {$IFDEF RUN_VSS_TESTS}
-    { if you want to purge these test files, you'll have to do that manually.
-      Some of the tests run cleaner if the test file was purged, because
-      repeated deletes don't do anything. However, when I wrote this I did
-      not have access to a test SourceSafe database that could survive an
-      accidental purging while writing this fixture code. -- Chrismo }
-    WinExec32AndWait('ss CP "' + FVssPath + '" -I- -Y' + FUserPwd, 0);
-    if FSampleFileName <> '' then
-      WinExec32AndWait('ss Delete "' + FVssPath + '/' + FSampleFileName +
-        '" -I- -Y' + FUserPwd, 0);
+    { NOTE: It is HIGHLY recommended you not run these tests on a production
+      Visual SourceSafe database. TearDown will issue a Delete and Purge
+      command on the test file. If there's any bug introduced in any of this
+      code, you run the risk of purging production data. Please re-read the
+      disclaimers contained within the Dante license. }
+    Exec('ss CP "' + FVssPath + '" -I- -Y' + FUserPwd);
+    DeleteTestFiles;
+    FTestPathFileNames.Free;
   {$ENDIF}
   inherited;
 end;
@@ -189,7 +290,7 @@ begin
   FVssGetTask.Login := FUserPwd;
   FVssGetTask.LocalPath := FTestDir;
   FVssGetTask.Execute;
-  Check(FileExists(FSamplePathFileName), 'file not retrieved');
+  Check(FileExists(FTestPathFileNames[0]), 'file not retrieved');
 end;
 
 procedure TTestVssGetTask.TestVssGetTaskLabel;
@@ -197,38 +298,22 @@ var
   LabelName: string;
   CurrDir: string;
 begin
-  { because the TearDown doesn't purge the test file or project (for reasons
-    stated there), re-running this test doesn't really achieve an actual test.
-    This is because the labelling done cannot be removed. The only way to remove
-    a label is to re-submit a label command that adds a single space label to
-    the version of the previous label (see MS KBase article Q126786):
-
-      ss label $/test "-vl old label" "-l "
-
-    But this won't work from inside this test code because then it prompts for a
-    confirmation, the default reply being No. So ... to actual ensure the
-    accuracy of this test, it is necessary to open the GUI client (version 5),
-    display the history for the test project, select the label row, open it
-    (double-click), delete the label name and click Close. This will delete the
-    label out of history. Then run this test to make certain. }
   CurrDir := GetCurrentDir;
   ChDir(FTestDir);
-  WinExec32AndWait('ss Checkout ' + FSampleFileName + ' -GL"' + FTestDir + '"' +
-    ' -Y' + FUserPwd, 0);
+  Exec('ss Checkout ' + TestFileNames[0] + ' -GL"' + FTestDir + '"' +
+    ' -Y' + FUserPwd);
   MakeSampleRevOne;
-  WinExec32AndWait('ss Checkin ' + FSampleFileName + ' -CComment -K ' +
-    ' -Y' + FUserPwd, 0);
+  Exec('ss Checkin ' + TestFileNames[0] + ' -CComment -K -Y' + FUserPwd);
   LabelName := 'RevOne';
-  WinExec32AndWait('ss Label "' + FVssPath + '" -CComment -L' + LabelName +
-    ' -I- -Y' + FUserPwd, 0);
+  Exec('ss Label "' + FVssPath + '" -CComment -L' + LabelName +
+    ' -I- -Y' + FUserPwd);
 
   { if the following Checkin command is sent immediately, sometimes it
     beats the labeling command (don't know why) and gets applied to the
     2nd revision instead of the first }
   Sleep(1000);
   MakeSampleRevTwo;
-  WinExec32AndWait('ss Checkin ' + FSampleFileName + ' -CComment ' +
-    ' -Y' + FUserPwd, 0);
+  Exec('ss Checkin ' + TestFileNames[0] + ' -CComment -Y' + FUserPwd);
   ChDir(CurrDir);
 
   FVssGetTask.VssPath := FVssPath;
@@ -237,6 +322,14 @@ begin
   FVssGetTask._Label := LabelName;
   FVssGetTask.Execute;
   CheckEquals(FRevOneContents, ReadSampleContents, 'wrong version retrieved');
+
+  { remove the label. The only way to remove a label is to re-submit a label
+    command that adds a single space label to the version of the previous
+    label (see MS KBase article Q126786)
+
+    -I-Y required to answer yes to removing the label confirmation  }
+  Exec('ss Label ' + FVssPath + ' "-vl ' + LabelName + '" "-l " ' +
+    '-I-Y -Y' + FUserPwd);
 end;
 
 procedure TTestVssGetTask.TestVssGetTaskRelPath;
@@ -246,12 +339,90 @@ begin
   FVssGetTask.Login := FUserPwd;
   FVssGetTask.LocalPath := FLongFNTestDir;
   FVssGetTask.Execute;
-  Check(FileExists(FLongFNTestDir + '\' + FSampleFileName), 'file not retrieved');
+  Check(FileExists(FLongFNTestDir + '\' + TestFileNames[0]), 'file not retrieved');
+end;
+
+{ TTestVssCheckoutTask }
+
+procedure TTestVssCheckoutTask.Setup;
+begin
+  inherited;
+  FVssCheckoutTask := TVssCheckoutTask.Create(FProject.AddTarget('test'));
+end;
+
+procedure TTestVssCheckoutTask.TearDown;
+begin
+  FVssCheckoutTask.Free;
+  inherited;
+end;
+
+procedure TTestVssCheckoutTask.TestVssCheckoutTask;
+begin
+  AddTestFile; // 2nd file
+
+  FVssCheckoutTask.VssPath := FVssPath;
+  FVssCheckoutTask.Login := FUserPwd;
+  FVssCheckoutTask.LocalPath := FTestDir;
+  FVssCheckoutTask.FileName := TestFileNames[0];
+  FVssCheckoutTask.Execute;
+  Check(WinExec32AndWait('ss Status ' + FVssPath + '/' + TestFileNames[0] +
+    ' -U -Y' + FUserPwd, 0) <> 0, 'file should be checked out, but it ain''t');
+  Check(WinExec32AndWait('ss Status ' + FVssPath + '/' + TestFileNames[1] +
+    ' -U -Y' + FUserPwd, 0) = 0, '2nd file shouldn''t be checked out, but is');
+end;
+
+{ TTestVssCheckinTask }
+
+procedure TTestVssCheckinTask.Setup;
+begin
+  inherited;
+  FVssCheckinTask := TVssCheckinTask.Create(FProject.AddTarget('test'));
+end;
+
+procedure TTestVssCheckinTask.TearDown;
+begin
+  FVssCheckinTask.Free;
+  inherited;
+end;
+
+procedure TTestVssCheckinTask.TestVssCheckinTask;
+begin
+  AddTestFile;
+
+  Exec('ss Checkout ' + TestFileNames[0] + ' -GL"' + FTestDir + '"' +
+    ' -Y' + FUserPwd);
+  Exec('ss Checkout ' + TestFileNames[1] + ' -GL"' + FTestDir + '"' +
+    ' -Y' + FUserPwd);
+  Check(WinExec32AndWait('ss Status ' + FVssPath + '/' + TestFileNames[0] +
+    ' -U -Y' + FUserPwd, 0) <> 0, 'file should be checked out, but it ain''t');
+
+  { modify the content, otherwise vss will undo the checkout rather than
+    actually checking in }
+  MakeSampleRevTwo;
+  FVssCheckinTask.VssPath := FVssPath;
+  FVssCheckinTask.Login := FUserPwd;
+  FVssCheckinTask.LocalPath := FTestDir;
+  FVssCheckinTask.FileName := TestFileNames[0];
+  FVssCheckinTask.Comment := 'test checkin';
+  FVssCheckinTask.Execute;
+
+  Check(WinExec32AndWait('ss Status ' + FVssPath + '/' + TestFileNames[0] +
+    ' -U -Y' + FUserPwd, 0) = 0, 'file shouldn''t be checked out, but is');
+
+  Check(WinExec32AndWait('ss Status ' + FVssPath +
+    ' -U -Y' + FUserPwd, 0) <> 0,
+    '2nd file should still be checked out, but isn''t');
+
+  { currently no way to double check that the comment went in without parsing
+    a ss History call (any other way?), and I don't have time to mess with that
+    right now, unfortunately. }
 end;
 
 initialization
   {$IFNDEF NO_RUN_VSS_TESTS}
   RegisterTest('Acceptance Suite', TTestVssGetTask);
+  RegisterTest('Acceptance Suite', TTestVssCheckoutTask);
+  RegisterTest('Acceptance Suite', TTestVssCheckinTask);
   {$ENDIF}
 end.
 
