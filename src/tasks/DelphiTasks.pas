@@ -36,13 +36,9 @@ unit DelphiTasks;
 
 interface
 uses
-  DanteClasses,
-  ExecTasks,
-  WildPaths,
-  PatternSets,
-
-  Collections,
-  MiniDom,
+  Windows,
+  SysUtils,
+  Classes,
 
   JclBase,
   JclMiscel,
@@ -50,9 +46,15 @@ uses
   JclRegistry,
   JclStrings,
 
-  Windows,
-  SysUtils,
-  Classes;
+  Collections,
+  MiniDom,
+  DanteBase,
+  DanteClasses,
+  ExecTasks,
+  WildPaths,
+  PatternSets;
+
+
 
 
 const
@@ -76,19 +78,6 @@ type
   TUnitPathElement     = class(TPathSet);
   TResourcePathElement = class(TPathSet);
   TIncludePathElement  = class(TPathSet);
-
-  TDefineElement = class(TDanteElement)
-  protected
-    FValue :string;
-
-  public
-    procedure Init; override;
-
-  published
-    property Name;
-    property Value :string read FValue write FValue;
-  end;
-
 
   TCustomDelphiTask = class(TCustomExecTask)
   protected
@@ -195,6 +184,86 @@ type
   published
     property _file:  string read FFile   write FFile;
     property output: string read FOutput write FOutput;
+  end;
+
+  TOptionElement = class(TDanteElement)
+  protected
+    function dcc :TDelphiCompileTask;
+  end;
+
+  TBooleanOptionElement = class(TOptionElement)
+  protected
+    FValue :boolean;
+  public
+    procedure Init; override;
+  published
+    property value :boolean read FValue write FValue;
+  end;
+
+  TQuietElement = class(TBooleanOptionElement)
+  public
+    procedure Init; override;
+  end;
+
+  TMakeElement = class(TBooleanOptionElement)
+  public
+    procedure Init; override;
+  end;
+
+  TBuildElement = class(TBooleanOptionElement)
+  public
+    procedure Init; override;
+  end;
+
+  TOptimizeElement = class(TBooleanOptionElement)
+  public
+    procedure Init; override;
+  end;
+
+  TDebugElement = class(TBooleanOptionElement)
+  public
+    procedure Init; override;
+  end;
+
+  TConsoleElement = class(TBooleanOptionElement)
+  public
+    procedure Init; override;
+  end;
+
+  TUseLibraryPathElement = class(TBooleanOptionElement)
+  public
+    procedure Init; override;
+  end;
+
+  TDefineElement = class(TOptionElement)
+  protected
+    FValue :string;
+
+  public
+    procedure Init; override;
+
+  published
+    property Name;
+    property Value :string read FValue write FValue;
+  end;
+
+  TPathOptionElement = class(TOptionElement)
+  protected
+    FPath :TPath;
+  public
+    procedure Init; override;
+  published
+    property path :TPath read FPath write FPath;
+  end;
+
+  TDCUOutputElement = class(TPathOptionElement)
+  public
+    procedure Init; override;
+  end;
+
+  TEXEOutputElement = class(TPathOptionElement)
+  public
+    procedure Init; override;
   end;
 
 implementation
@@ -324,50 +393,84 @@ var
 begin
   Result := inherited BuildArguments;
 
-  if console then
-    Result := Result + ' -CC'
-  else
-    Result := Result + ' -CG';
-
+  Log(vlVerbose, 'sources %s', [ToRelativePath(source)]);
   Sources := WildPaths.Wild(Source, BasePath);
   if Length(Sources) = 0 then
     TaskFailure('nothing to compile');
 
   for s := Low(Sources) to High(Sources) do
+  begin
+    Log(vlVerbose, 'source %s', [ToRelativePath(Sources[s])]);
     Result := Result + ' ' + ToSystemPath(Sources[s]);
+  end;
 
   if exeoutput <> '' then
+  begin
+    Log(vlVerbose, 'exeoutput=' + ToRelativePath(exeoutput));
     Result := Result + ' -E' + ToSystemPath(exeoutput);
+  end;
+
   if dcuoutput <> '' then
+  begin
+    Log(vlVerbose, 'dcuoutput=' + ToRelativePath(dcuoutput));
     Result := Result + ' -N' + ToSystemPath(dcuoutput);
+  end;
+
+  Log(vlVerbose, 'console=' + BooleanToString[console]);
+  if console then
+    Result := Result + ' -CC'
+  else
+    Result := Result + ' -CG';
+
   if quiet then
-    Result := Result + ' -Q';
+    Result := Result + ' -Q'
+  else
+    Log(vlVerbose, 'quiet=false');
 
   if build then
+  begin
+    Log(vlVerbose, 'build=true');
     Result := Result + ' -B'
+  end
   else if make then
+  begin
+    Log(vlVerbose, 'make=true');
     Result := Result + ' -M';
+  end;
 
   if optimize then
+  begin
+    Log(vlVerbose, 'optimize=true');
     Result := Result + ' -$O+'
+  end
   else
     Result := Result + ' -$O-';
 
   if debug then
+  begin
+    Log(vlVerbose, 'debug=true');
     Result := Result + ' -V -$D+ -$L+ -GD'
+  end
   else
     Result := Result + ' -V- -$D-';
 
   for d := 0 to FDefines.Count-1 do
+  begin
+    Log(vlVerbose, 'define %s', [FDefines.Names[d]]);
     Result := Result + ' -D' + FDefines.Names[d];
+  end;
 
 
   Paths := FUnitPaths.RelativePaths;
   for p := Low(paths) to High(Paths) do
+  begin
+    Log(vlVerbose, 'unitpath %s', [ToRelativePath(Paths[p])]);
     Result := Result + ' -U' + ToSystemPath(Paths[p]);
+  end;
 
   if useLibraryPath then
   begin
+    Log(vlVerbose, 'uselibrarypath=true');
     PS := TStringList.Create;
     try
       StrToStrings(ReadLibraryPaths, ';', PS);
@@ -380,11 +483,17 @@ begin
 
   Paths := FResourcePaths.RelativePaths;
   for p := Low(paths) to High(Paths) do
+  begin
+    Log(vlVerbose, 'resourcepath %s', [ToRelativePath(Paths[p])]);
     Result := Result + ' -R' + ToSystemPath(Paths[p]);
+  end;
 
   Paths := FIncludePaths.RelativePaths;
   for p := Low(paths) to High(Paths) do
+  begin
+    Log(vlVerbose, 'includepath %s', [ToRelativePath(Paths[p])]);
     Result := Result + ' -I' + ToSystemPath(Paths[p]);
+  end;
 end;
 
 procedure TDelphiCompileTask.SetExes(Value: string);
@@ -490,8 +599,9 @@ end;
 procedure TDefineElement.Init;
 begin
   inherited Init;
+  Log(vlDebug, '%s %s=%s', [TagName, Name, Value]);
   RequireAttribute('name');
-  (Owner as TDelphiCompileTask).AddDefine(Name, Value);
+  dcc.AddDefine(Name, Value);
 end;
 
 { TPathElement }
@@ -516,7 +626,118 @@ begin
   AddDefaultPatterns;
 end;
 
+{ TOptionElement }
+
+function TOptionElement.dcc: TDelphiCompileTask;
+begin
+  Result := Owner as TDelphiCompileTask;
+end;
+
+{ TBooleanOptionElement }
+
+procedure TBooleanOptionElement.Init;
+begin
+  inherited Init;
+  if value then
+    Log(vlDebug, '%s=true',  [TagName])
+  else
+    Log(vlDebug, '%s=false', [TagName])
+end;
+
+{ TQuietElement }
+
+procedure TQuietElement.Init;
+begin
+  inherited Init;
+  dcc.quiet := value;
+end;
+
+{ TMakeElement }
+
+procedure TMakeElement.Init;
+begin
+  inherited Init;
+  dcc.make := value;
+end;
+
+{ TBuildElement }
+
+procedure TBuildElement.Init;
+begin
+  inherited Init;
+  dcc.build := value;
+end;
+
+{ TOptimizeElement }
+
+procedure TOptimizeElement.Init;
+begin
+  inherited Init;
+  dcc.optimize := value;
+end;
+
+{ TDebugElement }
+
+procedure TDebugElement.Init;
+begin
+  inherited Init;
+  dcc.debug := value;
+end;
+
+{ TConsoleElement }
+
+procedure TConsoleElement.Init;
+begin
+  inherited Init;
+  dcc.console := value;
+end;
+
+{ TUseLibraryPathElement }
+
+procedure TUseLibraryPathElement.Init;
+begin
+  inherited Init;
+  dcc.uselibrarypath := value;
+end;
+
+{ TPathOptionElement }
+
+procedure TPathOptionElement.Init;
+begin
+  inherited Init;
+  Log(vlDebug, '%s=%s', [TagName, path]);
+end;
+
+{ TDCUOutputElement }
+
+procedure TDCUOutputElement.Init;
+begin
+  inherited Init;
+  dcc.dcuoutput := path;
+end;
+
+{ TEXEutputElement }
+
+procedure TEXEOutputElement.Init;
+begin
+  inherited Init;
+  dcc.exeoutput := path;
+end;
+
 initialization
   RegisterTasks( [TDelphiCompileTask, TResourceCompileTask]);
-  RegisterElement(TDelphiCompileTask, TDefineElement);
+  RegisterElements(TDelphiCompileTask, [
+                         TDefineElement,
+
+                         TQuietElement,
+                         TMakeElement,
+                         TBuildElement,
+                         TOptimizeElement,
+                         TDebugElement,
+                         TConsoleElement,
+                         TUseLibraryPathElement,
+
+                         TDCUOutputElement,
+                         TEXEOutputElement
+                         ]);
 end.

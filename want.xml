@@ -89,15 +89,12 @@ See http://dante.sourceforge.net for details
     <touch  file="${src}/dante.cfg"  />
     <delete file="${src}/dante.cfg" />
 
-    <dcc basedir="${src}"
-         source="dante.dpr"
-         exeoutput="${basedir}"
-         dcuoutput="${dcu}"
-         quiet="true"
-         build="true"
-         optimize="true"
-         debug="false"
-    >
+    <dcc basedir="${src}" source="dante.dpr"  >
+      <exeoutput path="${basedir}"  />
+      <dcuoutput path="${dcu}"      />
+      <build     value="true" />
+      <optimize  value="true" />
+
       <unitpath     refid="sources"   />
       <includepath  refid="sources"   />
       <resourcepath refid="resources" />
@@ -109,20 +106,18 @@ See http://dante.sourceforge.net for details
 
   <target name="internal_tests" depends="clean,prepare">
     <property name="test.app" value="DanteTest" />
-    <dcc basedir="${test}"
-         source="${test.app}.dpr"
-         exeoutput="${bin}"
-         dcuoutput="${dcu}"
-         quiet="true"
-         build="true"
-         optimize="false"
-         debug="true"
-         console="true"
-         uselibrarypath="false"
-    >
+    <dcc basedir="${test}" source="${test.app}.dpr" >
+      <exeoutput path="${bin}"  />
+      <dcuoutput path="${dcu}"  />
+      <build     value="true" />
+      <debug     value="true" />
+      <console   value="true" />
+
       <define name="USE_TEXT_RUNNER" />
       <unitpath     refid="sources" >
         <include name="${test}/**" />
+        <exclude  name="${test}/data" />
+        <exclude  name="${test}/data/**" />
       </unitpath>
       <includepath  refid="sources"   />
       <resourcepath refid="resources" />
@@ -133,21 +128,20 @@ See http://dante.sourceforge.net for details
 
   <target name="acceptance_tests" depends="clean,prepare" >
     <property name="test.app" value="DanteAcceptTest" />
-    <dcc basedir="${test}"
-         source="${test.app}.dpr"
-         exeoutput="${bin}"
-         dcuoutput="${dcu}"
-         quiet="true"
-         build="true"
-         optimize="false"
-         debug="true"
-         console="true"
-         uselibrarypath="false"
-  >
+    <dcc basedir="${test}" source="${test.app}.dpr" >
+      <exeoutput path="${bin}"  />
+      <dcuoutput path="${dcu}"  />
+      <build     value="true" />
+      <debug     value="true" />
+      <console   value="true" />
+
       <define name="USE_TEXT_RUNNER" />
       <define name="NO_RUN_VSS_TESTS" unless="include.vss" />
+
       <unitpath     refid="sources" >
         <include name="${test}/**" />
+        <exclude  name="${test}/data" />
+        <exclude  name="${test}/data/**" />
       </unitpath>
       <includepath  refid="sources"   />
       <resourcepath refid="resources" />

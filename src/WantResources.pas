@@ -46,6 +46,8 @@ const
 
   C_EOL = #13#10;
 
+  BooleanToString : array[boolean] of string = ('false', 'true');
+
 type
   EDanteException  = class(Exception);
   EDanteError      = class(EDanteException);
