@@ -111,6 +111,9 @@ function  SuperPath(Path :TPath) :TPath;
 
 implementation
 
+uses
+  JclStrings;
+
 procedure Wild(Files :TStrings; Patterns :TPatterns; BasePath: TPath = ''; Index :Integer = 0);
   overload; forward;
 
@@ -245,7 +248,9 @@ var
 begin
   S := TStringList.Create;
   try
-    S.CommaText := StringReplace(path, '/', ',', [rfReplaceAll]);
+    StrToStrings(path, '/', S);
+    { CommaText breaks on spaces in a dir name. "My Dir" becomes My/Dir
+    S.CommaText := StringReplace(path, '/', ',', [rfReplaceAll]);}
     Result := StringsToPaths(S);
   finally
     S.Free;
