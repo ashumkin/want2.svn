@@ -176,11 +176,9 @@ type
     procedure RequireAttributes(Names: array of string);
     procedure AttributeRequiredError(AttName: string);
 
-    procedure Init;    virtual;
-    procedure Execute; virtual;
+    procedure Init;   virtual;
 
-    function  GetNoChanges :boolean; virtual;
-    procedure EvaluateAttributes;
+    function GetNoChanges :boolean; virtual;
   public
     constructor Create(Owner: TScriptElement); reintroduce; overload; virtual;
     destructor Destroy; override;
@@ -255,10 +253,10 @@ type
     FDefaultTarget: string;
     FRootPath:      TPath;  // root for all path calculations
     FRootPathSet:   boolean;
+    FInputHandler:  IInputHandler;
 
     FListener :TBuildListener;
     FNoChanges: boolean;
-    FInputHandler:  IInputHandler;
 
     procedure InsertNotification(Child :TTree); override;
     procedure RemoveNotification(Child :TTree); override;
@@ -305,8 +303,7 @@ type
     property Listener :TBuildListener read FListener write FListener;
 
     property NoChanges :boolean read GetNoChanges write FNoChanges;
-
-    property InputHandler : IInputHandler read FInputHandler write FInputHandler;
+    property InputHandler :IInputHandler read FInputHandler write FInputHandler;
   published
     function CreateTarget    : TTarget;
 
@@ -349,6 +346,7 @@ type
     procedure TaskError(Msg: string = ''; Addr :Pointer = nil);
     procedure WantError(Msg: string = ''; Addr :Pointer = nil); override;
 
+    procedure Execute; virtual;
   public
     class function TagName: string; override;
 
@@ -597,13 +595,19 @@ end;
 
 procedure TScriptElement.Configure;
 var
+  a       :Integer;
   i       :Integer;
   LastDir :TPath;
 begin
   LastDir := CurrentDir;
   try
     try
-      EvaluateAttributes;
+      with Attributes do
+      begin
+        for a := 0 to Count-1 do
+          if not SetDelphiProperty(Names[a], Evaluate(Values[Names[a]])) then
+             raise Exception.CreateFmt('%s not a property of this element', [Names[a]]);
+      end;
 
       ChangeDir(BasePath, false);
       Self.Init;
@@ -1139,25 +1143,6 @@ begin
   Result := (Owner <> nil) and Owner.NoChanges;
 end;
 
-procedure TScriptElement.Execute;
-begin
-  EvaluateAttributes;
-  if Description <> '' then
-    Log(Description);
-end;
-
-procedure TScriptElement.EvaluateAttributes;
-var
-  a : integer;
-begin
-  with Attributes do
-  begin
-    for a := 0 to Count-1 do
-      if not SetDelphiProperty(Names[a], Evaluate(Values[Names[a]])) then
-         raise Exception.CreateFmt('%s not a property of this element', [Names[a]]);
-  end;
-end;
-
 { TProject }
 
 constructor TProject.Create(Owner: TScriptElement);
@@ -1165,8 +1150,8 @@ begin
   inherited Create(Owner);
   FTargets    := TList.Create;
 
-  FRootPath    := CurrentDir;
-  FRootPathSet := False;
+  FRootPath     := CurrentDir;
+  FRootPathSet  := False;
   FInputHandler := TDefaultInputHandler.Create;
 end;
 
@@ -1286,14 +1271,14 @@ end;
 procedure TTarget.InsertNotification(Child: TTree);
 begin
   inherited InsertNotification(Child);
-  if Child is TScriptElement then
+  if Child is TTask then
       FTasks.Add(Child)
 end;
 
 procedure TTarget.RemoveNotification(Child: TTree);
 begin
   inherited RemoveNotification(Child);
-  if Child is TScriptElement then
+  if Child is TTask then
       FTasks.Remove(Child)
 end;
 
@@ -1420,6 +1405,13 @@ end;
 class function TTask.TagName: string;
 begin
   Result := SynthesizeTagName('Task');
+end;
+
+
+procedure TTask.Execute;
+begin
+  if Description <> '' then
+    Log(Description);
 end;
 
 procedure TTask.TaskFailure(const Msg: string; Addr :Pointer);
