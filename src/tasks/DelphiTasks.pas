@@ -27,13 +27,6 @@
 }
 { TODO -oGJD -cTODO : 
   Add handling of:
-  -$A: Align on/off/1/2/4/8
-  -$X: Extended Syntax
-  -$G: Imported Data
-  -$P: Open Strings
-  -$M: RTTI Type Info
-  -$V: Var String Checks
-  -A: Unit aliases
   -J: Generate an object file
   -JP: Generate C++ object file
   -K: Set image base address
@@ -151,7 +144,6 @@ type
   );
   TWarnings = set of TWarning;
 
-
   TDelphiCompileTask = class(TCustomDelphiTask)
   protected
     FExesPath: TPath;
@@ -177,6 +169,8 @@ type
     FUseLibraryPath : boolean;
     FUseCFG         : boolean;
     FHugeStrings    : boolean;
+    FOpenStrings    : boolean;
+    FVarStringChecks: boolean;
     FIoChecks       : boolean;
     FOverFlowChecks : boolean;
     FRangeChecks    : boolean;
@@ -190,6 +184,11 @@ type
     FMinEnumSize    : integer;
     FUseDebugDCUs   : boolean;
     FSafeDivide     : boolean;
+    FExtendedSyntax : boolean;
+    FImportedData   : boolean;
+    FTypeInfo       : boolean;
+    FAlign          : boolean;
+    FAlignSize      : integer;
 
     FUnitPaths      : TUnitPathElement;
     FResourcePaths  : TResourcePathElement;
@@ -198,7 +197,6 @@ type
 
     FDefines        : TStrings;
     FPackages       : TStrings;
-    { TODO -oGJD -cTODO : Add handling of unit aliases (-A) }
     FUnitAliases    : TStrings;
     FWarnings       : TWarnings;
 
@@ -230,6 +228,7 @@ type
     procedure AddDefine(Name, Value :string);
     procedure AddPackage(Name :string);
     procedure AddWarning(Name :TWarning; Value :boolean);
+    procedure AddUnitAlias(OldUnit, NewUnit: string);
 
     procedure RestoreCFGs;
 
@@ -275,12 +274,19 @@ type
     property hints          :boolean read FEnableHints    write FEnableHints    default true;
     property usecfg         :boolean read FUseCFG         write FUseCFG         default false;
     property hugestrings    :boolean read FHugeStrings    write FHugeStrings    default true;
+    property openstrings    :boolean read FOpenStrings    write FOpenStrings    default true;
+    property varstringchecks:boolean read FVarStringChecks write FVarStringChecks default true;
     property typedaddress   :boolean read FTypedAddress   write FTypedAddress   default false;
     property stackframes    :boolean read FStackFrames    write FStackFrames    default false;
     property writeableconst :boolean read FWriteableConst write FWriteableConst default false;
     property usedebugdcu    :boolean read FUseDebugDCUs   write FUseDebugDCUs   default false;
     property minenumsize    :integer read FMinEnumSize    write FMinEnumSize    default 1;
     property safedivide     :boolean read FSafeDivide     write FSafeDivide     default false;
+    property extendedsyntax :boolean read FExtendedSyntax write FExtendedSyntax default true;
+    property importeddata   :boolean read FImportedData   write FImportedData   default true;
+    property _typeinfo      :boolean read FTypeInfo       write FTypeInfo       default false;
+    property align          :boolean read FAlign          write FAlign          default true;
+    property alignsize      :integer read FAlignSize      write FAlignSize      default 8;
 
     property map            :TMapType read FMap write FMap default none;
 
@@ -317,10 +323,8 @@ type
   TDefineElement = class(TOptionElement)
   protected
     FValue :string;
-
   public
     procedure Init; override;
-
   published
     property Name;
     property Value :string read FValue write FValue;
@@ -342,15 +346,26 @@ type
     property value :TMapType read FValue write FValue;
   end;
 
-  TWarningElement = class(TScriptElement)
+  TWarningElement = class(TOptionElement)
   protected
     FName  :TWarning;
     FValue :boolean;
   public
     procedure Init; override;
   published
-    property Name :TWarning read FName write FName;
+    property Name  :TWarning read FName write FName;
     property Value :boolean read FValue write FValue;
+  end;
+
+  TUnitAliasElement = class(TOptionElement)
+  protected
+    FOldUnit :string;
+    FNewUnit :string;
+  public
+    procedure Init; override;
+  published
+    property OldUnit :string read FOldUnit write FOldUnit;
+    property NewUnit :string read FNewUnit write FNewUnit;
   end;
 
 
@@ -515,6 +530,7 @@ begin
 
   FDefines        := TStringList.Create;
   FPackages       := TStringList.Create;
+  FUnitAliases    := TStringList.Create;
 
   FQuiet := true;
   FMake := false;
@@ -537,12 +553,19 @@ begin
   FEnableHints := true;
   FUseCFG := false;
   FHugeStrings := true;
+  FOpenStrings := true;
+  FVarStringChecks := true;
   FTypedAddress := false;
   FStackFrames := false;
   FWriteableConst := false;
   FUseDebugDCUs := false;
   FMinEnumSize := 1;
   FSafeDivide := false;
+  FExtendedSyntax := true;
+  FImportedData := true;
+  FTypeInfo := false;
+  FAlign := true;
+  FAlignSize := 8;
   FAllChecks := false;
   FAllDebugInfo := true;
 
@@ -565,6 +588,7 @@ destructor TDelphiCompileTask.Destroy;
 begin
   FreeAndNil(FDefines);
   FreeAndNil(FPackages);
+  FreeAndNil(FUnitAliases);
   inherited Destroy;
 end;
 
@@ -573,7 +597,6 @@ begin
   inherited Init;
   RequireAttribute('source');
 end;
-
 
 class function TDelphiCompileTask.ToolName: string;
 begin
@@ -617,6 +640,7 @@ function TDelphiCompileTask.BuildArguments: string;
 var
   Sources: TPaths;
   d      : Integer;
+  a      : Integer;
   s      : Integer;
   p      : Integer;
   w      : TWarning;
@@ -688,12 +712,12 @@ begin
     if debug then
     begin
       Log(vlVerbose, 'debug=true');
-      Result := Result + ' -$D+ -$L+ -$YD -$C+ -$Q+ -$R+ -$O- -GD'
+      Result := Result + ' -$D+ -$L+ -$YD -$C+ -$Q+ -$R+ -$O- -GD';
     end
     else if optimize then
     begin
       Log(vlVerbose, 'optimize=true');
-      Result := Result + ' -$D+ -$L+ -$Y- -$C+ -$Q+ -$R+ -$O+'
+      Result := Result + ' -$D+ -$L+ -$Y- -$C+ -$Q+ -$R+ -$O+';
     end
   end;
 
@@ -702,12 +726,12 @@ begin
     if alldebuginfo then
     begin
       Log(vlVerbose, 'alldebuginfo=true');
-      Result := Result + ' -$D+ -$L+ -$YD'
+      Result := Result + ' -$D+ -$L+ -$YD';
     end
     else
     begin
       Log(vlVerbose, 'alldebuginfo=false');
-      Result := Result + ' -$D- -$L- -$Y-'
+      Result := Result + ' -$D- -$L- -$Y-';
     end;
   end;
 
@@ -716,12 +740,12 @@ begin
     if allchecks then
     begin
       Log(vlVerbose, 'allchecks=true');
-      Result := Result + ' -$C+ -$Q+ -$R+'
+      Result := Result + ' -$C+ -$Q+ -$R+';
     end
     else
     begin
       Log(vlVerbose, 'allchecks=false');
-      Result := Result + ' -$C- -$Q- -$R-'
+      Result := Result + ' -$C- -$Q- -$R-';
     end;
   end;
 
@@ -732,7 +756,7 @@ begin
     if console then
     begin
       Log(vlVerbose, 'console=true');
-      Result := Result + ' -CC'
+      Result := Result + ' -CC';
     end
     else
       Result := Result + ' -CG';
@@ -752,9 +776,7 @@ begin
   if HasAttribute('hints') then
   begin
     if hints then
-    begin
-      Result := Result + ' -H+';
-    end
+      Result := Result + ' -H+'
     else
     begin
       Log(vlVerbose, 'hints=false');
@@ -765,9 +787,7 @@ begin
   if HasAttribute('debuginfo') then
   begin
     if debuginfo then
-    begin
       Result := Result + ' -$D+'
-    end
     else
     begin
       Log(vlVerbose, 'debuginfo=false');
@@ -799,9 +819,7 @@ begin
   if HasAttribute('optimization') then
   begin
     if optimization then
-    begin
       Result := Result + ' -$O+'
-    end
     else
     begin
       Log(vlVerbose, 'optimization=false');
@@ -864,6 +882,28 @@ begin
     end;
   end;
 
+  if HasAttribute('openstrings') then
+  begin
+    if openstrings then
+      Result := Result + ' -$P+'
+    else
+    begin
+      Log(vlVerbose, 'openstrings=false');
+      Result := Result + ' -$P-';
+    end;
+  end;
+
+  if HasAttribute('varstringchecks') then
+  begin
+    if varstringchecks then
+      Result := Result + ' -$V+'
+    else
+    begin
+      Log(vlVerbose, 'varstringchecks=false');
+      Result := Result + ' -$V-';
+    end;
+  end;
+
   if HasAttribute('booleval') then
   begin
     if booleval then
@@ -919,6 +959,62 @@ begin
       Result := Result + ' -$U-';
   end;
 
+  if HasAttribute('extendedsyntax') then
+  begin
+    if extendedsyntax then
+      Result := Result + ' -$X+'
+    else
+    begin
+      Log(vlVerbose, 'extendedsyntax=false');
+      Result := Result + ' -$X-';
+    end;
+  end;
+
+  if HasAttribute('importeddata') then
+  begin
+    if importeddata then
+      Result := Result + ' -$G+'
+    else
+    begin
+      Log(vlVerbose, 'importeddata=false');
+      Result := Result + ' -$G-';
+    end;
+  end;
+
+  if HasAttribute('typeinfo') then
+  begin
+    if _typeinfo then
+    begin
+      Log(vlVerbose, 'typeinfo=true');
+      Result := Result + ' -$M+';
+    end
+    else
+      Result := Result + ' -$M-';
+  end;
+
+  if HasAttribute('alignsize') then
+  begin
+    if alignsize in [1,2,4,8] then
+    begin
+      if alignsize <> 8 then
+        Log(vlVerbose, 'alignsize=' + IntToStr(alignsize));
+      Result := Result + ' -$A' + IntToStr(alignsize);
+    end
+    else
+      Log(vlErrors, 'Invalid align size value (not one of [1,2,4,8]): '
+                    + IntToStr(alignsize));
+  end
+  else if HasAttribute('align') then
+  begin
+    if align then
+      Result := Result + ' -$A+'
+    else
+    begin
+      Log(vlVerbose, 'align=false');
+      Result := Result + ' -$A-';
+    end;
+  end;
+
   if HasAttribute('minenumsize') then
   begin
     if minenumsize in [1,2,4] then
@@ -941,7 +1037,7 @@ begin
     if build then
     begin
       Log(vlVerbose, 'build=true');
-      Result := Result + ' -B'
+      Result := Result + ' -B';
     end
     else if make then
     begin
@@ -960,6 +1056,17 @@ begin
   begin
     Log(vlVerbose, 'define %s', [FDefines.Names[d]]);
     Result := Result + ' -D' + FDefines.Names[d];
+  end;
+
+  if FUnitAliases.Count <> 0 then
+  begin
+    Result := Result + ' -A';
+    for a := 0 to FUnitAliases.Count - 1 do
+    begin
+      Log(vlVerbose, 'unit alias %s', [FUnitAliases[a]]);
+      Result := Result + FUnitAliases[a] + ';';
+    end;
+    SetLength(Result, Length(Result) - 1);
   end;
 
   if HasAttribute('warnings') then
@@ -1140,6 +1247,11 @@ begin
     Exclude(FWarnings, Name);
 end;
 
+procedure TDelphiCompileTask.AddUnitAlias(OldUnit, NewUnit: string);
+begin
+  FUnitAliases.Add(OldUnit + '=' + NewUnit);
+end;
+
 { TResourceCompileTask }
 
 function TResourceCompileTask.BuildArguments: string;
@@ -1185,9 +1297,12 @@ end;
 procedure TDefineElement.Init;
 begin
   inherited Init;
-  Log(vlDebug, '%s %s=%s', [TagName, Name, Value]);
-  RequireAttribute('name');
-  dcc.AddDefine(Name, Value);
+  if Enabled then
+  begin
+    Log(vlDebug, '%s %s=%s', [TagName, Name, Value]);
+    RequireAttribute('name');
+    dcc.AddDefine(Name, Value);
+  end;
 end;
 
 
@@ -1196,7 +1311,7 @@ end;
 constructor TPathSet.Create(Owner: TScriptElement);
 begin
   inherited Create(Owner);
-  FSorted := false;
+  Sorted := false;
   AddDefaultPatterns;
 end;
 
@@ -1224,7 +1339,8 @@ end;
 procedure TUsePackageElement.Init;
 begin
   inherited Init;
-  if Enabled then begin
+  if Enabled then
+  begin
     Log(vlDebug, '%s %s', [TagName, Name]);
     RequireAttribute('name');
     dcc.AddPackage(Name);
@@ -1237,8 +1353,25 @@ end;
 
 procedure TWarningElement.Init;
 begin
-  inherited;
-  TDelphiCompileTask(Owner).AddWarning(Name, Value);
+  inherited Init;
+  if Enabled then
+  begin
+    RequireAttributes(['name', 'value']);
+    dcc.AddWarning(Name, Value);
+  end;
+end;
+
+{ TUnitAliasElement }
+
+procedure TUnitAliasElement.Init;
+begin
+  inherited Init;
+  if Enabled then
+  begin
+    Log(vlDebug, '%s %s=%s', [TagName, OldUnit, NewUnit]);
+    RequireAttributes(['oldunit', 'newunit']);
+    dcc.AddUnitAlias(OldUnit, NewUnit);
+  end;
 end;
 
 initialization
@@ -1246,7 +1379,8 @@ initialization
   RegisterElements(TDelphiCompileTask, [
                          TDefineElement ,
                          TUsePackageElement,
-                         TWarningElement
+                         TWarningElement,
+                         TUnitAliasElement
                          ]);
   with TDelphiCompileTask.FindDelphi('') do
   begin
