@@ -44,6 +44,8 @@ uses
   JclStrings,
   JclFileUtils,
 
+  LogMgr,
+  ConsoleLogMgr,
   DanteClasses,
   StandardElements,
   StandardTasks,
@@ -56,24 +58,18 @@ const
 type
   TDante = class(TObject)
   protected
-    FOnLog: TLogMethod;
-    
     function RunConsole(CmdLine: string): boolean;
 
     procedure SetCommandLineProperties(Project :TProject);
-    procedure LogSink(Msg: string; Verbosity: TVerbosityLevel);
-
   public
     class function FindBuildFile(BuildFile: string):string; overload;
     class function FindBuildFile :string; overload;
 
     procedure DoBuild( ABuildFileName: string;
-                       Verbosity: TVerbosityLevel = vlNormal); overload;
+                       Level: TLogLevel = vlNormal); overload;
     procedure DoBuild( ABuildFileName: string;
                        Targets:        string;
-                       Verbosity:      TVerbosityLevel = vlNormal); overload;
-
-    property OnLog: TLogMethod read FOnLog write FOnLog;
+                       Level:      TLogLevel = vlNormal); overload;
   end;
 
 function DefaultBuildFileName: string;
@@ -93,43 +89,72 @@ end;
 
 procedure TDante.DoBuild( ABuildFileName: string;
                           Targets:        string;
-                          Verbosity:      TVerbosityLevel = vlNormal);
+                          Level:      TLogLevel = vlNormal);
 var
   Project: TProject;
   T:       string;
+  Logger: TLogManager;
 begin
-  Project := TProject.Create(nil);
+  Logger  := TConsoleLogManager.Create;
+  Logger.Level := Level;
+  Logger.Start;
   try
-    Project.OnLog := Self.LogSink;
-    Project.Verbosity := Verbosity;
-    SetCommandLineProperties(Project);
 
-    // only search for build file if name not specified
-    if ABuildFileName = '' then
-       ABuildFileName := FindBuildFile;
+    Project := TProject.Create(nil);
+    try
+      Project.LogManager := Logger;
 
-    if not FileExists(ABuildFileName) then
-      DanteError(Format('Cannot find build file "%s"',[DefaultBuildFileName]));
+      try
+        SetCommandLineProperties(Project);
 
-    Project.LoadXML(ABuildFileName);
-    if Targets = '' then
-      Project.Build
-    else begin
-      T := StrToken(Targets, ',');
-      while T <> '' do
-      begin
-        Project.Build(T);
-        T := StrToken(Targets, ',');
+        // only search for build file if name not specified
+        if ABuildFileName = '' then
+           ABuildFileName := FindBuildFile;
+
+        if not FileExists(ABuildFileName) then
+        begin
+          Logger.Log(vlErrors, Format('Cannot find build file "%s"',[DefaultBuildFileName]));
+          DanteError;
+        end;
+
+        Logger.Log('buildfile: ' + ABuildFileName);
+        Logger.Log;
+
+        Project.LoadXML(ABuildFileName);
+        if Targets = '' then
+          Project.Build
+        else begin
+          T := StrToken(Targets, ',');
+          while T <> '' do
+          begin
+            Project.Build(T);
+            T := StrToken(Targets, ',');
+          end;
+        end;
+        Logger.Log;
+        Logger.Log('Build complete.');
+
+      except
+        on E: Exception do
+        begin
+          if not E.ClassType.InheritsFrom(EDanteException) then
+            Logger.Log(vlErrors, E.ClassName + ': ' + E.Message);
+          Logger.Log;
+          Logger.Log(vlErrors, 'BUILD FAILED');
+          raise;
+        end;
       end;
+    finally
+      Project.Free;
     end;
   finally
-    Project.Free;
+    Logger.Free;
   end;
 end;
 
-procedure TDante.DoBuild(ABuildFileName: string; Verbosity: TVerbosityLevel);
+procedure TDante.DoBuild(ABuildFileName: string; Level: TLogLevel);
 begin
-  DoBuild(ABuildFileName, '', Verbosity);
+  DoBuild(ABuildFileName, '', Level);
 end;
 
 class function TDante.FindBuildFile(BuildFile: string): string;
@@ -167,14 +192,6 @@ begin
      Result := FindBuildFile(AntBuildFileName);
   if not FileExists(Result) then
      Result := DefaultBuildFileName;
-end;
-
-procedure TDante.LogSink(Msg: string; Verbosity: TVerbosityLevel);
-begin
-  if Assigned(FOnLog) then
-    FOnLog(Msg, Verbosity)
-  else if IsConsole then
-    Writeln(Msg);
 end;
 
 function TDante.RunConsole(CmdLine: string): boolean;

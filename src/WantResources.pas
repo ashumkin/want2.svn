@@ -37,13 +37,14 @@ interface
 
 uses
   Classes,
-  SysUtils;
+  SysUtils,
+  JclFileUtils;
 
 const
   Default_BuildFileName = 'build.xml';
   SwitchChars           = ['-', '/'];
 
-  C_EOL = #13 + #10;
+  C_EOL = #13#10;
 
 type
   EDanteException  = class(Exception);
@@ -100,7 +101,6 @@ type
       property    Count: Integer     read GetCount;
   end;
 
-{$IFNDEF VER120}
 resourcestring
   DanteHeaderText  = 'Dante v0.0.0 Build 0. Build Management tool for Delphi' + C_EOL;
 
@@ -113,10 +113,11 @@ resourcestring
                      '  -h, -H, -?          Displays this help text.'             + C_EOL +
                      '  -buildfile [file]   Specifies the build file. Default is' + C_EOL +
                      '                      build.xml'                            + C_EOL +
+                     '  -quiet              Be very quiet..'                      + C_EOL +
                      '  -verbose            Be extra verbose.'                    + C_EOL +
                      '  -debug              Print debugging information.'         + C_EOL;
 
-  DanteLicenseText1 = '--------------------------------------------------------------------------' + C_EOL +
+  DanteLicenseText1  = '--------------------------------------------------------------------------' + C_EOL +
                       ' Copyright (c) 2001, Dante Authors -- See authors.txt for complete list   ' + C_EOL +
                       ' All rights reserved.                                                     ' + C_EOL +
                       '                                                                          ' + C_EOL +
@@ -185,11 +186,15 @@ resourcestring
   F_DanteClassNotFound        = 'Dante class <%s> not found';
   F_DuplicateDanteClass       = 'Duplicate Dante tag <%s> in class <%s>';
 
-{$ENDIF}
 
 procedure RaiseLastSystemError(Msg :string = '');
 
 function ConvertToBoolean(const aValue: String): Boolean;
+
+function  DanteHeader: string;
+function  License :string;
+procedure Usage;
+function  GetVersionString: string;
 
 implementation
 
@@ -216,6 +221,43 @@ begin
   end;
 end;
 
+function GetVersionString: string;
+var
+  AFileVer: TJclFileVersionInfo;
+begin
+  try
+    AFileVer := TJclFileVersionInfo.Create(ParamStr(0));
+    try
+      Result := AFileVer.FileVersion;
+    finally
+      AFileVer.Free;
+    end;
+  except
+    Result := '?.?.?.?';
+  end;
+end;
+
+
+function DanteHeader: string;
+begin
+  Result :=
+    'Dante ' + GetVersionString + ' Build Management tool                  '+ C_EOL +
+    'Copyright (c) 2001, Dante Authors -- See authors.txt for complete list'+ C_EOL +
+    'For complete licensing info, execute with -L switch';
+end;
+
+function License: string;
+begin
+  Result := DanteLicenseText1 +
+            DanteLicenseText2 +
+            DanteLicenseText3 +
+            DanteLicenseText4;
+end;
+
+procedure Usage;
+begin
+  Writeln(DanteUsageText);
+end;
 
   { TDanteBase }
 
