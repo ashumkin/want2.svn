@@ -89,8 +89,6 @@ type
     procedure SetFile(Value: TPath);
 
     procedure DoFileset(Fileset: TFileSet); override;
-  public
-    procedure Init; override;
   published
     property basedir;
     property _File: TPath  read FFile write SetFile stored True;
@@ -335,12 +333,6 @@ procedure TDeleteTask.SetFile(Value: TPath);
 begin
   FFile := Value;
   MyFileSet.Include(Value);
-end;
-
-procedure TDeleteTask.Init;
-begin
-  inherited Init;
-  RequireAttribute('file|dir');
 end;
 
 { TMoveCopyTask }
