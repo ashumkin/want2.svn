@@ -836,7 +836,7 @@ end;
 
 procedure TTask.Log(Msg: string; Verbosity :TVerbosityLevel);
 begin
-  Project.Log(Format('%16s %s', ['['+XMLTag+']', Msg]), Verbosity);
+  Project.Log(Format('%12s %s', ['['+XMLTag+']', Msg]), Verbosity);
 end;
 
 function TTask.Target: TTarget;
