@@ -710,7 +710,7 @@ end;
 
 function TScriptElement.ToAbsolutePath(const Path: TPath): TPath;
 begin
-  Result := PathConcat(BasePath, Path);
+  Result := PathConcat(ToAbsolutePath(BasePath), Path);
 end;
 
 function TScriptElement.ToRelativePath(const Path: TPath; const Base: TPath): TPath;
@@ -781,7 +781,7 @@ end;
 
 function TScriptElement.ToSystemPath(const Path: TPath; const Base: TPath): TSystemPath;
 begin
-  Result := ToRelativePath(Path, ToAbsolutePath(Base));
+  Result := PathConcat(ToAbsolutePath(Base), Path);
   Result := WildPaths.ToSystemPath(Result);
 end;
 
