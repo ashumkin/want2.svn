@@ -15,8 +15,14 @@ See http://www.suigeneris.org/want/ for details.
          basedir="."
          default="dist" >
 
-  <property name="version"  value="?{release.ini:releases:current}" />
+  <property name="old.version"    value="?{release.ini:releases:current}" />
+  <regexp   property="old.build"  text="${old.version}" pattern="^.*\.([0-9]+)$" subst ="\1" />
+  
+  <property name="build" value="={1 + ${old.build}}" />
+  
+  <regexp property="version" text="${old.version}" pattern="\.[0-9]*$" subst=".={1 + ${old.build}}" />
   <regexp property="build"  text="${version}" pattern="^.*\.([0-9]+)$" subst ="\1" />
+  <regexp property="comma.version" pattern="\." subst="," text="${version}" />
 
   <property name="etc"       value="${basedir}/etc" />
   <property name="src"       value="${basedir}/src" />
@@ -53,6 +59,8 @@ See http://www.suigeneris.org/want/ for details.
   <target name="prepare" >
     <mkdir dir="${dcu}" />
     <mkdir dir="${bin}" />
+    <echo  message="version=${version}" />
+    <echo  message="build=${build}" />
   </target>
 
   <target name="clean" >
@@ -63,7 +71,6 @@ See http://www.suigeneris.org/want/ for details.
 
   <target name="versioninfo" >
     <echo message="version=${version}" />
-    <regexp property="comma.version" pattern="\." subst="," text="${version}" />
     <echo input="${src}/wantver.template.rc" file="${src}/wantver.rc" />
   </target>
 
@@ -178,12 +185,8 @@ See http://www.suigeneris.org/want/ for details.
   </target>
 
   <target name="build" >
-    <regexp property="newversion" text="${version}" pattern="\.[0-9]*$" subst=".={1 + ${build}}" />
-    <echo   message="version=${version}" />
-    <echo   message="build=${build}" />
-    <echo   message="newversion=${newversion}" />
     <ini file="release.ini" >
-      <write section="releases" key="current" value="${newversion}" />                  
+      <write section="releases" key="current" value="${version}" />                  
     </ini>
   </target>
 
