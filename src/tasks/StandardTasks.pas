@@ -41,7 +41,8 @@ uses
   ZipTasks,
   DanteTasks,
   VersionInfoTasks,
-  VssTasks;
+  VssTasks,
+  DUnitTasks;      
 
 implementation
 

@@ -72,7 +72,7 @@ begin
       FclVerRc.IncBuild;
     end;
   finally
-    FclVerRc.Free;
+    FreeAndNil(FclVerRc);
   end;
 end;
 
@@ -94,7 +94,7 @@ begin
     if Trim(_property) <> '' then
       Project.SetProperty(_property, FclVerRc.VersionInfo.VersionString);
   finally
-    FclVerRc.Free;
+    FreeAndNil(FclVerRc);
   end;
 end;
 

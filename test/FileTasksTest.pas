@@ -34,7 +34,12 @@ unit FileTasksTest;
 
 interface
 
-uses TestFramework, WildPaths, FileTasks, DanteClassesTest;
+uses
+  SysUtils,
+  TestFramework,
+  WildPaths,
+  FileTasks,
+  DanteClassesTest;
 
 type
   TTestDeleteTask = class(TTestDirCase)
@@ -112,8 +117,12 @@ end;
 procedure TTestMkDirTask.DoTest;
 begin
   FMkDirTask.Execute;
-  Check(DirectoryExists(FMkDirTask.ToSystemPath(FMkDirTask.dir)), 'directory not made');
-  Check(WildPaths.PathIsDir(FMkDirTask.dir), 'directory not made');
+  try
+    Check(DirectoryExists(FMkDirTask.ToSystemPath(FMkDirTask.dir)), 'directory not made');
+    Check(WildPaths.PathIsDir(FMkDirTask.dir), 'directory not made');
+  finally
+    WildPaths.DeleteFile(FMkDirTask.dir);
+  end;
 end;
 
 procedure TTestMkDirTask.Setup;

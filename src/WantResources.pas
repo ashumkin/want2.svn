@@ -38,6 +38,7 @@ interface
 uses
   Classes,
   SysUtils,
+  JclSysUtils,
   JclFileUtils,
   WildPaths;
 
@@ -104,8 +105,6 @@ type
   end;
 
 resourcestring
-  DanteHeaderText  = 'Dante v0.0.0 Build 0. Build Management tool for Delphi' + C_EOL;
-
   DanteUsageText   = 'For licensing info, use the -L switch'                      + C_EOL +
                                                                                     C_EOL +
                      'Usage:'                                                     + C_EOL +
@@ -119,50 +118,6 @@ resourcestring
                      '  -verbose            Be extra verbose.'                    + C_EOL +
                      '  -debug              Print debugging information.'         + C_EOL +
                      '  -color              Output to console using color.'       + C_EOL;
-
-  DanteLicenseText1  = '--------------------------------------------------------------------------' + C_EOL +
-                      ' Copyright (c) 2001, Dante Authors -- See authors.txt for complete list   ' + C_EOL +
-                      ' All rights reserved.                                                     ' + C_EOL +
-                      '                                                                          ' + C_EOL +
-                      ' Redistribution and use in source and binary forms, with or without       ' + C_EOL +
-                      ' modification, are permitted provided that the following conditions       ' + C_EOL +
-                      ' are met:                                                                 ' + C_EOL +
-                      '                                                                          ' + C_EOL;
-  DanteLicenseText2 = ' 1. Redistributions of source code must retain the above copyright        ' + C_EOL +
-                      '    notice, this list of conditions and the following disclaimer.         ' + C_EOL +
-                      '                                                                          ' + C_EOL +
-                      ' 2. Redistributions in binary form must reproduce the above copyright     ' + C_EOL +
-                      '    notice, this list of conditions and the following disclaimer in       ' + C_EOL +
-                      '    the documentation and/or other materials provided with the            ' + C_EOL +
-                      '    distribution.                                                         ' + C_EOL +
-                      '                                                                          ' + C_EOL +
-                      ' 3. The name Dante, the names of the authors in authors.txt and the       ' + C_EOL +
-                      '    names of other contributors to this software may not be used to       ' + C_EOL +
-                      '    endorse or promote products derived from this software without        ' + C_EOL +
-                      '    specific prior written permission.                                    ' + C_EOL +
-                      '                                                                          ' + C_EOL;
-  DanteLicenseText3 = '  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS     ' + C_EOL +
-                      '  ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT     ' + C_EOL +
-                      '  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS       ' + C_EOL +
-                      '  FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE          ' + C_EOL +
-                      '  COPYRIGHT HOLDERS OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,   ' + C_EOL +
-                      '  INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,    ' + C_EOL +
-                      '  BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS   ' + C_EOL +
-                      '  OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND  ' + C_EOL +
-                      '  ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR   ' + C_EOL +
-                      '  TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE  ' + C_EOL +
-                      '  USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.' + C_EOL;
-  DanteLicenseText4 = '                                                                          ' + C_EOL +
-                      '--------------------------------------------------------------------------' + C_EOL +
-                      ' The JCL (JEDI Code Library) used in Dante is governed by                 ' + C_EOL +
-                      ' the terms of the MPL (Mozilla Public License) found at                   ' + C_EOL +
-                      ' http://www.mozilla.org/MPL/MPL-1.1.html.                                 ' + C_EOL +
-                      '                                                                          ' + C_EOL +
-                      ' The source code for JCL itself can be found on JEDI Web site:            ' + C_EOL +
-                      ' http://delphi-jedi.org/Jedi:CODELIBJCL.                                  ' + C_EOL +
-                      '--------------------------------------------------------------------------' + C_EOL +
-                      ' (based on BSD Open Source License)                                       ' + C_EOL +
-                      '--------------------------------------------------------------------------' + C_EOL;
 
   F_DanteStartupFailed        = 'Dante startup failed';
 
@@ -233,7 +188,7 @@ begin
     try
       Result := AFileVer.FileVersion;
     finally
-      AFileVer.Free;
+      FreeAndNil(AFileVer);
     end;
   except
     Result := '?.?.?.?';
@@ -250,11 +205,42 @@ begin
 end;
 
 function License: string;
+var
+  FindHandle: THandle;
+  ResHandle: THandle;
+  ResPtr: Pointer;
+
+  procedure RaiseError(ErrorTxt: string);
+  begin
+    raise Exception.Create('Internal error: ' + ErrorTxt + ' ' +
+      '[DanteBase.License]');
+  end;
 begin
-  Result := DanteLicenseText1 +
-            DanteLicenseText2 +
-            DanteLicenseText3 +
-            DanteLicenseText4;
+  FindHandle := FindResource(HInstance, PChar('LICENSE'), 'TEXT');
+  if FindHandle <> 0 then
+  begin
+    ResHandle := LoadResource(HInstance, FindHandle);
+    try
+      if ResHandle <> 0 then
+      begin
+        ResPtr := LockResource(ResHandle);
+        try
+          if ResPtr <> Nil then
+            Result := PChar(ResPtr)
+          else
+            RaiseError('LockResource failed');
+        finally
+          UnlockResource(ResHandle);
+        end;
+      end
+      else
+        RaiseError('LoadResource failed');
+   finally
+     FreeResource(FindHandle);
+   end;
+  end
+  else
+    RaiseError('FindResource failed');
 end;
 
 procedure Usage;
@@ -300,8 +286,7 @@ destructor TDanteList.Destroy; { override }
 begin
   Clear;
 
-  FList.Free;
-  FList := nil;
+  FreeAndNil(FList);
 
   inherited Destroy;
 end;

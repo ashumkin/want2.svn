@@ -86,7 +86,7 @@ end;
 destructor TLoggerTask.Destroy;
 begin
   // no need to free the TInfoElements themselves
-  FInfos.Free;
+  FreeAndNil(FInfos);
   inherited Destroy;
 end;
 

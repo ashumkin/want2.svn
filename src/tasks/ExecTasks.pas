@@ -214,7 +214,7 @@ end;
 
 destructor TCustomExecTask.Destroy;
 begin
-  FArguments.Free;
+  FreeAndNil(FArguments);
   inherited;
 end;
 
@@ -258,7 +258,7 @@ begin
       TaskFailure('failed');
     end;
   finally
-    Child.Free;
+    FreeAndNil(Child);
   end;
 end;
 

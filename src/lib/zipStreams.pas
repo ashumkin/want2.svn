@@ -38,6 +38,7 @@ interface
 uses
   SysUtils,
   Classes,
+  JclSysUtils,
   ZipUtils,
   ZIP,
   UNZIP,
@@ -186,7 +187,7 @@ begin
   try
     UnzipStream.ExtractAll(ToDir);
   finally
-    UnzipStream.Free;
+    FreeAndNil(UnzipStream);
   end;
 end;
 
@@ -212,7 +213,7 @@ destructor TZipStream.Destroy;
 var
   Err :Integer;
 begin
-  FPaths.Free;
+  FreeAndNil(FPaths);
   if EntryOpen then
      CloseEntry;
   Err := ZIP_OK;
@@ -365,7 +366,7 @@ begin
                              CheckFileTime(FileName),
                              Comment);
     finally
-      Stream.Free;
+      FreeAndNil(Stream);
     end;
   end;
 end;
@@ -423,7 +424,7 @@ destructor TUnzipStream.Destroy;
 var
   Err :Integer;
 begin
-  FEntries.Free;
+  FreeAndNil(FEntries);
   if EntryOpen then
      CloseEntry;
   Err := UNZ_OK;
@@ -553,7 +554,7 @@ begin
     try
       ReadStream(FileName, Stream);
     finally
-      Stream.Free;
+      FreeAndNil(Stream);
     end;
   end;
 end;

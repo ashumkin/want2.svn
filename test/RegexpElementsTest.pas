@@ -37,6 +37,7 @@ interface
 uses
   TestFramework,
   DanteClasses,
+  ScriptParser,
   DanteClassesTest,
   RegexpElements;
 
@@ -62,7 +63,7 @@ const
   +#10'</project>'
   +'';
 begin
-  FProject.ParseXMLText(build_xml);
+  TScriptParser.ParseText(FProject, build_xml);
   FProject.Build;
   CheckEquals('1_2_3', FProject.Targets[0].PropertyValue('subst'));
 end;

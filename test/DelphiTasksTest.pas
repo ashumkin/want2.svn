@@ -35,6 +35,7 @@ unit DelphiTasksTest;
 interface
 
 uses
+  JclFileUtils,
   WildPaths,
   DanteClasses,
   DelphiTasks,
@@ -62,7 +63,7 @@ var
 begin
   with FProject do
   begin
-    BaseDir := PathConcat(SuperPath(ToPath(ParamStr(0))), '..');
+    BaseDir := PathConcat(SuperPath(ToPath(GetModulePath(hInstance))), '..');
     Name := 'delphi_compile';
 
     T := AddTarget('compile');
@@ -77,15 +78,8 @@ begin
       quiet   := true;
       uselibrarypath := false;
 
-      AddUnitPath('lib');
-      AddUnitPath('tasks');
-      AddUnitPath('elements');
-
-      AddUnitPath('../lib/jcl');
-      AddUnitPath('../lib/xml');
-      AddUnitPath('../lib/paszlib');
-      AddUnitPath('../lib/paszlib/minizip');
-      AddUnitPath('../lib/perlre');
+      AddUnitPath('../lib/**');
+      AddUnitPath('../src/**');
     end;
   end;
 end;

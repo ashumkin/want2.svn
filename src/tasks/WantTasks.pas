@@ -36,13 +36,17 @@ unit DanteTasks;
 
 interface
 uses
+  SysUtils,
+  Classes,
+
+  JclSysUtils,
+
   DanteBase,
   DanteClasses,
+  ScriptParser,
   WildPaths,
-  PatternSets,
+  PatternSets;
 
-  SysUtils,
-  Classes;
 
 type
   TSubProjectPropertyElement = class(TDanteElement)
@@ -101,7 +105,7 @@ end;
 
 destructor TDanteTask.Destroy;
 begin
-  FSubProject.Free;
+  FreeAndNil(FSubProject);
   inherited Destroy;
 end;
 
@@ -123,7 +127,7 @@ begin
                      ]);
 
 
-  FSubProject.LoadXML(buildfile);
+  TScriptParser.Parse(FSubProject, buildfile);
   FSubProject.Build(_target);
 end;
 

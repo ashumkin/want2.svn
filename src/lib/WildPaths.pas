@@ -63,6 +63,7 @@ uses
   Classes,
 
   JclBase,
+  JclSysUtils,
   JclStrings;
 
 const
@@ -93,7 +94,8 @@ type
     SysFile,   {= $00000004 }
     VolumeID,  {= $00000008 }
     Directory, {= $00000010 }
-    Archive    {= $00000020 }
+    Archive,   {= $00000020 }
+    NoFile     {= -1}
   );
   TFileAttributes = set of TFileAttribute;
 
@@ -134,13 +136,20 @@ procedure ForceRelativePath(var Path, BasePath: TPath);
 
 // use JCL for this
 function FindPaths(const Path: TPath; const BasePath: TPath = '';
-                   IncludeAttr: Integer = faAnyFile;
-                   ExcludeAttr: Integer = 0): TPaths;
+                   IncludeAttr: TFileAttributes = AnyFileAttribute;
+                   ExcludeAttr: TFileAttributes = []
+                   ): TPaths;
 function FindFiles(const Path: TPath; const BasePath: TPath = ''): TPaths;
 function FindDirs(const  Path: TPath; const BasePath: TPath  = ''): TPaths;
 
-function  Wild(const Pattern: TPath; const BasePath: TPath = ''):TPaths; overload;
-procedure Wild(Files: TStrings; const Pattern: TPath; const BasePath: TPath = ''); overload;
+function  Wild(const Pattern: TPath; const BasePath: TPath = '';
+                   IncludeAttr: TFileAttributes = AnyFileAttribute;
+                   ExcludeAttr: TFileAttributes = []
+                ):TPaths; overload;
+procedure Wild(Files: TStrings; const Pattern: TPath; const BasePath: TPath = '';
+                   IncludeAttr: TFileAttributes = AnyFileAttribute;
+                   ExcludeAttr: TFileAttributes = []
+          ); overload;
 
 
 function IsMatch(const Path, Pattern: TPath):boolean; overload;
@@ -180,17 +189,22 @@ procedure SetFileAttributes(const Path: TPath; const Attr: TFileAttributes);
 
 function  FileTime(const Path: TPath): TDateTime;
 
-function  SystemFileAttributes(const Path: TPath): Byte;
+function  SystemFileAttributes(const Path: TPath): Integer;
 function  SystemFileTime(const Path: TPath): Longint;
 
 function  TimeToSystemFileTime(const Time: TDateTime):Integer;
 function  FileAttributesToSystemAttributes(const Attr: TFileAttributes):Byte;
+function  SystemAttributesToFileAttributes(Attr: Integer) :TFileAttributes;
 
 
 implementation
 
 
-procedure Wild(Files: TStrings; const Patterns: TPatterns; const BasePath: TPath = ''; Index: Integer = 0);
+procedure Wild( Files: TStrings; const Patterns: TPatterns; const BasePath: TPath = '';
+                Index: Integer = 0;
+                IncludeAttr: TFileAttributes = AnyFileAttribute;
+                ExcludeAttr: TFileAttributes = []
+                );
   overload; forward;
 
 
@@ -361,8 +375,9 @@ end;
 
 
 function FindPaths( const Path: TPath; const BasePath: TPath;
-                    IncludeAttr: Integer;
-                    ExcludeAttr: Integer):TPaths;
+                    IncludeAttr: TFileAttributes;
+                    ExcludeAttr: TFileAttributes
+                    ):TPaths;
 var
   S: TStringList;
   Search: TSearchRec;
@@ -377,8 +392,8 @@ begin
     try
       while SearchResult = 0 do
       begin
-        if ((Search.Attr and IncludeAttr) <> 0)
-        and ((Search.Attr and ExcludeAttr) = 0)
+        if  ((SystemAttributesToFileAttributes(Search.Attr) * IncludeAttr) <> [])
+        and ((SystemAttributesToFileAttributes(Search.Attr) * ExcludeAttr) =  [])
         and (Search.Name <> '.' )
         and (Search.Name <> '..' )
         then
@@ -390,18 +405,18 @@ begin
     end;
     Result := StringsToPaths(S);
   finally
-    S.Free;
+    FreeAndNil(S);
   end;
 end;
 
 function FindDirs(const Path: TPath; const BasePath: TPath): TPaths;
 begin
-   Result := FindPaths(Path, BasePath, faDirectory, 0);
+   Result := FindPaths(Path, BasePath, [Directory]);
 end;
 
 function FindFiles(const Path: TPath; const BasePath: TPath): TPaths;
 begin
-   Result := FindPaths(Path, BasePath, faAnyFile, faDirectory);
+   Result := FindPaths(Path, BasePath, AnyFileAttribute, [Directory]);
 end;
 
 function SplitPath(Path: TPath): TPaths;
@@ -430,7 +445,7 @@ begin
     for i := 0 to S.Count-1 do
       Result[i+n] := S[i];
   finally
-    S.Free;
+    FreeAndNil(S);
   end;
 end;
 
@@ -551,7 +566,10 @@ begin
   end;
 end;
 
-function Wild(const Pattern: TPath; const BasePath: TPath):TPaths;
+function Wild(const Pattern: TPath; const BasePath: TPath;
+                    IncludeAttr: TFileAttributes;
+                    ExcludeAttr: TFileAttributes
+                    ):TPaths;
 var
   Files: TStringList;
 begin
@@ -561,14 +579,17 @@ begin
   Files := TStringList.Create;
   try
     Files.Sorted := True;
-    Wild(Files, Pattern, BasePath);
+    Wild(Files, Pattern, BasePath, IncludeAttr, ExcludeAttr);
     Result := StringsToPaths(Files);
   finally
-    Files.Free;
+    FreeAndNil(Files);
   end;
 end;
 
-procedure Wild(Files: TStrings; const Pattern: TPath; const BasePath: TPath = '');
+procedure Wild(Files: TStrings; const Pattern: TPath; const BasePath: TPath;
+               IncludeAttr: TFileAttributes;
+               ExcludeAttr: TFileAttributes
+               );
 var
   Pats: string;
   Pat : TPath;
@@ -582,14 +603,18 @@ begin
   begin
     //ForceRelativePath(Pattern, BasePath);
     if PathIsAbsolute(Pattern) then
-      Wild(Files, SplitPath(Pat), '')
+      Wild(Files, SplitPath(Pat), '',       0, IncludeAttr, ExcludeAttr)
     else
-      Wild(Files, SplitPath(Pat), BasePath);
+      Wild(Files, SplitPath(Pat), BasePath, 0, IncludeAttr, ExcludeAttr);
     Pat  := StrToken(Pats, ',');
   end;
 end;
 
-procedure Wild(Files: TStrings; const Patterns: TPatterns; const BasePath: TPath; Index: Integer);
+procedure Wild( Files: TStrings; const Patterns: TPatterns; const BasePath: TPath;
+                Index: Integer;
+                IncludeAttr: TFileAttributes;
+                ExcludeAttr: TFileAttributes
+                );
 var
   i      : Integer;
   Matches: TPaths;
@@ -605,7 +630,7 @@ begin
   while (Index < High(Patterns))
   and ((LastDelimiter(WildChars, Patterns[Index]) = 0)
        or (Patterns[Index] = '.')
-      ) 
+      )
   do
   begin
     NewBase := PathConcat(NewBase, Patterns[Index]);
@@ -614,7 +639,7 @@ begin
   Assert(Index <= High(Patterns));
   if Index = High(Patterns) then
   begin // add files (works for '**' too)
-    Matches := FindPaths(Patterns[Index], NewBase);
+    Matches := FindPaths(Patterns[Index], NewBase, IncludeAttr, ExcludeAttr);
     for i := Low(Matches) to High(Matches) do
       Files.Add(PathConcat(NewBase, Matches[i]))
   end;
@@ -622,17 +647,17 @@ begin
   // handle wildcards
   if Patterns[Index] = '**' then
   begin // match anything and recurse
-    Wild(Files, Patterns, NewBase, Index+1);
+    Wild(Files, Patterns, NewBase, Index+1, IncludeAttr, ExcludeAttr);
     Matches := FindDirs('*', NewBase);
     // use same Index ('**') to recurse
     for i := Low(Matches) to High(Matches) do
-      Wild(Files, Patterns, PathConcat(NewBase, Matches[i]), Index);
+      Wild(Files, Patterns, PathConcat(NewBase, Matches[i]), Index, IncludeAttr, ExcludeAttr);
   end
   else if Index < High(Patterns) then
   begin // match directories
     Matches := FindDirs(Patterns[Index], NewBase);
     for i := Low(Matches) to High(Matches) do
-      Wild(Files, Patterns, PathConcat(NewBase, Matches[i]), Index+1);
+      Wild(Files, Patterns, PathConcat(NewBase, Matches[i]), Index+1, IncludeAttr, ExcludeAttr);
   end;
 end;
 
@@ -703,14 +728,13 @@ function  PathIsDir(const Path: TPath):boolean;
 begin
   AssertIsSystemIndependentPath(Path);
 
-  Result := Length(FindDirs(Path)) = 1;
+  Result := (FileAttributes(Path) * [NoFile, Directory]) = [Directory];
 end;
 
 function  PathIsFile(const Path: TPath):boolean;
 begin
-   AssertIsSystemIndependentPath(Path);
-
-  Result := Length(FindFiles(Path)) = 1;
+  AssertIsSystemIndependentPath(Path);
+  Result := (FileAttributes(Path) * [NoFile, Directory]) = [];
 end;
 
 function  SuperPath(const Path: TPath): TPath;
@@ -905,8 +929,14 @@ begin
 end;
 
 function FileAttributes(const Path: TPath):TFileAttributes;
+var
+  Attr :Integer;
 begin
-  Result := TFileAttributes(SystemFileAttributes(Path));
+  Attr := SystemFileAttributes(Path);
+  if Attr < 0 then
+    Result := [NoFile]
+  else
+    Result := TFileAttributes(Byte(Attr));
 end;
 
 procedure SetFileAttributes(const Path: TPath; const Attr: TFileAttributes);
@@ -925,7 +955,7 @@ begin
     Result := FileDateToDateTime(SystemTime);
 end;
 
-function  SystemFileAttributes(const Path: TPath): Byte;
+function  SystemFileAttributes(const Path: TPath): Integer;
 begin
   Result := Byte(SysUtils.FileGetAttr(ToSystemPath(Path)));
 end;
@@ -945,6 +975,11 @@ end;
 function  FileAttributesToSystemAttributes(const Attr: TFileAttributes):Byte;
 begin
   Result := Byte(Attr);
+end;
+
+function  SystemAttributesToFileAttributes(Attr: Integer) :TFileAttributes;
+begin
+  Result := TFileAttributes(Byte(Attr));
 end;
 
 

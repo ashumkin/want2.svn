@@ -17,10 +17,17 @@
     <h2>Core Classes</h2>
 
     <ul>
+      <li>Must parse all elements and store value of _all_ attributes 
+      to support GUI editing.
+      Conditional attributes currently make the parser skip elements.
       <li>Make Dante capable of analyzing a task/element and
       outputing its XML syntax.</li>
 
       <li>Implement loadable task/element modules.</li>
+
+      <li><b>DONE!</b>Factor out XML parsing into its own unit. This will reduce
+      the set of core classes that loadable modules must link in
+      </li>
     </ul>
 
     <h2>Build Scripts</h2>

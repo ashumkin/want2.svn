@@ -118,7 +118,7 @@ begin
       System.Insert(Replacement, Result, Matched.StartP);
     end;
   finally
-    Regexp.Free;
+    FreeAndNil(Regexp);
   end;
 end;
 

@@ -33,8 +33,11 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 program DanteAcceptTest;
 
 uses
-  GUITestRunner,
-  TextTestRunner,
+  {$IFDEF USE_TEXT_RUNNER}
+    TextTestRunner,
+  {$ELSE}
+    GUITestRunner,
+  {$ENDIF}
   TestFramework,
   DanteMainTest,
   VssTasksTest,

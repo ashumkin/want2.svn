@@ -137,7 +137,7 @@ begin
 
     Result := S.Text;
   finally
-    S.Free;
+    FreeAndNil(S);
   end;
 end;
 

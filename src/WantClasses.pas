@@ -43,9 +43,7 @@ uses
 
   WildPaths,
 
-  Collections,
-  MiniDom,
-
+  JclSysUtils,
   JclSysInfo,
   JclStrings,
   JclFileUtils,
@@ -103,9 +101,6 @@ type
   ETaskError       = class(ETaskException);
   ETaskFailure     = class(ETaskException);
 
-  EDanteParseException = class(EDanteException);
-
-
   TStringArray = array of string;
 
   TDanteElementArray = array of TDanteElement;
@@ -125,7 +120,9 @@ type
 
     FDescription:   string;
 
-    function GetChild(i :Integer):TDanteElement;
+    class function SynthesizeTagName(Suffix :string): string; virtual;
+
+    function  GetChild(i :Integer):TDanteElement;
 
     function  GetBaseDir: TPath;              virtual;
     procedure SetBaseDir(const Value: TPath); virtual;
@@ -149,20 +146,15 @@ type
     procedure RequireAttributes(Names: array of string);
     procedure AttributeRequiredError(AttName: string);
 
-    procedure ParseXML(Node: MiniDom.IElement);               virtual;
-    function  ParseXMLChild(Child: MiniDom.IElement):boolean; virtual;
-    procedure ParseError(Msg: string; Line: Integer);
   public
     constructor Create(Owner: TDanteElement); reintroduce; overload; virtual;
-
     destructor Destroy; override;
 
     class function TagName: string; virtual;
 
-    procedure Init;                                       virtual;
-
-    function  AsXML    : string;                virtual;
-    function  ToXML(Dom: IDocument):  IElement; virtual;
+    procedure SetUp(Name :string; Atts :TStrings);                         virtual;
+    function  SetupChild(ChildName :string; Atts :TStrings):TDanteElement; virtual;
+    procedure Init;   virtual;
 
     procedure SetProperty(Name, Value: string);          virtual;
     function  PropertyDefined(Name: string): boolean;    virtual;
@@ -188,7 +180,6 @@ type
     function  ToDantePath(Path: TSystemPath): TPath;
     function  ToAbsolutePath(const Path: TPath): TPath; virtual;
     function  ToRelativePath(const Path: TPath; const Base: TPath = ''): TPath; virtual;
-    function  StringsToSystemPathList(List: TStrings; const Base: TPath = ''): TSystemPath;
     procedure AboutToScratchPath(const Path: TPath);
 
     property  Project: TProject      read GetProject;
@@ -198,14 +189,13 @@ type
     property basedir:    TPath    read GetBaseDir  write SetBaseDir;
     property Properties: TStrings read FProperties write SetProperties;
     property Attributes: TStrings read FAttributes write SetAttributes;
-    property Name:  string read FName write FName stored True;
+    property Name:       string   read FName       write FName stored True;
 
     property Children[i :Integer] :TDanteElement read GetChild;
   published
     property Tag :  string        read TagName stored False;
     property Description: string  read FDescription write FDescription;
   end;
-
 
 
 
@@ -226,8 +216,6 @@ type
     function  GetTarget(Index: Integer):TTarget;
     procedure BuildSchedule(TargetName: string; Sched: TList);
 
-    procedure DoParseXML(Node: MiniDom.IElement);
-
     procedure SetBaseDir(const Value: TPath); override;
     function  GetBaseDir: TPath;              override;
 
@@ -244,10 +232,6 @@ type
     class function DefaultBuildFileName: TPath;
     function FindBuildFile(BuildFile: TPath; SearchUp :boolean = False):TPath; overload;
     function FindBuildFile(SearchUp :boolean= False) :TPath; overload;
-
-    function  ToXML(Dom: IDocument):  IElement; override;
-    procedure ParseXMLText(const XML: string);
-    procedure LoadXML(const SystemPath: TSystemPath = '');
 
     function  FindChild(Id: string; ChildClass: TClass = nil): TDanteElement;
 
@@ -306,7 +290,6 @@ type
     destructor  Destroy; override;
 
     class function TagName: string; override;
-    function  ToXML(Dom: IDocument):  IElement; override;
 
     function TaskCount: Integer;
     procedure Build; virtual;
@@ -355,6 +338,11 @@ procedure RaiseLastSystemError(Msg: string = '');
 procedure DanteError(Msg: string = '');
 procedure TaskError(Msg: string = '');
 procedure TaskFailure(Msg: string = '');
+
+function CallerAddr: Pointer;
+{$IFNDEF DELPHI5_UP}
+const FreeAndNil : procedure(var Obj) = JclSysUtils.FreeAndNil;
+{$ENDIF}
 
 implementation
 
@@ -473,24 +461,58 @@ begin
     for i := 0 to S.Count-1 do
        Result[i] := Trim(S[i]);
   finally
-    S.Free;
+    FreeAndNil(S);
   end;
 end;
 
 
+function IsBadPointer(P: Pointer):boolean; register;
+begin
+  try
+    Result  := (p = nil)
+              or ((Pointer(P^) <> P) and (Pointer(P^) = P));
+  except
+    Result := false
+  end
+end;
+
+
+function CallerAddr: Pointer; assembler;
+const
+  CallerIP = $4;
+asm
+   mov   eax, ebp
+   call  IsBadPointer
+   test  eax,eax
+   jne   @@Error
+
+   mov   eax, [ebp].CallerIP
+   sub   eax, 5   // 5 bytes for call
+
+   push  eax
+   call  IsBadPointer
+   test  eax,eax
+   pop   eax
+   je    @@Finish
+
+@@Error:
+   xor eax, eax
+@@Finish:
+end;
+
 procedure DanteError(Msg: string = '');
 begin
-   raise EDanteError.Create(Msg + '!' );
+   raise EDanteError.Create(Msg + '!' ) at CallerAddr;
 end;
 
 procedure TaskError(Msg: string);
 begin
-   raise ETaskError.Create(Msg + '!' );
+   raise ETaskError.Create(Msg + '!' ) at CallerAddr;;
 end;
 
 procedure TaskFailure(Msg: string);
 begin
-   raise ETaskFailure.Create('fail: '+ Msg);
+   raise ETaskFailure.Create(Msg) at CallerAddr;
 end;
 
 { TDanteElement }
@@ -504,8 +526,8 @@ end;
 
 destructor TDanteElement.Destroy;
 begin
-  FAttributes.Free;
-  FProperties.Free;
+  FreeAndNil(FAttributes);
+  FreeAndNil(FProperties);
   inherited Destroy;
 end;
 
@@ -529,14 +551,19 @@ begin
     Result := Owner.Project;
 end;
 
-class function TDanteElement.TagName: string;
-const
-  Elem = 'element';
+class function TDanteElement.SynthesizeTagName(Suffix: string): string;
 begin
-  Result := copy(ClassName, 2, 255);
+  Result := ClassName;
+  if StrLeft(Result, 1) = 'T' then
+    Delete(Result, 1, 1);
+  if StrRight(Result, Length(Suffix)) = Suffix then
+    Delete(Result, 1 + Length(Result) - Length(Suffix), Length(Suffix));
   Result := LowerCase(Result);
-  if Pos(Elem, Result) = (1 + Length(Result) - Length(Elem)) then
-    Result := StringReplace(Result, Elem, '', []);
+end;
+
+class function TDanteElement.TagName: string;
+begin
+  Result := SynthesizeTagName('Element');
 end;
 
 
@@ -545,68 +572,35 @@ begin
   // do nothing
 end;
 
-procedure TDanteElement.ParseXML(Node: IElement);
+procedure TDanteElement.SetUp(Name: string; Atts: TStrings);
 var
-  i    : IIterator;
-  valid: boolean;
-  child: MiniDom.INode;
-  elem : MiniDom.IElement;
-  text : MiniDom.ITextNode;
+  i        :Integer;
+  LastDir  :TPath;
 begin
-  Log(vlDebug, 'Parsing %s', [Node.Name]);
-  if Node.Name <> Self.TagName then
-    ParseError(Format('XML tag of class <%s> is <%s> but found <%s>',
-                      [ClassName, TagName, NOde.Name]
-                      ), Node.LineNo);
+  Log(vlDebug, 'SetUp %s', [Name]);
 
-  i := Node.Attributes.Iterator;
-  while i.HasNext do
-  begin
-    with i.Next as IAttribute do
-    begin
-      valid := False;
-      try
-        valid := Self.SetAttribute(Name, Value);
-      except
-        on e: Exception do
-          ParseError(e.Message, Node.LineNo);
-      end;
-      if not valid then
-        ParseError(Format('Unknown attribute <%s>.%s', [TagName, Name]), Node.LineNo);
-    end;
-  end;
-
-  Log(vlDebug, 'Init, BasePath ="%s"', [BasePath]);
+  LastDir := CurrentDir;
   ChangeDir(BasePath);
-
   try
-    Self.Init;
-  except
-    on e :Exception do
-    begin
-      ParseError(e.Message, Node.LineNo);
-    end;
-  end;
+    if Name <> Self.TagName then
+      DanteError(Format('XML tag of class <%s> is <%s> but found <%s>',
+                        [ClassName, TagName, Name]
+                        ));
 
-  i := Node.Children.Iterator;
-  while i.HasNext do
-  begin
-    child := i.Next as INode;
-    if 0 = child.QueryInterface(IElement, elem)  then
+    for i := 0 to Atts.Count-1 do
     begin
-      if not ParseXMLChild(elem) then
-        ParseError(Format('Unknown element <%s><%s>', [TagName, elem.Name] ), Child.LineNo);
-    end
-    else if 0 = child.QueryInterface(ITextNode, text)  then
-    begin
-      if not SetAttribute('text', GetAttribute('text') + text.text )
-      and (Trim(GetAttribute('text')) <> '')
-      then
-        ParseError(Format('Element <%s> does not accept text', [TagName]), Child.LineNo);
+       if not Self.SetAttribute(Atts.Names[i], Atts.Values[Atts.Names[i]]) then
+         DanteError(Format('Unknown attribute <%s>.%s', [TagName, Atts.Names[i]]));
     end;
+
+    Log(vlDebug, 'Init, BasePath ="%s"', [BasePath]);
+    ChangeDir(BasePath);
+
+    Self.Init;
+  finally
+    ChangeDir(LastDir);
   end;
 end;
-
 
 function TDanteElement.HasAttribute(Name: string): boolean;
 begin
@@ -619,9 +613,17 @@ begin
   if (Name = 'if') or (Name = 'unless')
   or (Name = 'ifdef') or (Name = 'ifndef')
   then
-    Result := true // Do nothing. Conditionals are processed by ParseXMLChild
+    Result := true // Do nothing. Conditionals are processed elsewhere
   else
   begin
+    Result := true;
+    if (Name = 'text') then
+    begin
+       if Trim(Value) = '' then
+         EXIT // ignore it
+       else
+         Value := TrimRight(Value);
+    end;
     Log(vlDebug, 'attribute %s="%s"', [Name,ExpandMacros(Value)]);
     FAttributes.Values[Name] := Value;
     Result := SetDelphiProperty(Name, ExpandMacros(Value));
@@ -643,117 +645,49 @@ begin
   FAttributes.Assign(Value);
 end;
 
-function TDanteElement.ParseXMLChild(Child: IElement): boolean;
+function TDanteElement.SetupChild(ChildName: string; Atts: TStrings) :TDanteElement;
 var
   MethodName: string;
   Method    : TMethod;
   ElemClass : TDanteElementClass;
-  Elem      : TDanteElement;
   CondPropName: string;
 begin
-  Result := true;
-  Elem := nil;
-
+  Result := nil;
   // conditionals
-  CondPropName := Child.attributeValue('if');
+
+  CondPropName := Atts.Values['if'];
   if CondPropName = '' then
-    CondPropName := Child.attributeValue('ifdef');
+    CondPropName := Atts.Values['ifdef'];
   if (CondPropName <> '')
   and not PropertyDefined(CondPropName) then
   begin
-    Log(vlDebug, 'skipping <%s> because "%s" not defined', [Child.Name, CondPropName]);
+    Log(vlDebug, 'skipping <%s> because "%s" not defined', [ChildName, CondPropName]);
     EXIT;
   end;
 
-  CondPropName := Child.attributeValue('unless');
+  CondPropName := Atts.Values['unless'];
   if CondPropName = '' then
-    CondPropName := Child.attributeValue('ifndef');
+    CondPropName := Atts.Values['ifndef'];
   if (CondPropName <> '')
   and PropertyDefined(CondPropName) then
   begin
-    Log(vlDebug, 'skipping <%s> because "%s" defined', [Child.Name, CondPropName]);
+    Log(vlDebug, 'skipping <%s> because "%s" defined', [ChildName, CondPropName]);
     EXIT;
   end;
 
   Method.Data  := Self;
-  MethodName   := 'Create' + Child.Name;
+  MethodName   := 'Create' + ChildName;
   Method.Code  := MethodAddress(MethodName);
 
   if Method.Code <> nil then
-    Elem := TCreateElementMethod(Method)()
+    Result := TCreateElementMethod(Method)()
   else
   begin
-    ElemClass := FindElement(Child.Name, Self.ClassType);
+    ElemClass := FindElement(ChildName, Self.ClassType);
     if ElemClass <> nil then
-      Elem := ElemClass.Create(Self);
-  end;
-
-  if Elem <> nil then
-    Elem.ParseXML(Child)
-  else
-    Result := false;
-end;
-
-procedure TDanteElement.ParseError(Msg: string; Line: Integer);
-begin
-  raise EDanteParseException.Create(Format('(%d): %s',[Line, Msg]));
-end;
-
-function TDanteElement.AsXML: string;
-begin
-  Result := toXML(TDocument.Create).toString;
-end;
-
-function TDanteElement.ToXML(Dom: MiniDom.IDocument): MiniDom.IElement;
-var
-  TypeInfo:  PTypeInfo;
-  PropList:  PPropList;
-  PropInfo:  PPropInfo;
-  PropCount: Integer;
-  i:         Integer;
-  PropName:  string;
-  PropValue: string;
-begin
-  Result := Dom.NewElement(TagName);
-
-  TypeInfo  := Self.ClassInfo;
-  PropCount := GetTypeData(TypeInfo).PropCount;
-  if PropCount > 0 then
-  begin
-    GetMem(PropList, PropCount * SizeOf(PPropInfo));
-    try
-      GetPropInfos(TypeInfo, PropList);
-      for i := 0 to PropCount-1 do
-      begin
-        PropInfo  := PropList[i];
-        PropName  := AnsiLowerCase(PropInfo.Name);
-        PropValue := '';
-        with PropInfo^, PropType^^ do
-          if IsStoredProp(Self, PropInfo)
-          and (SetProc <> nil)
-          and (GetProc <> nil)
-          and (Kind in SupportedPropertyTypes)
-          then
-          begin
-            if Kind in [tkString, tkLString, tkWString] then
-              PropValue := GetStrProp(Self, PropInfo)
-            else if Kind in [tkInteger] then
-              PropValue := IntToStr(GetOrdProp(Self, PropInfo))
-            else if Kind in [tkEnumeration] then
-              PropValue := GetEnumName(PropType^, GetOrdProp(Self, PropInfo))
-            else
-            begin
-              // do nothing
-            end
-          end;
-        if StrLeft(PropName,1) = '_' then
-          Delete(PropName, 1, 1);
-        if PropValue <> '' then
-          Result.SetAttribute(PropName, PropValue);
-      end;
-    finally
-      FreeMem(PropList);
-    end;
+      Result := ElemClass.Create(Self)
+    else
+      DanteError(Format('Unknown element <%s><%s>', [TagName, ChildName] ));
   end;
 end;
 
@@ -777,22 +711,6 @@ begin
   else
     Result := WildPaths.ToRelativePath(Path, Base);
 end;
-
-function TDanteElement.StringsToSystemPathList(List: TStrings; const Base: TPath): TSystemPath;
-var
-  i, p : Integer;
-  Paths: TStringArray;
-begin
-  Result := '';
-  Paths  := nil;
-  for i := 0 to List.Count-1 do
-  begin
-    Paths := TextToArray(List[i]);
-    for p := Low(Paths) to High(Paths) do
-      Result := Result + ';' + ToSystemPath(Paths[p], Base);
-  end;
-end;
-
 
 procedure TDanteElement.AboutToScratchPath(const Path: TPath);
 begin
@@ -822,7 +740,7 @@ begin
     for i := 0 to List.Count-1 do
       Result[i] := List[i];
   finally
-    List.Free
+    FreeAndNil(List);
   end;
 end;
 
@@ -1056,10 +974,6 @@ begin
   end;
 end;
 
-
-
-
-
 { TProject }
 
 constructor TProject.Create(Owner: TDanteElement);
@@ -1076,8 +990,7 @@ destructor TProject.Destroy;
 begin
   FTargets.Clear;
   inherited Destroy;
-  FTargets.Free;
-  FTargets := nil;
+  FreeAndNil(FTargets);
 end;
 
 function TProject.CreateTarget: TTarget;
@@ -1168,7 +1081,7 @@ begin
     for i := 0 to Sched.Count-1 do
       Result[i] := Sched[i];
   finally
-    Sched.Free;
+    FreeAndNil(Sched);
   end;
 end;
 
@@ -1219,97 +1132,9 @@ end;
 
 // XML handling
 
-procedure TProject.ParseXMLText(const XML :string);
-var
-  Dom      : IDocument;
-begin
-  try
-    Dom := MiniDom.ParseTextToDom(XML);
-    Self.DoParseXML(Dom.Root);
-  except
-    on e:EDanteParseException do
-    begin
-      Log(vlErrors, e.Message);
-      raise;
-    end;
-    on e:Exception do
-    begin
-      Log(vlErrors, e.Message);
-      ParseError(e.Message, 0);
-    end;
-  end;
-end;
-
-procedure TProject.LoadXML(const SystemPath: string);
-var
-  Dom:       IDocument;
-  BuildFile: TPath;
-  LastDir:   TPath;
-begin
-  BuildFile := ToPath(SystemPath);
-  if SystemPath = '' then
-    BuildFile := FindBuildFile(False)
-  else
-    BuildFile := FindBuildFile(BuildFile, False);
-
-  BuildFile := ToAbsolutePath(BuildFile);
-  try
-    if not PathIsFile(BuildFile) then
-      DanteError(Format('Cannot find build file "%s"',[BuildFile]));
-
-    if not FRootPathSet then
-      RootPath := SuperPath(ToAbsolutePath(BuildFile));
-    Log(vlDebug, 'Runpath="%s"', [ RootPath ] );
-
-    LastDir := CurrentDir;
-    try
-      ChangeDir(BasePath);
-      Dom := MiniDom.ParseToDom(ToSystemPath(BuildFile));
-      Self.DoParseXML(Dom.Root);
-    finally
-      ChangeDir(LastDir);
-    end;
-  except
-    on e:EDanteParseException do
-    begin
-      Log(vlErrors, Format('%s %s', [SystemPath, e.Message]));
-      raise;
-    end;
-    on e:Exception do
-    begin
-      Log(vlErrors, Format('%s %s', [SystemPath, e.Message]));
-      ParseError(e.Message, 0);
-    end;
-  end;
-end;
-
 class function TProject.TagName: string;
 begin
   Result := 'project';
-end;
-
-procedure TProject.DoParseXML(Node: IElement);
-begin
-  try
-    ParseXML(Node);
-  except
-    on e: EDanteParseException do
-      raise;
-    on e: Exception do
-    begin
-      Log(vlErrors, e.Message);
-      ParseError(e.Message, Node.LineNo);
-    end;
-  end;
-end;
-
-function TProject.ToXML(Dom: IDocument): IElement;
-var
-  i: Integer;
-begin
-  Result := inherited ToXML(Dom);
-  for i := 0 to TargetCount-1 do
-    Result.Add(Targets[i].toXML(Dom));
 end;
 
 function TProject.BasePath: string;
@@ -1328,13 +1153,17 @@ end;
 
 function TProject.GetBaseDir: TPath;
 begin
-  Result := WildPaths.ToRelativePath(PropertyValue('basedir'), FRootPath);
+  Result := WildPaths.ToRelativePath(PropertyValue('basedir'), RootPath);
 end;
 
 procedure TProject.SetRootPath(const Path: TPath);
 begin
-  FRootPath := Path;
-  FRootPathSet := True;
+  if not FRootPathSet then
+  begin
+    Project.Log(vlDebug, 'rootpath="%s"', [ RootPath ] );
+    FRootPath := Path;
+    FRootPathSet := True;
+  end;
 end;
 
 procedure TProject.SetInitialBaseDir(Path: TPath);
@@ -1440,8 +1269,7 @@ destructor TTarget.Destroy;
 begin
   FTasks.Clear;
   inherited Destroy;
-  FTasks.Free;
-  FTasks := nil;
+  FreeAndNil(FTasks);
 end;
 
 
@@ -1465,15 +1293,6 @@ begin
   Result := FTasks.Count;
 end;
 
-
-function TTarget.ToXML(Dom: IDocument): IElement;
-var
-  i: Integer;
-begin
-  Result := inherited ToXML(Dom);
-  for i := 0 to TaskCount-1 do
-    Result.Add(Tasks[i].toXML(Dom));
-end;
 
 procedure TProject.InsertNotification(Child: TTree);
 begin
@@ -1535,10 +1354,9 @@ end;
 
 class function TTask.TagName: string;
 begin
-  Result := copy(ClassName, 2, 255);
-  Result := LowerCase(Result);
-  Result := StringReplace(Result, 'task', '', []);
+  Result := SynthesizeTagName('Task');
 end;
+
 
 
 { TaskRegistry }

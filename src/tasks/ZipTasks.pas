@@ -37,6 +37,9 @@ unit ZipTasks;
 interface
 uses
   SysUtils,
+
+  JclSysUtils,
+  
   WildPaths,
   PatternSets,
   ZipStreams,
@@ -135,8 +138,7 @@ begin
       FZipStream.CompressionLevel := zlNone;
     inherited Execute;
   finally
-    FZipStream.Free;
-    FZipStream := nil;
+    FreeAndNil(FZipStream);
   end
 end;
 
@@ -174,8 +176,7 @@ begin
       end;
     end;
   finally
-    FUnzipStream.Free;
-    FUnzipStream := nil;
+    FreeAndNil(FUnzipStream);
   end
 end;
 

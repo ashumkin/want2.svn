@@ -134,17 +134,24 @@ begin
      with ADirComp do
      begin
        GetRelativeFiles;
+
        for p := 0 to AFiles.Count-1 do
-         Check(BFiles.IndexOf(AFiles[p]) >= 0, Format('%s in setup but not in final', [AFiles[p]]));
+         if Pos('CVS\', AFiles[p]) = 0 then
+           Check(BFiles.IndexOf(AFiles[p]) >= 0, Format('%s in setup but not in final', [AFiles[p]]));
+
        for p := 0 to BFiles.Count-1 do
-         Check(AFiles.IndexOf(BFiles[p]) >= 0, Format('%s in final but not in setup', [BFiles[p]]));
+         if Pos('CVS\', BFiles[p]) = 0 then
+           Check(AFiles.IndexOf(BFiles[p]) >= 0, Format('%s in final but not in setup', [BFiles[p]]));
 
        GetFiles;
        for p := 0 to Min(AFiles.Count, BFiles.Count)-1 do
        begin
-         CheckEquals(IsDirectory(Afiles[p]), IsDirectory(Bfiles[p]), Format('%s files not both directories', [ExtractFileName(AFiles[p])]));;
-         if not IsDirectory(Afiles[p]) then
-           Check(TclFileCompare.CompareFiles(AFiles[p], BFiles[p]), Format('%s files are different', [ExtractFileName(AFiles[p])]));;
+         if Pos('CVS\', AFiles[p]) = 0 then
+         begin
+           CheckEquals(IsDirectory(AFiles[p]), IsDirectory(BFiles[p]), Format('%s files not both directories', [ExtractFileName(AFiles[p])]));;
+           if not IsDirectory(Afiles[p]) then
+             Check(TclFileCompare.CompareFiles(AFiles[p], BFiles[p]), Format('%s files are different', [ExtractFileName(AFiles[p])]));;
+           end;
        end;
      end;
   finally

@@ -41,6 +41,7 @@ uses
   Classes,
 
   JclBase,
+  JclSysUtils,
   JclMiscel,
   JclSysInfo,
   JclRegistry,
@@ -295,7 +296,7 @@ end;
 
 destructor TDelphiCompileTask.Destroy;
 begin
-  FDefines.Free;
+  FreeAndNil(FDefines);
   inherited Destroy;
 end;
 
@@ -346,7 +347,7 @@ begin
   Log(vlVerbose, 'sources %s', [ToRelativePath(source)]);
   Sources := WildPaths.Wild(Source, BasePath);
   if Length(Sources) = 0 then
-    TaskFailure('nothing to compile');
+    TaskFailure(Format('could not find %s to compile', [PathConcat(BasePath, source)]));
 
   for s := Low(Sources) to High(Sources) do
   begin
@@ -366,31 +367,33 @@ begin
     Result := Result + ' -N' + ToSystemPath(dcuoutput);
   end;
 
-  Log(vlVerbose, 'console=' + BooleanToString[console]);
   if console then
+  begin
+    Log(vlVerbose, 'console');
     Result := Result + ' -CC'
+  end
   else
     Result := Result + ' -CG';
 
   if quiet then
     Result := Result + ' -Q'
   else
-    Log(vlVerbose, 'quiet=false');
+    Log(vlVerbose, 'verbose');
 
   if build then
   begin
-    Log(vlVerbose, 'build=true');
+    Log(vlVerbose, 'build');
     Result := Result + ' -B'
   end
   else if make then
   begin
-    Log(vlVerbose, 'make=true');
+    Log(vlVerbose, 'make');
     Result := Result + ' -M';
   end;
 
   if optimize then
   begin
-    Log(vlVerbose, 'optimize=true');
+    Log(vlVerbose, 'optimize');
     Result := Result + ' -$O+'
   end
   else
@@ -398,11 +401,11 @@ begin
 
   if debug then
   begin
-    Log(vlVerbose, 'debug=true');
-    Result := Result + ' -V -$D+ -$L+ -GD'
+    Log(vlVerbose, 'debug');
+    Result := Result + ' -$D+ -$L+ -$R+ -$Q+ -$C+ -GD'
   end
-  else
-    Result := Result + ' -V- -$D-';
+  else if optimize then
+    Result := Result + ' -$D- -$L- -$R- -$Q- -$C-';
 
   for d := 0 to FDefines.Count-1 do
   begin
@@ -411,24 +414,24 @@ begin
   end;
 
 
-  Paths := FUnitPaths.RelativePaths;
-  for p := Low(paths) to High(Paths) do
-  begin
-    Log(vlVerbose, 'unitpath %s', [ToRelativePath(Paths[p])]);
-    Result := Result + ' -U' + ToSystemPath(Paths[p]);
-  end;
-
   if useLibraryPath then
   begin
-    Log(vlVerbose, 'uselibrarypath=true');
+    Log(vlVerbose, 'uselibrarypath');
     PS := TStringList.Create;
     try
       StrToStrings(ReadLibraryPaths, ';', PS);
       for p := 0 to PS.Count-1 do
         Result := Result + ' -U' + PS[p];
     finally
-      PS.Free;
+      FreeAndNil(PS);
     end;
+  end;
+
+  Paths := FUnitPaths.RelativePaths;
+  for p := Low(paths) to High(Paths) do
+  begin
+    Log(vlVerbose, 'unitpath %s', [ToRelativePath(Paths[p])]);
+    Result := Result + ' -U' + ToSystemPath(Paths[p]);
   end;
 
   Paths := FResourcePaths.RelativePaths;

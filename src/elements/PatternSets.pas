@@ -65,21 +65,27 @@ type
     FPatternSets: array of TPatternSet;
 
     procedure AddPatternSet(APatternSet: TPatternSet);
+    procedure SetRefId(Id :string);
 
     procedure SetIncludes(Value: TStrings);
     procedure SetExcludes(Value: TStrings);
 
-    procedure DoInclude(Files: TStrings; Pattern: TPath; Base: string); virtual;
+
+    procedure DoInclude( Files: TStrings; Pattern: TPath; Base: string;
+                         IncAtt: TFileAttributes = AnyFileAttribute;
+                         ExcAtt: TFileAttributes = []
+                         ); virtual;
     procedure DoExclude(Files: TStrings; Pattern: TPath; Base: string); virtual;
 
-    procedure DoIncludes(Files: TStrings; Base: string); virtual;
+    procedure DoIncludes(Files: TStrings; Base: string;
+                         IncAtt: TFileAttributes = AnyFileAttribute;
+                         ExcAtt: TFileAttributes = []
+                         ); virtual;
     procedure DoExcludes(Files: TStrings; Base: string); virtual;
 
   public
     constructor Create(Owner: TDanteElement); override;
     destructor  Destroy; override;
-
-    function ParseXMLChild(Child: MiniDom.IElement):boolean; override;
 
     procedure Include(Pattern: TPath);  overload;
     procedure Exclude(Pattern: TPath);  overload;
@@ -101,6 +107,7 @@ type
     function createPatternSet: TPatternSet;
 
     property id;
+    property refid :string write SetRefId;
   end;
 
 
@@ -113,6 +120,10 @@ type
 
   TCustomDirSet  = class(TCustomFileSet)
   protected
+    procedure DoIncludes(Files: TStrings; Base: string;
+                         IncAtt: TFileAttributes = AnyFileAttribute;
+                         ExcAtt: TFileAttributes = []
+                         ); override;
     procedure DoExcludes(Files: TStrings; Base: string); override;
   end;
 
@@ -153,8 +164,8 @@ end;
 
 destructor TPatternSet.Destroy;
 begin
-  FIncludes.Free;
-  FExcludes.Free;
+  FreeAndNil(FIncludes);
+  FreeAndNil(FExcludes);
   inherited Destroy;
 end;
 
@@ -178,9 +189,9 @@ begin
   FExcludes.Add(Pattern);
 end;
 
-procedure TPatternSet.DoInclude(Files: TStrings; Pattern: TPath; Base: string);
+procedure TPatternSet.DoInclude(Files: TStrings; Pattern: TPath; Base: string; IncAtt, ExcAtt: TFileAttributes);
 begin
-  Wild(Files, Pattern, Base);
+  Wild(Files, Pattern, Base, IncAtt, ExcAtt);
 end;
 
 procedure TPatternSet.DoExclude(Files: TStrings; Pattern: TPath; Base: string);
@@ -204,15 +215,15 @@ begin
   Result := TExcludeElement.Create(Self);
 end;
 
-procedure TPatternSet.DoIncludes(Files: TStrings; Base: string);
+procedure TPatternSet.DoIncludes(Files: TStrings; Base: string; IncAtt, ExcAtt: TFileAttributes);
 var
   i: Integer;
 begin
   for i := 0 to FIncludes.Count-1 do
-    DoInclude(Files, FIncludes[i], Base);
+    DoInclude(Files, FIncludes[i], Base, IncAtt, ExcAtt);
 
   for i := Low(FPatternSets) to High(FPatternSets) do
-    FPatternSets[i].DoIncludes(Files, Base);
+    FPatternSets[i].DoIncludes(Files, Base, IncAtt, ExcAtt);
 end;
 
 
@@ -233,16 +244,9 @@ begin
   FPatternSets[High(FPatternSets)] := APatternSet;
 end;
 
-function TPatternSet.ParseXMLChild(Child: IElement): boolean;
+procedure TPatternSet.SetRefId(Id: string);
 begin
-  if  (Child.Name = 'patternset')
-  and (Child.attribute('refid') <> nil) then
-  begin
-    AddPatternSet(Project.FindChild(Child.attributeValue('refid'), TPatternSet) as TPatternSet);
-    Result := true;
-  end
-  else
-    Result := inherited ParseXMLChild(Child);
+  AddPatternSet(Project.FindChild(Id, TPatternSet) as TPatternSet);
 end;
 
 function TPatternSet.Paths: TPaths;
@@ -258,7 +262,7 @@ begin
 
     Result := StringsToPaths(Files);
   finally
-    Files.Free;
+    FreeAndNil(Files);
   end;
 end;
 
@@ -279,7 +283,7 @@ begin
     for i := 0 to Files.Count-1 do
       Paths[i+n] := Files[i];
   finally
-    Files.Free;
+    FreeAndNil(Files);
   end;
 end;
 
@@ -312,6 +316,8 @@ begin
   AddPatternSet(Result);
 end;
 
+
+
 { TCustomFileSet }
 
 procedure TCustomFileSet.AddDefaultPatterns;
@@ -343,6 +349,12 @@ begin
 end;
 
 { TCustomDirSet }
+
+procedure TCustomDirSet.DoIncludes(Files: TStrings; Base: string; IncAtt, ExcAtt: TFileAttributes);
+begin
+  inherited DoIncludes(Files, Base, [Directory], ExcAtt);
+  //inherited DoIncludes(Files, Base, IncAtt, ExcAtt);
+end;
 
 procedure TCustomDirSet.DoExcludes(Files: TStrings; Base: string);
 var

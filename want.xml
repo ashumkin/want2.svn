@@ -82,6 +82,7 @@ See http://dante.sourceforge.net for details
 	 />
 	 <echo message="Build number is '${build}'" />
     <brcc file="${src}/dantever.rc" output="${bin}/dantever.res" />
+    <brcc file="${src}/license.rc" output="${bin}/license.res" />
 
     <!-- Delete dante.cfg first to get a reproducible build.
          (Should this be automated?)
@@ -105,7 +106,7 @@ See http://dante.sourceforge.net for details
   <target name="test" depends="internal_tests,acceptance_tests" />
 
   <target name="internal_tests" depends="clean,prepare">
-    <property name="test.app" value="DanteTest" />
+    <property name="test.app" value="DanteTestLib" />
     <dcc basedir="${test}" source="${test.app}.dpr" >
       <exeoutput path="${bin}"  />
       <dcuoutput path="${dcu}"  />
@@ -114,6 +115,7 @@ See http://dante.sourceforge.net for details
       <console   value="true" />
 
       <define name="USE_TEXT_RUNNER" />
+      <define name="USE_JEDI_JCL" />
       <unitpath     refid="sources" >
         <include name="${test}/**" />
         <exclude  name="${test}/data" />
@@ -122,12 +124,12 @@ See http://dante.sourceforge.net for details
       <includepath  refid="sources"   />
       <resourcepath refid="resources" />
     </dcc>
-    <exec executable="${bin}/${test.app}.exe" />
+    <dunit testlib="${bin}/${test.app}" />
  </target>
 
 
   <target name="acceptance_tests" depends="clean,prepare" >
-    <property name="test.app" value="DanteAcceptTest" />
+    <property name="test.app" value="DanteAcceptTestLib" />
     <dcc basedir="${test}" source="${test.app}.dpr" >
       <exeoutput path="${bin}"  />
       <dcuoutput path="${dcu}"  />
@@ -146,7 +148,7 @@ See http://dante.sourceforge.net for details
       <includepath  refid="sources"   />
       <resourcepath refid="resources" />
     </dcc>
-    <exec executable="${bin}/${test.app}.exe" />
+    <dunit testlib="${bin}/${test.app}" />
  </target>
 
   <target name="dist" depends="clean,prepare,compile,test" >
@@ -171,7 +173,7 @@ See http://dante.sourceforge.net for details
          <include name="**/*.txt" />
 
          <include name="${test}/data/**" />
-         
+
          <include name="${lib}/*.zip" />    <!-- include third party library .zips -->
          <exclude name="${lib}/*/**"   />   <!-- exclude subdirectories -->
          <exclude name="${basedir}/private/**" />

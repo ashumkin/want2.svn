@@ -38,6 +38,7 @@ uses
   SysUtils,
   TestFramework,
   DanteClasses,
+  ScriptParser,
   DanteClassesTest,
   ExecTasks;
 
@@ -157,7 +158,7 @@ const
 var
   ExecTask :THackedCustomExecTask;
 begin
-  FProject.ParseXMLText(build_xml);
+  TScriptParser.ParseText(FProject, build_xml);
 
   ExecTask := THackedCustomExecTask(FProject.Targets[0].Tasks[0] as TExecTask);
   CheckEquals('first second third', ExecTask.BuildArguments);

@@ -35,20 +35,23 @@ unit DanteClassesTest;
 interface
 
 uses
+  SysUtils,
+  Classes,
+
+  JclFileUtils,
+  JclShell,
+
   WildPaths,
   DanteClasses,
+  ScriptParser,
   StandardElements,
   ExecTasks,
   DelphiTasks,
   ConsoleLogMgr,
 
-  TestFramework,
+  TestFramework;
 
-  JclFileUtils,
-  JclShell,
 
-  SysUtils,
-  Classes;
 
 
 type
@@ -267,8 +270,7 @@ end;
 
 procedure TSaveProjectTests.TestParseXML;
 begin
-  FProject.ParseXMLText(ExpectedXML);
-  CheckEquals(ExpectedXML, CR+FProject.AsXML);
+  TScriptParser.ParseText(FProject, ExpectedXML);
 end;
 
 { TBuildTests }
@@ -345,8 +347,8 @@ begin
 
    Check(FileExists(NewFileName), 'file not copied');
  finally
-   DeleteFile(OldFileName);
-   DeleteFile(NewFileName);
+   SysUtils.DeleteFile(OldFileName);
+   SysUtils.DeleteFile(NewFileName);
    RemoveDir(ExtractFileDir(OldFileName));
  end;
 end;
@@ -416,7 +418,7 @@ const
   +#10'</project>'
   +'';
 begin
-  FProject.ParseXMLText(build_xml);
+  TScriptParser.ParseText(FProject, build_xml);
   FProject.Build;
 end;
 
@@ -430,7 +432,7 @@ const
   +#10'</project>'
   +'';
 begin
-  FProject.ParseXMLText(build_xml);
+  TScriptParser.ParseText(FProject, build_xml);
   FProject.Build;
 end;
 
@@ -445,7 +447,7 @@ const
   +'';
 begin
   try
-    FProject.ParseXMLText(build_xml);
+    TScriptParser.ParseText(FProject, build_xml);
     FProject.Build;
     fail('expected exception about invalid path')
   except

@@ -23,7 +23,9 @@ unit LogMgr;
 {-------------------------------------------------------------------------}
 
 interface
-
+uses
+  JclSysUtils;
+  
 type
   TLogLevel = ( vlErrors,
                 vlWarnings,
@@ -216,8 +218,8 @@ begin
         end;
 
       finally
-        Lines.Free;
-        Fragments.Free;
+        FreeAndNil(Lines);
+        FreeAndNil(Fragments);
       end;
     end;
 end;

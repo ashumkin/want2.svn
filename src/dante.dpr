@@ -46,9 +46,29 @@ uses
   leave dantever.res in the src directory, so the subsequent dcc32 call failed
   -- Chrismo }
 {$R dantever.res}
+{$R license.res}
 
 const
   SwitchChars = ['-', '/'];
+
+procedure ShowLicense;
+var
+  Output: string;
+  AConsoleMore: TConsoleMore;
+begin
+  Output := DanteHeader + #13#10 + License;
+  AConsoleMore := TConsoleMore.Create(Output);
+  try
+    while not AConsoleMore.Finished do
+    begin
+      WriteLn(AConsoleMore.CurrentPage);
+      ReadLn;
+      AConsoleMore.NextPage;
+    end;
+  finally
+    AConsoleMore.Free;
+  end;
+end;
 
 procedure Run;
 var
@@ -76,9 +96,7 @@ begin
   end
   else if FindCmdLineSwitch('L', SwitchChars, false) then
   begin
-    // need to add More functionality ... going to add it in clUtilConsole
-    WriteLn(DanteHeader);
-    WriteLn(License);
+    ShowLicense;
   end
   else
     Run;

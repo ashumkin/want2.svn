@@ -41,6 +41,7 @@ uses
   SysUtils,
   Classes,
 
+  JclSysUtils,
   JclMiscel,
   JclStrings,
 
@@ -50,6 +51,7 @@ uses
 
   DanteBase,
   DanteClasses,
+  ScriptParser,
 
   StandardElements,
   StandardTasks,
@@ -108,7 +110,7 @@ begin
   Log(Description);
 
   try
-    LoadXML(ABuildFileName);
+    TScriptParser.Parse(Self, ABuildFileName);
     if LogManager <> nil then
       LogManager.Level := Level;
     if Length(Targets) = 0 then
@@ -118,16 +120,19 @@ begin
       for t := Low(Targets) to High(Targets) do
         Build(Targets[t]);
     end;
-    
+
     Log;
     Log('Build complete.');
   except
     on e: Exception do
     begin
-      if not (e is EDanteException) then
-        Log(vlErrors, E.ClassName + ': ' + E.Message);
       Log;
-      Log(vlErrors, 'BUILD FAILED');
+      if (e is ETaskFailure) or (e is ETaskError) then
+        Log('BUILD FAILED','', vlErrors)
+      else if e is EDanteException then
+        Log('BUILD FAILED',e.Message, vlErrors)
+      else
+        Log('BUILD FAILED', E.ClassName + ': ' + E.Message, vlErrors);
       raise;
     end;
   end;
@@ -163,8 +168,7 @@ end;
 
 destructor TConsoleDante.Destroy;
 begin
-  LogManager.Free;
-  LogManager := nil;
+  FreeAndNil(FLogManager);
   inherited Destroy;
 end;
 

@@ -47,6 +47,9 @@ uses
 
 {$R *.RES}
 
+exports
+  RegisteredTests index 1 name 'Test'; 
+
 begin
   {$IFDEF USE_TEXT_RUNNER}
     TextTestRunner.RunRegisteredTests(rxbHaltOnFailures)
