@@ -64,6 +64,7 @@ begin
       AddUnitPath('../lib/**');
       AddUnitPath('../src/**');
       AddResourcePath('../bin');
+      AddIncludePath('../lib/**');
     end;
   end;
 end;
