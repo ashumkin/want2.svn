@@ -25,15 +25,15 @@ uses
 type
   IStyleTaskXSLEngine = interface(IUnknown)
     procedure transform(_in, _out, style: string;
-      Params,OutputProperties: array of string);
+      Params, OutputProperties: array of string);
   end;
 
-  TParamElement = class;
+  TParamElement          = class;
   TOutputPropertyElement = class;
 
   TStyleTask = class(TFileSetTask)
   private
-    p,o : Array of String;
+    p, o: array of string;
   protected
     FIn: TPath;
     FOut: TPath;
@@ -49,7 +49,7 @@ type
     destructor Destroy; override;
     procedure DoFileset(Fileset: TFileSet); override;
     procedure Init; override;
-    procedure execute ; override;
+    procedure Execute; override;
   published
     property _in: TPath read Fin write Fin;
     property _out: TPath read Fout write Fout;
@@ -63,22 +63,22 @@ type
 
   TParamElement = class(TScriptElement)
   protected
-    FName       : string;
-    FExpression : string;
+    FName: string;
+    FExpression: string;
   published
-    property name: string read FName write FName;
+    property Name: string read FName write FName;
     property expression: string read FExpression write FExpression;
   end;
   TOutputPropertyElement = class(TScriptElement)
   protected
-    FName       : string;
-    FValue      : string;
+    FName: string;
+    FValue: string;
   published
-    property name: string read FName write FName;
-    property value: string read FValue write FValue;
+    property Name: string read FName write FName;
+    property Value: string read FValue write FValue;
   end;
 var
-    XSLEngine : IStyleTaskXSLEngine;
+  XSLEngine: IStyleTaskXSLEngine;
 
 implementation
 
@@ -113,62 +113,62 @@ end;
 procedure TStyleTask.DoFileset(Fileset: TFileSet);
 var
   i: integer;
-  FromPaths,ToPaths:TPaths;
+  FromPaths, ToPaths: TPaths;
 begin
   inherited;
   Log(SysUtils.Format('Transforming into %s', [destdir]));
+  Log(SysUtils.Format('Using %s', [style]));
   FromPaths := Fileset.Paths;
-  ToPaths   := Fileset.MovePaths(destdir);
+  ToPaths := Fileset.MovePaths(destdir);
   for i := 0 to High(FromPaths) do
   begin
-    ToPaths[i]:=WildPaths.ChangeExtension(ToPaths[i],FExtension);
-    Log(SysUtils.Format('Processing %s to %s ', [FromPaths[i],ToPaths[i]]));
+    ToPaths[i] := WildPaths.ChangeExtension(ToPaths[i], FExtension);
+    Log(SysUtils.Format('Processing %s to %s ', [FromPaths[i], ToPaths[i]]));
     AboutToScratchPath(ToPaths[i]);
-    XSLEngine.transform(FromPaths[i],ToPaths[i],style,p,o);
+    XSLEngine.transform(FromPaths[i], ToPaths[i], style, p, o);
   end;
 end;
 
-procedure TStyleTask.execute;
+procedure TStyleTask.Execute;
 var
-  i : integer;
+  i: integer;
 begin
-  SetLength(p,FOutputProperties.count*2);
-  for i := 0 to FOutputProperties.count-1 do
-  with TOutputPropertyElement(FOutputProperties[i]) do begin
-      p[i]:=name;
-      p[i+1]:=value;
-  end;
-  SetLength(p,FParams.count*2);
-  for i := 0 to FParams.count-1 do
-  with TParamElement(FParams[i]) do begin
-      p[i]:=name;
-      p[i+1]:=expression;
-  end;
-  if Fsinglefile then begin
-    Log(SysUtils.Format('Processing %s to %s ', [Fin,Fout]));
+  SetLength(p, FOutputProperties.Count * 2);
+  for i := 0 to FOutputProperties.Count - 1 do
+    with TOutputPropertyElement(FOutputProperties[i]) do 
+    begin
+      p[i] := Name;
+      p[i + 1] := Value;
+    end;
+  SetLength(p, FParams.Count * 2);
+  for i := 0 to FParams.Count - 1 do
+    with TParamElement(FParams[i]) do 
+    begin
+      p[i] := Name;
+      p[i + 1] := expression;
+    end;
+  if Fsinglefile then 
+  begin
+    Log(SysUtils.Format('Processing %s to %s ', [Fin, Fout]));
+    Log(SysUtils.Format('Using %s', [style]));
     AboutToScratchPath(Fout);
-    XSLEngine.transform(Fin,Fout,style,p,o);
-  end else
-    inherited execute ;
+    XSLEngine.transform(Fin, Fout, style, p, o);
+  end 
+  else
+    inherited Execute;
 end;
 
 procedure TStyleTask.Init;
 begin
   inherited Init;
-  try
-    RequireAttributes(['in', 'out']);
-    Fsinglefile := True;
-  except
-    Fsinglefile := False;
-  end;
+  Fsinglefile := (Fout <> '') and (Fin <> '');
   if (not Fsinglefile) then
     RequireAttribute('destdir');
   RequireAttribute('style');
-  if Not Assigned(XSLEngine) then
+  if not Assigned(XSLEngine) then
     WantError('XSL Engine not initialized correctly');
 end;
 
 initialization
   RegisterTask(TStyleTask);
-
 end.

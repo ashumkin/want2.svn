@@ -2,9 +2,7 @@ unit MSXMLEngineImpl;
 
 interface
 
-uses SysUtils,
-  Classes,
-  StyleTasks,ComObj,Activex;
+uses SysUtils, Classes, StyleTasks,ComObj,Activex;
 
 type
   TMSXMLEngineImpl = class(TInterfacedObject, IStyleTaskXSLEngine)
@@ -70,9 +68,7 @@ procedure TMSXMLEngineImpl.transform(_in, _out, style: string;
   Params,OutputProperties: array of string);
 var
   xslp: Variant;
-  tt: string;
   fs: TFileStream;
-  ss: TStringStream;
   i: integer;
   xmld: Variant;
 begin
@@ -93,11 +89,6 @@ begin
     fs.Free;
   end;
 end;
-
-{ TMSXMLTemplateCacheItem }
-
-
-{ TMSXMLTemplateCacheItem }
 
 { TMSXMLTemplateCacheItem }
 
