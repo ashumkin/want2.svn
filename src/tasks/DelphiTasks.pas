@@ -390,7 +390,7 @@ begin
  end
  else if (Pos('Fatal:', Line) <> 0) or  (Pos('Error:', Line) <> 0) then
    TaskFailure(Line)
- else if (Pos('Wargint', Line) <> 0) then
+ else if (Pos('Warning', Line) <> 0) then
      Log(vlWarnings, Line)
  else
    inherited HandleOutputLine(Line);
