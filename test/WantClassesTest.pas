@@ -26,7 +26,7 @@ uses
   Properties,
   ExecTasks,
   DelphiTasks,
-  ConsoleLogMgr,
+  ConsoleListener,
 
   TestFramework;
 
@@ -36,7 +36,7 @@ uses
 type
   TProjectBaseCase = class(TTestCase)
   protected
-    FLogger : TConsoleLogManager;
+    FLogger : TConsoleListener;
     FProject: TProject;
 
     procedure SetUp;    override;
@@ -140,9 +140,9 @@ procedure TProjectBaseCase.SetUp;
 begin
   FProject := TProject.Create;
   {$IFNDEF USE_TEXT_RUNNER}
-    FLogger  := TConsoleLogManager.Create;
+    FLogger  := TConsoleListener.Create;
     FLogger.UseColor := True;
-    FProject.LogManager := FLogger;
+    FProject.Listener := FLogger;
   {$ENDIF}
 end;
 
@@ -449,7 +449,7 @@ procedure TTestWantElement.TestWantElementPaths;
 var
   AbsPath: string;
 begin
-  AbsPath := ExtractFileDir(ParamStr(0));
+  AbsPath := LowerCase(ExtractFileDir(ParamStr(0)));
   CheckEquals(
     AbsPath,
     WildPaths.ToSystemPath(FWantElement.ToAbsolutePath(ToPath(AbsPath))),

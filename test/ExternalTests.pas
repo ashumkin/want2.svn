@@ -212,7 +212,7 @@ var
 begin
   Runner := TScriptRunner.Create;
   {$IFNDEF USE_TEXT_RUNNER}
-     Runner.CreateLogManager;
+     Runner.CreateListener;
   {$ENDIF}
   try
     Runner.DoBuild(PathConcat(SetupPath, BuildFileName), vlVerbose);
