@@ -22,17 +22,20 @@
 
     @author Juancarlo Añez
     @author Dan Hughes <dan@multiedit.com>
+    @author Ignacio J. Ortega
 }
 
 unit DelphiTasks;
 
 interface
 uses
+  {Delphi}
   Windows,
   SysUtils,
   Classes,
   TypInfo,
 
+  {Jcl}
   JclBase,
   JclSysUtils,
   JclMiscel,
@@ -40,6 +43,7 @@ uses
   JclRegistry,
   JclStrings,
 
+  {Local}
   JalStrings,
 
   XPerlRe,
@@ -56,6 +60,7 @@ uses
 
 const
   DelphiRegRoot  = 'SOFTWARE\Borland\Delphi';
+  CBuilderRegRoot = 'SOFTWARE\Borland\C++Builder';
   DelphiRootKey  = 'RootDir';
 
   __RENAMED_CFG_EXT = '.want.cfg';
@@ -97,8 +102,8 @@ type
     FVersionNumber:double;
     procedure HandleOutputLine(Line :string); override;
 
-    class function RootForVersion(version: string): string;
-    class function ReadDelphiDir(ver :string = '') :string;
+    class function RootForVersion(version: string; UseCBuilder: boolean = false): string;
+    class function ReadDelphiDir(ver :string = ''; UseCBuilder: boolean = false) :string;
     class function ReadUserOption(Key, Name, Ver :string):string;
     class function ReadMachineOption(Key, Name, Ver :string):string;
 
@@ -145,7 +150,7 @@ type
     FUseLibraryPath : boolean;
     FUseCFG         : boolean;
     FHugeStrings    : boolean;
-
+    FIochecks       : boolean;
     FMap            : TMapType;
 
     FUnitPaths      : TUnitPathElement;
@@ -212,6 +217,7 @@ type
     property build: boolean read FBuild write FBuild;
 
     property optimize: boolean read FOptimize write FOptimize;
+    property iochecks: boolean read Fiochecks write Fiochecks;
     property debug:    boolean read FDebug    write FDebug;
     property console:  boolean read FConsole  write FConsole;
     property warnings: boolean read FEnableWarnings write FEnableWarnings default true;
@@ -304,32 +310,42 @@ var
   i     :Integer;
   Path  :string;
   Tool  :string;
+  UseCBuilder : boolean;
 begin
   FillChar(Result, SizeOf(Result), #0);
   vers := nil;
-  if V = '' then begin
+  if V = '' then
+  begin
     WantUtils.GetEnvironmentVar('delphi_version', V, true);
   end;
-  if V = '' then
+  if V = '' then begin
      V := '10,9,8,7,6,5,4';
-
+  end;
   vers := StringToArray(V);
   for i := 0 to High(vers) do
   begin
-     if StrLeft(vers[i], 2) <> '.0' then
-       vers[i] := vers[i] + '.0';
-     Path := ReadDelphiDir(vers[i]);
-     if Path <> '' then
-     begin
-       Tool := Path + '\' + ToolName;
-       if FileExists(Tool) then // found it !
-       begin
-         Result.Version   := vers[i];
-         Result.Directory := Path;
-         Result.ToolPath  := Tool;
-         BREAK;
-       end;
-     end;
+    if StrRight(vers[i], 2) <> '.0' then
+    begin
+      vers[i] := vers[i] + '.0';
+    end;
+    UseCBuilder := false;
+    if ( StrLower(StrLeft(vers[i], 1)) = 'c') then
+    begin
+      vers[i] := StrRestOf(vers[i], 2);
+      UseCBuilder := true;
+    end;
+    Path := ReadDelphiDir(vers[i], UseCBuilder);
+    if Path <> '' then
+    begin
+      Tool := Path + '\' + ToolName;
+      if FileExists(Tool) then // found it !
+      begin
+        Result.Version   := vers[i];
+        Result.Directory := Path;
+        Result.ToolPath  := Tool;
+        Break;
+      end;
+    end;
   end;
 end;
 
@@ -351,10 +367,10 @@ begin
 end;
 
 
-class function TCustomDelphiTask.ReadDelphiDir(ver: string): string;
+class function TCustomDelphiTask.ReadDelphiDir(ver: string; UseCBuilder: boolean): string;
 begin
   assert(ver <> '');
-  Result := RegReadStringDef(HKEY_LOCAL_MACHINE, RootForVersion(ver), DelphiRootKey, '');
+  Result := RegReadStringDef(HKEY_LOCAL_MACHINE, RootForVersion(ver, UseCBuilder), DelphiRootKey, '');
 end;
 
 class function TCustomDelphiTask.ReadMachineOption(Key, Name, Ver: string): string;
@@ -367,13 +383,21 @@ begin
   Result := RegReadStringDef(HKEY_CURRENT_USER, RootForVersion(Ver)+'\'+Key, Name, '');
 end;
 
-class function TCustomDelphiTask.RootForVersion(version: string): string;
+class function TCustomDelphiTask.RootForVersion(version: string; UseCBuilder: boolean): string;
+var
+  RegRoot : string;
 begin
-  if Pos('.', version) = 0 then
+  if ( UseCBuilder ) then begin
+    RegRoot := CBuilderRegRoot;
+  end
+  else begin
+    RegRoot := DelphiRegRoot;
+  end;
+  if Pos('.', version) = 0 then begin
     version := version + '.0';
-  Result := Format('%s\%s', [DelphiRegRoot, version]);
+  end;
+  Result := Format('%s\%s', [RegRoot, version]);
 end;
-
 
 procedure TCustomDelphiTask.HandleOutputLine(Line: string);
 begin
@@ -621,6 +645,11 @@ begin
   else
     Result := Result + ' -$H-';
 
+  if iochecks then
+    Result := Result + ' -$I+'
+  else
+    Result := Result + ' -$I-';
+
   case map of
     segments : Result := Result + ' -GS';
     publics  : Result := Result + ' -GP';
@@ -867,8 +896,11 @@ end;
 procedure TUsePackageElement.Init;
 begin
   inherited Init;
-  RequireAttribute('name');
-  dcc.AddPackage(Name);
+  if Enabled then begin
+    Log(vlDebug, '%s %s', [TagName, Name]);
+    RequireAttribute('name');
+    dcc.AddPackage(Name);
+  end;
 end;
 
 { TMapElement }
