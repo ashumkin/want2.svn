@@ -12,17 +12,20 @@ type
     procedure Setup; override;
     procedure TearDown; override;
   published
-    procedure TestDeleteTask;
+    procedure TestDeleteDir;
+    procedure TestDeleteDirRelative;
   end;
 
 implementation
+
+uses JclFileUtils;
 
 { TTestDeleteTask }
 
 procedure TTestDeleteTask.Setup;
 begin
   inherited;
-  FDeleteTask := TDeleteTask.Create(nil);
+  FDeleteTask := TDeleteTask.Create(FProject.AddTarget('test_delete_task'));
 end;
 
 procedure TTestDeleteTask.TearDown;
@@ -31,8 +34,26 @@ begin
   inherited;
 end;
 
-procedure TTestDeleteTask.TestDeleteTask;
+procedure TTestDeleteTask.TestDeleteDir;
 begin
+  CheckEquals('delete', TDeleteTask.XMLTag, 'XMLTag is wrong');
+  MakeSampleTextFile;
+  FDeleteTask.Dir := FTestDir;
+  FDeleteTask.Execute;
+  Check(not DirectoryExists(FTestDir), 'directory not deleted');
+
+  // ensure it doesn't blow up trying to delete a directory that's gone
+  FDeleteTask.Execute;
+end;
+
+procedure TTestDeleteTask.TestDeleteDirRelative;
+var
+  SiblingDir: string;
+begin
+  MakeSampleTextFile;
+
+  // need routine (add to clLib) to grab FTestDir parent (ExtractFilePathParent)
+  SiblingDir := FTestDir;
 
 end;
 
