@@ -294,12 +294,18 @@ begin
   except
     on e: Exception do
     begin
-      Log(vlDebug, e.Message);
-      Listener.TaskFailed(Task, e.Message);
+      Log(vlDebug, 'caught: ' + e.Message);
       if e is EWantException then
+      begin
+        Listener.TaskFailed(Task, e.Message);
         raise
+      end
       else
-        TaskError(e.Message);
+      begin
+        Log(vlErrors, e.Message);
+        Listener.TaskFailed(Task, e.Message);
+        raise ETaskError.Create(e.Message);
+      end;
     end;
   end;
 end;

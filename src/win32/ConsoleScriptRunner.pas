@@ -133,10 +133,10 @@ begin
       if Param[1] in ['-','/'] then
       begin
         if not ParseOption(Project, p, Copy(Param, 2, Length(Param))) then
-          WantError('Unknown commandline option: ' + Param);
+          raise EWantError.Create('Unknown commandline option: ' + Param);
       end
       else if not ParseArgument(Project, p, Param) then
-          WantError('Don''t know what to do with argument : ' + Param);
+          raise EWantError.Create('Don''t know what to do with argument : ' + Param);
       Inc(p);
     end;
   except

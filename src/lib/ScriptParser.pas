@@ -36,7 +36,7 @@ type
 
   TScriptParser = class
   protected
-    class procedure ParseError(Msg :string; Line, Col :Integer);
+    class procedure ParseError(Msg :string; Line :Integer =0; Col :Integer = 0);
 
     class function  XMLAttsToStrings(Node :IElement) :TStrings;
     class procedure ParseXML(Elem :TScriptElement; Node: JALMiniDOM.IElement; Atts :TStrings);
@@ -169,7 +169,7 @@ begin
   BuildFile := ToPath(Path);
 
   if not PathIsFile(BuildFile) then
-    WantError(Format('Cannot find build file "%s"',[BuildFile]));
+    ParseError(Format('Cannot find build file "%s"',[BuildFile]));
 
   BuildFile := Project.ToAbsolutePath(BuildFile);
   try
@@ -178,7 +178,7 @@ begin
     ParseProject(Project, Dom);
   except
     on e :SAXParseException do
-      WantError(ToRelativePath(BuildFile, CurrentDir) + ' ' +  e.Message);
+      ParseError(ToRelativePath(BuildFile, CurrentDir) + ' ' +  e.Message);
     on e :Exception do
     begin
       e.Message := ToRelativePath(BuildFile, CurrentDir) + ' ' +  e.Message;

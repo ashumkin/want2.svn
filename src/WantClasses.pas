@@ -151,6 +151,8 @@ type
     function  Log(const Format: string; const Args: array of const; Level: TLogLevel = vlNormal): string; overload;
     function  Log(Level: TLogLevel; const Format: string; const Args: array of const): string; overload;
 
+    procedure WantError(Msg: string = ''; Addr :Pointer = nil);
+    
     procedure RequireAttribute(Name: string);
     procedure RequireAttributes(Names: array of string);
     procedure AttributeRequiredError(AttName: string);
@@ -309,7 +311,8 @@ type
 
   TTask = class(TScriptElement)
   protected
-    procedure TaskFailure(Msg: string = ''; Addr :Pointer = nil);
+    procedure TaskFailure(const Msg: string; Addr :Pointer = nil);
+    procedure TaskError(Msg: string = ''; Addr :Pointer = nil);
   public
     class function TagName: string; override;
 
@@ -353,9 +356,6 @@ procedure RegisterElement(ElementClass :TScriptElementClass);                   
 procedure RegisterElement(AppliesTo, ElementClass :TScriptElementClass);                                 overload;
 procedure RegisterElements(ElementClasses:array of TScriptElementClass);                                 overload;
 procedure RegisterElements(AppliesTo : TScriptElementClass; ElementClasses:array of TScriptElementClass); overload;
-
-procedure WantError(Msg: string = ''; Addr :Pointer = nil);
-procedure TaskError(Msg: string = ''; Addr :Pointer = nil);
 
 function CallerAddr: Pointer;
 
@@ -437,10 +437,9 @@ function FindTask(Tag: string): TTaskClass;
 var
   C :TScriptElementClass;
 begin
-  Result := nil;
   C := FindElement(Tag, TTarget);
   if (C = nil) or not C.InheritsFrom(TTask) then
-    TaskError(Format('Task class <%s> not found', [Tag]) )
+    raise EWantError.Create(Format('Task class <%s> not found', [Tag]) )
   else
     Result := TTaskClass(C);
 end;
@@ -491,22 +490,6 @@ asm
 @@Error:
    xor eax, eax
 @@Finish:
-end;
-
-procedure WantError(Msg: string; Addr :Pointer);
-begin
-   if Addr <> nil then
-     raise EWantError.Create(Msg) at Addr
-   else
-     raise EWantError.Create(Msg) at CallerAddr;
-end;
-
-procedure TaskError(Msg: string; Addr :Pointer);
-begin
-   if Addr <> nil then
-     raise ETaskError.Create(Msg) at Addr
-   else
-     raise ETaskError.Create(Msg) at CallerAddr;
 end;
 
 { TScriptElement }
@@ -723,9 +706,9 @@ end;
 procedure TScriptElement.AboutToScratchPath(const Path: TPath);
 begin
   if  PathExists(Path)
-  and not PathIsAbsolute(Path) !!
+  and (Pos('..', ToRelativePath(Path)) <> 0)
   then
-    TaskError(Format('Will not scratch %s outside of %s',
+    WantError(Format('Will not scratch %s outside of %s',
                          [ToSystemPath(Path), ToSystemPath(BasePath)]
                          ));
 end;
@@ -1064,6 +1047,14 @@ begin
   end;
 end;
 
+procedure TScriptElement.WantError(Msg: string; Addr: Pointer);
+begin
+   Log(vlErrors, Msg);
+   if Addr <> nil then
+     Addr := CallerAddr;
+   raise EWantError.Create(Msg) at Addr
+end;
+
 { TProject }
 
 constructor TProject.Create(Owner: TScriptElement);
@@ -1322,15 +1313,21 @@ begin
     Log(Description);
 end;
 
-procedure TTask.TaskFailure(Msg: string; Addr :Pointer);
+procedure TTask.TaskFailure(const Msg: string; Addr :Pointer);
 begin
-  if Addr <> nil then
-    raise ETaskFailure.Create(Msg) at Addr
-  else
-    raise ETaskFailure.Create(Msg) at CallerAddr;
+  Log(vlWarnings, Msg);
+  if Addr = nil then
+    Addr := CallerAddr;
+  raise ETaskFailure.Create(Msg) at Addr
 end;
 
-{ TCustomAttributeElement }
+procedure TTask.TaskError(Msg: string; Addr: Pointer);
+begin
+  Log(vlErrors, Msg);
+   if Addr <> nil then
+     Addr := CallerAddr;
+   raise ETaskError.Create(Msg) at Addr
+end;
 
 { TCustomAttributeElement }
 

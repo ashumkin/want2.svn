@@ -11,6 +11,7 @@ unit Win32ChildProcesses;
 interface
 uses
   Windows,
+  SysUtils,
   Math,
 
   WIN32,
@@ -21,6 +22,8 @@ const
   rcs_id :string = '#(@)$Id$';
 
 type
+  EChildProcessException = class(Exception);
+
   TWin32ChildProcess = class(TChildProcess)
   protected
     hChild,
@@ -28,6 +31,8 @@ type
 
     function  Launch(const CmdLine: string; hInput, hOutput, hError: THandle): THandle;
     function  __Read(Count :Integer = 80)   :string; override;
+
+    procedure Error(Msg :string);
   public
     destructor Destroy; override;
 
@@ -45,12 +50,12 @@ destructor TWin32ChildProcess.Destroy;
 begin
   if (hOutputRead <> 0)
   and not CloseHandle(hOutputRead) then
-    RaiseLastSystemError('CloseHandle');
+    Error('CloseHandle:' + SysErrorMessage(GetLastError));
   if (hChild <> 0) then
   begin
     TerminateProcess(hChild, Cardinal(-1));
     if not CloseHandle(hChild) then
-      RaiseLastSystemError('CloseHandle');
+      Error('CloseHandle' + SysErrorMessage(GetLastError));
   end;
   inherited Destroy;
 end;
@@ -65,7 +70,7 @@ function TWin32ChildProcess.ExitCode: Cardinal;
 begin
   if (WaitForSingleObject(hChild, INFINITE) <> WAIT_OBJECT_0)
   or not GetExitCodeProcess(hChild, Result) then
-      RaiseLastSystemError;
+      Error(SysErrorMessage(GetLastError));
 end;
 
 function TWin32ChildProcess.Launch(const CmdLine: string; hInput, hOutput, hError: THandle): THandle;
@@ -88,7 +93,7 @@ begin
     NORMAL_PRIORITY_CLASS, nil, nil, StartupInfo,
     ProcessInfo);
   if not Success then
-    RaiseLastSystemError
+    Error('CreateProcess:' + SysErrorMessage(GetLastError))
   else begin
     WaitForInputIdle(ProcessInfo.hProcess, INFINITE);
     CloseHandle(ProcessInfo.hThread);
@@ -113,7 +118,7 @@ begin
     or (BytesRead = 0) then
     begin
       if GetLastError <> ERROR_BROKEN_PIPE then
-         RaiseLastSystemError('ReadFile') // Something bad happened.
+         Error('ReadFile:' + SysErrorMessage(GetLastError)) // Something bad happened.
       else begin
          CloseHandle(hOutputRead);
          hOutputRead := 0;
@@ -142,7 +147,7 @@ begin
 
   // Create the child output pipe.
   if not CreatePipe(hOutputReadTmp, hOutputWrite, @sa, 0) then
-     RaiseLastSystemError('CreatePipe');
+     Error('CreatePipe:' + SysErrorMessage(GetLastError));
 
   // Create child input handle
   if not IsConsole then
@@ -150,7 +155,7 @@ begin
   else if not DuplicateHandle(hCurrentProcess, GetStdHandle(STD_INPUT_HANDLE),
                          hCurrentProcess, @hInputRead,0,
                        TRUE,DUPLICATE_SAME_ACCESS) then
-     RaiseLastSystemError('DuplicateHandle');
+     Error('DuplicateHandle:' + SysErrorMessage(GetLastError));
 
   // Create a duplicate of the output write handle for the std error
   // write handle. This is necessary in case the child application
@@ -158,7 +163,7 @@ begin
   if not DuplicateHandle(hCurrentProcess,hOutputWrite,
                        hCurrentProcess,  @hErrorWrite,0,
                        TRUE,DUPLICATE_SAME_ACCESS) then
-     RaiseLastSystemError('DuplicateHandle');
+     Error('DuplicateHandle:' + SysErrorMessage(GetLastError));
 
 
   // Create new output read handle. Set
@@ -170,12 +175,12 @@ begin
                        @hOutputRead, // Address of new handle.
                        0,FALSE, // Make it uninheritable.
                        DUPLICATE_SAME_ACCESS) then
-     RaiseLastSystemError('DupliateHandle');
+     Error('DupliateHandle:' + SysErrorMessage(GetLastError));
 
 
   // Close inheritable copies of the handles you do not want to be
   // inherited.
-  if not CloseHandle(hOutputReadTmp) then RaiseLastSystemError('CloseHandle');
+  if not CloseHandle(hOutputReadTmp) then Error('CloseHandle:' + SysErrorMessage(GetLastError));
 
   hChild := Launch(CmdLine, hInputRead, hOutputWrite, hErrorWrite);
 
@@ -184,14 +189,19 @@ begin
   // You need to make sure that no handles to the write end of the
   // output pipe are maintained in this process or else the pipe will
   // not close when the child process exits and the ReadFile will hang.
-  if not CloseHandle(hOutputWrite) then RaiseLastSystemError('CloseHandle');
+  if not CloseHandle(hOutputWrite) then Error('CloseHandle:' + SysErrorMessage(GetLastError));
   if hInputRead <> 0 then
   begin
-    if not CloseHandle(hInputRead )  then RaiseLastSystemError('CloseHandle');
+    if not CloseHandle(hInputRead )  then Error('CloseHandle:' + SysErrorMessage(GetLastError));
   end;
-  if not CloseHandle(hErrorWrite)  then RaiseLastSystemError('CloseHandle');
+  if not CloseHandle(hErrorWrite)  then Error('CloseHandle:' + SysErrorMessage(GetLastError));
 end;
 
+
+procedure TWin32ChildProcess.Error(Msg: string);
+begin
+  raise EChildProcessException.Create(Msg);
+end;
 
 initialization
  ChildProcesses.ChildProcessClass := TWin32ChildProcess;

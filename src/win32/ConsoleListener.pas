@@ -206,7 +206,7 @@ end;
 procedure TConsoleListener.TaskFailed(Task: TTask; Msg: string);
 begin
   inherited TaskFailed(Task, Msg);
-  Log(vlErrors, Msg);
+  //!!! Log(vlErrors, Msg);
   DeleteTaskPrefix(Task);
 end;
 
