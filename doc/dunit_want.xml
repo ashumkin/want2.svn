@@ -1,0 +1,157 @@
+<!-- 
+========================================================================
+ Copyright (c) 1999-2001 The DUnit Group. All rights reserved.
+ $Id$
+======================================================================== 
+ This build file specifies how to build DUnit using the Dante build tool.
+ See:
+  http://dante.sourceforge.net/
+ for details.
+======================================================================== 
+
+-->
+<project name="DUnit Extrem Testing Framework for Delphi"
+  default="test" 
+  basedir=".">
+ 
+  <property name="app.name"       value="dunit" />
+  <property name="version"        value="3.2.7.2" />
+  <regexp   property="cvs.tag" text="build_${version}" pattern="\." subst="_" />
+  
+  <property name="src.dir"        value="${basedir}/src" />
+  <property name="doc.dir"        value="${basedir}/doc" />
+  <property name="test.dir"       value="${basedir}/tests"/>
+  <property name="samp.dir"       value="${basedir}/examples"/>
+  <property name="scratch.dir"    value="${basedir}/scratch"/>
+  <property name="bin.dir"        value="${basedir}/bin"/>
+  <property name="dist.dir"       value="${basedir}/dist"/>
+
+  <patternset id="source.code" >
+    <include name="**/*.pas" />
+    <include name="**/*.dfm" />
+    <include name="**/*.dpr" />
+    <include name="**/*.rc" />
+    <include name="**/*.res" />
+    <include name="**/*.xml" />
+  </patternset>
+
+  <patternset id="docs" >
+    <include name="**/*.html" />
+    <include name="**/*.htm" />
+    <include name="**/*.txt" />
+  </patternset>
+
+  <patternset id="source.and.docs" >
+    <patternset refid="source.code" />
+    <patternset refid="docs" />
+  </patternset>
+
+  <target name="prepare">
+    <mkdir dir="${scratch.dir}" />
+    <mkdir dir="${bin.dir}" />
+  </target>
+
+  <target name="clean">
+    <delete dir="${scratch.dir}" />
+    <!-- <delete file="${bin.dir}/**" /> -->
+  </target>
+
+  <property name="test.app" value="UnitTests" />
+
+  <target name="compile" depends="prepare" >
+    <dcc basedir="${test.dir}"
+         source="${test.app}.dpr"
+         dcus="${scratch.dir}"
+         exes="${bin.dir}"
+         debug="true"
+         build="true"
+    >
+      <unit path="${src.dir}" />
+      <resource path="${src.dir}" />
+    </dcc>
+  </target>
+
+  <target name="test_dunit" depends="compile" >
+    <exec executable="${bin.dir}/${test.app}.exe" 
+	       arguments="-text-mode"
+	 />
+  </target>
+
+  <target name="examples"  
+          depends="registration,collection,registry,tlist,structure,cmdline" > 
+			 <!-- list all example dirs here -->
+  </target>
+
+  <target name="test" depends="test_dunit,examples" />
+
+  <target name="dist" depends="clean,prepare,test" >
+    <echo message="CVS tag='${cvs.tag}'" />
+
+    <property name="zipfile" value="${dist.dir}/${app.name}-${version}.zip" />
+
+    <delete file="${zipfile}" />
+	 <mkdir dir="${dist.dir}" />
+
+    <zip zipfile="${zipfile}" >
+	   <fileset dir="." >
+        <include name="ChangeLog" />
+		  <include name="*.xml"  />
+		  <include name="*.html"  />
+		</fileset>
+      <fileset dir="${src.dir}">
+        <patternset refid="source.and.docs" />
+      </fileset>
+      <fileset dir="${test.dir}">
+        <patternset refid="source.and.docs" />
+      </fileset>
+      <fileset dir="${doc.dir}" >
+        <patternset refid="docs" />
+      </fileset>
+  
+      <!-- examples -->
+      <fileset dir="${samp.dir}">
+        <patternset refid="source.and.docs" />
+      </fileset>
+    </zip>
+  </target>
+
+  <!-- EXAMPLES 
+       Each has its own Dante build.xml file.
+  -->
+  
+  <target name="registration" depends="prepare" >
+    <dante dir="${samp.dir}/registration" />
+  </target>
+
+  <target name="collection" depends="prepare" >
+    <dante dir="${samp.dir}/collection" />
+  </target>
+
+  <target name="registry" depends="prepare" >
+    <dante dir="${samp.dir}/registry" />
+  </target>
+
+  <target name="tlist" depends="prepare" >
+    <dante dir="${samp.dir}/TListTest" />
+  </target>
+
+  <target name="structure" depends="prepare" >
+    <dante dir="${samp.dir}/structure" />
+  </target>
+
+  <target name="cmdline" depends="prepare" >
+    <dante dir="${samp.dir}/cmdline" />
+  </target>
+
+  <!-- ...add a target for each example... -->
+  <target name="changelog" >
+     <shell executable="perl tools/cvs2cl.pl" >
+			<arg value="--file ChangeLog" />
+			<arg value="--tags" />
+			<arg value="--utc" /> 
+			<arg value="--window 604800" />
+			<arg value="--prune" />
+		</shell>
+  </target>
+
+</project>
