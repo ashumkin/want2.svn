@@ -1,6 +1,6 @@
 (*******************************************************************
 *  WANT - A build management tool.                                 *
-*  Copyright (c) 2001 Juancarlo Añez, Caracas, Venezuela.          *
+*  Copyright (c) 2001-2003 Juancarlo Añez, Caracas, Venezuela.     *
 *  All rights reserved.                                            *
 *                                                                  *
 *******************************************************************)
@@ -155,9 +155,9 @@ end;
 function Copyright: string;
 begin
   Result :=
-   'WANT - A Build Management tool. v' + GetVersionString       + C_EOL +
-   'Copyright (c) 2001 Juancarlo Anez, Caracas, Venezuela.'    + C_EOL +
-   'All rights reserved'                                        + C_EOL;
+   'WANT - A Build Management tool. v' + GetVersionString         + C_EOL +
+   'Copyright (c) 2001-2003 Juancarlo Anez, Caracas, Venezuela.'  + C_EOL +
+   'All rights reserved'                                          + C_EOL;
 end;
 
 function License :string;
