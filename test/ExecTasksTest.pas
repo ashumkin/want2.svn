@@ -102,18 +102,15 @@ begin
 end;
 
 procedure TTestShellTask.TestBuildCmdLine;
+const
+  SHELL_VAR = 'COMSPEC';
 var
-  OrigValue: boolean;
+  ComSpec :string;
 begin
-  OrigValue := JclSysInfo.IsWinNT;
-  try
+  if GetEnvironmentVar(SHELL_VAR, Comspec, false) then
+  begin
     FShellTask.Executable := 'dir';
-    JclSysInfo.IsWinNT := false;
-    CheckEquals('command.com /c dir', FShellTask.BuildCmdLine);
-    JclSysInfo.IsWinNT := true;
-    CheckEquals('cmd.exe /c dir', FShellTask.BuildCmdLine);
-  finally
-    JclSysInfo.IsWinNT := OrigValue;
+    CheckEquals(Comspec + ' /c dir', FShellTask.BuildCmdLine);
   end;
 end;
 
