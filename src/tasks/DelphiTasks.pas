@@ -136,7 +136,7 @@ type
     FEnableWarnings : boolean;
     FUseLibraryPath : boolean;
     FUseCFG         : boolean;
-    FLongStrings    : boolean;
+    FHugeStrings    : boolean;
 
     FMap            : TMapType;
 
@@ -209,7 +209,7 @@ type
     property warnings: boolean read FEnableWarnings write FEnableWarnings default true;
     property usecfg:   boolean read FUseCFG   write FUseCFG;
 
-    property longstrings :boolean read FLongStrings   write FLongStrings default true;
+    property hugestrings :boolean read FHugeStrings   write FHugeStrings default true;
 
     property map       :TMapType read FMap write FMap;
 
@@ -429,7 +429,7 @@ begin
   FPackages       := TStringList.Create;
 
   FEnableWarnings := true;
-  FLongStrings    := true;
+  FHugeStrings    := true;
 
   AddWarning(UNSAFE_CODE,       false);
   AddWarning(SYMBOL_PLATFORM,   false);
@@ -608,7 +608,7 @@ begin
   else if optimize then
     Result := Result + ' -$D- -$L- -$R- -$Q- -$C-';
 
-  if longstrings then
+  if hugestrings then
     Result := Result + ' -$H+'
   else
     Result := Result + ' -$H-';
