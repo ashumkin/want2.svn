@@ -120,7 +120,7 @@ type
     function  GetBaseDir :string;          virtual;
     procedure SetBaseDir(Value :string);   virtual;
 
-    function GetOwner: TPersistent; override;
+    function GetOwner: TDanteElement; reintroduce;
     function GetProject: TProject;
     function NewName: string;
 
@@ -171,7 +171,8 @@ type
     function  StringsToSystemPathList(List: TStrings; Base :string = ''): string;
     procedure AboutToScratchPath(Path :TPath);
 
-    property  Project: TProject read GetProject;
+    property  Project: TProject      read GetProject;
+    property  Owner  : TDanteElement read GetOwner;
     property  Tag stored False;
 
     property  basedir :string   read GetBaseDir write SetBaseDir;
@@ -416,9 +417,9 @@ begin
 end;
 
 
-function TDanteElement.GetOwner: TPersistent;
+function TDanteElement.GetOwner: TDanteElement;
 begin
-  Result := inherited GetOwner;
+  Result := inherited GetOwner as TDanteElement;
 end;
 
 function TDanteElement.GetProject: TProject;
@@ -722,7 +723,7 @@ begin
   Msg := StringReplace(Msg, #13,'@@', [rfReplaceAll]);
   Msg := StringReplace(Msg, #10,'@@', [rfReplaceAll]);
 
-  Msg := WrapText(Msg, '@@   ', [' ',#13,#10,#9,';',','], 66);
+  Msg := WrapText(Msg, '@@   ', [' ',#13,#10,#9,';',','], 64);
   Lines := TStringList.Create;
   try
     JclStrings.StrToStrings(Msg, '@@', Lines);
@@ -800,7 +801,10 @@ end;
 
 function TDanteElement.GetBaseDir: string;
 begin
-  Result := FBaseDir;
+  if Owner <> nil then
+    Result := Owner.ToRelativePath(FBaseDir)
+  else
+    Result := FBaseDir;
 end;
 
 procedure TDanteElement.SetBaseDir(Value: string);
@@ -819,7 +823,7 @@ begin
   FTargets    := TList.Create;
   FProperties := TStringList.Create;
   FVerbosity  := vlNormal;
-  FRunPath    := ToAbsolutePath(ToPath(GetCurrentDir));
+  FRunPath    := ToPath(GetCurrentDir);
 end;
 
 destructor TProject.Destroy;
@@ -1128,12 +1132,13 @@ end;
 
 procedure TProject.SetBaseDir(Path: TPath);
 begin
-  SetProperty('basedir', PathConcat(FRunPath, Path));
+  inherited SetBaseDir(Path);
+  SetProperty('basedir', PathConcat(RunPath, Path));
 end;
 
 function TProject.GetBaseDir: TPath;
 begin
-  Result := PropertyValue('basedir');
+  Result := WildPaths.ToRelativePath(PropertyValue('basedir'), FRunPath);
 end;
 
 

@@ -109,6 +109,11 @@ type
 
     procedure Validate; override;
     procedure Execute;  override;
+
+    procedure AddUnitPath(Path :TPath);
+    procedure AddResourcePath(Path :TPath);
+    procedure AddIncludePath(Path :TPath);
+
   published
 
     property basedir; // from TTask
@@ -165,7 +170,8 @@ end;
 procedure TDelphiCompileTask.Validate;
 begin
   inherited Validate;
-  RequireAttribute('source', source);
+  RequireAttribute('basedir', source);
+  RequireAttribute('source',  source);
 end;
 
 
@@ -174,6 +180,7 @@ procedure TDelphiCompileTask.Execute;
 begin
   Log(ToRelativePath(Source));
   Log(vlVerbose, BuildCmdLine);
+  Log(vlDebug, 'Current Dir is:'+ CurrentDir);
   inherited Execute;
 end;
 
@@ -276,25 +283,40 @@ begin
   FExesPath := Value;
 end;
 
+procedure TDelphiCompileTask.AddUnitPath(Path: TPath);
+begin
+  FUnitPaths.Add(Path);
+end;
+
+procedure TDelphiCompileTask.AddIncludePath(Path: TPath);
+begin
+     FIncludePaths.Add(Path);
+end;
+
+procedure TDelphiCompileTask.AddResourcePath(Path: TPath);
+begin
+  FResourcePaths.Add(Path);
+end;
+
 { TUnitElement }
 
 procedure TUnitElement.SetPath(Value: string);
 begin
-  (Owner as TDelphiCompileTask).FUnitPaths.Add(Value);
+  (Owner as TDelphiCompileTask).AddUnitPath(Value);
 end;
 
 { TResourceElement }
 
 procedure TResourceElement.SetPath(Value: string);
 begin
-  (Owner as TDelphiCompileTask).FResourcePaths.Add(Value);
+  (Owner as TDelphiCompileTask).AddResourcePath(Value);
 end;
 
 { TIncludeElement }
 
 procedure TIncludeElement.SetPath(Value: string);
 begin
-  (Owner as TDelphiCompileTask).FIncludePaths.Add(Value);
+  (Owner as TDelphiCompileTask).AddIncludePath(Value);
 end;
 
 initialization

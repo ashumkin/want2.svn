@@ -6,13 +6,11 @@
 
   <property name="version" value="0.0.1-beta" />
 
-  <echo message="${basedir}" />
-  <echo message="The base directory is ${basedir}." />
-
-  <property name="src"  value="${basedir}/src" />
-  <property name="dist" value="${basedir}/dist" />
-  <property name="res"  value="${basedir}/res" />
-  <property name="lib"  value="${basedir}/lib" />
+  <property name="src"       value="${basedir}/src" />
+  <property name="dist"      value="${basedir}/dist" />
+  <property name="res"       value="${basedir}/res" />
+  <property name="lib"       value="${basedir}/lib" />
+  <property name="examples"  value="${basedir}/examples" />
 
   <property name="bin" value="${basedir}/bin" />
   <property name="dcu" value="${basedir}/dcu" />
@@ -20,10 +18,25 @@
   <property name="jcl"     value="${src}/jcl" />
   <property name="paszlib" value="${lib}/paszlib" />
 
-  <echo message="The source directory is ${src}." />
-  <echo message="The default command processor is %{comspec}." />
 
   <target name="prepare" >
+    <echo message="basedir=${basedir}" />
+    <echo>
+	 The base directory is ${basedir}
+    The source directory is ${src}
+    The default command processor is %{comspec}
+	 </echo>
+    <echo message="src=${src}" />
+    <echo message="dist=${dist}" />
+    <echo message="res=${res}" />
+    <echo message="lib=${lib}" />
+
+    <echo message="bin=${bin}" />
+    <echo message="dcu=${dcu}" />
+
+    <echo message="jcl=${jcl}" />
+    <echo message="paszlib=${paszlib}" />
+
     <mkdir dir="${dcu}" />
     <mkdir dir="${bin}" />
   </target>
@@ -34,7 +47,7 @@
     <delete dir="${bin}" />
   </target>
 
-  <target name="compile" depends="prepare" >
+  <target name="compile" > <!-- depends="prepare" -->
     <log file="compile.log" >
       <info code="compile">
         Compile started.
@@ -45,7 +58,8 @@
     -->
     <touch  file="${src}/dante.cfg"  />
     <delete file="${src}/dante.cfg" />
-    <dcc source="${src}/dante.dpr"
+    <dcc basedir="${src}"
+	      source="dante.dpr"
          exes="${basedir}"
          dcus="${dcu}"
          quiet="true"
@@ -74,6 +88,15 @@
       </info>
     </log>
   </target>
+
+  <target name="examples" depends="prepare" >
+    <dante dir="${examples}" />
+    <dante dir="${examples}/test" />
+
+    <dante buildfile="${examples}/build.xml" />
+    <dante buildfile="${examples}/test/build.xml" />
+</target>
+  
 
   <target name="dist" depends="prepare,compile" >
     <mkdir dir="${dist}" />
