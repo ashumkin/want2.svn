@@ -103,7 +103,7 @@ type
 
   TTestDanteElement = class(TProjectBaseCase)
   private
-    FDanteElement: TDanteElement;
+    FDanteElement: TScriptElement;
   public
     procedure Setup; override;
     procedure TearDown; override;
@@ -463,7 +463,7 @@ end;
 procedure TTestDanteElement.Setup;
 begin
   inherited;
-  FDanteElement := TDanteElement.Create(FProject.AddTarget('test'));
+  FDanteElement := TScriptElement.Create(FProject.AddTarget('test'));
 end;
 
 procedure TTestDanteElement.TearDown;

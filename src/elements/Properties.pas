@@ -39,7 +39,7 @@ uses
   DanteClasses;
 
 type
-  TPropertyElement = class(TDanteElement)
+  TPropertyElement = class(TScriptElement)
   protected
     FName: string;
     FValue: string;

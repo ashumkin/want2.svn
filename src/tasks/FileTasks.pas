@@ -61,7 +61,7 @@ type
 
     procedure DoFileset(Fileset: TFileSet); virtual;
   public
-    constructor Create(Owner: TDanteElement); override;
+    constructor Create(Owner: TScriptElement); override;
 
     procedure Execute; override;
   published
@@ -143,7 +143,7 @@ implementation
 
 { TFileSetTask }
 
-constructor TFileSetTask.Create(Owner: TDanteElement);
+constructor TFileSetTask.Create(Owner: TScriptElement);
 begin
   inherited Create(Owner);
   DefaultExcludes := True;
@@ -263,7 +263,7 @@ procedure TDeleteTask.AddDefaultPatterns;
 var
   RelDir: TPath;
 begin
-  inherited AddDefaultPatterns;
+  //inherited AddDefaultPatterns;
 
   if dir <> '' then
   begin

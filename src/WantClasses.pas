@@ -78,9 +78,9 @@ const
 type
   TLogLevel = LogMgr.TLogLevel;
 
-  TDanteElement = class;
-  TDanteElementClass = class of TDanteElement;
-  TDanteElementClassArray = array of TDanteElementClass;
+  TScriptElement = class;
+  TScriptElementClass = class of TScriptElement;
+  TScriptElementClassArray = array of TScriptElementClass;
 
   TProject    = class;
   TTarget     = class;
@@ -90,7 +90,6 @@ type
   EDanteException   = class(Exception);
   EDanteError       = class(EDanteException);
   ETargetException  = class(EDanteException);
-  ETaskException    = class(EDanteException);
 
 
   ENoDefaultTargetError     = class(ETargetException);
@@ -98,18 +97,19 @@ type
   ECircularTargetDependency = class(ETargetException);
 
 
+  ETaskException    = class(EDanteException);
   ETaskError       = class(ETaskException);
   ETaskFailure     = class(ETaskException);
 
   TStringArray = array of string;
 
-  TDanteElementArray = array of TDanteElement;
+  TScriptElementArray = array of TScriptElement;
 
   TTargetArray = array of TTarget;
 
-  TCreateElementMethod = function: TDanteElement of object;
+  TCreateElementMethod = function: TScriptElement of object;
 
-  TDanteElement = class(TTree)
+  TScriptElement = class(TTree)
   protected
     FName   : string;
     FId     : string;      // element Id
@@ -120,19 +120,22 @@ type
 
     FDescription:   string;
 
+    FIf  :string;
+    FUnless :string;
+
     class function SynthesizeTagName(Suffix :string): string; virtual;
 
-    function  GetChild(i :Integer):TDanteElement;
+    function  GetChild(i :Integer):TScriptElement;
 
     function  GetBaseDir: TPath;              virtual;
     procedure SetBaseDir(const Value: TPath); virtual;
 
     procedure SetID(Value: string); virtual;
 
-    function GetOwner: TDanteElement; reintroduce;
+    function GetOwner: TScriptElement; reintroduce;
     function GetProject: TProject;
 
-    function  GetChildrenTyped(AClass: TDanteElementClass = nil):  TDanteElementArray;
+    function  GetChildrenTyped(AClass: TScriptElementClass = nil):  TScriptElementArray;
 
     procedure Log(Msg: string = ''; Level: TLogLevel = vlNormal); overload; virtual;
     procedure Log(Level: TLogLevel; Msg: string = '');            overload;
@@ -146,28 +149,29 @@ type
     procedure RequireAttributes(Names: array of string);
     procedure AttributeRequiredError(AttName: string);
 
+    procedure Init;   virtual;
+    procedure Initialize; virtual;
   public
-    constructor Create(Owner: TDanteElement); reintroduce; overload; virtual;
+    constructor Create(Owner: TScriptElement); reintroduce; overload; virtual;
     destructor Destroy; override;
 
     class function TagName: string; virtual;
 
-    procedure SetUp(Name :string; Atts :TStrings);                         virtual;
-    function  SetupChild(ChildName :string; Atts :TStrings):TDanteElement; virtual;
-    procedure Init;   virtual;
+    function  Enabled :boolean; virtual;
+    procedure SetUp(Name :string; Atts :TStrings); virtual;
+    function  SetupChild(ChildName :string; Atts :TStrings):TScriptElement; virtual;
 
     procedure SetProperty(Name, Value: string);          virtual;
     function  PropertyDefined(Name: string): boolean;    virtual;
     function  PropertyValue(Name: string): string;       virtual;
     function  EnvironmentValue(Name: string): string;    virtual;
-    function  ExpandMacros(Value: string): string;       virtual;
+    function  Evaluate(Value: string): string;       virtual;
 
     procedure SetProperties(Value: TStrings);
 
     function  HasAttribute(Name :string) : boolean;
     function  SetAttribute(Name, Value: string): boolean; virtual;
     function  GetAttribute(Name :string) : string;        virtual;
-    procedure SetAttributes(Value :TStrings);
 
     function  GetDelphiProperty(Name :string) :Variant;
     function  SetDelphiProperty(Name, Value :string) :boolean;
@@ -183,23 +187,29 @@ type
     procedure AboutToScratchPath(const Path: TPath);
 
     property  Project: TProject      read GetProject;
-    property  Owner :  TDanteElement read GetOwner;
+    property  Owner :  TScriptElement read GetOwner;
 
     property id     :    string   read FId         write SetId;
     property basedir:    TPath    read GetBaseDir  write SetBaseDir;
     property Properties: TStrings read FProperties write SetProperties;
-    property Attributes: TStrings read FAttributes write SetAttributes;
+    property Attributes: TStrings read FAttributes;
     property Name:       string   read FName       write FName stored True;
 
-    property Children[i :Integer] :TDanteElement read GetChild;
+    property Children[i :Integer] :TScriptElement read GetChild;
   published
     property Tag :  string        read TagName stored False;
     property Description: string  read FDescription write FDescription;
+
+    property _if    :string read FIf     write FIf;
+    property unless :string read FUnless write FUnless;
+
+    property ifdef  :string read FIf     write FIf;
+    property ifndef :string read FUnless write FUnless;
   end;
 
 
 
-  TProject = class(TDanteElement)
+  TProject = class(TScriptElement)
   protected
     FTargets:       TList;
     FDefaultTarget: string;
@@ -222,7 +232,7 @@ type
     procedure SetRootPath(const Path :TPath);
 
   public
-    constructor Create(Owner: TDanteElement = nil); override;
+    constructor Create(Owner: TScriptElement = nil); override;
     destructor  Destroy; override;
 
     procedure SetInitialBaseDir(Path: TPath);
@@ -233,7 +243,7 @@ type
     function FindBuildFile(BuildFile: TPath; SearchUp :boolean = False):TPath; overload;
     function FindBuildFile(SearchUp :boolean= False) :TPath; overload;
 
-    function  FindChild(Id: string; ChildClass: TClass = nil): TDanteElement;
+    function  FindChild(Id: string; ChildClass: TClass = nil): TScriptElement;
 
     // use this to get the fully qualified base path
     function  BasePath: string; override;
@@ -276,7 +286,7 @@ type
 
 
 
-  TTarget = class(TDanteElement)
+  TTarget = class(TScriptElement)
   protected
     FTasks:   TList;
     FDepends: string;
@@ -286,7 +296,7 @@ type
 
     function GetTask(Index: Integer):TTask;
   public
-    constructor Create(Owner: TDanteElement); override;
+    constructor Create(Owner: TScriptElement); override;
     destructor  Destroy; override;
 
     class function TagName: string; override;
@@ -304,7 +314,7 @@ type
 
 
 
-  TTask = class(TDanteElement)
+  TTask = class(TScriptElement)
   protected
     procedure DoExecute;
   public
@@ -325,12 +335,12 @@ function  FindTask(Tag: string): TTaskClass;
 procedure RegisterTask(TaskClass: TTaskClass);
 procedure RegisterTasks(TaskClasses: array of TTaskClass);
 
-function  FindElement(Tag :string; AppliedTo :TClass = nil) :TDanteElementClass;
+function  FindElement(Tag :string; AppliedTo :TClass = nil) :TScriptElementClass;
 
-procedure RegisterElement(ElementClass :TDanteElementClass);                                            overload;
-procedure RegisterElement(AppliesTo, ElementClass :TDanteElementClass);                                 overload;
-procedure RegisterElements(ElementClasses:array of TDanteElementClass);                                 overload;
-procedure RegisterElements(AppliesTo : TDanteElementClass; ElementClasses:array of TDanteElementClass); overload;
+procedure RegisterElement(ElementClass :TScriptElementClass);                                            overload;
+procedure RegisterElement(AppliesTo, ElementClass :TScriptElementClass);                                 overload;
+procedure RegisterElements(ElementClasses:array of TScriptElementClass);                                 overload;
+procedure RegisterElements(AppliesTo : TScriptElementClass; ElementClasses:array of TScriptElementClass); overload;
 
 function  TextToArray(const Text: string; const Delimiter :string = ','): TStringArray;
 
@@ -349,15 +359,15 @@ implementation
 type
   TElementRecord = record
     _TagName      :string;
-    _ElementClass :TDanteElementClass;
-    _AppliesTo    :TDanteElementClass;
+    _ElementClass :TScriptElementClass;
+    _AppliesTo    :TScriptElementClass;
   end;
 
 var
   __ElementRegistry :array of TElementRecord;
 
 
-function  FindElement(Tag :string; AppliedTo :TClass) :TDanteElementClass;
+function  FindElement(Tag :string; AppliedTo :TClass) :TScriptElementClass;
 var
   i :Integer;
 begin
@@ -382,12 +392,12 @@ begin
     end;
 end;
 
-procedure RegisterElement(ElementClass :TDanteElementClass);
+procedure RegisterElement(ElementClass :TScriptElementClass);
 begin
-  RegisterElement(TDanteElementClass(nil), ElementClass);
+  RegisterElement(TScriptElementClass(nil), ElementClass);
 end;
 
-procedure RegisterElement(AppliesTo, ElementClass :TDanteElementClass); overload;
+procedure RegisterElement(AppliesTo, ElementClass :TScriptElementClass); overload;
 var
   pos :Integer;
 begin
@@ -404,12 +414,12 @@ begin
   end;
 end;
 
-procedure RegisterElements(ElementClasses:array of TDanteElementClass);
+procedure RegisterElements(ElementClasses:array of TScriptElementClass);
 begin
-  RegisterElements(TDanteElementClass(nil), ElementClasses);
+  RegisterElements(TScriptElementClass(nil), ElementClasses);
 end;
 
-procedure RegisterElements(AppliesTo : TDanteElementClass; ElementClasses:array of TDanteElementClass);
+procedure RegisterElements(AppliesTo : TScriptElementClass; ElementClasses:array of TScriptElementClass);
 var
   i :Integer;
 begin
@@ -420,7 +430,7 @@ end;
 
 function FindTask(Tag: string): TTaskClass;
 var
-  C :TDanteElementClass;
+  C :TScriptElementClass;
 begin
   Result := nil;
   C := FindElement(Tag, TTarget);
@@ -512,36 +522,36 @@ end;
 
 procedure TaskFailure(Msg: string);
 begin
-   raise ETaskFailure.Create(Msg) at CallerAddr;
+   raise ETaskFailure.Create(Msg) //at CallerAddr;
 end;
 
-{ TDanteElement }
+{ TScriptElement }
 
-constructor TDanteElement.Create(Owner: TDanteElement);
+constructor TScriptElement.Create(Owner: TScriptElement);
 begin
   inherited Create(Owner);
   FProperties := TStringList.Create;
   FAttributes := TStringList.Create;
 end;
 
-destructor TDanteElement.Destroy;
+destructor TScriptElement.Destroy;
 begin
   FreeAndNil(FAttributes);
   FreeAndNil(FProperties);
   inherited Destroy;
 end;
 
-function TDanteElement.GetChild(i: Integer): TDanteElement;
+function TScriptElement.GetChild(i: Integer): TScriptElement;
 begin
-  Result := inherited GetChild(i) as TDanteElement;
+  Result := inherited GetChild(i) as TScriptElement;
 end;
 
-function TDanteElement.GetOwner: TDanteElement;
+function TScriptElement.GetOwner: TScriptElement;
 begin
-  Result := Parent as TDanteElement;
+  Result := Parent as TScriptElement;
 end;
 
-function TDanteElement.GetProject: TProject;
+function TScriptElement.GetProject: TProject;
 begin
   if self is TProject then
      Result := TProject(self)
@@ -551,7 +561,7 @@ begin
     Result := Owner.Project;
 end;
 
-class function TDanteElement.SynthesizeTagName(Suffix: string): string;
+class function TScriptElement.SynthesizeTagName(Suffix: string): string;
 begin
   Result := ClassName;
   if StrLeft(Result, 1) = 'T' then
@@ -561,119 +571,134 @@ begin
   Result := LowerCase(Result);
 end;
 
-class function TDanteElement.TagName: string;
+class function TScriptElement.TagName: string;
 begin
   Result := SynthesizeTagName('Element');
 end;
 
 
-procedure TDanteElement.Init;
+procedure TScriptElement.Init;
 begin
   // do nothing
 end;
 
-procedure TDanteElement.SetUp(Name: string; Atts: TStrings);
+procedure TScriptElement.Initialize;
 var
-  i        :Integer;
-  LastDir  :TPath;
+  a       :Integer;
+  i       :Integer;
+  LastDir :TPath;
 begin
-  Log(vlDebug, 'SetUp %s', [Name]);
+  if not Enabled then
+    Log(vlDebug, '%s disabled', [TagName])
+  else
+  begin
+    for a := 0 to Attributes.Count-1 do
+      with Attributes do
+        SetDelphiProperty(Names[a], Evaluate(Values[Names[a]]) );
 
-  LastDir := CurrentDir;
-  ChangeDir(BasePath);
-  try
-    if Name <> Self.TagName then
-      DanteError(Format('XML tag of class <%s> is <%s> but found <%s>',
-                        [ClassName, TagName, Name]
-                        ));
-
-    for i := 0 to Atts.Count-1 do
-    begin
-       if not Self.SetAttribute(Atts.Names[i], Atts.Values[Atts.Names[i]]) then
-         DanteError(Format('Unknown attribute <%s>.%s', [TagName, Atts.Names[i]]));
-    end;
-
-    Log(vlDebug, 'Init, BasePath ="%s"', [BasePath]);
+    LastDir := CurrentDir;
     ChangeDir(BasePath);
+    try
+      Log(vlDebug, 'Init, BasePath ="%s"', [BasePath]);
+      ChangeDir(BasePath);
 
-    Self.Init;
-  finally
-    ChangeDir(LastDir);
+      Self.Init;
+
+      for i := 0 to ChildCount-1 do
+        Children[i].Initialize;
+    finally
+      ChangeDir(LastDir);
+    end;
   end;
 end;
 
-function TDanteElement.HasAttribute(Name: string): boolean;
+function TScriptElement.Enabled: boolean;
+var
+  PropName: string;
+begin
+  Result := true;
+
+  PropName := GetAttribute('if');
+  if PropName = '' then
+    PropName := GetAttribute('ifdef');
+  PropName := Evaluate(PropName);
+  if (PropName <> '')
+  and not PropertyDefined(PropName) then
+  begin
+    Log(vlDebug, 'disabling <%s> because "%s" not defined', [TagName, PropName]);
+    Result := False
+  end
+  else
+  begin
+    PropName := GetAttribute('unless');
+
+    if PropName = '' then
+      PropName := GetAttribute('ifndef');
+    PropName := Evaluate(PropName);
+    if (PropName <> '')
+    and PropertyDefined(PropName) then
+    begin
+      Log(vlDebug, 'skipping <%s> because "%s" defined', [TagName, PropName]);
+      Result := False;
+    end;
+  end
+end;
+
+procedure TScriptElement.SetUp(Name: string; Atts: TStrings);
+var
+  i        :Integer;
+begin
+  Log(vlDebug, 'SetUp %s', [Name]);
+
+  if Name <> Self.TagName then
+    DanteError(Format('XML tag of class <%s> is <%s> but found <%s>',
+                      [ClassName, TagName, Name]
+                      ));
+
+  for i := 0 to Atts.Count-1 do
+  begin
+     if not Self.SetAttribute(Atts.Names[i], Atts.Values[Atts.Names[i]]) then
+       DanteError(Format('Unknown attribute <%s>.%s', [TagName, Atts.Names[i]]));
+  end;
+end;
+
+function TScriptElement.HasAttribute(Name: string): boolean;
 begin
   Result := FAttributes.IndexOf(Name) >= 0;
 end;
 
 
-function TDanteElement.SetAttribute(Name, Value: string): boolean;
+function TScriptElement.SetAttribute(Name, Value: string): boolean;
 begin
-  if (Name = 'if') or (Name = 'unless')
-  or (Name = 'ifdef') or (Name = 'ifndef')
-  then
-    Result := true // Do nothing. Conditionals are processed elsewhere
-  else
+  Result := true;
+  if (Name = 'text') then
   begin
-    Result := true;
-    if (Name = 'text') then
-    begin
-       if Trim(Value) = '' then
-         EXIT // ignore it
-       else
-         Value := TrimRight(Value);
-    end;
-    Log(vlDebug, 'attribute %s="%s"', [Name,ExpandMacros(Value)]);
-    FAttributes.Values[Name] := Value;
-    Result := SetDelphiProperty(Name, ExpandMacros(Value));
+     if Trim(Value) = '' then
+       EXIT // ignore it
+     else
+       Value := TrimRight(Value);
   end;
+  Log(vlDebug, 'attribute %s="%s"', [Name,Value]);
+  FAttributes.Values[Name] := Value;
+  Result := SetDelphiProperty(Name, Evaluate(Value));
 end;
 
 
-function TDanteElement.GetAttribute(Name: string): string;
+function TScriptElement.GetAttribute(Name: string): string;
 begin
   Result := FAttributes.Values[Name];
   if Result = '' then
     Result := GetDelphiProperty(Name);
-
-  Result := ExpandMacros(Result);
 end;
 
-procedure TDanteElement.SetAttributes(Value: TStrings);
-begin
-  FAttributes.Assign(Value);
-end;
-
-function TDanteElement.SetupChild(ChildName: string; Atts: TStrings) :TDanteElement;
+function TScriptElement.SetupChild(ChildName: string; Atts: TStrings) :TScriptElement;
 var
   MethodName: string;
   Method    : TMethod;
-  ElemClass : TDanteElementClass;
-  CondPropName: string;
+  ElemClass : TScriptElementClass;
 begin
   Result := nil;
   // conditionals
-
-  CondPropName := Atts.Values['if'];
-  if CondPropName = '' then
-    CondPropName := Atts.Values['ifdef'];
-  if (CondPropName <> '')
-  and not PropertyDefined(CondPropName) then
-  begin
-    Log(vlDebug, 'skipping <%s> because "%s" not defined', [ChildName, CondPropName]);
-    EXIT;
-  end;
-
-  CondPropName := Atts.Values['unless'];
-  if CondPropName = '' then
-    CondPropName := Atts.Values['ifndef'];
-  if (CondPropName <> '')
-  and PropertyDefined(CondPropName) then
-  begin
-    Log(vlDebug, 'skipping <%s> because "%s" defined', [ChildName, CondPropName]);
-    EXIT;
-  end;
 
   Method.Data  := Self;
   MethodName   := 'Create' + ChildName;
@@ -687,24 +712,24 @@ begin
     if ElemClass <> nil then
       Result := ElemClass.Create(Self)
     else
-      DanteError(Format('Unknown element <%s><%s>', [TagName, ChildName] ));
+      DanteError(Format('Unknown element <%s><%s>', [TagName, ChildName]));
   end;
 end;
 
-function TDanteElement.BasePath: string;
+function TScriptElement.BasePath: string;
 begin
   if (Owner = nil) or PathIsAbsolute(FBaseDir) then
     Result := FBaseDir
   else
-    Result := PathConcat((Owner as TDanteElement).BasePath, FBaseDir);
+    Result := PathConcat((Owner as TScriptElement).BasePath, FBaseDir);
 end;
 
-function TDanteElement.ToAbsolutePath(const Path: TPath): TPath;
+function TScriptElement.ToAbsolutePath(const Path: TPath): TPath;
 begin
   Result := PathConcat(BasePath, Path);
 end;
 
-function TDanteElement.ToRelativePath(const Path: TPath; const Base: TPath): TPath;
+function TScriptElement.ToRelativePath(const Path: TPath; const Base: TPath): TPath;
 begin
   if Base = '' then
     Result := WildPaths.ToRelativePath(Path, Self.BasePath)
@@ -712,7 +737,7 @@ begin
     Result := WildPaths.ToRelativePath(Path, Base);
 end;
 
-procedure TDanteElement.AboutToScratchPath(const Path: TPath);
+procedure TScriptElement.AboutToScratchPath(const Path: TPath);
 begin
   if  PathExists(Path)
   and PathIsAbsolute(ToRelativePath(Path))
@@ -722,10 +747,10 @@ begin
                          ));
 end;
 
-function TDanteElement.GetChildrenTyped(AClass: TDanteElementClass): TDanteElementArray;
+function TScriptElement.GetChildrenTyped(AClass: TScriptElementClass): TScriptElementArray;
 var
   List: TList;
-  E   : TDanteElement;
+  E   : TScriptElement;
   i   : Integer;
 begin
   List := TList.Create;
@@ -744,55 +769,55 @@ begin
   end;
 end;
 
-procedure TDanteElement.Log(Msg: string; Level: TLogLevel);
+procedure TScriptElement.Log(Msg: string; Level: TLogLevel);
 begin
   Log('', Msg, Level);
 end;
 
-procedure TDanteElement.Log(Level: TLogLevel; Msg: string);
+procedure TScriptElement.Log(Level: TLogLevel; Msg: string);
 begin
   Log(Msg, Level);
 end;
 
-procedure TDanteElement.Log(Tag, Msg: string; Level: TLogLevel);
+procedure TScriptElement.Log(Tag, Msg: string; Level: TLogLevel);
 begin
   Owner.Log(Tag, Msg, Level);
 end;
 
-function TDanteElement.Log(const Format: string; const Args: array of const; Level: TLogLevel): string;
+function TScriptElement.Log(const Format: string; const Args: array of const; Level: TLogLevel): string;
 begin
   Log(SysUtils.Format(Format, Args), Level);
 end;
 
-function TDanteElement.Log(Level: TLogLevel; const Format: string; const Args: array of const): string;
+function TScriptElement.Log(Level: TLogLevel; const Format: string; const Args: array of const): string;
 begin
   Log(Format, Args, Level);
 end;
 
 
-function TDanteElement.ToDantePath(Path: TSystemPath): TPath;
+function TScriptElement.ToDantePath(Path: TSystemPath): TPath;
 begin
   Result := WildPaths.ToPath(Path, BasePath);
 end;
 
-function TDanteElement.ToSystemPath(const Path: TPath; const Base: TPath): TSystemPath;
+function TScriptElement.ToSystemPath(const Path: TPath; const Base: TPath): TSystemPath;
 begin
   Result := ToRelativePath(Path, ToAbsolutePath(Base));
   Result := WildPaths.ToSystemPath(Result);
 end;
 
-procedure TDanteElement.AttributeRequiredError(AttName: string);
+procedure TScriptElement.AttributeRequiredError(AttName: string);
 begin
   DanteError(Format('"%s" attribute is required', [AttName]));
 end;
 
-procedure TDanteElement.RequireAttribute(Name: string);
+procedure TScriptElement.RequireAttribute(Name: string);
 begin
   if GetAttribute(Name) = '' then
     AttributeRequiredError(Name);
 end;
 
-procedure TDanteElement.RequireAttributes(Names: array of string);
+procedure TScriptElement.RequireAttributes(Names: array of string);
 var
   i :Integer;
 begin
@@ -800,7 +825,7 @@ begin
     RequireAttribute(Names[i]);
 end;
 
-function TDanteElement.GetBaseDir: TPath;
+function TScriptElement.GetBaseDir: TPath;
 begin
   if Owner <> nil then
     Result := Owner.ToRelativePath(FBaseDir)
@@ -808,56 +833,56 @@ begin
     Result := FBaseDir;
 end;
 
-procedure TDanteElement.SetBaseDir(const Value: TPath);
+procedure TScriptElement.SetBaseDir(const Value: TPath);
 begin
   FBaseDir := Value;
   //!!!SetProperty('basedir', BasePath);
 end;
 
-procedure TDanteElement.SetID(Value: string);
+procedure TScriptElement.SetID(Value: string);
 begin
   FId := Value;
 end;
 
 
 
-procedure TDanteElement.SetProperties(Value: TStrings);
+procedure TScriptElement.SetProperties(Value: TStrings);
 begin
   Assert(Value <> nil);
   FProperties.Assign(Value);
 end;
 
-procedure TDanteElement.SetProperty(Name, Value: string);
+procedure TScriptElement.SetProperty(Name, Value: string);
 begin
   Assert(Name <> '');
   if not PropertyDefined(Name) then
     Properties.Values[Name] := Value;
 end;
 
-function TDanteElement.PropertyDefined(Name: string): boolean;
+function TScriptElement.PropertyDefined(Name: string): boolean;
 begin
   Assert(Name <> '');
   Result :=   (Properties.IndexOfName(Name) >= 0)
            or (Owner <> nil) and (Owner.PropertyDefined(Name));
 end;
 
-function TDanteElement.PropertyValue(Name: string): string;
+function TScriptElement.PropertyValue(Name: string): string;
 begin
   Assert(Name <> '');
   if Properties.IndexOfName(Name) >= 0 then
-    Result := ExpandMacros(Properties.Values[Name])
+    Result := Evaluate(Properties.Values[Name])
   else if Owner <> nil then
     Result := Owner.PropertyValue(Name);
 end;
 
-function TDanteElement.EnvironmentValue(Name: string): string;
+function TScriptElement.EnvironmentValue(Name: string): string;
 begin
   Assert(Name <> '');
   JclSysInfo.GetEnvironmentVar(Name, Result, True);
 end;
 
 
-function TDanteElement.ExpandMacros(Value: string): string;
+function TScriptElement.Evaluate(Value: string): string;
 type
   TMacroExpansion = function(Name: string): string of object;
 
@@ -871,6 +896,7 @@ type
     MacroStart := StrSearch(StartPat, Result);
     while MacroStart <> 0 do
     begin
+      Result := Copy(Result, 1, MacroStart+1) + Evaluate(Copy(Result, MacroStart+2, Length(Result)));
       MacroEnd := StrSearch(EndPat, Result, macroStart+1);
       if MacroEnd =0  then
         break
@@ -889,7 +915,7 @@ begin
   Result := Expand('${', '}', Result, PropertyValue);
 end;
 
-function TDanteElement.GetDelphiProperty(Name: string): Variant;
+function TScriptElement.GetDelphiProperty(Name: string): Variant;
 var
   TypeInfo :PTypeInfo;
   PropInfo :PPropInfo;
@@ -925,7 +951,7 @@ begin
   end;
 end;
 
-function TDanteElement.SetDelphiProperty(Name, Value: string) :boolean;
+function TScriptElement.SetDelphiProperty(Name, Value: string) :boolean;
 var
   TypeInfo: PTypeInfo;
   PropInfo: PPropInfo;
@@ -962,10 +988,8 @@ begin
           Value := LowerCase(Value);
           if (Value = 'true') or (Value = 'yes') or (Value = 'on') then
             SetOrdProp(Self, PropInfo, GetEnumValue(PropType^, 'true'))
-          else if (Value = 'false') or (Value = 'no') or (Value = 'off')  or (Value = '') then
-            SetOrdProp(Self, PropInfo, GetEnumValue(PropType^, 'false'))
           else
-            DanteError('expected one of true/false, yes/no, on/off');
+            SetOrdProp(Self, PropInfo, GetEnumValue(PropType^, 'false'));
         end
       end
       else
@@ -976,7 +1000,7 @@ end;
 
 { TProject }
 
-constructor TProject.Create(Owner: TDanteElement);
+constructor TProject.Create(Owner: TScriptElement);
 begin
   inherited Create(Owner);
   FTargets    := TList.Create;
@@ -1014,9 +1038,9 @@ begin
   Result := FTargets.Count;
 end;
 
-function TProject.FindChild(Id: string; ChildClass: TClass): TDanteElement;
+function TProject.FindChild(Id: string; ChildClass: TClass): TScriptElement;
 var
-  E   : TDanteElement;
+  E   : TScriptElement;
   i   : Integer;
 begin
   Result := nil;
@@ -1058,7 +1082,12 @@ var
 begin
   Target := GetTargetByName(TargetName);
   if Sched.IndexOf(Target) >= 0 then
-     EXIT; // done
+    EXIT; // done
+  if not Target.Enabled then
+  begin
+    Log(vlVerbose, 'Skipping disabled target "%s"', [Target.TagName]);
+    EXIT;
+  end;
 
   Deps := TextToArray(Target.Depends);
   for i := Low(Deps) to High(Deps) do
@@ -1117,12 +1146,20 @@ begin
       raise ENoDefaultTargetError.Create('No default target');
   end;
 
+  Initialize;
   Sched := Schedule(Target);
-  LastDir := CurrentDir;
-  for i := Low(Sched) to High(Sched) do
+
+  if Length(Sched) = 0 then
+    Log(vlWarnings, 'Nothing to build')
+  else
   begin
+    LastDir := CurrentDir;
     try
-      Sched[i].Build;
+      for i := Low(Sched) to High(Sched) do
+      begin
+          ChangeDir(BasePath);
+          Sched[i].Build;
+      end;
     finally
       ChangeDir(LastDir);
     end;
@@ -1246,6 +1283,7 @@ end;
 procedure TTarget.Build;
 var
   i: Integer;
+  LastDir :TPath;
 begin
   Project.Log;
   Log(Description);
@@ -1253,13 +1291,19 @@ begin
   Log(vlDebug, 'basepath="%s"', [BasePath]);
   Log(vlDebug, 'basedir="%s"',  [BaseDir]);
 
-  for i := 0 to TaskCount-1 do
-  begin
-    Tasks[i].DoExecute;
+  LastDir := CurrentDir;
+  try
+    ChangeDir(BasePath);
+    for i := 0 to TaskCount-1 do
+    begin
+      Tasks[i].DoExecute;
+    end;
+  finally
+    ChangeDir(LastDir)
   end;
 end;
 
-constructor TTarget.Create(Owner: TDanteElement);
+constructor TTarget.Create(Owner: TScriptElement);
 begin
   inherited Create(Owner);
   FTasks   := TList.Create;
@@ -1324,31 +1368,33 @@ procedure TTask.DoExecute;
 var
   LastDir: TPath;
 begin
-  Log(vlDebug, 'basepath="%s"', [BasePath]);
-  Log(vlDebug, 'basedir="%s"',  [BaseDir]);
-
+  if not Enabled then
+    EXIT;
   if Description <> '' then
     Log(Description);
+
+  Log(vlDebug, 'basepath="%s"', [BasePath]);
+  Log(vlDebug, 'basedir="%s"',  [BaseDir]);
 
   LastDir := CurrentDir;
   try
     try
       ChangeDir(BasePath);
       Execute;
-    except
-      on e: EDanteException do
-      begin
-        Log(vlErrors, e.Message);
-        raise;
-      end;
-      on e: Exception do
-      begin
-        Log(vlErrors, e.Message);
-        TaskFailure(e.Message);
-      end;
+    finally
+      ChangeDir(LastDir);
     end;
-  finally
-    ChangeDir(LastDir);
+  except
+    on e: ETaskException do
+    begin
+      Log(vlErrors, e.Message);
+      raise;
+    end;
+    on e: Exception do
+    begin
+      Log(vlErrors, e.Message);
+      TaskFailure(e.Message);
+    end;
   end;
 end;
 
@@ -1366,7 +1412,7 @@ begin
   if (Owner = nil) or PathIsAbsolute(BaseDir) then
     Result := FBaseDir
   else
-    Result := PathConcat((Owner as TDanteElement).BasePath, BaseDir);
+    Result := PathConcat((Owner as TScriptElement).BasePath, BaseDir);
 end;
 
 

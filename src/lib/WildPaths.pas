@@ -343,6 +343,8 @@ begin
    if (Length(Result) >= 1) and (Result[Length(Result)] = '/') then
      Delete(Result,Length(Result), 1);
    Result := StringReplace(Result, '/', SystemPathDelimiter, [rfReplaceAll]);
+   if PathIsAbsolute(Path) then
+     Result := ExpandFileName(Result);
 end;
 
 function ToSystemPaths(const Paths: TPaths; const BasePath: TPath = ''): TSystemPaths;
@@ -778,7 +780,7 @@ end;
 
 procedure ChangeDir(const Path: TPath);
 begin
-  if Path <> '' then
+  if (Path <> '') and (Path <> CurrentDir) then
     SetCurrentDir(ToSystemPath(Path));
 end;
 

@@ -161,6 +161,7 @@ begin
   TScriptParser.ParseText(FProject, build_xml);
 
   ExecTask := THackedCustomExecTask(FProject.Targets[0].Tasks[0] as TExecTask);
+  ExecTask.Initialize;
   CheckEquals('first second third', ExecTask.BuildArguments);
   CheckEquals(false, ExecTask.failonerror);
 end;

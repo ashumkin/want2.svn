@@ -40,7 +40,7 @@ uses
   DanteClasses;
 
 type
-  TFormatElement = class(TDanteElement)
+  TFormatElement = class(TScriptElement)
   protected
     FProperty :string;
     FPattern  :string;
@@ -51,7 +51,7 @@ type
     property pattern   :string read FPattern  write FPattern;
   end;
 
-  TTStampElement = class(TDanteElement)
+  TTStampElement = class(TScriptElement)
   protected
     FTime :TDateTime;
   public

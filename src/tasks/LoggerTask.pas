@@ -42,7 +42,7 @@ uses
 type
   TLogFormat = (brief, normal, detailed);
 
-  TInfoElement = class(TDanteElement)
+  TInfoElement = class(TScriptElement)
   protected
     FCode :string;
     FText :string;
@@ -57,7 +57,7 @@ type
     FFormat :TLogFormat;
     FInfos  :TList;
   public
-    constructor Create(Owner :TDanteElement); override;
+    constructor Create(Owner :TScriptElement); override;
     destructor Destroy; override;
 
     class function TagName :string; override;
@@ -78,7 +78,7 @@ begin
   Result := 'log';
 end;
 
-constructor TLoggerTask.Create(Owner: TDanteElement);
+constructor TLoggerTask.Create(Owner: TScriptElement);
 begin
   inherited Create(Owner);
 end;

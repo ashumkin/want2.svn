@@ -49,7 +49,7 @@ uses
 
 
 type
-  TSubProjectPropertyElement = class(TDanteElement)
+  TSubProjectPropertyElement = class(TScriptElement)
   public
     class function TagName :string;              override;
     procedure SetProperty(Name, Value :string); override;
@@ -62,7 +62,7 @@ type
     property _target   :string read FTarget    write FTarget;
   end;
 
-  TDanteTask = class(TCustomDanteTask)
+  TWantTask = class(TCustomDanteTask)
   protected
     FBuildFile  :string;
     FDir        :string;
@@ -70,7 +70,7 @@ type
     FSubProject :TProject;
 
   public
-    constructor Create(Owner: TDanteElement = nil); override;
+    constructor Create(Owner: TScriptElement = nil); override;
     destructor  Destroy; override;
 
     procedure Init; override;
@@ -81,7 +81,7 @@ type
     property dir       :string read FDir       write FDir;
   end;
 
-  TDanteCallTask = class(TCustomDanteTask)
+  TWantCallTask = class(TCustomDanteTask)
   public
     procedure Init; override;
     procedure Execute;  override;
@@ -92,9 +92,9 @@ type
 
 implementation
 
-{ TDanteTask }
+{ TWantTask }
 
-constructor TDanteTask.Create(Owner: TDanteElement);
+constructor TWantTask.Create(Owner: TScriptElement);
 begin
   inherited Create(Owner);
   FSubProject := TProject.Create(Self);
@@ -103,31 +103,25 @@ begin
   FSubProject.OnLog := Self.Log;
 end;
 
-destructor TDanteTask.Destroy;
+destructor TWantTask.Destroy;
 begin
-  FreeAndNil(FSubProject);
   inherited Destroy;
 end;
 
 
-procedure TDanteTask.Init;
+procedure TWantTask.Init;
 begin
   inherited Init;
-  // nothing required
-end;
-
-procedure TDanteTask.Execute;
-begin
   if dir <> '' then
     FSubProject.SetInitialBaseDir(dir);
+end;
 
-  Log('building "%s" in directory "%s"', [
-                     buildfile,
-                     ToRelativePath(FSubProject.BasePath)
-                     ]);
-
-
-  TScriptParser.Parse(FSubProject, buildfile);
+procedure TWantTask.Execute;
+var
+  bfile :string;
+begin
+  bfile := TScriptParser.Parse(FSubProject, buildfile);
+  Log('building "%s"', [ ToRelativePath(bfile) ]);
   FSubProject.Build(_target);
 end;
 
@@ -140,21 +134,21 @@ end;
 
 procedure TSubProjectPropertyElement.SetProperty(Name, Value: string);
 begin
-  (Owner as TDanteTask).FSubProject.SetProperty(Name, Value);
+  (Owner as TWantTask).FSubProject.SetProperty(Name, Value);
 end;
 
-{ TDanteCallTask }
+{ TWantCallTask }
 
-procedure TDanteCallTask.Init;
+procedure TWantCallTask.Init;
 begin
   RequireAttribute('target');
 end;
 
-procedure TDanteCallTask.Execute;
+procedure TWantCallTask.Execute;
 begin
   Project.Build(_target);
 end;
 
 initialization
- RegisterTasks([TDanteTask,TDanteCallTask]);
+ RegisterTasks([TWantTask,TWantCallTask]);
 end.

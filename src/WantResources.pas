@@ -112,8 +112,9 @@ resourcestring
                                                                                     C_EOL +
                      'Options:'                                                   + C_EOL +
                      '  -h, -H, -?          Displays this help text.'             + C_EOL +
-                     '  -buildfile [file]   Specifies the build file. Default is' + C_EOL +
+                     '  -buildfile <file>   Specifies the build file. Default is' + C_EOL +
                      '                      build.xml'                            + C_EOL +
+                     '  -Dname=value        Define property "name".'              + C_EOL +
                      '  -quiet              Be very quiet..'                      + C_EOL +
                      '  -verbose            Be extra verbose.'                    + C_EOL +
                      '  -debug              Print debugging information.'         + C_EOL +

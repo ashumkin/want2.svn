@@ -30,7 +30,7 @@ TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
 THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 --------------------------------------------------------------------------------
 Original Author: Juancarlo Añez
-Contributors   : 
+Contributors   :
 }
 unit DanteMain;
 
@@ -40,6 +40,7 @@ uses
   Windows,
   SysUtils,
   Classes,
+  Forms,
 
   JclSysUtils,
   JclMiscel,
@@ -55,7 +56,9 @@ uses
 
   StandardElements,
   StandardTasks,
-  CustomTasks;
+  CustomTasks,
+
+  ScriptFrm;
 
 type
   TDante = class(TProject)
@@ -76,6 +79,7 @@ type
   protected
     FBuildFile   :string;
     FTargets     :TStringArray;
+    FDoEdit      :boolean;
 
     procedure ParseCommandLine;              virtual;
     function  ParseOption(Switch :string) :boolean;  virtual;
@@ -83,11 +87,11 @@ type
     function  GetUseColor :boolean;
     procedure SetUseColor(Value :boolean);
   public
-    constructor Create(Owner :TDanteElement = nil); override;
+    constructor Create(Owner :TScriptElement = nil); override;
     destructor  Destroy; override;
 
 
-    procedure DoBuild; overload;
+    procedure Execute; virtual;
 
     property  UseColor :Boolean read GetUseColor write SetUseColor;
   end;
@@ -113,21 +117,22 @@ begin
     TScriptParser.Parse(Self, ABuildFileName);
     if LogManager <> nil then
       LogManager.Level := Level;
-    if Length(Targets) = 0 then
-      Build
-    else
-    begin
-      for t := Low(Targets) to High(Targets) do
-        Build(Targets[t]);
+    try
+      if Length(Targets) = 0 then
+        Build
+      else
+      begin
+        for t := Low(Targets) to High(Targets) do
+          Build(Targets[t]);
+      end;
+    finally
+      Log;
     end;
-
-    Log;
     Log('Build complete.');
   except
     on e: Exception do
     begin
-      Log;
-      if (e is ETaskFailure) or (e is ETaskError) then
+      if e is ETaskException then
         Log('BUILD FAILED','', vlErrors)
       else if e is EDanteException then
         Log('BUILD FAILED',e.Message, vlErrors)
@@ -160,7 +165,7 @@ end;
 
 { TConsoleDante }
 
-constructor TConsoleDante.Create(Owner: TDanteElement);
+constructor TConsoleDante.Create(Owner: TScriptElement);
 begin
   inherited Create(Owner);
   CreateLogManager;
@@ -172,10 +177,17 @@ begin
   inherited Destroy;
 end;
 
-procedure TConsoleDante.DoBuild;
+procedure TConsoleDante.Execute;
 begin
   ParseCommandLine;
-  DoBuild(FBuildFile, FTargets, FVerbosity);
+  if not FDoEdit then
+    DoBuild(FBuildFile, FTargets, FVerbosity)
+  else
+  begin
+    Application.Initialize;
+    Application.CreateForm(TScriptForm, ScriptForm);
+    Application.Run;
+  end;
 end;
 
 function TConsoleDante.ParseOption(Switch: string):boolean;
@@ -197,6 +209,8 @@ begin
     Verbosity := vlQuiet
   else if Switch = '-color'then
     UseColor := True
+  else if Switch = '-edit' then
+    FDoEdit := True
   else if StrLeft(Switch, 2) = '-D' then
   begin
     Delete(Switch, 1, 2);
@@ -221,26 +235,34 @@ var
   p:         Integer;
   Param:     string;
 begin
-  p := 1;
-  while p <= ParamCount do
-  begin
-    Param := ParamStr(p);
-    if Param = '-buildfile' then
+  try
+    p := 1;
+    while p <= ParamCount do
     begin
+      Param := ParamStr(p);
+      if Param = '-buildfile' then
+      begin
+        Inc(p);
+        FBuildFile := FindBuildFile(ToPath(ParamStr(p)), True);
+      end
+      else if (StrLeft(Param, 1) = '-') then
+      begin
+        if not ParseOption(Param) then
+          DanteError('Unknown commandline option: ' + Param);
+      end
+      else
+      begin
+        SetLength(FTargets, 1+Length(FTargets));
+        FTargets[High(FTargets)] := Param;
+      end;
       Inc(p);
-      FBuildFile := FindBuildFile(ToPath(ParamStr(p)), True);
-    end
-    else if (StrLeft(Param, 1) = '-') then
-    begin
-      if not ParseOption(Param) then
-        DanteError('Unknown commandline option: ' + Param)
-    end
-    else
-    begin
-      SetLength(FTargets, 1+Length(FTargets));
-      FTargets[High(FTargets)] := Param;
     end;
-    Inc(p);
+  except
+    on e :Exception do
+    begin
+      Log(vlErrors, e.Message);
+      raise;
+    end;
   end;
 end;
 

@@ -42,7 +42,7 @@ uses
   DanteClasses;
 
 type
-  TPatternPart = class(TDanteElement)
+  TPatternPart = class(TScriptElement)
   protected
     procedure SetValue(Value: string); virtual; abstract;
   published
@@ -57,7 +57,7 @@ type
     procedure SetValue(Value: string); override;
   end;
 
-  TPatternSet = class(TDanteElement)
+  TPatternSet = class(TScriptElement)
   protected
     FIncludes: TStrings;
     FExcludes: TStrings;
@@ -84,7 +84,7 @@ type
     procedure DoExcludes(Files: TStrings; Base: string); virtual;
 
   public
-    constructor Create(Owner: TDanteElement); override;
+    constructor Create(Owner: TScriptElement); override;
     destructor  Destroy; override;
 
     procedure Include(Pattern: TPath);  overload;
@@ -155,7 +155,7 @@ end;
 
 { TPatternSet }
 
-constructor TPatternSet.Create(Owner: TDanteElement);
+constructor TPatternSet.Create(Owner: TScriptElement);
 begin
   inherited Create(Owner);
   FIncludes := TStringList.Create;

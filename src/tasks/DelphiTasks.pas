@@ -72,7 +72,7 @@ type
   protected
     procedure SetPath(Value: string); virtual;
   public
-    constructor Create(Owner :TDanteElement); override;
+    constructor Create(Owner :TScriptElement); override;
   published
     property Path: string write SetPath;
   end;
@@ -126,7 +126,7 @@ type
     function ReadLibraryPaths :string;
 
   public
-    constructor Create(Owner: TDanteElement); override;
+    constructor Create(Owner: TScriptElement); override;
     destructor  Destroy; override;
 
     class function TagName: string; override;
@@ -179,7 +179,7 @@ type
   public
     class function TagName: string; override;
 
-    constructor Create(Owner: TDanteElement); override;
+    constructor Create(Owner: TScriptElement); override;
 
     procedure Init;    override;
     procedure Execute; override;
@@ -199,7 +199,7 @@ type
   TDCUOutputElement = class(TPathAttributeElement);
   TEXEOutputElement = class(TPathAttributeElement);
 
-  TOptionElement = class(TDanteElement)
+  TOptionElement = class(TScriptElement)
   protected
     function dcc: TDelphiCompileTask;
   end;
@@ -282,7 +282,7 @@ end;
 
 { TDelphiCompileTask }
 
-constructor TDelphiCompileTask.Create(Owner: TDanteElement);
+constructor TDelphiCompileTask.Create(Owner: TScriptElement);
 begin
   inherited Create(Owner);
   SkipLines  := 1;
@@ -517,7 +517,7 @@ begin
   Result := inherited BuildExecutable;
 end;
 
-constructor TResourceCompileTask.Create(Owner: TDanteElement);
+constructor TResourceCompileTask.Create(Owner: TScriptElement);
 begin
   inherited Create(Owner);
   SkipLines := 2;
@@ -573,7 +573,7 @@ end;
 
 { TPathSet }
 
-constructor TPathSet.Create(Owner: TDanteElement);
+constructor TPathSet.Create(Owner: TScriptElement);
 begin
   inherited Create(Owner);
   AddDefaultPatterns;

@@ -56,7 +56,7 @@ type
     FZipStream :TZipStream;
 
   public
-    constructor Create(Owner :TDanteElement); override;
+    constructor Create(Owner :TScriptElement); override;
 
     procedure Init; override;
     procedure DoFileset(Fileset :TFileSet); override;
@@ -94,7 +94,7 @@ implementation
 
 { TZipTask }
 
-constructor TZipTask.Create(Owner: TDanteElement);
+constructor TZipTask.Create(Owner: TScriptElement);
 begin
   inherited Create(Owner);
   FCompress := true;

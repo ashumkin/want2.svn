@@ -41,7 +41,7 @@ uses
   DanteClasses;
 
 type
-  TRegexpElement = class(TDanteElement)
+  TRegexpElement = class(TScriptElement)
   protected
     FProperty :string;
     FText     :string;

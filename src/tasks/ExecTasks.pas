@@ -38,24 +38,26 @@ unit ExecTasks;
 
 interface
 uses
-  WildPaths,
-  DanteClasses,
+  Windows,
+  SysUtils,
+  Math,
+  Classes,
 
   JclBase,
   JclMiscel,
   JclSysInfo,
   JclSecurity,
 
-  Math,
-  Windows,
-  SysUtils,
-  Classes;
+  WildPaths,
+  DanteClasses,
+  Attributes;
+
 
 
 type
   TChildProcess = class;
 
-  TArgElement = class(TDanteElement)
+  TArgElement = class(TScriptElement)
   protected
     FVAlue :string;
   public
@@ -90,7 +92,7 @@ type
     procedure Run(CmdLine: string);
     procedure HandleOutput(Child :TChildProcess);
   public
-    constructor Create(Owner: TDanteElement);  override;
+    constructor Create(Owner: TScriptElement);  override;
     destructor Destroy; override;
 
     procedure Execute; override;
@@ -106,7 +108,7 @@ type
     {:@TODO Implement a TWaitableTimer class to implement timeouts.
       Use Windows.CreateWaitableTimer and Windows.SetWaitableTimer.
     }
-    property timeout:      Longint  read FTimeout     write FTimeout;       
+    property timeout:      Longint  read FTimeout     write FTimeout;
   published
     function CreateArg  :TArgElement;
     function CreatePath :TPathElement;
@@ -205,7 +207,7 @@ begin
   Result := Trim(Result);
 end;
 
-constructor TCustomExecTask.Create(Owner: TDanteElement);
+constructor TCustomExecTask.Create(Owner: TScriptElement);
 begin
   inherited Create(Owner);
   FArguments   := TStringList.Create;
@@ -509,6 +511,7 @@ end;
 
 procedure TArgElement.Init;
 begin
+  inherited Init;
   RequireAttribute('value');
   (Owner as TCustomExecTask).FArguments.Add(Value);
 end;
