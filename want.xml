@@ -72,8 +72,16 @@ See http://www.suigeneris.org/want/ for details.
 
   <target name="clean" >
     <!-- delete dir="${dist}" / -->
-    <delete dir="${dcu}/**" />
-    <delete dir="${bin}/**" />
+    <delete dir="${dcu}" >
+       <include name="**" />
+       <exclude name="CVS" />
+       <exclude name=".cvsignore" />
+    </delete>
+    <delete dir="${bin}" >
+       <include name="**" />
+       <exclude name="CVS" />
+       <exclude name=".cvsignore" />
+    </delete>
   </target>
 
   <target name="versioninfo" >

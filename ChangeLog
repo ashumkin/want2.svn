@@ -1,67 +1,373 @@
+2003-03-01 21:06  hippoman
+
+	* src/want.dof, test/WantAcceptTestLib.dof, test/WantTestLib.dof,
+	test/WantTests.dof: * Readded dof files to make build with the IDE
+	easy..
+
+2003-03-01 03:13  juanco
+
+	* src/: .cvsignore, jal/test/.cvsignore: include bin\ide and
+	dcu\ide directories so they can be used for generic Delphi .dof
+	files
+
+2003-03-01 03:11  juanco
+
+	* test/data/file/rename/: build.xml, final/copied.txt,
+	final/copy_me.txt, final/renamed.txt, setup/copy_me.txt,
+	setup/rename_me.txt: added test case for new tofile attribute of
+	<copy> and <move> tasks
+
+2003-03-01 00:29  juanco
+
+	* test/.cvsignore: removed .dof files so people can use their own
+	local copies
+
+2003-03-01 00:29  hippoman
+
+	* lib/dunit-7.0.3.zip: Adding a current Dunit dist..
+
+2003-03-01 00:27  juanco
+
+	* release.ini, src/want.dof, src/jal/test/JALTestLib.dof,
+	src/jal/test/JalDXFTests.dof, test/WantAcceptTestLib.dof,
+	test/WantTestLib.dof, test/WantTests.dof: removed .dof files so
+	people can use their local copies
+
+2003-02-28 16:47  majohnson
+
+	* src/tasks/DelphiTasks.pas: 0) added support for linking in
+	objects by allowing the user to specify an objectPath for linking
+	in (.obj) much like the include or resource path 1) moved path opt
+	from a nested function to a full method 2) refactored the redundant
+	loop code that outputs path elements for include, objects, etc into
+	a method called outputPathElements
+
+2003-02-28 14:36  juanco
+
+	* release.ini, src/want.cfg, src/want.dof, src/lib/WildPaths.pas,
+	src/tasks/StandardTasks.pas, src/tasks/WantStandardTasks.pas,
+	test/WantAcceptTestLib.cfg, test/WantAcceptTestLib.dof,
+	test/WantAcceptTestLib.dpr, test/WantClassesTest.pas,
+	test/WantTestLib.dof, test/WantTestLib.dpr,
+	test/data/file/copyrecursive/final.zip,
+	test/data/file/copyrecursive/setup.zip,
+	test/data/file/move/all/final.zip,
+	test/data/file/move/all/setup.zip,
+	test/data/file/move/overwrite/final.zip,
+	test/data/file/move/overwrite/setup.zip,
+	test/data/file/move/overwrite_readonly/final.zip,
+	test/data/file/move/overwrite_readonly/setup.zip,
+	test/data/file/move/recursive/final.zip,
+	test/data/file/move/recursive/setup.zip,
+	test/data/file/move/single/final.zip,
+	test/data/file/move/single/setup.zip,
+	test/data/file/ziptasks/simple_unzip/final.zip: Fixed several
+	issues with path handling.
+	
+	All tests pass.
+
+2003-02-28 14:35  juanco
+
+	* src/WantClasses.pas: Allow requiring one of several attributes.
+	
+	Donnot make paths automatically relative to the basedir as it
+	interferes with <shell> and <exe> tasks.
+
+2003-02-28 14:30  juanco
+
+	* src/tasks/FileTasks.pas: applied patch to have tofile in <move>
+	and <copy>
+
+2003-02-28 02:57  hippoman
+
+	* test/WantAcceptTestLib.dsk, test/WantTestLib.dsk, src/want.dsk,
+	src/jal/test/JALTestLib.dsk, src/jal/test/JalDXFTests.dsk: * dsk
+	files are not needed to build, they are a by product of delphi IDE
+
+2003-02-28 02:52  hippoman
+
+	* src/tasks/DelphiTasks.pas: * Fixed bug#671823 Submitted by Tobias
+	Grimm (tiber)
+	
+	There's a small bug in DelphiTasks.pas.  The TUsePackageElement
+	doesn't get registered:
+
+2003-02-27 20:08  hippoman
+
+	* src/jal/src/JalZipStreams.pas (tags: build_0_1_149,
+	build_0_1_148, build_0_1_147): * Fixed the preservePAth feature now
+	compiles :)..  * Deletedthe overloaded WriteFile not needed for
+	backward compatibility
+
+2003-02-26 17:29  majohnson
+
+	* lib/jal-0.1.4.zip: the source for JAL is now part of the src
+	folder so no need to keep the .zip here
+
+2003-02-26 15:06  hippoman
+
+	* lib/: jcl-1.12.zip, perlre-1.1.zip (utags: build_0_1_147,
+	build_0_1_148, build_0_1_149): fixed broken binaries..
+
+2003-02-26 14:53  majohnson
+
+	* lib/jal-0.1.4.zip: the JAL lib was in the distribution, but for
+	some reason is not part of the CVS snapshot, so I'm attempting to
+	add it. If this is incorrect I apologize in advance.
+
+2003-02-23 19:55  hippoman
+
+	* CVSROOT/loginfo (tags: build_0_1_149, build_0_1_148,
+	build_0_1_147): * Test
+
+2003-02-23 19:54  hippoman
+
+	* CVSROOT/loginfo: * Enabling CVS to send email on commits..
+
+2003-02-21 23:14  hippoman
+
+	* src/want.bpg (tags: build_0_1_149, build_0_1_148, build_0_1_147):
+	* Fichero corrupto, seguramente no tenia crlf o al reves..
+
+2003-02-21 23:12  hippoman
+
+	* src/: jal/src/JalZipStreams.pas, tasks/ZipTasks.pas (tags:
+	build_0_1_149, build_0_1_148, build_0_1_147): * Added
+	"preservePath" attribute to ZipTask, true by default.	  When
+	preservePath=false the Filesets are added to the ZipFile    
+	without path information, making the Zipfile flat.
+
+2003-02-21 20:28  juanco
+
+	* release.ini (tags: build_0_1_149, build_0_1_148, build_0_1_147),
+	lib/jal-0.1.4.zip, lib/paszlib-1.0-want-1.zip, src/want.dpr (tags:
+	build_0_1_149, build_0_1_148, build_0_1_147), src/jal/index.html
+	(tags: build_0_1_149, build_0_1_148, build_0_1_147),
+	src/jal/lib/paszlib/ADLER.PAS (tags: build_0_1_149, build_0_1_148,
+	build_0_1_147), src/jal/lib/paszlib/CRC.PAS (tags: build_0_1_149,
+	build_0_1_148, build_0_1_147), src/jal/lib/paszlib/MINIUNZ.PAS
+	(tags: build_0_1_149, build_0_1_148, build_0_1_147),
+	src/jal/lib/paszlib/MINIZIP.PAS (tags: build_0_1_149,
+	build_0_1_148, build_0_1_147), src/jal/lib/paszlib/TREES.PAS (tags:
+	build_0_1_149, build_0_1_148, build_0_1_147),
+	src/jal/lib/paszlib/UNZIP.PAS (tags: build_0_1_149, build_0_1_148,
+	build_0_1_147), src/jal/lib/paszlib/ZCONF.INC (tags: build_0_1_149,
+	build_0_1_148, build_0_1_147), src/jal/lib/paszlib/ZDEFLATE.PAS
+	(tags: build_0_1_149, build_0_1_148, build_0_1_147),
+	src/jal/lib/paszlib/ZINFLATE.PAS (tags: build_0_1_149,
+	build_0_1_148, build_0_1_147), src/jal/lib/paszlib/ZIP.PAS (tags:
+	build_0_1_149, build_0_1_148, build_0_1_147),
+	src/jal/lib/paszlib/ZIPUTILS.PAS (tags: build_0_1_149,
+	build_0_1_148, build_0_1_147), src/jal/lib/paszlib/ZLIB.PAS (tags:
+	build_0_1_149, build_0_1_148, build_0_1_147),
+	src/jal/lib/paszlib/dzlib.pas (tags: build_0_1_149, build_0_1_148,
+	build_0_1_147), src/jal/lib/paszlib/dzlib.txt (tags: build_0_1_149,
+	build_0_1_148, build_0_1_147), src/jal/lib/paszlib/example.pas
+	(tags: build_0_1_149, build_0_1_148, build_0_1_147),
+	src/jal/lib/paszlib/gzio.pas (tags: build_0_1_149, build_0_1_148,
+	build_0_1_147), src/jal/lib/paszlib/infblock.pas (tags:
+	build_0_1_149, build_0_1_148, build_0_1_147),
+	src/jal/lib/paszlib/infcodes.pas (tags: build_0_1_149,
+	build_0_1_148, build_0_1_147), src/jal/lib/paszlib/inffast.pas
+	(tags: build_0_1_149, build_0_1_148, build_0_1_147),
+	src/jal/lib/paszlib/inftrees.pas (tags: build_0_1_149,
+	build_0_1_148, build_0_1_147), src/jal/lib/paszlib/infutil.pas
+	(tags: build_0_1_149, build_0_1_148, build_0_1_147),
+	src/jal/lib/paszlib/minigzip.pas (tags: build_0_1_149,
+	build_0_1_148, build_0_1_147), src/jal/lib/paszlib/paszlib.html
+	(tags: build_0_1_149, build_0_1_148, build_0_1_147),
+	src/jal/lib/paszlib/paszlib.xbm (tags: build_0_1_149,
+	build_0_1_148, build_0_1_147), src/jal/lib/paszlib/readme.txt
+	(tags: build_0_1_149, build_0_1_148, build_0_1_147),
+	src/jal/lib/paszlib/zcompres.pas (tags: build_0_1_149,
+	build_0_1_148, build_0_1_147), src/jal/lib/paszlib/zuncompr.pas
+	(tags: build_0_1_149, build_0_1_148, build_0_1_147),
+	src/jal/lib/paszlib/zutil.pas (tags: build_0_1_149, build_0_1_148,
+	build_0_1_147), src/jal/src/JALAlgorithms.pas (tags: build_0_1_149,
+	build_0_1_148, build_0_1_147), src/jal/src/JALCollections.pas
+	(tags: build_0_1_149, build_0_1_148, build_0_1_147),
+	src/jal/src/JALExpressions.pas (tags: build_0_1_149, build_0_1_148,
+	build_0_1_147), src/jal/src/JALFiles.pas (tags: build_0_1_149,
+	build_0_1_148, build_0_1_147), src/jal/src/JALGZipStreams.pas
+	(tags: build_0_1_149, build_0_1_148, build_0_1_147),
+	src/jal/src/JALGeomModels.pas (tags: build_0_1_149, build_0_1_148,
+	build_0_1_147), src/jal/src/JALGeometry.pas (tags: build_0_1_149,
+	build_0_1_148, build_0_1_147), src/jal/src/JALMath.pas (tags:
+	build_0_1_149, build_0_1_148, build_0_1_147),
+	src/jal/src/JALMiniDOM.pas (tags: build_0_1_149, build_0_1_148,
+	build_0_1_147), src/jal/src/JALOwnedTrees.pas (tags: build_0_1_149,
+	build_0_1_148, build_0_1_147), src/jal/src/JALSAX.pas (tags:
+	build_0_1_149, build_0_1_148, build_0_1_147),
+	src/jal/src/JALStdIO.pas (tags: build_0_1_149, build_0_1_148,
+	build_0_1_147), src/jal/src/JALStrings.pas (tags: build_0_1_149,
+	build_0_1_148, build_0_1_147), src/jal/src/JALUIHandler.pas (tags:
+	build_0_1_149, build_0_1_148, build_0_1_147),
+	src/jal/src/JALXML.pas (tags: build_0_1_149, build_0_1_148,
+	build_0_1_147), src/jal/src/JALXMLParser.pas (tags: build_0_1_149,
+	build_0_1_148, build_0_1_147), src/jal/src/JalCRT.pas (tags:
+	build_0_1_149, build_0_1_148, build_0_1_147),
+	src/jal/src/JalDXF.pas (tags: build_0_1_149, build_0_1_148,
+	build_0_1_147), src/jal/src/JalDebug.pas (tags: build_0_1_149,
+	build_0_1_148, build_0_1_147), src/jal/src/JalMessages.pas (tags:
+	build_0_1_149, build_0_1_148, build_0_1_147),
+	src/jal/src/JalParse.pas (tags: build_0_1_149, build_0_1_148,
+	build_0_1_147), src/jal/src/JalPaths.pas (tags: build_0_1_149,
+	build_0_1_148, build_0_1_147), src/jal/src/JalPorting.pas (tags:
+	build_0_1_149, build_0_1_148, build_0_1_147),
+	src/jal/src/JalProcesses.pas (tags: build_0_1_149, build_0_1_148,
+	build_0_1_147), src/jal/src/JalProxyStreams.pas (tags:
+	build_0_1_149, build_0_1_148, build_0_1_147),
+	src/jal/src/JalSetup.pas (tags: build_0_1_149, build_0_1_148,
+	build_0_1_147), src/jal/src/JalUTM.pas (tags: build_0_1_149,
+	build_0_1_148, build_0_1_147), src/jal/src/JalUtils.pas (tags:
+	build_0_1_149, build_0_1_148, build_0_1_147),
+	src/jal/src/JalXMLGenerator.pas (tags: build_0_1_149,
+	build_0_1_148, build_0_1_147), src/jal/src/JalZipStreams.pas,
+	src/jal/test/.cvsignore (tags: build_0_1_149, build_0_1_148,
+	build_0_1_147), src/jal/test/ExpressionTests.pas (tags:
+	build_0_1_149, build_0_1_148, build_0_1_147),
+	src/jal/test/JALTestLib.cfg (tags: build_0_1_149, build_0_1_148,
+	build_0_1_147), src/jal/test/JALTestLib.dof (tags: build_0_1_149,
+	build_0_1_148, build_0_1_147), src/jal/test/JALTestLib.dpr (tags:
+	build_0_1_149, build_0_1_148, build_0_1_147),
+	src/jal/test/JALTestLib.dsk (tags: build_0_1_149, build_0_1_148,
+	build_0_1_147), src/jal/test/JalDXFTestLib.dpr (tags:
+	build_0_1_149, build_0_1_148, build_0_1_147),
+	src/jal/test/JalDXFTests.cfg (tags: build_0_1_149, build_0_1_148,
+	build_0_1_147), src/jal/test/JalDXFTests.dof (tags: build_0_1_149,
+	build_0_1_148, build_0_1_147), src/jal/test/JalDXFTests.dpr (tags:
+	build_0_1_149, build_0_1_148, build_0_1_147),
+	src/jal/test/JalDXFTests.dsk (tags: build_0_1_149, build_0_1_148,
+	build_0_1_147), src/jal/test/JalDXFTests.res (tags: build_0_1_149,
+	build_0_1_148, build_0_1_147), src/jal/test/TestDXFParse.pas (tags:
+	build_0_1_149, build_0_1_148, build_0_1_147): now WANT has own copy
+	of Jal library
+
+2003-02-15 15:24  juanco
+
+	* release.ini, want.xml (tags: build_0_1_149, build_0_1_148,
+	build_0_1_147), src/want.bpg, src/want.dof (tags: build_0_1_149,
+	build_0_1_148, build_0_1_147), src/want.dpr, src/want.dsk (tags:
+	build_0_1_148, build_0_1_147), src/lib/ChildProcesses.pas,
+	src/tasks/DUnitTasks.pas (tags: build_0_1_149, build_0_1_148,
+	build_0_1_147), src/tasks/DelphiTasks.pas (tags: build_0_1_149,
+	build_0_1_148, build_0_1_147), src/tasks/ExecTasks.pas (tags:
+	build_0_1_149, build_0_1_148, build_0_1_147),
+	src/win32/Win32ChildProcesses.pas,
+	src/win32/Win32Implementations.pas (tags: build_0_1_149,
+	build_0_1_148, build_0_1_147): reimplemented child processes with
+	streams and moved them to the Jal library
+
+2003-02-15 15:22  juanco
+
+	* test/: DelphiTasksTest.pas, WantAcceptTestLib.cfg,
+	WantAcceptTestLib.dof, WantAcceptTestLib.drc, WantTestLib.cfg,
+	WantTestLib.dof, WantTestLib.drc, WantTests.dof (utags:
+	build_0_1_147, build_0_1_148, build_0_1_149): delphi compile test
+	needs to define DUNIT_DLL
+
+2002-11-06 15:42  juanco
+
+	* test/: WantAcceptTestLib.drc, WantTestLib.drc: fixed corrupted
+	binaries
+
+2002-11-06 15:37  juanco
+
+	* ChangeLog (tags: build_0_1_149, build_0_1_148, build_0_1_147),
+	release.ini, doc/.cvsignore (tags: build_0_1_149, build_0_1_148,
+	build_0_1_147), doc/index.html (tags: build_0_1_149, build_0_1_148,
+	build_0_1_147), doc/images/failure.png (tags: build_0_1_149,
+	build_0_1_148, build_0_1_147), doc/images/success.png (tags:
+	build_0_1_149, build_0_1_148, build_0_1_147), lib/jal-0.1.4.zip,
+	lib/jcl-1.12.zip, lib/paszlib-1.0-want-1.zip, lib/perlre-1.1.zip,
+	src/elements/.cvsignore (tags: build_0_1_149, build_0_1_148,
+	build_0_1_147), test/WantAcceptTestLib.cfg,
+	test/WantAcceptTestLib.drc, test/WantAcceptTestLib.dsk (tags:
+	build_0_1_149, build_0_1_148, build_0_1_147), test/WantTestLib.cfg,
+	test/WantTestLib.drc, test/WantTestLib.dsk (tags: build_0_1_149,
+	build_0_1_148, build_0_1_147),
+	test/data/file/copyrecursive/final.zip (tags: build_0_1_149,
+	build_0_1_148, build_0_1_147),
+	test/data/file/copyrecursive/setup.zip (tags: build_0_1_149,
+	build_0_1_148, build_0_1_147), test/data/file/move/all/final.zip
+	(tags: build_0_1_149, build_0_1_148, build_0_1_147),
+	test/data/file/move/all/setup.zip (tags: build_0_1_149,
+	build_0_1_148, build_0_1_147),
+	test/data/file/move/overwrite/final.zip (tags: build_0_1_149,
+	build_0_1_148, build_0_1_147),
+	test/data/file/move/overwrite/setup.zip (tags: build_0_1_149,
+	build_0_1_148, build_0_1_147),
+	test/data/file/move/overwrite_readonly/final.zip (tags:
+	build_0_1_149, build_0_1_148, build_0_1_147),
+	test/data/file/move/overwrite_readonly/setup.zip (tags:
+	build_0_1_149, build_0_1_148, build_0_1_147),
+	test/data/file/move/recursive/final.zip (tags: build_0_1_149,
+	build_0_1_148, build_0_1_147),
+	test/data/file/move/recursive/setup.zip (tags: build_0_1_149,
+	build_0_1_148, build_0_1_147), test/data/file/move/single/final.zip
+	(tags: build_0_1_149, build_0_1_148, build_0_1_147),
+	test/data/file/move/single/setup.zip (tags: build_0_1_149,
+	build_0_1_148, build_0_1_147),
+	test/data/file/ziptasks/simple_unzip/final.zip (tags:
+	build_0_1_149, build_0_1_148, build_0_1_147): routine
+
+2002-11-02 14:59  juanco
+
+	* want.xml: cvs rtag files before releasing
+
 2002-11-02 14:51  juanco
 
-	* want.xml: include ChangeLog in distrbutions
+	* want.xml (tags: build_0_1_138): include ChangeLog in distrbutions
 
 2002-11-01 14:22  juanco
 
-	* src/: ScriptRunner.pas, WantClasses.pas, want.dof, want.dsk,
-	win32/ConsoleListener.pas: avoid duplicate error messages during
-	configuration
+	* src/: ScriptRunner.pas (tags: build_0_1_149, build_0_1_148,
+	build_0_1_147), WantClasses.pas (tags: build_0_1_149,
+	build_0_1_148, build_0_1_147), want.dof, want.dsk,
+	win32/ConsoleListener.pas (tags: build_0_1_149, build_0_1_148,
+	build_0_1_147) (utags: build_0_1_138): avoid duplicate error
+	messages during configuration
 
 2002-11-01 14:22  juanco
 
 	* src/tasks/LoggerTask.pas, test/data/logger/want.xml,
-	test/data/logger/final/test.log: BUG: uninitializded variable
-	exposed with empty <log> task. Added regression test case
+	test/data/logger/final/test.log (utags: build_0_1_138,
+	build_0_1_147, build_0_1_148, build_0_1_149): BUG: uninitializded
+	variable exposed with empty <log> task. Added regression test case
 
 2002-10-28 04:51  juanco
 
-	* doc/: dunit_want.xml, history.html: updated Want history and
-	links
+	* doc/: dunit_want.xml, history.html (utags: build_0_1_138,
+	build_0_1_147, build_0_1_148, build_0_1_149): updated Want history
+	and links
 
 2002-10-28 03:53  juanco
 
-	* ChangeLog, release.ini, doc/index.html: v 0.1.137
+	* ChangeLog, release.ini, doc/index.html (utags: build_0_1_138): v
+	0.1.137
 
 2002-10-27 16:03  juanco
 
-	* release.ini, src/want.dof, src/want.dsk, src/lib/WildPaths.pas:
+	* release.ini, src/want.dof, src/want.dsk, src/lib/WildPaths.pas
+	(tags: build_0_1_149, build_0_1_148, build_0_1_147, build_0_1_138):
 	changes in FindPaths so files wihout the Archive bit set are found,
 	and extended wildcards can be used
 
 2002-10-27 15:30  juanco
 
-	* src/: want.cfg, want.dof, want.dsk, tasks/DUnitTasks.pas,
-	tasks/DelphiTasks.pas, win32/WIN32.pas: find delphi and store
+	* src/: want.cfg (tags: build_0_1_149, build_0_1_148,
+	build_0_1_147, build_0_1_138), want.dof, want.dsk,
+	tasks/DUnitTasks.pas (tags: build_0_1_138), tasks/DelphiTasks.pas
+	(tags: build_0_1_138), win32/WIN32.pas (tags: build_0_1_149,
+	build_0_1_148, build_0_1_147, build_0_1_138): find delphi and store
 	delphi.version and delphi.dir environment variables for any task to
 	use
 
-2002-10-21 19:02  juanca
-
-	* lib/jal/src/JalXMLGenerator.pas: simple cheap XML generation
-
-2002-10-21 19:02  juanca
-
-	* lib/jal/src/JALCollections.pas: formatting
-
-2002-10-21 16:32  juanca
-
-	* lib/jal/src/JALGeometry.pas: added Integer TPoint3 type
-
-2002-10-21 15:49  juanca
-
-	* lib/jal/src/JALCollections.pas: code formatting, and minor
-	logically equivalent changes
-
-2002-10-21 15:31  juanca
-
-	* lib/jal/src/JALCollections.pas: code formatting
-
 2002-10-13 00:00  juanco
 
-	* release.ini, want.xml, src/lib/ChildProcesses.pas,
-	src/win32/Win32ChildProcesses.pas: default to long strings where
-	appropiate
+	* release.ini, want.xml, src/lib/ChildProcesses.pas (tags:
+	build_0_1_138), src/win32/Win32ChildProcesses.pas (tags:
+	build_0_1_138): default to long strings where appropiate
 
 2002-10-12 23:56  juanco
 
@@ -70,48 +376,13 @@
 2002-10-11 14:38  juanco
 
 	* ChangeLog, release.ini, src/tasks/DelphiTasks.pas,
-	test/WantAcceptTestLib.drc, test/WantTestLib.drc: added longstrings
+	test/WantAcceptTestLib.drc (tags: build_0_1_138),
+	test/WantTestLib.drc (tags: build_0_1_138): added longstrings
 	options to <dcc> task
-
-2002-10-10 19:14  juanca
-
-	* lib/jal/: src/JalParse.pas, test/ExpressionTests.pas: fixed
-	problems with extra commandline arguments in Delphi tasks
-
-2002-09-27 19:44  juanca
-
-	* lib/jal/src/JALGeometry.pas (tags: build_6_9_19, build_6_9_18):
-	redefine TRect and TPoint so clients don't need to use the Windows
-	unit
-
-2002-09-24 19:08  juanca
-
-	* lib/jal/: index.html, release.ini, want.xml,
-	etc/index.template.html (utags: build_6_9_18, build_6_9_19): added
-	basic home page
-
-2002-09-24 18:49  juanca
-
-	* lib/jal/src/JalSetup.pas (tags: build_6_9_19, build_6_9_18):
-	backup AUTOEXEC.BAT before changing it
 
 2002-09-24 18:22  juanco
 
 	* src/tasks/DelphiTasks.pas: skip two lines in delphi compile task
-
-2002-09-24 17:30  juanca
-
-	* lib/jal/src/JalSetup.pas: added support for paths in AUTOEXEC.BAT
-
-2002-09-24 17:30  juanca
-
-	* lib/jal/src/JALStrings.pas (tags: build_6_9_19, build_6_9_18):
-	added StringArrayToFile and StringArrayAppend
-
-2002-09-24 17:06  juanca
-
-	* lib/jal/src/: JALStrings.pas, JalSetup.pas: utilities to help
-	with app setup
 
 2002-09-19 01:22  juanco
 
@@ -120,109 +391,8 @@
 
 2002-09-18 23:19  juanco
 
-	* lib/: jcl-1.11.zip, jcl-1.12.zip: upgraded to JCL v 1.12
-
-2002-09-13 21:07  juanca
-
-	* lib/jal/src/: JALGeometry.pas, JALStdIO.pas (tags: build_6_9_19,
-	build_6_9_18) (utags: build_6_9_16, build_6_9_17): BUG: fixed
-	problems with scaling. World bounds were wrong when no DXF files
-	were open
-
-2002-09-06 00:49  juanca
-
-	* lib/jal/src/JALGeometry.pas (tags: build_6_9_15): deal with
-	various memory leaks and inefficiencies
-
-2002-09-04 15:25  juanca
-
-	* lib/jal/want.xml (tags: build_6_9_17, build_6_9_16,
-	build_6_9_15): updated copyright info
-
-2002-08-22 17:57  juanca
-
-	* lib/jal/src/JALUIHandler.pas (tags: build_6_9_19, build_6_9_18,
-	build_6_9_17, build_6_9_16, build_6_9_15, build_6_9_14,
-	build_6_9_13): UI handling delegated to a separate object
-
-2002-08-09 16:53  juanca
-
-	* lib/jal/src/: JALCollections.pas (tags: build_6_9_19,
-	build_6_9_18, build_6_9_17, build_6_9_16, build_6_9_15),
-	JALGeomModels.pas (tags: build_6_9_19, build_6_9_18, build_6_9_17,
-	build_6_9_16, build_6_9_15), JALGeometry.pas (utags: build_6_9_13,
-	build_6_9_14): optimize (again) handling of geom models
-
-2002-07-29 16:17  juanca
-
-	* lib/jal/src/JALCollections.pas: added IList.move and fixed
-	TLinkList.insert
-
-2002-07-18 21:43  juanca
-
-	* lib/jal/src/JALGeomModels.pas: fixes and optimizations in DXF
-	file viewing
-
-2002-07-16 13:29  juanca
-
-	* lib/jal/src/: JALCollections.pas, JALGZipStreams.pas (tags:
-	build_6_9_19, build_6_9_18, build_6_9_17, build_6_9_16,
-	build_6_9_15, build_6_9_14, build_6_9_13), JALGeomModels.pas,
-	JALGeometry.pas: several bugs in insertion on TLinkedList
-
-2002-07-13 17:58  juanca
-
-	* lib/jal/src/JALStrings.pas (tags: build_6_9_17, build_6_9_16,
-	build_6_9_15, build_6_9_14, build_6_9_13): bugs repotados por Tomas
-	introducidos con manejo de DXF
-
-2002-06-27 17:10  juanca
-
-	* lib/jal/src/JalUTM.pas (tags: build_6_9_19, build_6_9_18,
-	build_6_9_17, build_6_9_16, build_6_9_15, build_6_9_14,
-	build_6_9_13): Lat-Long <-> UTM conversion
-
-2002-06-27 16:50  juanca
-
-	* lib/jal/: release.ini (tags: build_6_9_17, build_6_9_16,
-	build_6_9_15, build_6_9_14, build_6_9_13), src/JALAlgorithms.pas
-	(tags: build_6_9_19, build_6_9_18, build_6_9_17, build_6_9_16,
-	build_6_9_15, build_6_9_14, build_6_9_13), src/JALCollections.pas,
-	src/JALExpressions.pas (tags: build_6_9_19, build_6_9_18,
-	build_6_9_17, build_6_9_16, build_6_9_15, build_6_9_14,
-	build_6_9_13), src/JALFiles.pas (tags: build_6_9_19, build_6_9_18,
-	build_6_9_17, build_6_9_16, build_6_9_15, build_6_9_14,
-	build_6_9_13), src/JALGZipStreams.pas, src/JALGeomModels.pas,
-	src/JALGeometry.pas, src/JALMath.pas (tags: build_6_9_19,
-	build_6_9_18, build_6_9_17, build_6_9_16, build_6_9_15,
-	build_6_9_14, build_6_9_13), src/JALMiniDOM.pas (tags:
-	build_6_9_19, build_6_9_18, build_6_9_17, build_6_9_16,
-	build_6_9_15, build_6_9_14, build_6_9_13), src/JALOwnedTrees.pas
-	(tags: build_6_9_19, build_6_9_18, build_6_9_17, build_6_9_16,
-	build_6_9_15, build_6_9_14, build_6_9_13), src/JALSAX.pas (tags:
-	build_6_9_19, build_6_9_18, build_6_9_17, build_6_9_16,
-	build_6_9_15, build_6_9_14, build_6_9_13), src/JALStdIO.pas (tags:
-	build_6_9_15, build_6_9_14, build_6_9_13), src/JALStrings.pas,
-	src/JALXML.pas (tags: build_6_9_19, build_6_9_18, build_6_9_17,
-	build_6_9_16, build_6_9_15, build_6_9_14, build_6_9_13),
-	src/JalDXF.pas (tags: build_6_9_19, build_6_9_18, build_6_9_17,
-	build_6_9_16, build_6_9_15, build_6_9_14, build_6_9_13),
-	src/JalDebug.pas (tags: build_6_9_19, build_6_9_18, build_6_9_17,
-	build_6_9_16, build_6_9_15, build_6_9_14, build_6_9_13),
-	src/JalPaths.pas (tags: build_6_9_19, build_6_9_18, build_6_9_17,
-	build_6_9_16, build_6_9_15, build_6_9_14, build_6_9_13),
-	src/JalProxyStreams.pas (tags: build_6_9_19, build_6_9_18,
-	build_6_9_17, build_6_9_16, build_6_9_15, build_6_9_14,
-	build_6_9_13), src/JalZipStreams.pas (tags: build_6_9_19,
-	build_6_9_18, build_6_9_17, build_6_9_16, build_6_9_15,
-	build_6_9_14, build_6_9_13), test/JALTestLib.cfg (tags:
-	build_6_9_19, build_6_9_18, build_6_9_17, build_6_9_16,
-	build_6_9_15, build_6_9_14, build_6_9_13), test/JALTestLib.dof
-	(tags: build_6_9_19, build_6_9_18, build_6_9_17, build_6_9_16,
-	build_6_9_15, build_6_9_14, build_6_9_13), test/JALTestLib.dpr,
-	test/JALTestLib.dpr (tags: build_6_9_19, build_6_9_18,
-	build_6_9_17, build_6_9_16, build_6_9_15, build_6_9_14,
-	build_6_9_13): updated copyright and boilerplate
+	* lib/: jcl-1.11.zip, jcl-1.12.zip (tags: build_0_1_138): upgraded
+	to JCL v 1.12
 
 2002-06-25 14:26  juanco
 
@@ -234,18 +404,14 @@
 
 2002-06-22 04:15  juanco
 
-	* lib/jal-0.1.4.zip: new version of JAL library
+	* lib/jal-0.1.4.zip (tags: build_0_1_138): new version of JAL
+	library
 
 2002-06-21 18:39  juanco
 
 	* ChangeLog, release.ini, doc/index.html,
 	src/tasks/DelphiTasks.pas: patch to delphi error message detecting
 	code by Michael A. Johnson
-
-2002-06-11 17:34  juanca
-
-	* lib/jal/src/: JALCollections.pas, JALGeomModels.pas, JalDXF.pas:
-	allow for multiple colored visible/invisible DXF files
 
 2002-06-10 15:18  juanco
 
@@ -255,38 +421,6 @@
 2002-06-10 15:13  juanco
 
 	* src/tasks/DelphiTasks.pas: Search for Delphi 7 directory too
-
-2002-06-10 15:11  juanca
-
-	* lib/jal/src/: JALGeomModels.pas, JALMath.pas: Added option to
-	hide grayed links (View/Options/Links).
-	
-	Make sure DXF files are drawn in light gray (silver).
-
-2002-03-31 14:04  juanca
-
-	* lib/jal/src/JALMath.pas: routine
-
-2002-03-30 00:39  juanca
-
-	* lib/jal/src/JALStdIO.pas: flush standard files before exiting
-
-2002-03-30 00:33  juanca
-
-	* lib/jal/src/JalPaths.pas: unexplainable changes
-
-2002-03-30 00:32  juanca
-
-	* lib/jal/src/JALStrings.pas: Better compatibility with D6.
-	
-	Trim strings before unquoting them to avoid obvious and easy to
-	solve errors.
-
-2002-03-30 00:29  juanca
-
-	* lib/jal/src/JalParse.pas (tags: build_6_9_19, build_6_9_18,
-	build_6_9_17, build_6_9_16, build_6_9_15, build_6_9_14,
-	build_6_9_13): added better EOL support
 
 2002-02-21 22:29  juanco
 
@@ -302,18 +436,14 @@
 
 2002-02-16 21:23  juanco
 
-	* make/bootstrap.bat (tags: v_0_1_10): minor changes to make
+	* make/bootstrap.bat (tags: build_0_1_149, build_0_1_148,
+	build_0_1_147, build_0_1_138, v_0_1_10): minor changes to make
 	bootstrapping work
 
 2002-02-14 18:14  juanco
 
 	* want.xml (tags: v_0_1_10): add want task for retreiving cvs
 	tarball with wget
-
-2002-02-13 13:23  juanca
-
-	* lib/jal/src/: JALFiles.pas, JALGZipStreams.pas, JalDebug.pas
-	(utags: v_6_9_2): removed platform dependencies
 
 2002-02-13 12:21  pshrimpton
 
@@ -330,48 +460,25 @@
 	src/tasks/DelphiTasks.pas (tags: v_0_1_10): removed minor prublems
 	when using delphi 6
 
-2002-02-13 01:56  juanca
-
-	* lib/jal/: lib/paszlib/TREES.PAS (tags: build_6_9_19,
-	build_6_9_18, build_6_9_17, build_6_9_16, build_6_9_15,
-	build_6_9_14, build_6_9_13, v_6_9_2), lib/paszlib/inftrees.pas
-	(tags: build_6_9_19, build_6_9_18, build_6_9_17, build_6_9_16,
-	build_6_9_15, build_6_9_14, build_6_9_13, v_6_9_2),
-	src/JALGZipStreams.pas: removed problems with writeable consts and
-	third party libraries
-
-2002-02-13 01:39  juanca
-
-	* lib/jal/: lib/paszlib/strutils.pas, src/JALFiles.pas,
-	src/JALGeometry.pas (tags: v_6_9_2), src/JalDebug.pas: Adopted
-	version 2.5 of XStringGrid.
-	
-	Moved extensions to TXStringGrid to TYStringGrid.
-	
-	Program compiles and runs under Delphi 6.
-
 2002-02-06 14:50  juanco
 
 	* release.ini, src/want.dsk: routine
 
 2002-02-06 14:47  juanco
 
-	* src/tasks/: DelphiTasks.pas, ZipTasks.pas (tags: v_0_1_10):
-	simplified <delphi> task using TAttributeElement features
+	* src/tasks/: DelphiTasks.pas, ZipTasks.pas (tags: build_0_1_138,
+	v_0_1_10): simplified <delphi> task using TAttributeElement
+	features
 
 2002-02-06 14:45  juanco
 
 	* src/WantClasses.pas (tags: v_0_1_10): made element-as-attribute
 	support path= in addition to value=
 
-2002-02-02 19:23  juanca
-
-	* lib/jal/src/: JALGeomModels.pas, JalDXF.pas (utags: v_6_9_2):
-	Read value of color attribute
-
 2002-01-29 21:54  juanco
 
 	* want.xml, doc/index.html, doc/index.template.html (tags:
+	build_0_1_149, build_0_1_148, build_0_1_147, build_0_1_138,
 	v_0_1_10), doc/index.html: move dist directory to under doc
 	directory to aid with web site management
 
@@ -382,7 +489,8 @@
 
 2002-01-29 14:54  juanco
 
-	* CVSROOT/cvswrappers (tags: v_0_1_10): Added cvswrappers to catch
+	* CVSROOT/cvswrappers (tags: build_0_1_149, build_0_1_148,
+	build_0_1_147, build_0_1_138, v_0_1_10): Added cvswrappers to catch
 	known extensions for binary files and check them in as -kb.
 
 2002-01-29 14:41  juanco
@@ -391,7 +499,8 @@
 
 2002-01-29 02:03  juanco
 
-	* .cvsignore (tags: v_0_1_10): ignore build dirs
+	* .cvsignore (tags: build_0_1_149, build_0_1_148, build_0_1_147,
+	build_0_1_138, v_0_1_10): ignore build dirs
 
 2002-01-28 17:19  juanco
 
@@ -400,8 +509,9 @@
 
 2002-01-25 18:17  juanco
 
-	* etc/bku.btm (tags: v_0_1_10): CVS repository moved to remore
-	server: do not attempt backup
+	* etc/bku.btm (tags: build_0_1_149, build_0_1_148, build_0_1_147,
+	build_0_1_138, v_0_1_10): CVS repository moved to remore server: do
+	not attempt backup
 
 2002-01-25 17:06  juanco
 
@@ -411,11 +521,21 @@
 
 2002-01-08 18:12  root
 
-	* CVSROOT/: checkoutlist (tags: v_0_1_10), commitinfo (tags:
-	v_0_1_10), config (tags: v_0_1_10), cvswrappers, editinfo (tags:
-	v_0_1_10), loginfo (tags: v_0_1_10), modules (tags: v_0_1_10),
-	notify (tags: v_0_1_10), rcsinfo (tags: v_0_1_10), taginfo (tags:
-	v_0_1_10), verifymsg (tags: v_0_1_10): initial checkin
+	* CVSROOT/: checkoutlist (tags: build_0_1_149, build_0_1_148,
+	build_0_1_147, build_0_1_138, v_0_1_10), commitinfo (tags:
+	build_0_1_149, build_0_1_148, build_0_1_147, build_0_1_138,
+	v_0_1_10), config (tags: build_0_1_149, build_0_1_148,
+	build_0_1_147, build_0_1_138, v_0_1_10), cvswrappers, editinfo
+	(tags: build_0_1_149, build_0_1_148, build_0_1_147, build_0_1_138,
+	v_0_1_10), loginfo (tags: build_0_1_138, v_0_1_10), modules (tags:
+	build_0_1_149, build_0_1_148, build_0_1_147, build_0_1_138,
+	v_0_1_10), notify (tags: build_0_1_149, build_0_1_148,
+	build_0_1_147, build_0_1_138, v_0_1_10), rcsinfo (tags:
+	build_0_1_149, build_0_1_148, build_0_1_147, build_0_1_138,
+	v_0_1_10), taginfo (tags: build_0_1_149, build_0_1_148,
+	build_0_1_147, build_0_1_138, v_0_1_10), verifymsg (tags:
+	build_0_1_149, build_0_1_148, build_0_1_147, build_0_1_138,
+	v_0_1_10): initial checkin
 
 2002-01-08 16:50  juanca
 
@@ -425,22 +545,25 @@
 2002-01-07 23:32  juanca
 
 	* release.ini, want.xml, doc/index.html, make/bootstrap.bat,
-	src/WantClasses.pas, src/want.dof, src/want.dpr (tags: v_0_1_10),
-	src/want.dsk, src/lib/WildPaths.pas (tags: v_0_1_10),
-	src/tasks/ExecTasks.pas (tags: v_0_1_10) (utags: v_0_1_109): fixed
-	more problems with directories with spaces
+	src/WantClasses.pas, src/want.dof, src/want.dpr (tags:
+	build_0_1_138, v_0_1_10), src/want.dsk, src/lib/WildPaths.pas
+	(tags: v_0_1_10), src/tasks/ExecTasks.pas (tags: build_0_1_138,
+	v_0_1_10) (utags: v_0_1_109): fixed more problems with directories
+	with spaces
 
 2002-01-07 14:49  juanca
 
-	* README.TXT (tags: v_0_1_10, v_0_1_109), release.ini,
+	* README.TXT (tags: build_0_1_149, build_0_1_148, build_0_1_147,
+	build_0_1_138, v_0_1_10, v_0_1_109), release.ini,
 	test/WantTestLib.drc (tags: v_0_1_109): added basic README.TXT
 
 2002-01-07 14:43  juanca
 
 	* src/WantClasses.pas, src/want.dof, src/want.dsk,
-	src/elements/Properties.pas (tags: v_0_1_10, v_0_1_109),
-	test/WantTestLib.drc, test/WantTestLib.dsk (tags: v_0_1_10,
-	v_0_1_109): make properties be undefined if empty
+	src/elements/Properties.pas (tags: build_0_1_149, build_0_1_148,
+	build_0_1_147, build_0_1_138, v_0_1_10, v_0_1_109),
+	test/WantTestLib.drc, test/WantTestLib.dsk (tags: build_0_1_138,
+	v_0_1_10, v_0_1_109): make properties be undefined if empty
 
 2002-01-07 14:12  juanca
 
@@ -466,17 +589,16 @@
 2002-01-05 23:57  juanca
 
 	* release.ini, doc/index.html, src/want.dsk, test/WantTestLib.dsk,
-	test/WantTests.dof (tags: v_0_1_10, v_0_1_109), test/WantTests.dpr
-	(tags: v_0_1_10, v_0_1_109), lib/jal/release.ini (tags: v_6_9_2),
-	lib/jal/src/JALCollections.pas (tags: v_6_9_2),
-	lib/jal/src/JALXMLParser.pas (tags: build_6_9_19, build_6_9_18,
-	build_6_9_17, build_6_9_16, build_6_9_15, build_6_9_14,
-	build_6_9_13, v_6_9_2): repaired memory leaks
+	test/WantTests.dof (tags: build_0_1_138, v_0_1_10, v_0_1_109),
+	test/WantTests.dpr (tags: build_0_1_149, build_0_1_148,
+	build_0_1_147, build_0_1_138, v_0_1_10, v_0_1_109): repaired memory
+	leaks
 
 2002-01-05 15:47  juanca
 
 	* release.ini, doc/index.html, src/tasks/ExecTasks.pas,
-	test/ExecTasksTest.pas (tags: v_0_1_10, v_0_1_109): removed
+	test/ExecTasksTest.pas (tags: build_0_1_149, build_0_1_148,
+	build_0_1_147, build_0_1_138, v_0_1_10, v_0_1_109): removed
 	redundant double quotes in <exec> tasks
 
 2002-01-04 16:11  juanca
@@ -490,7 +612,7 @@
 2002-01-04 14:33  juanca
 
 	* release.ini, doc/index.html, src/elements/.cvsignore (tags:
-	v_0_1_10, v_0_1_109): routine
+	build_0_1_138, v_0_1_10, v_0_1_109): routine
 
 2001-12-21 15:43  juanca
 
@@ -504,7 +626,8 @@
 
 2001-12-19 23:17  juanca
 
-	* doc/style.css (tags: v_0_1_10, v_0_1_109): fortmatting of images
+	* doc/style.css (tags: build_0_1_149, build_0_1_148, build_0_1_147,
+	build_0_1_138, v_0_1_10, v_0_1_109): fortmatting of images
 
 2001-12-19 23:07  juanca
 
@@ -542,42 +665,55 @@
 2001-12-17 22:10  juanca
 
 	* src/tasks/DUnitTasks.pas (tags: v_0_1_10, v_0_1_109),
-	src/tasks/DelphiTasks.pas, src/tasks/EchoTasks.pas (tags: v_0_1_10,
-	v_0_1_109), src/tasks/EditTasks.pas (tags: v_0_1_10, v_0_1_109),
-	src/tasks/ExecTasks.pas, src/tasks/FileTasks.pas (tags: v_0_1_10,
-	v_0_1_109), src/tasks/ZipTasks.pas (tags: v_0_1_109),
-	test/WildPathsTest.pas (tags: v_0_1_10, v_0_1_109),
-	test/ExecTasksTest.pas, test/ExternalTests.pas (tags: v_0_1_10,
-	v_0_1_109), test/FileSetTests.pas (tags: v_0_1_10, v_0_1_109),
-	test/FileTasksTest.pas (tags: v_0_1_10, v_0_1_109),
-	test/RunnerTests.pas (tags: v_0_1_10, v_0_1_109),
-	test/WantAcceptTestLib.cfg (tags: v_0_1_10, v_0_1_109),
-	test/WantAcceptTestLib.dof (tags: v_0_1_10, v_0_1_109),
-	test/WantTestLib.cfg (tags: v_0_1_10, v_0_1_109),
-	test/WantTestLib.dof (tags: v_0_1_10, v_0_1_109),
-	test/WantTestLib.dpr (tags: v_0_1_10, v_0_1_109),
-	test/data/inifile/want.xml (tags: v_0_1_10, v_0_1_109): upgraded
+	src/tasks/DelphiTasks.pas, src/tasks/EchoTasks.pas (tags:
+	build_0_1_149, build_0_1_148, build_0_1_147, build_0_1_138,
+	v_0_1_10, v_0_1_109), src/tasks/EditTasks.pas (tags: build_0_1_149,
+	build_0_1_148, build_0_1_147, build_0_1_138, v_0_1_10, v_0_1_109),
+	src/tasks/ExecTasks.pas, src/tasks/FileTasks.pas (tags:
+	build_0_1_149, build_0_1_148, build_0_1_147, build_0_1_138,
+	v_0_1_10, v_0_1_109), src/tasks/ZipTasks.pas (tags: v_0_1_109),
+	test/WildPathsTest.pas (tags: build_0_1_149, build_0_1_148,
+	build_0_1_147, build_0_1_138, v_0_1_10, v_0_1_109),
+	test/ExecTasksTest.pas, test/ExternalTests.pas (tags:
+	build_0_1_149, build_0_1_148, build_0_1_147, build_0_1_138,
+	v_0_1_10, v_0_1_109), test/FileSetTests.pas (tags: build_0_1_149,
+	build_0_1_148, build_0_1_147, build_0_1_138, v_0_1_10, v_0_1_109),
+	test/FileTasksTest.pas (tags: build_0_1_149, build_0_1_148,
+	build_0_1_147, build_0_1_138, v_0_1_10, v_0_1_109),
+	test/RunnerTests.pas (tags: build_0_1_149, build_0_1_148,
+	build_0_1_147, build_0_1_138, v_0_1_10, v_0_1_109),
+	test/WantAcceptTestLib.cfg (tags: build_0_1_138, v_0_1_10,
+	v_0_1_109), test/WantAcceptTestLib.dof (tags: build_0_1_138,
+	v_0_1_10, v_0_1_109), test/WantTestLib.cfg (tags: build_0_1_138,
+	v_0_1_10, v_0_1_109), test/WantTestLib.dof (tags: build_0_1_138,
+	v_0_1_10, v_0_1_109), test/WantTestLib.dpr (tags: build_0_1_149,
+	build_0_1_148, build_0_1_147, build_0_1_138, v_0_1_10, v_0_1_109),
+	test/data/inifile/want.xml (tags: build_0_1_149, build_0_1_148,
+	build_0_1_147, build_0_1_138, v_0_1_10, v_0_1_109): upgraded
 	<dunit> task to latest version of DUnit, with status messages
 
 2001-12-17 22:08  juanca
 
-	* src/: elements/PatternSets.pas (tags: v_0_1_10, v_0_1_109),
+	* src/: elements/PatternSets.pas (tags: build_0_1_149,
+	build_0_1_148, build_0_1_147, build_0_1_138, v_0_1_10, v_0_1_109),
 	lib/WildPaths.pas: debugged WildPaths.IsMatch so CVS/** matches
 	xxx/CVS
 
 2001-12-17 22:07  juanca
 
 	* src/: ScriptRunner.pas (tags: v_0_1_10, v_0_1_109),
-	WantClasses.pas, lib/ScriptParser.pas (tags: v_0_1_10, v_0_1_109),
+	WantClasses.pas, lib/ScriptParser.pas (tags: build_0_1_149,
+	build_0_1_148, build_0_1_147, build_0_1_138, v_0_1_10, v_0_1_109),
 	win32/ConsoleListener.pas (tags: v_0_1_10, v_0_1_109),
-	win32/ConsoleScriptRunner.pas (tags: v_0_1_10, v_0_1_109),
+	win32/ConsoleScriptRunner.pas (tags: build_0_1_149, build_0_1_148,
+	build_0_1_147, build_0_1_138, v_0_1_10, v_0_1_109),
 	win32/Win32ChildProcesses.pas (tags: v_0_1_10, v_0_1_109): debugged
 	logging of errors
 
 2001-12-17 22:04  juanca
 
-	* lib/: dunit-4.1.2.zip, jal-0.1.1.zip, jcl-1.0.zip,
-	jal/release.ini: upgraded libraries
+	* lib/: dunit-4.1.2.zip, jal-0.1.1.zip, jcl-1.0.zip: upgraded
+	libraries
 
 2001-12-03 16:34  juanca
 
@@ -613,25 +749,15 @@
 
 2001-12-03 16:30  juanca
 
-	* src/elements/RegexpElements.pas (tags: v_0_1_10, v_0_1_109): make
-	verbose be less verbose for <regexp>
+	* src/elements/RegexpElements.pas (tags: build_0_1_149,
+	build_0_1_148, build_0_1_147, build_0_1_138, v_0_1_10, v_0_1_109):
+	make verbose be less verbose for <regexp>
 
 2001-12-03 16:29  juanca
 
 	* src/WantClasses.pas: Added @{} path macro expansion.
 	
 	BUG: Fixed GPF bug while checking for the presence of attributes.
-
-2001-12-03 16:27  juanca
-
-	* lib/jal/src/: JALSAX.pas (tags: v_6_9_2), JALXMLParser.pas:
-	changes for compatibility with Delphi 6
-
-2001-12-03 12:56  juanca
-
-	* lib/jal/.cvsignore (tags: build_6_9_19, build_6_9_18,
-	build_6_9_17, build_6_9_16, build_6_9_15, build_6_9_14,
-	build_6_9_13, v_6_9_2): ignore generated directories
 
 2001-11-27 19:41  juanca
 
@@ -651,15 +777,14 @@
 2001-11-27 18:32  juanca
 
 	* release.ini, doc/index.html, test/WantAcceptTestLib.drc,
-	release.ini, doc/index.html, src/.cvsignore (tags: v_0_1_10,
-	v_0_1_109), src/want.cfg, src/want.dof, src/want.dsk,
-	lib/jal/test/.cvsignore (tags: build_6_9_19, build_6_9_18,
-	build_6_9_17, build_6_9_16, build_6_9_15, build_6_9_14,
-	build_6_9_13, v_6_9_2): routine
+	release.ini, doc/index.html, src/.cvsignore (tags: build_0_1_149,
+	build_0_1_148, build_0_1_147, build_0_1_138, v_0_1_10, v_0_1_109),
+	src/want.cfg, src/want.dof, src/want.dsk: routine
 
 2001-11-27 18:32  juanca
 
-	* private/juanco/todo_juanco.html (tags: v_0_1_10, v_0_1_109,
+	* private/juanco/todo_juanco.html (tags: build_0_1_149,
+	build_0_1_148, build_0_1_147, build_0_1_138, v_0_1_10, v_0_1_109,
 	v_0_1_31): new todo items for juanco
 
 2001-11-27 18:29  juanca
@@ -672,18 +797,6 @@
 	* want.xml (tags: v_0_1_31): ignore CVS directories (want should do
 	it by default)
 
-2001-11-27 18:29  juanca
-
-	* lib/jal/test/: ExpressionTests.pas, JALTestLib.dsk (utags:
-	build_6_9_13, build_6_9_14, build_6_9_15, build_6_9_16,
-	build_6_9_17, build_6_9_18, build_6_9_19, v_6_9_2): stricter tests
-	for expression parsing
-
-2001-11-27 18:27  juanca
-
-	* lib/jal/src/: JALExpressions.pas, JalParse.pas (utags: v_6_9_2):
-	raise only EParseEceptions from TParser
-
 2001-11-27 18:26  juanca
 
 	* src/: WantClasses.pas, want.cfg, want.dof, want.dsk, wantver.rc,
@@ -694,12 +807,6 @@
 2001-11-27 18:25  juanca
 
 	* lib/: jal-0.1.0.zip, jal-0.1.1.zip (tags: v_0_1_31): upgraded JAL
-	library
-
-2001-11-27 18:23  juanca
-
-	* lib/jal/: release.ini, want.xml (tags: build_6_9_14,
-	build_6_9_13, v_6_9_2): added want script to test and package the
 	library
 
 2001-11-27 18:11  juanca
@@ -745,6 +852,7 @@
 	* want.xml, doc/index.html, src/ScriptRunner.pas,
 	src/WantClasses.pas, src/want.cfg, src/want.dof, src/want.dpr,
 	src/want.dsk, src/wantver.rc, src/elements/Attributes.pas (tags:
+	build_0_1_149, build_0_1_148, build_0_1_147, build_0_1_138,
 	v_0_1_10, v_0_1_109, v_0_1_31), src/lib/ScriptParser.pas (tags:
 	v_0_1_31), src/lib/WildPaths.pas (tags: v_0_1_31),
 	src/win32/ConsoleListener.pas (tags: v_0_1_31): Now all task
@@ -764,26 +872,15 @@
 2001-11-16 16:52  juanca
 
 	* src/tasks/: EchoTasks.pas (tags: v_0_1_31), ExecTasks.pas,
-	FileTasks.pas (tags: v_0_1_31), IniFileTasks.pas (tags: v_0_1_10,
-	v_0_1_109, v_0_1_31), WantTasks.pas (tags: v_0_1_10, v_0_1_109,
+	FileTasks.pas (tags: v_0_1_31), IniFileTasks.pas (tags:
+	build_0_1_149, build_0_1_148, build_0_1_147, build_0_1_138,
+	v_0_1_10, v_0_1_109, v_0_1_31), WantTasks.pas (tags: build_0_1_149,
+	build_0_1_148, build_0_1_147, build_0_1_138, v_0_1_10, v_0_1_109,
 	v_0_1_31): buglets in <echo> task
 
 2001-11-16 16:52  juanca
 
 	* src/tasks/DelphiTasks.pas (tags: v_0_1_31): todo stuff
-
-2001-11-16 16:51  juanca
-
-	* lib/jal/test/: ExpressionTests.pas, JALTestLib.cfg (tags:
-	v_6_9_2), JALTestLib.dof (tags: v_6_9_2), JALTestLib.dpr (tags:
-	v_6_9_2), JALTestLib.dsk: added mathematical expressions to JAL
-	library
-
-2001-11-16 16:50  juanca
-
-	* lib/jal/src/: JALExpressions.pas, JALStrings.pas (tags: v_6_9_2),
-	JalParse.pas, JalPaths.pas (tags: v_6_9_2): be more permissive
-	about path format
 
 2001-11-16 14:21  juanca
 
@@ -801,10 +898,6 @@
 
 	* want.xml, doc/index.html, src/wantver.rc: bump up version number
 
-2001-11-13 20:04  juanca
-
-	* lib/jal/src/JALFiles.pas: added simple logging facility
-
 2001-11-13 18:08  juanca
 
 	* src/: want.dof, want.dsk, lib/WildPaths.pas, tasks/ExecTasks.pas:
@@ -818,10 +911,11 @@
 
 2001-11-13 17:23  juanca
 
-	* doc/index.html, src/BuildListeners.pas (tags: v_0_1_10,
-	v_0_1_109, v_0_1_31), src/ScriptRunner.pas, src/WantClasses.pas,
-	src/want.dof, src/want.dsk, src/win32/ConsoleListener.pas: refactor
-	BuildListener to avoid duplicate error reporting
+	* doc/index.html, src/BuildListeners.pas (tags: build_0_1_149,
+	build_0_1_148, build_0_1_147, build_0_1_138, v_0_1_10, v_0_1_109,
+	v_0_1_31), src/ScriptRunner.pas, src/WantClasses.pas, src/want.dof,
+	src/want.dsk, src/win32/ConsoleListener.pas: refactor BuildListener
+	to avoid duplicate error reporting
 
 2001-11-13 16:54  juanca
 
@@ -832,22 +926,13 @@
 
 	* src/want.dsk: routine
 
-2001-11-02 17:41  juanca
-
-	* lib/jal/src/JALAlgorithms.pas (tags: v_6_9_2): added algorithms
-	that work with collections
-
-2001-10-26 16:10  juanca
-
-	* lib/jal/src/JALGZipStreams.pas: BUG: buglets in TGZipStream
-	calculation of size
-
 2001-10-26 16:05  juanca
 
 	* test/data/file/gziptasks/simple/: build.xml, final/afile.txt,
 	final/afile2.txt, final/afile2.txt.gz, setup/afile.txt,
-	setup/afile2.txt, setup/afile2.txt.gz (utags: v_0_1_4, v_0_1_10,
-	v_0_1_109, v_0_1_31): added external tests for <gzip> task
+	setup/afile2.txt, setup/afile2.txt.gz (utags: v_0_1_10, v_0_1_109,
+	build_0_1_138, build_0_1_147, build_0_1_148, build_0_1_149,
+	v_0_1_31, v_0_1_4): added external tests for <gzip> task
 
 2001-10-26 16:03  juanca
 
@@ -867,37 +952,26 @@
 
 2001-10-26 16:02  juanca
 
-	* src/tasks/: GZipTasks.pas (tags: v_0_1_10, v_0_1_109),
-	StandardTasks.pas (tags: v_0_1_10, v_0_1_109), ZipTasks.pas (utags:
-	v_0_1_4, v_0_1_31): added <gzip> task. Moved ZipStreams to JAL
-	library
+	* src/tasks/: GZipTasks.pas (tags: build_0_1_149, build_0_1_148,
+	build_0_1_147, build_0_1_138, v_0_1_10, v_0_1_109),
+	StandardTasks.pas (tags: build_0_1_149, build_0_1_148,
+	build_0_1_147, build_0_1_138, v_0_1_10, v_0_1_109), ZipTasks.pas
+	(utags: v_0_1_31, v_0_1_4): added <gzip> task. Moved ZipStreams to
+	JAL library
 
 2001-10-26 16:01  juanca
 
 	* src/tasks/DelphiTasks.pas: Added Map option to <dcc> task.
 
-2001-10-26 15:58  juanca
-
-	* lib/jal/src/: JALGZipStreams.pas, JALStrings.pas, JalPaths.pas,
-	JalProxyStreams.pas (tags: v_6_9_2), JalUtils.pas (tags:
-	build_6_9_19, build_6_9_18, build_6_9_17, build_6_9_16,
-	build_6_9_15, build_6_9_14, build_6_9_13, v_6_9_2),
-	JalZipStreams.pas (tags: v_6_9_2): Moved zip streams into JAL
-	library.
-	
-	Several minor bug fixes.
-
 2001-10-26 15:49  juanca
 
 	* doc/index.html, src/ScriptRunner.pas (tags: v_0_1_4),
-	lib/jal/src/JalPaths.pas, src/want.cfg (tags: v_0_1_4),
-	src/want.dof (tags: v_0_1_4), src/want.dsk, src/lib/WildPaths.pas,
-	doc/index.html, src/want.dsk (tags: v_0_1_4),
-	src/lib/WildPaths.pas, lib/jal/src/JalPaths.pas, doc/index.html
-	(tags: v_0_1_4), lib/jal/src/JalPaths.pas, src/wantver.rc (tags:
-	v_0_1_4), src/lib/WildPaths.pas (tags: v_0_1_4),
-	test/WantAcceptTestLib.drc (tags: v_0_1_4): detect invalid
-	characters in paths
+	src/want.cfg (tags: v_0_1_4), src/want.dof (tags: v_0_1_4),
+	src/want.dsk, src/lib/WildPaths.pas, doc/index.html, src/want.dsk
+	(tags: v_0_1_4), src/lib/WildPaths.pas, doc/index.html (tags:
+	v_0_1_4), src/wantver.rc (tags: v_0_1_4), src/lib/WildPaths.pas
+	(tags: v_0_1_4), test/WantAcceptTestLib.drc (tags: v_0_1_4): detect
+	invalid characters in paths
 
 2001-10-26 14:12  juanca
 
@@ -917,10 +991,6 @@
 	* src/: want.cfg, want.dof, want.dsk, wantver.rc,
 	tasks/DelphiTasks.pas (tags: v_0_1_4): BUG: errors figuring out
 	.cfg file name.
-
-2001-10-26 13:58  juanca
-
-	* lib/jal/src/JALStrings.pas: Bug in calculations in StrRight
 
 2001-10-23 20:05  juanca
 
@@ -944,7 +1014,8 @@
 	* test/: ExternalTests.pas, RunnerTests.pas (tags: v_0_1_31,
 	v_0_1_4), WantAcceptTestLib.cfg (tags: v_0_1_31, v_0_1_4),
 	WantAcceptTestLib.dof (tags: v_0_1_31, v_0_1_4),
-	WantAcceptTestLib.dpr (tags: v_0_1_10, v_0_1_109, v_0_1_31,
+	WantAcceptTestLib.dpr (tags: build_0_1_149, build_0_1_148,
+	build_0_1_147, build_0_1_138, v_0_1_10, v_0_1_109, v_0_1_31,
 	v_0_1_4), WantTestLib.cfg (tags: v_0_1_31, v_0_1_4),
 	WantTestLib.dof (tags: v_0_1_31, v_0_1_4): fixed minor problems
 	with test cases and latest versionof want
@@ -954,92 +1025,10 @@
 	* src/lib/WildPaths.pas: By default, check if change directory
 	suceeded.
 
-2001-10-23 20:00  juanca
-
-	* lib/jal/src/JALStrings.pas: BUG: TrimStringArray was not
-	returning anything
-
 2001-10-23 18:56  juanca
 
 	* src/tasks/DelphiTasks.pas: Use a default library path of
 	$(DELPHI)\Lib as default.
-
-2001-10-23 17:56  juanca
-
-	* lib/jal/lib/paszlib/: UNZIP.PAS, ZIP.PAS: do not report hints or
-	warnings for paszlib
-
-2001-10-23 17:52  juanca
-
-	* lib/jal/lib/paszlib/: ZCONF.INC, ZDEFLATE.PAS, ZIPUTILS.PAS,
-	zutil.pas, UNZIP.PAS, ZIP.PAS (utags: build_6_9_13, build_6_9_14,
-	build_6_9_15, build_6_9_16, build_6_9_17, build_6_9_18,
-	build_6_9_19, v_6_9_2): adopted fixed version of paszlib from want
-
-2001-10-23 17:49  juanca
-
-	* lib/jal/lib/paszlib/: CRC.PAS (tags: build_6_9_19, build_6_9_18,
-	build_6_9_17, build_6_9_16, build_6_9_15, build_6_9_14,
-	build_6_9_13, v_6_9_2), ZDEFLATE.PAS, zutil.pas: removed
-	superfluous warnings
-
-2001-10-23 15:31  juanca
-
-	* lib/jal/src/JALStrings.pas: string handling functions for
-	unix-style configuration files
-
-2001-10-23 15:13  juanca
-
-	* lib/jal/src/JALGZipStreams.pas: support for gzip/gunzip streams
-
-2001-10-23 15:11  juanca
-
-	* lib/jal/lib/paszlib/: ADLER.PAS (tags: build_6_9_19,
-	build_6_9_18, build_6_9_17, build_6_9_16, build_6_9_15,
-	build_6_9_14, build_6_9_13, v_6_9_2), CRC.PAS, TREES.PAS,
-	ZCONF.INC, ZDEFLATE.PAS, ZINFLATE.PAS (tags: build_6_9_19,
-	build_6_9_18, build_6_9_17, build_6_9_16, build_6_9_15,
-	build_6_9_14, build_6_9_13, v_6_9_2), ZIPUTILS.PAS, ZLIB.PAS (tags:
-	build_6_9_19, build_6_9_18, build_6_9_17, build_6_9_16,
-	build_6_9_15, build_6_9_14, build_6_9_13, v_6_9_2), dzlib.pas
-	(tags: build_6_9_19, build_6_9_18, build_6_9_17, build_6_9_16,
-	build_6_9_15, build_6_9_14, build_6_9_13, v_6_9_2), dzlib.txt
-	(tags: build_6_9_19, build_6_9_18, build_6_9_17, build_6_9_16,
-	build_6_9_15, build_6_9_14, build_6_9_13, v_6_9_2), example.pas
-	(tags: build_6_9_19, build_6_9_18, build_6_9_17, build_6_9_16,
-	build_6_9_15, build_6_9_14, build_6_9_13, v_6_9_2), gzio.pas (tags:
-	build_6_9_19, build_6_9_18, build_6_9_17, build_6_9_16,
-	build_6_9_15, build_6_9_14, build_6_9_13, v_6_9_2), infblock.pas
-	(tags: build_6_9_19, build_6_9_18, build_6_9_17, build_6_9_16,
-	build_6_9_15, build_6_9_14, build_6_9_13, v_6_9_2), infcodes.pas
-	(tags: build_6_9_19, build_6_9_18, build_6_9_17, build_6_9_16,
-	build_6_9_15, build_6_9_14, build_6_9_13, v_6_9_2), inffast.pas
-	(tags: build_6_9_19, build_6_9_18, build_6_9_17, build_6_9_16,
-	build_6_9_15, build_6_9_14, build_6_9_13, v_6_9_2), inftrees.pas,
-	infutil.pas (tags: build_6_9_19, build_6_9_18, build_6_9_17,
-	build_6_9_16, build_6_9_15, build_6_9_14, build_6_9_13, v_6_9_2),
-	minigzip.pas (tags: build_6_9_19, build_6_9_18, build_6_9_17,
-	build_6_9_16, build_6_9_15, build_6_9_14, build_6_9_13, v_6_9_2),
-	paszlib.html (tags: build_6_9_19, build_6_9_18, build_6_9_17,
-	build_6_9_16, build_6_9_15, build_6_9_14, build_6_9_13, v_6_9_2),
-	MINIUNZ.PAS (tags: build_6_9_19, build_6_9_18, build_6_9_17,
-	build_6_9_16, build_6_9_15, build_6_9_14, build_6_9_13, v_6_9_2),
-	paszlib.xbm (tags: build_6_9_19, build_6_9_18, build_6_9_17,
-	build_6_9_16, build_6_9_15, build_6_9_14, build_6_9_13, v_6_9_2),
-	readme.txt (tags: build_6_9_19, build_6_9_18, build_6_9_17,
-	build_6_9_16, build_6_9_15, build_6_9_14, build_6_9_13, v_6_9_2),
-	strutils.pas, zcompres.pas (tags: build_6_9_19, build_6_9_18,
-	build_6_9_17, build_6_9_16, build_6_9_15, build_6_9_14,
-	build_6_9_13, v_6_9_2), zuncompr.pas (tags: build_6_9_19,
-	build_6_9_18, build_6_9_17, build_6_9_16, build_6_9_15,
-	build_6_9_14, build_6_9_13, v_6_9_2), zutil.pas, MINIZIP.PAS (tags:
-	build_6_9_19, build_6_9_18, build_6_9_17, build_6_9_16,
-	build_6_9_15, build_6_9_14, build_6_9_13, v_6_9_2), UNZIP.PAS,
-	ZIP.PAS: added paszlib, required for zip and gzip file support
-
-2001-10-19 19:50  juanca
-
-	* lib/jal/src/JalDXF.pas: added topological sorting to routes
 
 2001-10-11 17:30  juanca
 
@@ -1064,11 +1053,6 @@
 	lib/ScriptParser.pas (utags: v_0_1_3): Improved error reporting
 	during init/configure phase
 
-2001-10-08 17:21  juanca
-
-	* lib/jal/src/JALXMLParser.pas: BUG: Not checking for EOF while
-	parsing comments
-
 2001-09-22 19:55  juanca
 
 	* want.xml: Buped version number to 0.1.2
@@ -1090,72 +1074,9 @@
 
 	* doc/index.html: Added download link for v 0.1.1
 
-2001-09-05 20:46  juanca
-
-	* lib/jal/src/JALGeometry.pas: Make sure turn restrictions go a way
-	when nodes are deleted.  Don't include nodes with 0,0 coordinates
-	in scale calculations.
-
-2001-09-05 14:15  juanca
-
-	* lib/jal/src/: JALFiles.pas, JALGeomModels.pas, JalDXF.pas: Added
-	RenameFileToBackup function
-
-2001-08-27 17:59  juanca
-
-	* lib/jal/: src/JALGeomModels.pas, src/JALGeometry.pas,
-	src/JALMath.pas (tags: v_6_9_2), src/JALStrings.pas,
-	src/JalDXF.pas, src/JalParse.pas, test/JalDXFTestLib.dpr (tags:
-	build_6_9_19, build_6_9_18, build_6_9_17, build_6_9_16,
-	build_6_9_15, build_6_9_14, build_6_9_13, v_6_9_2),
-	test/JalDXFTests.cfg (tags: build_6_9_19, build_6_9_18,
-	build_6_9_17, build_6_9_16, build_6_9_15, build_6_9_14,
-	build_6_9_13, v_6_9_2), test/JalDXFTests.dof (tags: build_6_9_19,
-	build_6_9_18, build_6_9_17, build_6_9_16, build_6_9_15,
-	build_6_9_14, build_6_9_13, v_6_9_2), test/JalDXFTests.dpr (tags:
-	build_6_9_19, build_6_9_18, build_6_9_17, build_6_9_16,
-	build_6_9_15, build_6_9_14, build_6_9_13, v_6_9_2),
-	test/JalDXFTests.dsk (tags: build_6_9_19, build_6_9_18,
-	build_6_9_17, build_6_9_16, build_6_9_15, build_6_9_14,
-	build_6_9_13, v_6_9_2), test/JalDXFTests.res (tags: build_6_9_19,
-	build_6_9_18, build_6_9_17, build_6_9_16, build_6_9_15,
-	build_6_9_14, build_6_9_13, v_6_9_2), test/TestDXFParse.pas (tags:
-	build_6_9_19, build_6_9_18, build_6_9_17, build_6_9_16,
-	build_6_9_15, build_6_9_14, build_6_9_13, v_6_9_2): Added basic DXF
-	parser and shape classes
-
 2001-08-22 18:53  juanca
 
 	* src/: want.dsk, wantver.rc: Ready for 0.1.1 release
-
-2001-08-03 18:40  juanca
-
-	* lib/jal/src/: JALGeometry.pas, JALMath.pas: Fixed minor bugs
-
-2001-08-01 19:25  juanca
-
-	* lib/jal/src/: JALGeomModels.pas, JALGeometry.pas: Improvements to
-	handling of DXF files.	First D6 compatibility changes.
-
-2001-07-27 22:45  juanca
-
-	* lib/jal/src/: JALGeomModels.pas, JALGeometry.pas: Added ability
-	to show DXF files to TUS
-
-2001-07-27 17:15  juanca
-
-	* lib/jal/src/JALGeometry.pas: Adapted graphics rendering to new
-	JALGeometry unit.
-
-2001-07-26 18:49  juanca
-
-	* lib/jal/src/JALGeometry.pas: Added functionality needed to
-	support DXF files.
-
-2001-07-26 14:48  juanca
-
-	* lib/jal/src/JALGeometry.pas: Treatment of points, coordinates,
-	and transformations.
 
 2001-07-10 13:39  juanca
 
@@ -1163,20 +1084,6 @@
 	src/win32/ConsoleListener.pas (tags: v_0_1_4, v_0_1_3),
 	src/win32/WIN32.pas, test/WantAcceptTestLib.drc: Try to avoid
 	messing screen colors when want is aborted with Ctrl+C
-
-2001-07-04 18:17  juanca
-
-	* lib/jal/src/JALStdIO.pas (tags: v_6_9_2): Added JALStdIO.pas to
-	library.
-
-2001-07-03 20:10  juanca
-
-	* lib/jal/src/: JALFiles.pas, JALStrings.pas: More routines for
-	manipulating TStrings
-
-2001-06-29 16:30  juanca
-
-	* lib/jal/src/JALStrings.pas: Added JalStrings.ArrayToString
 
 2001-06-28 18:50  juanca
 
@@ -1186,69 +1093,95 @@
 
 2001-06-28 18:42  juanca
 
-	* index.html, doc/task_writers_guide.html (tags: v_0_1_10,
-	v_0_1_109, v_0_1_31, v_0_1_4, v_0_1_3, v_0_1_0_base),
-	doc/elements/tstamp.html (tags: v_0_1_10, v_0_1_109, v_0_1_31,
-	v_0_1_4, v_0_1_3, v_0_1_0_base), private/juanco/URITests.dpr (tags:
+	* index.html, doc/task_writers_guide.html (tags: build_0_1_149,
+	build_0_1_148, build_0_1_147, build_0_1_138, v_0_1_10, v_0_1_109,
+	v_0_1_31, v_0_1_4, v_0_1_3, v_0_1_0_base), doc/elements/tstamp.html
+	(tags: build_0_1_149, build_0_1_148, build_0_1_147, build_0_1_138,
 	v_0_1_10, v_0_1_109, v_0_1_31, v_0_1_4, v_0_1_3, v_0_1_0_base),
-	private/juanco/notes_juanco.html (tags: v_0_1_10, v_0_1_109,
-	v_0_1_31, v_0_1_4, v_0_1_3, v_0_1_0_base),
+	private/juanco/URITests.dpr (tags: build_0_1_149, build_0_1_148,
+	build_0_1_147, build_0_1_138, v_0_1_10, v_0_1_109, v_0_1_31,
+	v_0_1_4, v_0_1_3, v_0_1_0_base), private/juanco/notes_juanco.html
+	(tags: build_0_1_149, build_0_1_148, build_0_1_147, build_0_1_138,
+	v_0_1_10, v_0_1_109, v_0_1_31, v_0_1_4, v_0_1_3, v_0_1_0_base),
 	private/juanco/todo_juanco.html (tags: v_0_1_4, v_0_1_3,
-	v_0_1_0_base), private/juanco/uris_juanco.html (tags: v_0_1_10,
-	v_0_1_109, v_0_1_31, v_0_1_4, v_0_1_3, v_0_1_0_base), src/want.dsk
-	(tags: v_0_1_0_base), src/lib/.cvsignore (tags: v_0_1_10,
-	v_0_1_109, v_0_1_31, v_0_1_4, v_0_1_3, v_0_1_0_base),
+	v_0_1_0_base), private/juanco/uris_juanco.html (tags:
+	build_0_1_149, build_0_1_148, build_0_1_147, build_0_1_138,
+	v_0_1_10, v_0_1_109, v_0_1_31, v_0_1_4, v_0_1_3, v_0_1_0_base),
+	src/want.dsk (tags: v_0_1_0_base), src/lib/.cvsignore (tags:
+	build_0_1_149, build_0_1_148, build_0_1_147, build_0_1_138,
+	v_0_1_10, v_0_1_109, v_0_1_31, v_0_1_4, v_0_1_3, v_0_1_0_base),
 	test/ExternalTests.pas (tags: v_0_1_3, v_0_1_0_base),
 	test/WantAcceptTestLib.drc (tags: v_0_1_0_base),
 	test/WantTestLib.dsk (tags: v_0_1_31, v_0_1_4, v_0_1_3,
 	v_0_1_0_base), test/WantTests.dof (tags: v_0_1_31, v_0_1_4,
 	v_0_1_3, v_0_1_0_base), test/data/edit/readwrite/build.xml (tags:
+	build_0_1_149, build_0_1_148, build_0_1_147, build_0_1_138,
 	v_0_1_10, v_0_1_109, v_0_1_31, v_0_1_4, v_0_1_3, v_0_1_0_base),
-	test/data/edit/readwrite/final/added_dot.txt (tags: v_0_1_10,
-	v_0_1_109, v_0_1_31, v_0_1_4, v_0_1_3, v_0_1_0_base),
-	test/data/edit/readwrite/final/added_end.txt (tags: v_0_1_10,
-	v_0_1_109, v_0_1_31, v_0_1_4, v_0_1_3, v_0_1_0_base),
-	test/data/edit/readwrite/final/added_zero.txt (tags: v_0_1_10,
-	v_0_1_109, v_0_1_31, v_0_1_4, v_0_1_3, v_0_1_0_base),
-	test/data/edit/readwrite/final/c.txt (tags: v_0_1_10, v_0_1_109,
+	test/data/edit/readwrite/final/added_dot.txt (tags: build_0_1_149,
+	build_0_1_148, build_0_1_147, build_0_1_138, v_0_1_10, v_0_1_109,
 	v_0_1_31, v_0_1_4, v_0_1_3, v_0_1_0_base),
-	test/data/edit/readwrite/final/c1.txt (tags: v_0_1_10, v_0_1_109,
+	test/data/edit/readwrite/final/added_end.txt (tags: build_0_1_149,
+	build_0_1_148, build_0_1_147, build_0_1_138, v_0_1_10, v_0_1_109,
 	v_0_1_31, v_0_1_4, v_0_1_3, v_0_1_0_base),
-	test/data/edit/readwrite/final/c2.txt (tags: v_0_1_10, v_0_1_109,
+	test/data/edit/readwrite/final/added_zero.txt (tags: build_0_1_149,
+	build_0_1_148, build_0_1_147, build_0_1_138, v_0_1_10, v_0_1_109,
 	v_0_1_31, v_0_1_4, v_0_1_3, v_0_1_0_base),
-	test/data/edit/readwrite/final/c_all.txt (tags: v_0_1_10,
-	v_0_1_109, v_0_1_31, v_0_1_4, v_0_1_3, v_0_1_0_base),
-	test/data/edit/readwrite/final/file.txt (tags: v_0_1_10, v_0_1_109,
+	test/data/edit/readwrite/final/c.txt (tags: build_0_1_149,
+	build_0_1_148, build_0_1_147, build_0_1_138, v_0_1_10, v_0_1_109,
 	v_0_1_31, v_0_1_4, v_0_1_3, v_0_1_0_base),
-	test/data/edit/readwrite/final/full.txt (tags: v_0_1_10, v_0_1_109,
+	test/data/edit/readwrite/final/c1.txt (tags: build_0_1_149,
+	build_0_1_148, build_0_1_147, build_0_1_138, v_0_1_10, v_0_1_109,
 	v_0_1_31, v_0_1_4, v_0_1_3, v_0_1_0_base),
-	test/data/edit/readwrite/final/full2.txt (tags: v_0_1_10,
-	v_0_1_109, v_0_1_31, v_0_1_4, v_0_1_3, v_0_1_0_base),
-	test/data/edit/readwrite/final/inserted_dot.txt (tags: v_0_1_10,
-	v_0_1_109, v_0_1_31, v_0_1_4, v_0_1_3, v_0_1_0_base),
-	test/data/edit/readwrite/final/inserted_end.txt (tags: v_0_1_10,
-	v_0_1_109, v_0_1_31, v_0_1_4, v_0_1_3, v_0_1_0_base),
+	test/data/edit/readwrite/final/c2.txt (tags: build_0_1_149,
+	build_0_1_148, build_0_1_147, build_0_1_138, v_0_1_10, v_0_1_109,
+	v_0_1_31, v_0_1_4, v_0_1_3, v_0_1_0_base),
+	test/data/edit/readwrite/final/c_all.txt (tags: build_0_1_149,
+	build_0_1_148, build_0_1_147, build_0_1_138, v_0_1_10, v_0_1_109,
+	v_0_1_31, v_0_1_4, v_0_1_3, v_0_1_0_base),
+	test/data/edit/readwrite/final/file.txt (tags: build_0_1_149,
+	build_0_1_148, build_0_1_147, build_0_1_138, v_0_1_10, v_0_1_109,
+	v_0_1_31, v_0_1_4, v_0_1_3, v_0_1_0_base),
+	test/data/edit/readwrite/final/full.txt (tags: build_0_1_149,
+	build_0_1_148, build_0_1_147, build_0_1_138, v_0_1_10, v_0_1_109,
+	v_0_1_31, v_0_1_4, v_0_1_3, v_0_1_0_base),
+	test/data/edit/readwrite/final/full2.txt (tags: build_0_1_149,
+	build_0_1_148, build_0_1_147, build_0_1_138, v_0_1_10, v_0_1_109,
+	v_0_1_31, v_0_1_4, v_0_1_3, v_0_1_0_base),
+	test/data/edit/readwrite/final/inserted_dot.txt (tags:
+	build_0_1_149, build_0_1_148, build_0_1_147, build_0_1_138,
+	v_0_1_10, v_0_1_109, v_0_1_31, v_0_1_4, v_0_1_3, v_0_1_0_base),
+	test/data/edit/readwrite/final/inserted_end.txt (tags:
+	build_0_1_149, build_0_1_148, build_0_1_147, build_0_1_138,
+	v_0_1_10, v_0_1_109, v_0_1_31, v_0_1_4, v_0_1_3, v_0_1_0_base),
 	test/data/edit/readwrite/final/jcl.txt,
 	test/data/edit/readwrite/final/jcl1.txt,
 	test/data/edit/readwrite/final/jcl2.txt,
 	test/data/edit/readwrite/final/jcl_all.txt,
-	test/data/edit/readwrite/final/nextthree.txt (tags: v_0_1_10,
-	v_0_1_109, v_0_1_31, v_0_1_4, v_0_1_3, v_0_1_0_base),
-	test/data/edit/readwrite/final/threefirst.txt (tags: v_0_1_10,
-	v_0_1_109, v_0_1_31, v_0_1_4, v_0_1_3, v_0_1_0_base),
-	test/data/edit/readwrite/setup/file.txt (tags: v_0_1_10, v_0_1_109,
+	test/data/edit/readwrite/final/nextthree.txt (tags: build_0_1_149,
+	build_0_1_148, build_0_1_147, build_0_1_138, v_0_1_10, v_0_1_109,
 	v_0_1_31, v_0_1_4, v_0_1_3, v_0_1_0_base),
-	test/data/file/copyrecursive/build.xml (tags: v_0_1_10, v_0_1_109,
+	test/data/edit/readwrite/final/threefirst.txt (tags: build_0_1_149,
+	build_0_1_148, build_0_1_147, build_0_1_138, v_0_1_10, v_0_1_109,
 	v_0_1_31, v_0_1_4, v_0_1_3, v_0_1_0_base),
-	test/data/file/move/all/build.xml (tags: v_0_1_10, v_0_1_109,
+	test/data/edit/readwrite/setup/file.txt (tags: build_0_1_149,
+	build_0_1_148, build_0_1_147, build_0_1_138, v_0_1_10, v_0_1_109,
 	v_0_1_31, v_0_1_4, v_0_1_3, v_0_1_0_base),
-	test/data/file/move/recursive/build.xml (tags: v_0_1_10, v_0_1_109,
+	test/data/file/copyrecursive/build.xml (tags: build_0_1_149,
+	build_0_1_148, build_0_1_147, build_0_1_138, v_0_1_10, v_0_1_109,
 	v_0_1_31, v_0_1_4, v_0_1_3, v_0_1_0_base),
-	test/data/file/move/single/build.xml (tags: v_0_1_10, v_0_1_109,
+	test/data/file/move/all/build.xml (tags: build_0_1_149,
+	build_0_1_148, build_0_1_147, build_0_1_138, v_0_1_10, v_0_1_109,
 	v_0_1_31, v_0_1_4, v_0_1_3, v_0_1_0_base),
-	test/data/file/ziptasks/simple_unzip/build.xml (tags: v_0_1_10,
-	v_0_1_109, v_0_1_31, v_0_1_4, v_0_1_3, v_0_1_0_base): Removed last
-	vestiges of dante
+	test/data/file/move/recursive/build.xml (tags: build_0_1_149,
+	build_0_1_148, build_0_1_147, build_0_1_138, v_0_1_10, v_0_1_109,
+	v_0_1_31, v_0_1_4, v_0_1_3, v_0_1_0_base),
+	test/data/file/move/single/build.xml (tags: build_0_1_149,
+	build_0_1_148, build_0_1_147, build_0_1_138, v_0_1_10, v_0_1_109,
+	v_0_1_31, v_0_1_4, v_0_1_3, v_0_1_0_base),
+	test/data/file/ziptasks/simple_unzip/build.xml (tags:
+	build_0_1_149, build_0_1_148, build_0_1_147, build_0_1_138,
+	v_0_1_10, v_0_1_109, v_0_1_31, v_0_1_4, v_0_1_3, v_0_1_0_base):
+	Removed last vestiges of dante
 
 2001-06-28 17:46  juanca
 
@@ -1257,8 +1190,8 @@
 2001-06-28 17:43  juanca
 
 	* lib/: paszlib-1.0-dante-1.zip, paszlib-1.0-want-1.zip (tags:
-	v_0_1_10, v_0_1_109, v_0_1_31, v_0_1_4, v_0_1_3, v_0_1_0_base):
-	Updated paszlib .zip
+	build_0_1_138, v_0_1_10, v_0_1_109, v_0_1_31, v_0_1_4, v_0_1_3,
+	v_0_1_0_base): Updated paszlib .zip
 
 2001-06-28 17:42  juanca
 
@@ -1286,15 +1219,6 @@
 	v_0_1_0_base), WildPathsTest.pas (tags: v_0_1_31, v_0_1_4, v_0_1_3,
 	v_0_1_0_base): Updated path tests to latest version of WildPaths
 
-2001-06-27 12:53  juanca
-
-	* lib/jal/src/JALMath.pas: Added JALMath unit.
-
-2001-06-21 18:33  juanca
-
-	* lib/jal/src/JALMiniDOM.pas (tags: v_6_9_2): Made MiniDom capable
-	of ignoring whitespace
-
 2001-06-11 19:31  juanca
 
 	* src/: want.dof (tags: v_0_1_0_base), want.dsk,
@@ -1304,9 +1228,8 @@
 
 2001-06-07 15:53  juanca
 
-	* src/want.dsk, lib/jal/src/JalPaths.pas, src/lib/WildPaths.pas
-	(tags: v_0_1_3, v_0_1_0_base): Removed dependency from JalPaths to
-	WildPaths
+	* src/: want.dsk, lib/WildPaths.pas (tags: v_0_1_3, v_0_1_0_base):
+	Removed dependency from JalPaths to WildPaths
 
 2001-06-07 15:19  juanca
 
@@ -1330,10 +1253,6 @@
 	* src/lib/WildPaths.pas: Make relative paths start with . when
 	appropiate.
 
-2001-06-07 15:17  juanca
-
-	* lib/jal/src/JalPaths.pas: Finished implementing IPath.Find.
-
 2001-05-29 17:10  juanca
 
 	* src/lib/WildPaths.pas, test/WantAcceptTestLib.dpr (tags: v_0_1_3,
@@ -1349,10 +1268,6 @@
 
 	* src/want.dsk: Routine.
 
-2001-05-29 17:09  juanca
-
-	* lib/jal/src/JALStrings.pas: BUG: Trim tokens in StringToArray.
-
 2001-05-29 17:08  juanca
 
 	* want.xml: BUG: Filesets with sub-patternsets were being excluded
@@ -1361,25 +1276,14 @@
 	BUG: Check in of versioninfo task in want.xml didn't make it into
 	last check in.
 
-2001-05-23 22:58  juanca
-
-	* lib/jal/etc/bku.bat (tags: build_6_9_19, build_6_9_18,
-	build_6_9_17, build_6_9_16, build_6_9_15, build_6_9_14,
-	build_6_9_13, v_6_9_2): Added bku.bat batch script.
-
-2001-05-23 22:35  juanca
-
-	* lib/jal/src/: JALStrings.pas, JalPaths.pas: Implemented IPath.
-
 2001-05-22 18:42  juanca
 
 	* src/ScriptRunner.pas (tags: v_0_1_0_base), src/WantClasses.pas,
 	src/want.dof, src/want.dpr, src/want.dsk,
-	lib/jal/src/JALStrings.pas, src/elements/PatternSets.pas,
-	src/lib/ScriptParser.pas (tags: v_0_1_0_base),
-	src/tasks/DelphiTasks.pas, src/tasks/EchoTasks.pas (tags: v_0_1_3,
-	v_0_1_0_base), src/tasks/ExecTasks.pas (tags: v_0_1_4, v_0_1_3,
-	v_0_1_0_base), src/tasks/FileTasks.pas,
+	src/elements/PatternSets.pas, src/lib/ScriptParser.pas (tags:
+	v_0_1_0_base), src/tasks/DelphiTasks.pas, src/tasks/EchoTasks.pas
+	(tags: v_0_1_3, v_0_1_0_base), src/tasks/ExecTasks.pas (tags:
+	v_0_1_4, v_0_1_3, v_0_1_0_base), src/tasks/FileTasks.pas,
 	src/win32/ConsoleScriptRunner.pas (tags: v_0_1_31, v_0_1_4,
 	v_0_1_3, v_0_1_0_base), test/WantAcceptTestLib.dpr: Updated some
 	copyrights.
@@ -1396,18 +1300,6 @@
 	test/WantTestLib.dpr (tags: v_0_1_31, v_0_1_4, v_0_1_3,
 	v_0_1_0_base), src/WantClasses.pas, src/want.dof, src/want.dpr,
 	src/want.dsk: Switched to using JAL library.
-
-2001-05-22 18:37  juanca
-
-	* lib/jal/src/: JALCollections.pas, JALMiniDOM.pas, JALStrings.pas,
-	JALSAX.pas, JALXML.pas (tags: v_6_9_2), JALXMLParser.pas: Updates
-	from WANT project.
-
-2001-05-22 18:20  juanca
-
-	* lib/jal/src/: JalDebug.pas (tags: base_2001_05_24_13),
-	JALFiles.pas, JALOwnedTrees.pas (tags: v_6_9_2), JALStrings.pas:
-	Updated copyrights.
 
 2001-05-22 17:53  juanca
 
@@ -1429,11 +1321,6 @@
 	Improved logging of <dcc>.
 	
 	Added quiet attribute to <exec>.
-
-2001-05-21 14:36  juanca
-
-	* lib/jal/src/JALFiles.pas: Agregada generacion automatica de
-	imagen ISO del CD de instalacion
 
 2001-05-20 20:55  juanca
 
@@ -1471,11 +1358,6 @@
 	* want.xml: Don't delete want.cfg. The <dcc> task skips it by
 	default.
 
-2001-05-17 20:12  juanca
-
-	* lib/jal/src/: JalDebug.pas, JALStrings.pas: Agregados archivos de
-	libreria usados por EVA
-
 2001-05-17 20:05  juanca
 
 	* src/tasks/DUnitTasks.pas: Fixed error message
@@ -1508,13 +1390,16 @@
 	* src/want.dpr, src/want.dsk, src/tasks/EchoTasks.pas,
 	src/tasks/IniFileTasks.pas (tags: v_0_1_4, v_0_1_3, v_0_1_0_base),
 	src/tasks/StandardTasks.pas (tags: v_0_1_3, v_0_1_0_base),
-	test/WantTestLib.drc, test/data/echo/want.xml (tags: v_0_1_10,
-	v_0_1_109, v_0_1_31, v_0_1_4, v_0_1_3, v_0_1_0_base),
-	test/data/echo/final/final.txt (tags: v_0_1_10, v_0_1_109,
+	test/WantTestLib.drc, test/data/echo/want.xml (tags: build_0_1_149,
+	build_0_1_148, build_0_1_147, build_0_1_138, v_0_1_10, v_0_1_109,
 	v_0_1_31, v_0_1_4, v_0_1_3, v_0_1_0_base),
-	test/data/echo/final/template.txt (tags: v_0_1_10, v_0_1_109,
-	v_0_1_31, v_0_1_4, v_0_1_3, v_0_1_0_base),
-	test/data/echo/setup/template.txt (tags: v_0_1_10, v_0_1_109,
+	test/data/echo/final/final.txt (tags: build_0_1_149, build_0_1_148,
+	build_0_1_147, build_0_1_138, v_0_1_10, v_0_1_109, v_0_1_31,
+	v_0_1_4, v_0_1_3, v_0_1_0_base), test/data/echo/final/template.txt
+	(tags: build_0_1_149, build_0_1_148, build_0_1_147, build_0_1_138,
+	v_0_1_10, v_0_1_109, v_0_1_31, v_0_1_4, v_0_1_3, v_0_1_0_base),
+	test/data/echo/setup/template.txt (tags: build_0_1_149,
+	build_0_1_148, build_0_1_147, build_0_1_138, v_0_1_10, v_0_1_109,
 	v_0_1_31, v_0_1_4, v_0_1_3, v_0_1_0_base): Added an "input"
 	attribute/property to the <echo> tast so it can be used to evaluate
 	property instances in external templates:
@@ -1532,12 +1417,14 @@
 
 2001-05-15 15:40  juanca
 
-	* test/data/inifile/: want.xml, final/test.ini (tags: v_0_1_10,
-	v_0_1_109, v_0_1_31, v_0_1_4, v_0_1_3, v_0_1_0_base),
-	final/test2.ini (tags: v_0_1_10, v_0_1_109, v_0_1_31, v_0_1_4,
-	v_0_1_3, v_0_1_0_base), setup/test.ini (tags: v_0_1_10, v_0_1_109,
-	v_0_1_31, v_0_1_4, v_0_1_3, v_0_1_0_base): Added <ini> and
-	<inifile> tests
+	* test/data/inifile/: want.xml, final/test.ini (tags:
+	build_0_1_149, build_0_1_148, build_0_1_147, build_0_1_138,
+	v_0_1_10, v_0_1_109, v_0_1_31, v_0_1_4, v_0_1_3, v_0_1_0_base),
+	final/test2.ini (tags: build_0_1_149, build_0_1_148, build_0_1_147,
+	build_0_1_138, v_0_1_10, v_0_1_109, v_0_1_31, v_0_1_4, v_0_1_3,
+	v_0_1_0_base), setup/test.ini (tags: build_0_1_149, build_0_1_148,
+	build_0_1_147, build_0_1_138, v_0_1_10, v_0_1_109, v_0_1_31,
+	v_0_1_4, v_0_1_3, v_0_1_0_base): Added <ini> and <inifile> tests
 
 2001-05-14 19:15  juanca
 
@@ -1547,8 +1434,9 @@
 
 2001-05-11 19:51  juanca
 
-	* src/ScriptRunner.pas, src/WantResources.pas (tags: v_0_1_10,
-	v_0_1_109, v_0_1_31, v_0_1_4, v_0_1_3, v_0_1_0_base), src/want.dof,
+	* src/ScriptRunner.pas, src/WantResources.pas (tags: build_0_1_149,
+	build_0_1_148, build_0_1_147, build_0_1_138, v_0_1_10, v_0_1_109,
+	v_0_1_31, v_0_1_4, v_0_1_3, v_0_1_0_base), src/want.dof,
 	src/want.dsk, src/win32/ConsoleScriptRunner.pas,
 	test/WantTestLib.drc: BUG: Failure to find build file was not being
 	logged to console.
@@ -1558,15 +1446,15 @@
 
 2001-05-11 19:37  juanca
 
-	* src/BuildListeners.pas, src/ScriptRunner.pas,
-	src/WantClasses.pas, src/WantUtils.pas (tags: v_0_1_10, v_0_1_109,
-	v_0_1_31, v_0_1_4, v_0_1_3, v_0_1_0_base), src/want.dpr,
-	src/want.dsk, src/elements/PatternSets.pas, src/lib/WildPaths.pas,
-	src/tasks/EchoTasks.pas, lib/jal/src/JALOwnedTrees.pas,
-	src/tasks/ExecTasks.pas, src/tasks/LoggerTask.pas (tags: v_0_1_10,
-	v_0_1_109, v_0_1_31, v_0_1_4, v_0_1_3, v_0_1_0_base),
-	src/win32/ConsoleListener.pas, src/win32/ConsoleScriptRunner.pas:
-	Removed direct dependencies of WantClasses and WildPaths on JCL.
+	* src/: BuildListeners.pas, ScriptRunner.pas, WantClasses.pas,
+	WantUtils.pas (tags: build_0_1_149, build_0_1_148, build_0_1_147,
+	build_0_1_138, v_0_1_10, v_0_1_109, v_0_1_31, v_0_1_4, v_0_1_3,
+	v_0_1_0_base), want.dpr, want.dsk, elements/PatternSets.pas,
+	lib/WildPaths.pas, tasks/EchoTasks.pas, tasks/ExecTasks.pas,
+	tasks/LoggerTask.pas (tags: v_0_1_10, v_0_1_109, v_0_1_31, v_0_1_4,
+	v_0_1_3, v_0_1_0_base), win32/ConsoleListener.pas,
+	win32/ConsoleScriptRunner.pas: Removed direct dependencies of
+	WantClasses and WildPaths on JCL.
 
 2001-05-11 18:50  juanca
 
@@ -1574,18 +1462,21 @@
 	src/want.dof, src/want.dsk, src/tasks/DUnitTasks.pas,
 	src/tasks/DelphiTasks.pas, src/win32/ConsoleListener.pas,
 	src/win32/ConsoleScriptRunner.pas, test/DelphiTasksTest.pas (tags:
-	v_0_1_10, v_0_1_109, v_0_1_31, v_0_1_4, v_0_1_3, v_0_1_0_base),
-	test/ExternalTests.pas, test/RunnerTests.pas (tags: v_0_1_3,
-	v_0_1_0_base), test/WantAcceptTestLib.dpr, test/WantClassesTest.pas
-	(tags: v_0_1_10, v_0_1_109, v_0_1_31, v_0_1_4, v_0_1_3,
-	v_0_1_0_base), test/WantTestLib.cfg, test/WantTestLib.dof,
-	test/WantTestLib.drc, test/WantTests.dof, test/WantTests.dpr (tags:
-	v_0_1_31, v_0_1_4, v_0_1_3, v_0_1_0_base): Updated tests and
-	want.xml after refactoring of script running logic.
+	build_0_1_138, v_0_1_10, v_0_1_109, v_0_1_31, v_0_1_4, v_0_1_3,
+	v_0_1_0_base), test/ExternalTests.pas, test/RunnerTests.pas (tags:
+	v_0_1_3, v_0_1_0_base), test/WantAcceptTestLib.dpr,
+	test/WantClassesTest.pas (tags: build_0_1_149, build_0_1_148,
+	build_0_1_147, build_0_1_138, v_0_1_10, v_0_1_109, v_0_1_31,
+	v_0_1_4, v_0_1_3, v_0_1_0_base), test/WantTestLib.cfg,
+	test/WantTestLib.dof, test/WantTestLib.drc, test/WantTests.dof,
+	test/WantTests.dpr (tags: v_0_1_31, v_0_1_4, v_0_1_3,
+	v_0_1_0_base): Updated tests and want.xml after refactoring of
+	script running logic.
 
 2001-05-11 17:18  juanca
 
-	* private/juanco/refactorings.html (tags: v_0_1_10, v_0_1_109,
+	* private/juanco/refactorings.html (tags: build_0_1_149,
+	build_0_1_148, build_0_1_147, build_0_1_138, v_0_1_10, v_0_1_109,
 	v_0_1_31, v_0_1_4, v_0_1_3, v_0_1_0_base), src/BuildListeners.pas,
 	src/ScriptRunner.pas, src/WantClasses.pas, src/want.dof,
 	src/want.dpr, src/want.dsk, src/lib/ScriptParser.pas,
@@ -1594,7 +1485,8 @@
 	src/win32/ConsoleListener.pas, src/win32/ConsoleScriptRunner.pas,
 	test/DelphiTasksTest.pas, test/ExecTasksTest.pas (tags: v_0_1_31,
 	v_0_1_4, v_0_1_3, v_0_1_0_base), test/ExternalTests.pas,
-	test/RegexpElementsTest.pas (tags: v_0_1_10, v_0_1_109, v_0_1_31,
+	test/RegexpElementsTest.pas (tags: build_0_1_149, build_0_1_148,
+	build_0_1_147, build_0_1_138, v_0_1_10, v_0_1_109, v_0_1_31,
 	v_0_1_4, v_0_1_3, v_0_1_0_base), test/RunnerTests.pas,
 	test/WantAcceptTestLib.dpr, test/WantAcceptTestLib.drc,
 	test/WantClassesTest.pas, test/WantTestLib.drc: Moved build logic
@@ -1619,18 +1511,18 @@
 2001-05-11 13:09  juanca
 
 	* private/juanco/refactorings.html, src/WantResources.pas,
-	src/want.bpg (tags: v_0_1_10, v_0_1_109, v_0_1_31, v_0_1_4,
-	v_0_1_3, v_0_1_0_base), src/want.dof, src/want.dpr, src/want.dsk,
-	src/lib/ChildProcesses.pas, src/tasks/ExecTasks.pas,
+	src/want.bpg (tags: build_0_1_138, v_0_1_10, v_0_1_109, v_0_1_31,
+	v_0_1_4, v_0_1_3, v_0_1_0_base), src/want.dof, src/want.dpr,
+	src/want.dsk, src/lib/ChildProcesses.pas, src/tasks/ExecTasks.pas,
 	src/win32/WIN32.pas (tags: v_0_1_0_base),
 	src/win32/Win32ChildProcesses.pas (tags: v_0_1_31, v_0_1_4,
 	v_0_1_3, v_0_1_0_base), src/win32/Win32Implementations.pas (tags:
-	v_0_1_10, v_0_1_109, v_0_1_31, v_0_1_4, v_0_1_3, v_0_1_0_base),
-	test/WantAcceptTestLib.cfg, test/WantAcceptTestLib.dof,
-	test/WantAcceptTestLib.dpr, test/WantTestLib.cfg,
-	test/WantTestLib.dof, test/WantTestLib.dpr, test/WantTestLib.drc:
-	Factored TChildProcess out of ExecTasks and into
-	lib/ChildProcesses.
+	build_0_1_138, v_0_1_10, v_0_1_109, v_0_1_31, v_0_1_4, v_0_1_3,
+	v_0_1_0_base), test/WantAcceptTestLib.cfg,
+	test/WantAcceptTestLib.dof, test/WantAcceptTestLib.dpr,
+	test/WantTestLib.cfg, test/WantTestLib.dof, test/WantTestLib.dpr,
+	test/WantTestLib.drc: Factored TChildProcess out of ExecTasks and
+	into lib/ChildProcesses.
 	
 	Factored TWin32ChildProcess out of ChildProcesses and into
 	win32/ChildProcesses.pas
@@ -1641,10 +1533,12 @@
 
 2001-05-10 19:41  juanca
 
-	* want.xml, private/juanco/.cvsignore (tags: v_0_1_10, v_0_1_109,
+	* want.xml, private/juanco/.cvsignore (tags: build_0_1_149,
+	build_0_1_148, build_0_1_147, build_0_1_138, v_0_1_10, v_0_1_109,
 	v_0_1_31, v_0_1_4, v_0_1_3, v_0_1_0_base), src/ScriptRunner.pas,
 	src/WantResources.pas, src/want.dof, src/want.dsk, src/wantver.rc,
-	src/wantver.template.rc (tags: v_0_1_10, v_0_1_109, v_0_1_31,
+	src/wantver.template.rc (tags: build_0_1_149, build_0_1_148,
+	build_0_1_147, build_0_1_138, v_0_1_10, v_0_1_109, v_0_1_31,
 	v_0_1_4, v_0_1_3, v_0_1_0_base), test/WantTestLib.drc: Fixed
 	copyright notices.
 	
@@ -1662,10 +1556,14 @@
 
 2001-05-10 19:03  juanca
 
-	* doc/: .cvsignore, COPYING.html, COPYING.txt, copyright.txt,
-	license.txt (utags: v_0_1_3, v_0_1_4, v_0_1_0_base, v_0_1_10,
-	v_0_1_109, v_0_1_31): Added GNU General Public License. Updated
-	license and copyright files with info about all copyright holders.
+	* doc/: .cvsignore, COPYING.html (tags: build_0_1_149,
+	build_0_1_148, build_0_1_147), COPYING.txt (tags: build_0_1_149,
+	build_0_1_148, build_0_1_147), copyright.txt (tags: build_0_1_149,
+	build_0_1_148, build_0_1_147), license.txt (tags: build_0_1_149,
+	build_0_1_148, build_0_1_147) (utags: v_0_1_10, v_0_1_109,
+	build_0_1_138, v_0_1_3, v_0_1_31, v_0_1_4, v_0_1_0_base): Added GNU
+	General Public License. Updated license and copyright files with
+	info about all copyright holders.
 
 2001-05-10 19:00  juanca
 
@@ -1680,8 +1578,10 @@
 
 2001-05-10 18:59  juanca
 
-	* src/license.rc (tags: v_0_1_10, v_0_1_109, v_0_1_31, v_0_1_4,
-	v_0_1_3, v_0_1_0_base): Added COPYRIGHT resource to license.rc.
+	* src/license.rc (tags: build_0_1_149, build_0_1_148,
+	build_0_1_147, build_0_1_138, v_0_1_10, v_0_1_109, v_0_1_31,
+	v_0_1_4, v_0_1_3, v_0_1_0_base): Added COPYRIGHT resource to
+	license.rc.
 
 2001-05-10 18:58  juanca
 
@@ -1701,10 +1601,10 @@
 2001-05-10 18:57  juanca
 
 	* test/WantAcceptTestLib.cfg, test/WantAcceptTestLib.dof,
-	test/WantAcceptTestLib.dsk (tags: v_0_1_10, v_0_1_109, v_0_1_31,
-	v_0_1_4, v_0_1_3, v_0_1_0_base), test/WantTestLib.cfg,
-	test/WantTestLib.dof, test/WantTestLib.dsk, src/want.dof,
-	src/want.dsk: routine
+	test/WantAcceptTestLib.dsk (tags: build_0_1_138, v_0_1_10,
+	v_0_1_109, v_0_1_31, v_0_1_4, v_0_1_3, v_0_1_0_base),
+	test/WantTestLib.cfg, test/WantTestLib.dof, test/WantTestLib.dsk,
+	src/want.dof, src/want.dsk: routine
 
 2001-05-10 18:57  juanca
 
@@ -1718,9 +1618,10 @@
 
 2001-05-10 18:51  juanca
 
-	* src/lib/XPerlRE.pas, lib/perlre-1.1.zip (utags: v_0_1_3, v_0_1_4,
-	v_0_1_0_base, v_0_1_10, v_0_1_109, v_0_1_31): Use 1.1 version of
-	PerlRE.
+	* src/lib/XPerlRE.pas (tags: build_0_1_149, build_0_1_148,
+	build_0_1_147), lib/perlre-1.1.zip (utags: v_0_1_10, v_0_1_109,
+	build_0_1_138, v_0_1_3, v_0_1_31, v_0_1_4, v_0_1_0_base): Use 1.1
+	version of PerlRE.
 	
 	Fixed parameter order bug in XPerlRE.pas
 
@@ -1733,10 +1634,11 @@
 	* src/: ScriptRunner.pas, WantClasses.pas, WantResources.pas,
 	want.cfg, want.dof, want.dpr, want.dsk,
 	elements/RegexpElements.pas, lib/WildPaths.pas, lib/XPerlRE.pas,
-	win32/CRT32.pas (tags: v_0_1_10, v_0_1_109, v_0_1_31, v_0_1_4,
-	v_0_1_3, v_0_1_0_base), win32/ConsoleListener.pas,
-	tasks/DelphiTasks.pas, tasks/EditTasks.pas, tasks/ExecTasks.pas:
-	Improved logic and formatting of log and error messages
+	win32/CRT32.pas (tags: build_0_1_149, build_0_1_148, build_0_1_147,
+	build_0_1_138, v_0_1_10, v_0_1_109, v_0_1_31, v_0_1_4, v_0_1_3,
+	v_0_1_0_base), win32/ConsoleListener.pas, tasks/DelphiTasks.pas,
+	tasks/EditTasks.pas, tasks/ExecTasks.pas: Improved logic and
+	formatting of log and error messages
 
 2001-05-10 14:57  juanca
 
@@ -1760,9 +1662,11 @@
 
 2001-05-10 14:39  juanca
 
-	* src/win32/: ConsoleListener.pas, Resources.pas (tags: v_0_1_10,
-	v_0_1_109, v_0_1_31, v_0_1_4, v_0_1_3, v_0_1_0_base),
-	VersionInfoResources.pas (tags: v_0_1_10, v_0_1_109, v_0_1_31,
+	* src/win32/: ConsoleListener.pas, Resources.pas (tags:
+	build_0_1_149, build_0_1_148, build_0_1_147, build_0_1_138,
+	v_0_1_10, v_0_1_109, v_0_1_31, v_0_1_4, v_0_1_3, v_0_1_0_base),
+	VersionInfoResources.pas (tags: build_0_1_149, build_0_1_148,
+	build_0_1_147, build_0_1_138, v_0_1_10, v_0_1_109, v_0_1_31,
 	v_0_1_4, v_0_1_3, v_0_1_0_base): Added initial implementation of
 	.res resource/versioninfo parsing and generation.
 
@@ -1825,11 +1729,13 @@
 
 	* doc/: dunit_want.xml (tags: v_0_1_10, v_0_1_109, v_0_1_31,
 	v_0_1_4, v_0_1_3, v_0_1_0_base), index.html, want_want.xml (tags:
+	build_0_1_149, build_0_1_148, build_0_1_147, build_0_1_138,
 	v_0_1_10, v_0_1_109, v_0_1_31, v_0_1_4, v_0_1_3, v_0_1_0_base),
-	images/failure.png (tags: v_0_1_10, v_0_1_109, v_0_1_31, v_0_1_4,
-	v_0_1_3, v_0_1_0_base), images/success.png (tags: v_0_1_10,
-	v_0_1_109, v_0_1_31, v_0_1_4, v_0_1_3, v_0_1_0_base): Factored out
-	Want/Dante history into its own history.html page.
+	images/failure.png (tags: build_0_1_138, v_0_1_10, v_0_1_109,
+	v_0_1_31, v_0_1_4, v_0_1_3, v_0_1_0_base), images/success.png
+	(tags: build_0_1_138, v_0_1_10, v_0_1_109, v_0_1_31, v_0_1_4,
+	v_0_1_3, v_0_1_0_base): Factored out Want/Dante history into its
+	own history.html page.
 	
 	Added introductory notes and screenshots ti Want page.
 
@@ -1925,20 +1831,24 @@
 	src/elements/PatternSets.pas, src/elements/Properties.pas (tags:
 	v_0_1_31, v_0_1_4, v_0_1_3, v_0_1_0_base),
 	src/elements/RegexpElements.pas, src/elements/StandardElements.pas
-	(tags: v_0_1_10, v_0_1_109, v_0_1_31, v_0_1_4, v_0_1_3,
-	v_0_1_0_base), src/elements/TimeElements.pas (tags: v_0_1_10,
-	v_0_1_109, v_0_1_31, v_0_1_4, v_0_1_3, v_0_1_0_base),
-	src/lib/ScriptParser.pas, src/tasks/CustomTasks.pas (tags:
+	(tags: build_0_1_149, build_0_1_148, build_0_1_147, build_0_1_138,
 	v_0_1_10, v_0_1_109, v_0_1_31, v_0_1_4, v_0_1_3, v_0_1_0_base),
-	src/tasks/DUnitTasks.pas, src/tasks/DelphiTasks.pas,
-	src/tasks/EchoTasks.pas, src/tasks/EditTasks.pas,
-	src/tasks/ExecTasks.pas, lib/jal/src/JALOwnedTrees.pas,
+	src/elements/TimeElements.pas (tags: build_0_1_149, build_0_1_148,
+	build_0_1_147, build_0_1_138, v_0_1_10, v_0_1_109, v_0_1_31,
+	v_0_1_4, v_0_1_3, v_0_1_0_base), src/lib/ScriptParser.pas,
+	src/tasks/CustomTasks.pas (tags: build_0_1_149, build_0_1_148,
+	build_0_1_147, build_0_1_138, v_0_1_10, v_0_1_109, v_0_1_31,
+	v_0_1_4, v_0_1_3, v_0_1_0_base), src/tasks/DUnitTasks.pas,
+	src/tasks/DelphiTasks.pas, src/tasks/EchoTasks.pas,
+	src/tasks/EditTasks.pas, src/tasks/ExecTasks.pas,
 	src/tasks/FileTasks.pas, src/tasks/LoggerTask.pas,
 	src/tasks/StandardTasks.pas, src/tasks/VersionInfoTasks.pas,
-	src/tasks/WantStandardTasks.pas (tags: v_0_1_10, v_0_1_109,
+	src/tasks/WantStandardTasks.pas (tags: build_0_1_149,
+	build_0_1_148, build_0_1_147, build_0_1_138, v_0_1_10, v_0_1_109,
 	v_0_1_31, v_0_1_4, v_0_1_3, v_0_1_0_base), src/tasks/WantTasks.pas,
 	src/tasks/ZipTasks.pas, src/tasks/vsstasks.pas,
-	test/DelphiCompileTest.pas (tags: v_0_1_10, v_0_1_109, v_0_1_31,
+	test/DelphiCompileTest.pas (tags: build_0_1_149, build_0_1_148,
+	build_0_1_147, build_0_1_138, v_0_1_10, v_0_1_109, v_0_1_31,
 	v_0_1_4, v_0_1_3, v_0_1_0_base), test/DelphiTasksTest.pas,
 	test/ExecTasksTest.pas, test/ExternalTests.pas,
 	test/FileSetTests.pas (tags: v_0_1_31, v_0_1_4, v_0_1_3,
@@ -1969,12 +1879,13 @@
 
 	* test/: WantAcceptTestLib.cfg, WantAcceptTestLib.dof,
 	WantAcceptTestLib.dpr, WantAcceptTestLib.drc,
-	WantAcceptTestLib.dsk, WantAcceptTestLib.res (tags: v_0_1_10,
-	v_0_1_109, v_0_1_31, v_0_1_4, v_0_1_3, v_0_1_0_base),
-	WantTestLib.cfg, WantTestLib.dof, WantTestLib.dpr, WantTestLib.drc,
-	WantTestLib.dsk, WantTestLib.res (tags: v_0_1_10, v_0_1_109,
-	v_0_1_31, v_0_1_4, v_0_1_3, v_0_1_0_base): Added test dlls to be
-	used with the dunit task
+	WantAcceptTestLib.dsk, WantAcceptTestLib.res (tags: build_0_1_149,
+	build_0_1_148, build_0_1_147, build_0_1_138, v_0_1_10, v_0_1_109,
+	v_0_1_31, v_0_1_4, v_0_1_3, v_0_1_0_base), WantTestLib.cfg,
+	WantTestLib.dof, WantTestLib.dpr, WantTestLib.drc, WantTestLib.dsk,
+	WantTestLib.res (tags: build_0_1_149, build_0_1_148, build_0_1_147,
+	build_0_1_138, v_0_1_10, v_0_1_109, v_0_1_31, v_0_1_4, v_0_1_3,
+	v_0_1_0_base): Added test dlls to be used with the dunit task
 
 2001-05-02 16:51  juanca
 
@@ -1991,7 +1902,8 @@
 2001-05-02 16:49  juanca
 
 	* src/forms/: ScriptFrm.dfm, ScriptFrm.pas (utags: v_0_1_3,
-	v_0_1_4, v_0_1_0_base, v_0_1_10, v_0_1_109, v_0_1_31): Added
+	v_0_1_4, v_0_1_0_base, v_0_1_109, v_0_1_10, build_0_1_138,
+	build_0_1_147, build_0_1_148, build_0_1_149, v_0_1_31): Added
 	initial version of GUI.
 
 2001-05-02 16:48  juanca
@@ -2043,9 +1955,8 @@
 	src/WantClasses.pas, src/WantResources.pas, src/ScriptRunner.pas,
 	src/dante.dpr, src/elements/PatternSets.pas,
 	src/elements/RegexpElements.pas, src/lib/LogMgr.pas,
-	src/lib/WildPaths.pas, lib/jal/src/JALOwnedTrees.pas,
-	src/lib/zipStreams.pas (tags: v_0_1_3, v_0_1_0_base),
-	src/tasks/DelphiTasks.pas, src/tasks/EchoTasks.pas,
+	src/lib/WildPaths.pas, src/lib/zipStreams.pas (tags: v_0_1_3,
+	v_0_1_0_base), src/tasks/DelphiTasks.pas, src/tasks/EchoTasks.pas,
 	src/tasks/ExecTasks.pas, src/tasks/LoggerTask.pas,
 	src/tasks/StandardTasks.pas, src/tasks/WantTasks.pas,
 	src/tasks/VersionInfoTasks.pas, src/tasks/ZipTasks.pas,
@@ -2095,7 +2006,8 @@
 
 	* test/data/parsing/conditionals/: final/should_1.txt,
 	final/should_2.txt, final/should_3.txt, build.xml (utags: v_0_1_3,
-	v_0_1_4, v_0_1_0_base, v_0_1_10, v_0_1_109, v_0_1_31): Added
+	v_0_1_4, v_0_1_0_base, v_0_1_10, v_0_1_109, build_0_1_138,
+	build_0_1_147, build_0_1_148, build_0_1_149, v_0_1_31): Added
 	external test for build script conditionals.
 
 2001-04-29 16:49  juanco
@@ -2278,11 +2190,6 @@
 	* doc/: dunit_want.xml, want_want.xml, index.html: Added dante's
 	build.xml and uptated dunit's
 
-2001-04-25 20:10  juanca
-
-	* lib/jal/src/JALMiniDOM.pas: BUG: MiniDom was ignoreing
-	ignorableWhiteSpace.
-
 2001-04-25 18:39  juanco
 
 	* test/: DanteTest.dof, ExternalTests.pas, data/unzip.exe: Use
@@ -2331,11 +2238,6 @@
 	a CharData section would hang the parser. Fixed, and updated parser
 	.zip.
 
-2001-04-24 19:17  juanca
-
-	* lib/jal/src/JALXMLParser.pas: BUG: A ']' character in a CharData
-	section would hang the parser. Fixed.
-
 2001-04-24 03:30  juanco
 
 	* src/: WantClasses.pas, lib/LogMgr.pas, tasks/WantTasks.pas:
@@ -2353,11 +2255,12 @@
 	src/lib/zipStreams.pas, src/tasks/ZipTasks.pas, test/DanteTest.dof,
 	test/ExternalTests.pas,
 	test/data/file/ziptasks/simple_unzip/build.xml,
-	test/data/file/ziptasks/simple_unzip/final.zip (tags: v_0_1_10,
-	v_0_1_109, v_0_1_31, v_0_1_4, v_0_1_3, v_0_1_0_base),
-	test/data/file/ziptasks/simple_unzip/setup.zip (tags: v_0_1_10,
-	v_0_1_109, v_0_1_31, v_0_1_4, v_0_1_3, v_0_1_0_base): Added <unzip>
-	task, and simple external test.
+	test/data/file/ziptasks/simple_unzip/final.zip (tags:
+	build_0_1_138, v_0_1_10, v_0_1_109, v_0_1_31, v_0_1_4, v_0_1_3,
+	v_0_1_0_base), test/data/file/ziptasks/simple_unzip/setup.zip
+	(tags: build_0_1_149, build_0_1_148, build_0_1_147, build_0_1_138,
+	v_0_1_10, v_0_1_109, v_0_1_31, v_0_1_4, v_0_1_3, v_0_1_0_base):
+	Added <unzip> task, and simple external test.
 
 2001-04-24 01:24  juanco
 
@@ -2413,8 +2316,9 @@
 
 	* test/data/file/move/: overwrite/build.xml,
 	overwrite_readonly/build.xml (utags: v_0_1_3, v_0_1_4,
-	v_0_1_0_base, v_0_1_10, v_0_1_109, v_0_1_31): Removal of old
-	external test data locations
+	v_0_1_0_base, v_0_1_10, v_0_1_109, build_0_1_138, build_0_1_147,
+	build_0_1_148, build_0_1_149, v_0_1_31): Removal of old external
+	test data locations
 
 2001-04-23 20:49  chrismo
 
@@ -2447,23 +2351,26 @@
 2001-04-23 20:08  chrismo
 
 	* test/data/file/move/: all/build.xml, all/final.zip (tags:
+	build_0_1_138, v_0_1_10, v_0_1_109, v_0_1_31, v_0_1_4, v_0_1_3,
+	v_0_1_0_base), all/setup.zip (tags: build_0_1_138, v_0_1_10,
+	v_0_1_109, v_0_1_31, v_0_1_4, v_0_1_3, v_0_1_0_base),
+	overwrite/build.xml, overwrite/final.zip (tags: build_0_1_138,
 	v_0_1_10, v_0_1_109, v_0_1_31, v_0_1_4, v_0_1_3, v_0_1_0_base),
-	all/setup.zip (tags: v_0_1_10, v_0_1_109, v_0_1_31, v_0_1_4,
-	v_0_1_3, v_0_1_0_base), overwrite/build.xml, overwrite/final.zip
-	(tags: v_0_1_10, v_0_1_109, v_0_1_31, v_0_1_4, v_0_1_3,
-	v_0_1_0_base), overwrite/setup.zip (tags: v_0_1_10, v_0_1_109,
+	overwrite/setup.zip (tags: build_0_1_138, v_0_1_10, v_0_1_109,
 	v_0_1_31, v_0_1_4, v_0_1_3, v_0_1_0_base),
 	overwrite_readonly/build.xml, overwrite_readonly/final.zip (tags:
+	build_0_1_138, v_0_1_10, v_0_1_109, v_0_1_31, v_0_1_4, v_0_1_3,
+	v_0_1_0_base), overwrite_readonly/setup.zip (tags: build_0_1_138,
 	v_0_1_10, v_0_1_109, v_0_1_31, v_0_1_4, v_0_1_3, v_0_1_0_base),
-	overwrite_readonly/setup.zip (tags: v_0_1_10, v_0_1_109, v_0_1_31,
-	v_0_1_4, v_0_1_3, v_0_1_0_base), recursive/build.xml,
-	recursive/final.zip (tags: v_0_1_10, v_0_1_109, v_0_1_31, v_0_1_4,
-	v_0_1_3, v_0_1_0_base), recursive/setup.zip (tags: v_0_1_10,
-	v_0_1_109, v_0_1_31, v_0_1_4, v_0_1_3, v_0_1_0_base),
-	single/build.xml, single/final.zip (tags: v_0_1_10, v_0_1_109,
+	recursive/build.xml, recursive/final.zip (tags: build_0_1_138,
+	v_0_1_10, v_0_1_109, v_0_1_31, v_0_1_4, v_0_1_3, v_0_1_0_base),
+	recursive/setup.zip (tags: build_0_1_138, v_0_1_10, v_0_1_109,
+	v_0_1_31, v_0_1_4, v_0_1_3, v_0_1_0_base), single/build.xml,
+	single/final.zip (tags: build_0_1_138, v_0_1_10, v_0_1_109,
 	v_0_1_31, v_0_1_4, v_0_1_3, v_0_1_0_base), single/setup.zip (tags:
-	v_0_1_10, v_0_1_109, v_0_1_31, v_0_1_4, v_0_1_3, v_0_1_0_base):
-	Re-organized external move tests - new directory structure
+	build_0_1_138, v_0_1_10, v_0_1_109, v_0_1_31, v_0_1_4, v_0_1_3,
+	v_0_1_0_base): Re-organized external move tests - new directory
+	structure
 
 2001-04-23 15:41  chrismo
 
@@ -2747,18 +2654,13 @@
 	data/moverecursive.xml, data/movesingle.final.zip,
 	data/movesingle.setup.zip, data/movesingle.xml,
 	data/file/copyrecursive/build.xml (tags: added_color),
-	data/file/copyrecursive/final.zip (tags: v_0_1_10, v_0_1_109,
-	v_0_1_31, v_0_1_4, v_0_1_3, v_0_1_0_base, added_color),
-	data/file/copyrecursive/setup.zip (tags: v_0_1_10, v_0_1_109,
-	v_0_1_31, v_0_1_4, v_0_1_3, v_0_1_0_base, added_color): Updated
-	external testing to support a hierarchy folder structure. Also
-	refactored out directory comparison code to clUtilFile (with added
-	content comparison text or binary).
-
-2001-04-12 13:19  chrismo
-
-	* lib/jal/src/JALOwnedTrees.pas (tags: added_color): Added Juanco's
-	OwnedTrees.pas
+	data/file/copyrecursive/final.zip (tags: build_0_1_138, v_0_1_10,
+	v_0_1_109, v_0_1_31, v_0_1_4, v_0_1_3, v_0_1_0_base, added_color),
+	data/file/copyrecursive/setup.zip (tags: build_0_1_138, v_0_1_10,
+	v_0_1_109, v_0_1_31, v_0_1_4, v_0_1_3, v_0_1_0_base, added_color):
+	Updated external testing to support a hierarchy folder structure.
+	Also refactored out directory comparison code to clUtilFile (with
+	added content comparison text or binary).
 
 2001-04-12 00:07  juanco
 
@@ -2818,9 +2720,10 @@
 
 2001-04-11 21:04  juanco
 
-	* lib/.cvsignore (tags: v_0_1_10, v_0_1_109, v_0_1_31, v_0_1_4,
-	v_0_1_3, v_0_1_0_base, added_color): cvsignore everything in the
-	{dante}/lib directory.
+	* lib/.cvsignore (tags: build_0_1_149, build_0_1_148,
+	build_0_1_147, build_0_1_138, v_0_1_10, v_0_1_109, v_0_1_31,
+	v_0_1_4, v_0_1_3, v_0_1_0_base, added_color): cvsignore everything
+	in the {dante}/lib directory.
 
 2001-04-11 21:03  juanco
 
@@ -2858,28 +2761,6 @@
 	tasks/WantTasks.pas, tasks/ZipTasks.pas, tasks/clUtilFile.pas,
 	tasks/clVersionRcUnit.pas, tasks/vsstasks.pas (tags: added_color):
 	Updated boilerplates where necessary.
-
-2001-04-10 19:13  juanca
-
-	* lib/jal/src/JALCollections.pas: routine
-
-2001-04-10 19:01  juanca
-
-	* lib/jal/src/JALMiniDOM.pas: MinDom now records file line numbers
-
-2001-04-10 19:00  juanca
-
-	* lib/jal/src/JALSAX.pas: Check for nil attributes before trying to
-	get their value.
-
-2001-04-10 18:58  juanca
-
-	* lib/jal/src/JALXML.pas: Routine
-
-2001-04-10 18:58  juanca
-
-	* lib/jal/src/JALXMLParser.pas: Make XML parser be able to read
-	blank lines at start of file.
 
 2001-04-10 17:28  juanco
 
@@ -3003,9 +2884,10 @@
 
 2001-04-05 20:30  juanco
 
-	* tools/cvs2cl.pl (tags: v_0_1_10, v_0_1_109, v_0_1_31, v_0_1_4,
-	v_0_1_3, v_0_1_0_base, added_color): Added perl tool to generate
-	ChangeLogs to the ./tools directory
+	* tools/cvs2cl.pl (tags: build_0_1_149, build_0_1_148,
+	build_0_1_147, build_0_1_138, v_0_1_10, v_0_1_109, v_0_1_31,
+	v_0_1_4, v_0_1_3, v_0_1_0_base, added_color): Added perl tool to
+	generate ChangeLogs to the ./tools directory
 
 2001-04-05 20:28  juanco
 
@@ -3372,9 +3254,11 @@
 2001-04-02 22:36  juanco
 
 	* private/juanco/URITests.dpr (tags: added_color),
-	private/juanco/URIs.pas (tags: v_0_1_10, v_0_1_109, v_0_1_31,
+	private/juanco/URIs.pas (tags: build_0_1_149, build_0_1_148,
+	build_0_1_147, build_0_1_138, v_0_1_10, v_0_1_109, v_0_1_31,
 	v_0_1_4, v_0_1_3, v_0_1_0_base, added_color),
-	private/juanco/edit_build.xml (tags: v_0_1_10, v_0_1_109, v_0_1_31,
+	private/juanco/edit_build.xml (tags: build_0_1_149, build_0_1_148,
+	build_0_1_147, build_0_1_138, v_0_1_10, v_0_1_109, v_0_1_31,
 	v_0_1_4, v_0_1_3, v_0_1_0_base, added_color),
 	private/juanco/notes_juanco.html (tags: added_color),
 	private/juanco/todo_juanco.html (tags: added_color),
@@ -3514,7 +3398,8 @@
 2001-03-28 23:53  juanco
 
 	* doc/reference/Q190351 - HOWTO Spawn Console Processes with
-	Redirected Standard Handles.htm (tags: v_0_1_10, v_0_1_109,
+	Redirected Standard Handles.htm (tags: build_0_1_149,
+	build_0_1_148, build_0_1_147, build_0_1_138, v_0_1_10, v_0_1_109,
 	v_0_1_31, v_0_1_4, v_0_1_3, v_0_1_0_base, added_color): Added the
 	Microsoft Knowledge Base article explaining how to spawn console
 	processes with redirected standard I/O to the doc/reference
@@ -3606,7 +3491,8 @@
 
 2001-03-27 02:55  juanco
 
-	* src/.cvsignore, test/.cvsignore (tags: v_0_1_10, v_0_1_109,
+	* src/.cvsignore, test/.cvsignore (tags: build_0_1_149,
+	build_0_1_148, build_0_1_147, build_0_1_138, v_0_1_10, v_0_1_109,
 	v_0_1_31, v_0_1_4, v_0_1_3, v_0_1_0_base, added_color): cvsignore
 	.cfg files
 
@@ -3674,7 +3560,8 @@
 
 2001-03-26 14:36  chrismo
 
-	* src/: dante.dof, tasks/.cvsignore (tags: v_0_1_10, v_0_1_109,
+	* src/: dante.dof, tasks/.cvsignore (tags: build_0_1_149,
+	build_0_1_148, build_0_1_147, build_0_1_138, v_0_1_10, v_0_1_109,
 	v_0_1_31, v_0_1_4, v_0_1_3, v_0_1_0_base, added_color): Added
 	.cvsignore files
 
@@ -3934,148 +3821,4 @@
 	JEDI.INC, JclSysInfo.pas, JclSysUtils.pas, JclWin32.pas,
 	TestExtensions.pas, GUITestRunner.dfm, TestFramework.pas: Initial
 	revision
-
-2001-03-11 18:20  juanca
-
-	* lib/jal/src/JALCollections.pas: Minor changes to suport old
-	applications (SEPA)
-
-2001-02-14 20:10  juanca
-
-	* lib/jal/src/: JALMiniDOM.pas, JALXMLParser.pas (utags:
-	rel_6_4_10): Added MiniDOM implementation, for easy and efficient
-	parsing of XML docs
-
-2001-02-14 20:07  juanca
-
-	* lib/jal/src/JALCollections.pas (tags: rel_6_4_10): Added
-	IObject.instanceOf(TGUID).
-
-2000-12-14 21:09  juanca
-
-	* lib/jal/src/: JALSAX.pas (tags: rel_6_4_10), JALXMLParser.pas:
-	Added experimental binary XML format (note: better use WBXML).
-
-2000-11-09 20:25  juanca
-
-	* lib/jal/src/JALCollections.pas: Removed memory leaks produced by
-	Delphi's buggy treatment of dynarrays of interfaces.  Made behavior
-	of THeap more overridable.
-
-2000-11-07 22:19  juanca
-
-	* lib/jal/src/JALCollections.pas: Added an almost O(log(N)) remove
-	routine to THeap.
-
-2000-11-06 19:11  juanca
-
-	* lib/jal/src/JALCollections.pas: Fixed bugs in path search
-
-2000-10-26 21:04  juanca
-
-	* lib/jal/src/JALCollections.pas: First attempt at implementing
-	variants with interfaces.
-
-2000-10-24 15:26  juanca
-
-	* lib/jal/src/: JALCollections.pas, JALSAX.pas, JALXML.pas (tags:
-	rel_6_4_10), JALXMLParser.pas: Optimizations for reading XML files
-	faster
-
-2000-10-19 18:47  juanca
-
-	* lib/jal/src/JALCollections.pas: BUG: Bugs in TTreeSet
-	implementation.  BUG: Some methods were defined in interfaces where
-	they made little sense.
-
-2000-10-19 18:46  juanca
-
-	* lib/jal/src/: JALSAX.pas, JALXML.pas, JALXMLParser.pas: Added
-	reading of exogenous trips
-
-2000-10-03 22:20  juanca
-
-	* lib/jal/src/: JALSAX.pas, JALXML.pas: XML Input done up to
-	sectors. Missing: transfers and economic data.	Also missing:
-	compression.
-
-2000-10-03 18:07  juanca
-
-	* lib/jal/src/JALXMLParser.pas: BUG: Minor parsing errors.
-
-2000-10-03 18:04  juanca
-
-	* lib/jal/src/JALSAX.pas: BUG: Provided some missing GUIDs.
-
-2000-08-28 18:32  juanca
-
-	* lib/jal/src/JALCollections.pas: IStack and related classes moved
-	to Collections unit.
-
-2000-08-15 18:03  juanca
-
-	* lib/jal/src/JALCollections.pas: Algorithms and Collections still
-	part of TRANUS/TUS.
-
-2000-03-28 21:37  juanca
-
-	* lib/jal/src/JALXMLParser.pas (tags: tou_base, rel_6_2_2,
-	cosin_base, rel_6_2_0, split_base, rel_6_0_1, aesthes,
-	rel_6_0_0_7_base, soja, rel_6_0_0_3_base): routine
-
-2000-01-19 19:48  juanca
-
-	* lib/jal/src/: JALSAX.pas (tags: tou_base, rel_6_2_2, cosin_base,
-	rel_6_2_0, split_base, rel_6_0_1, aesthes, rel_6_0_0_7_base, soja,
-	rel_6_0_0_3_base), JALXMLParser.pas: routine
-
-1999-07-27 18:55  juanca
-
-	* lib/jal/src/JALXML.pas (tags: tou_base, rel_6_2_2, cosin_base,
-	rel_6_2_0, split_base, rel_6_0_1, aesthes, rel_6_0_0_7_base, soja,
-	rel_6_0_0_3_base, rel_5_7_3_9_base, jam, rel_5_7_3_4_base): Added
-	XML file generation to XMLGEN and fixed bugs in related modules and
-	the DTD
-
-1999-07-16 20:23  juanca
-
-	* lib/jal/src/JALXML.pas: Optimized XML quoting
-
-1999-07-12 17:41  juanca
-
-	* lib/jal/src/JALXMLParser.pas (tags: rel_5_7_3_9_base, jam,
-	rel_5_7_3_4_base): Optimized using GpProfiler
-
-1999-06-29 21:17  juanca
-
-	* lib/jal/src/JALXMLParser.pas: Improved performance
-
-1999-06-29 16:49  juanca
-
-	* lib/jal/src/: JALSAX.pas (tags: rel_5_7_3_9_base, jam,
-	rel_5_7_3_4_base), JALXML.pas, JALXMLParser.pas: First version of
-	XML parser
-
-1998-10-20 15:56  juanca
-
-	* lib/jal/src/JALXML.pas (tags: t2k_last_merge, fat,
-	rel_5_7_1_9_base, square, rel_5_7_1_6_base, rubber,
-	rel_5_7_1_3_base, ata, rel_5_7_0_7_base, phoenix, rel_5_6_0_7_base,
-	enero, rel_1_0_50_base, peaches, rel_5_6_0_4_base, torcido,
-	rel_5_6_0_3_base, paella, rel_5_5_7_8_base, rel_5_5_7_4_base):
-	Implemented most of TRANUS.dtd. Verfied against several XML
-	compilers
-
-1998-10-05 22:42  juanca
-
-	* lib/jal/src/JALXML.pas: Finished implementing and testing DOMImpl
-
-1998-10-01 20:41  juanca
-
-	* lib/jal/src/JALXML.pas: A XML DOM Implementation. Almost done
-
-1998-09-22 18:41  juanca
-
-	* lib/jal/src/JALXML.pas: XML constants and general purpose
-	routines
 
