@@ -1,3 +1,56 @@
+2002-06-11 17:34  juanca
+
+	* lib/jal/src/: JALCollections.pas, JALGeomModels.pas, JalDXF.pas:
+	allow for multiple colored visible/invisible DXF files
+
+2002-06-10 15:18  juanco
+
+	* release.ini, src/WantClasses.pas, test/WantAcceptTestLib.drc,
+	test/WantTestLib.drc: Changes for Delphi7 compatibility
+
+2002-06-10 15:13  juanco
+
+	* src/tasks/DelphiTasks.pas: Search for Delphi 7 directory too
+
+2002-06-10 15:11  juanca
+
+	* lib/jal/src/: JALGeomModels.pas, JALMath.pas: Added option to
+	hide grayed links (View/Options/Links).
+	
+	Make sure DXF files are drawn in light gray (silver).
+
+2002-04-05 22:35  juanco
+
+	* doc/dist/want-0.1.120.zip: routine
+
+2002-03-31 14:04  juanca
+
+	* lib/jal/src/JALMath.pas: routine
+
+2002-03-30 00:39  juanca
+
+	* lib/jal/src/JALStdIO.pas: flush standard files before exiting
+
+2002-03-30 00:33  juanca
+
+	* lib/jal/src/JalPaths.pas: unexplainable changes
+
+2002-03-30 00:32  juanca
+
+	* lib/jal/src/JALStrings.pas: Better compatibility with D6.
+	
+	Trim strings before unquoting them to avoid obvious and easy to
+	solve errors.
+
+2002-03-30 00:29  juanca
+
+	* lib/jal/src/JalParse.pas: added better EOL support
+
+2002-02-21 22:29  juanco
+
+	* ChangeLog, src/tasks/DUnitTasks.pas: updated DUnitTasks to latest
+	version of DUnit
+
 2002-02-21 14:35  juanco
 
 	* ChangeLog, release.ini (tags: v_0_1_10), doc/index.html (tags:
@@ -17,8 +70,8 @@
 
 2002-02-13 13:23  juanca
 
-	* lib/jal/src/: JALFiles.pas, JALGZipStreams.pas, JalDebug.pas:
-	removed platform dependencies
+	* lib/jal/src/: JALFiles.pas, JALGZipStreams.pas, JalDebug.pas
+	(utags: v_6_9_2): removed platform dependencies
 
 2002-02-13 12:21  pshrimpton
 
@@ -37,15 +90,15 @@
 
 2002-02-13 01:56  juanca
 
-	* lib/jal/: lib/paszlib/TREES.PAS, lib/paszlib/inftrees.pas,
-	src/JALGZipStreams.pas: removed problems with writeable consts and
-	third party libraries
+	* lib/jal/: lib/paszlib/TREES.PAS (tags: v_6_9_2),
+	lib/paszlib/inftrees.pas (tags: v_6_9_2), src/JALGZipStreams.pas:
+	removed problems with writeable consts and third party libraries
 
 2002-02-13 01:39  juanca
 
 	* lib/jal/: lib/paszlib/strutils.pas, src/JALFiles.pas,
-	src/JALGeometry.pas, src/JalDebug.pas: Adopted version 2.5 of
-	XStringGrid.
+	src/JALGeometry.pas (tags: v_6_9_2), src/JalDebug.pas: Adopted
+	version 2.5 of XStringGrid.
 	
 	Moved extensions to TXStringGrid to TYStringGrid.
 	
@@ -67,8 +120,8 @@
 
 2002-02-02 19:23  juanca
 
-	* lib/jal/src/: JALGeomModels.pas, JalDXF.pas: Read value of color
-	attribute
+	* lib/jal/src/: JALGeomModels.pas, JalDXF.pas (utags: v_6_9_2):
+	Read value of color attribute
 
 2002-01-29 21:54  juanco
 
@@ -169,9 +222,9 @@
 
 	* release.ini, doc/index.html, src/want.dsk, test/WantTestLib.dsk,
 	test/WantTests.dof (tags: v_0_1_10, v_0_1_109), test/WantTests.dpr
-	(tags: v_0_1_10, v_0_1_109), lib/jal/release.ini,
-	lib/jal/src/JALCollections.pas, lib/jal/src/JALXMLParser.pas:
-	repaired memory leaks
+	(tags: v_0_1_10, v_0_1_109), lib/jal/release.ini (tags: v_6_9_2),
+	lib/jal/src/JALCollections.pas (tags: v_6_9_2),
+	lib/jal/src/JALXMLParser.pas (tags: v_6_9_2): repaired memory leaks
 
 2002-01-05 15:47  juanca
 
@@ -324,12 +377,12 @@
 
 2001-12-03 16:27  juanca
 
-	* lib/jal/src/: JALSAX.pas, JALXMLParser.pas: changes for
-	compatibility with Delphi 6
+	* lib/jal/src/: JALSAX.pas (tags: v_6_9_2), JALXMLParser.pas:
+	changes for compatibility with Delphi 6
 
 2001-12-03 12:56  juanca
 
-	* lib/jal/.cvsignore: ignore generated directories
+	* lib/jal/.cvsignore (tags: v_6_9_2): ignore generated directories
 
 2001-11-27 19:41  juanca
 
@@ -351,7 +404,7 @@
 	* release.ini, doc/index.html, test/WantAcceptTestLib.drc,
 	release.ini, doc/index.html, src/.cvsignore (tags: v_0_1_10,
 	v_0_1_109), src/want.cfg, src/want.dof, src/want.dsk,
-	lib/jal/test/.cvsignore: routine
+	lib/jal/test/.cvsignore (tags: v_6_9_2): routine
 
 2001-11-27 18:32  juanca
 
@@ -370,13 +423,13 @@
 
 2001-11-27 18:29  juanca
 
-	* lib/jal/test/: ExpressionTests.pas, JALTestLib.dsk: stricter
-	tests for expression parsing
+	* lib/jal/test/: ExpressionTests.pas, JALTestLib.dsk (utags:
+	v_6_9_2): stricter tests for expression parsing
 
 2001-11-27 18:27  juanca
 
-	* lib/jal/src/: JALExpressions.pas, JalParse.pas: raise only
-	EParseEceptions from TParser
+	* lib/jal/src/: JALExpressions.pas, JalParse.pas (utags: v_6_9_2):
+	raise only EParseEceptions from TParser
 
 2001-11-27 18:26  juanca
 
@@ -392,8 +445,8 @@
 
 2001-11-27 18:23  juanca
 
-	* lib/jal/: release.ini, want.xml: added want script to test and
-	package the library
+	* lib/jal/: release.ini, want.xml (tags: v_6_9_2): added want
+	script to test and package the library
 
 2001-11-27 18:11  juanca
 
@@ -467,14 +520,16 @@
 
 2001-11-16 16:51  juanca
 
-	* lib/jal/test/: ExpressionTests.pas, JALTestLib.cfg,
-	JALTestLib.dof, JALTestLib.dpr, JALTestLib.dsk: added mathematical
-	expressions to JAL library
+	* lib/jal/test/: ExpressionTests.pas, JALTestLib.cfg (tags:
+	v_6_9_2), JALTestLib.dof (tags: v_6_9_2), JALTestLib.dpr (tags:
+	v_6_9_2), JALTestLib.dsk: added mathematical expressions to JAL
+	library
 
 2001-11-16 16:50  juanca
 
-	* lib/jal/src/: JALExpressions.pas, JALStrings.pas, JalParse.pas,
-	JalPaths.pas: be more permissive about path format
+	* lib/jal/src/: JALExpressions.pas, JALStrings.pas (tags: v_6_9_2),
+	JalParse.pas, JalPaths.pas (tags: v_6_9_2): be more permissive
+	about path format
 
 2001-11-16 14:21  juanca
 
@@ -525,8 +580,8 @@
 
 2001-11-02 17:41  juanca
 
-	* lib/jal/src/JALAlgorithms.pas: added algorithms that work with
-	collections
+	* lib/jal/src/JALAlgorithms.pas (tags: v_6_9_2): added algorithms
+	that work with collections
 
 2001-10-26 16:10  juanca
 
@@ -570,8 +625,9 @@
 2001-10-26 15:58  juanca
 
 	* lib/jal/src/: JALGZipStreams.pas, JALStrings.pas, JalPaths.pas,
-	JalProxyStreams.pas, JalUtils.pas, JalZipStreams.pas: Moved zip
-	streams into JAL library.
+	JalProxyStreams.pas (tags: v_6_9_2), JalUtils.pas (tags: v_6_9_2),
+	JalZipStreams.pas (tags: v_6_9_2): Moved zip streams into JAL
+	library.
 	
 	Several minor bug fixes.
 
@@ -660,13 +716,13 @@
 2001-10-23 17:52  juanca
 
 	* lib/jal/lib/paszlib/: ZCONF.INC, ZDEFLATE.PAS, ZIPUTILS.PAS,
-	zutil.pas, UNZIP.PAS, ZIP.PAS: adopted fixed version of paszlib
-	from want
+	zutil.pas, UNZIP.PAS, ZIP.PAS (utags: v_6_9_2): adopted fixed
+	version of paszlib from want
 
 2001-10-23 17:49  juanca
 
-	* lib/jal/lib/paszlib/: CRC.PAS, ZDEFLATE.PAS, zutil.pas: removed
-	superfluous warnings
+	* lib/jal/lib/paszlib/: CRC.PAS (tags: v_6_9_2), ZDEFLATE.PAS,
+	zutil.pas: removed superfluous warnings
 
 2001-10-23 15:31  juanca
 
@@ -679,13 +735,18 @@
 
 2001-10-23 15:11  juanca
 
-	* lib/jal/lib/paszlib/: ADLER.PAS, CRC.PAS, TREES.PAS, ZCONF.INC,
-	ZDEFLATE.PAS, ZINFLATE.PAS, ZIPUTILS.PAS, ZLIB.PAS, dzlib.pas,
-	dzlib.txt, example.pas, gzio.pas, infblock.pas, infcodes.pas,
-	inffast.pas, inftrees.pas, infutil.pas, minigzip.pas, paszlib.html,
-	MINIUNZ.PAS, paszlib.xbm, readme.txt, strutils.pas, zcompres.pas,
-	zuncompr.pas, zutil.pas, MINIZIP.PAS, UNZIP.PAS, ZIP.PAS: added
-	paszlib, required for zip and gzip file support
+	* lib/jal/lib/paszlib/: ADLER.PAS (tags: v_6_9_2), CRC.PAS,
+	TREES.PAS, ZCONF.INC, ZDEFLATE.PAS, ZINFLATE.PAS (tags: v_6_9_2),
+	ZIPUTILS.PAS, ZLIB.PAS (tags: v_6_9_2), dzlib.pas (tags: v_6_9_2),
+	dzlib.txt (tags: v_6_9_2), example.pas (tags: v_6_9_2), gzio.pas
+	(tags: v_6_9_2), infblock.pas (tags: v_6_9_2), infcodes.pas (tags:
+	v_6_9_2), inffast.pas (tags: v_6_9_2), inftrees.pas, infutil.pas
+	(tags: v_6_9_2), minigzip.pas (tags: v_6_9_2), paszlib.html (tags:
+	v_6_9_2), MINIUNZ.PAS (tags: v_6_9_2), paszlib.xbm (tags: v_6_9_2),
+	readme.txt (tags: v_6_9_2), strutils.pas, zcompres.pas (tags:
+	v_6_9_2), zuncompr.pas (tags: v_6_9_2), zutil.pas, MINIZIP.PAS
+	(tags: v_6_9_2), UNZIP.PAS, ZIP.PAS: added paszlib, required for
+	zip and gzip file support
 
 2001-10-19 19:50  juanca
 
@@ -754,11 +815,13 @@
 2001-08-27 17:59  juanca
 
 	* lib/jal/: src/JALGeomModels.pas, src/JALGeometry.pas,
-	src/JALMath.pas, src/JALStrings.pas, src/JalDXF.pas,
-	src/JalParse.pas, test/JalDXFTestLib.dpr, test/JalDXFTests.cfg,
-	test/JalDXFTests.dof, test/JalDXFTests.dpr, test/JalDXFTests.dsk,
-	test/JalDXFTests.res, test/TestDXFParse.pas: Added basic DXF parser
-	and shape classes
+	src/JALMath.pas (tags: v_6_9_2), src/JALStrings.pas,
+	src/JalDXF.pas, src/JalParse.pas, test/JalDXFTestLib.dpr (tags:
+	v_6_9_2), test/JalDXFTests.cfg (tags: v_6_9_2),
+	test/JalDXFTests.dof (tags: v_6_9_2), test/JalDXFTests.dpr (tags:
+	v_6_9_2), test/JalDXFTests.dsk (tags: v_6_9_2),
+	test/JalDXFTests.res (tags: v_6_9_2), test/TestDXFParse.pas (tags:
+	v_6_9_2): Added basic DXF parser and shape classes
 
 2001-08-22 18:53  juanca
 
@@ -802,7 +865,8 @@
 
 2001-07-04 18:17  juanca
 
-	* lib/jal/src/JALStdIO.pas: Added JALStdIO.pas to library.
+	* lib/jal/src/JALStdIO.pas (tags: v_6_9_2): Added JALStdIO.pas to
+	library.
 
 2001-07-03 20:10  juanca
 
@@ -927,8 +991,8 @@
 
 2001-06-21 18:33  juanca
 
-	* lib/jal/src/JALMiniDOM.pas: Made MiniDom capable of ignoring
-	whitespace
+	* lib/jal/src/JALMiniDOM.pas (tags: v_6_9_2): Made MiniDom capable
+	of ignoring whitespace
 
 2001-06-11 19:31  juanca
 
@@ -998,7 +1062,7 @@
 
 2001-05-23 22:58  juanca
 
-	* lib/jal/etc/bku.bat: Added bku.bat batch script.
+	* lib/jal/etc/bku.bat (tags: v_6_9_2): Added bku.bat batch script.
 
 2001-05-23 22:35  juanca
 
@@ -1033,14 +1097,14 @@
 2001-05-22 18:37  juanca
 
 	* lib/jal/src/: JALCollections.pas, JALMiniDOM.pas, JALStrings.pas,
-	JALSAX.pas, JALXML.pas, JALXMLParser.pas: Updates from WANT
-	project.
+	JALSAX.pas, JALXML.pas (tags: v_6_9_2), JALXMLParser.pas: Updates
+	from WANT project.
 
 2001-05-22 18:20  juanca
 
 	* lib/jal/src/: JalDebug.pas (tags: base_2001_05_24_13),
-	JALFiles.pas, JALOwnedTrees.pas, JALStrings.pas: Updated
-	copyrights.
+	JALFiles.pas, JALOwnedTrees.pas (tags: v_6_9_2), JALStrings.pas:
+	Updated copyrights.
 
 2001-05-22 17:53  juanca
 

@@ -313,7 +313,7 @@ begin
  begin
    with regex do
      Line := ToRelativePath(ToPath(SubExp[1].Text)) + ' ' + SubExp[2].Text + #10 + SubExp[3].Text;
-   if (Pos('Fatal', Line) <> 0) or  (Pos('Error', Line) <> 0) then
+   if (Pos('Fatal:', Line) <> 0) or  (Pos('Error:', Line) <> 0) then
      TaskFailure(Line)
    else
      Log(vlWarnings, Line);
@@ -326,8 +326,7 @@ begin
    end;
    *)
  end
- else if 
-(Pos('Fatal', Line) <> 0) or  (Pos('Error', Line) <> 0) then
+ else if (Pos('Fatal:', Line) <> 0) or  (Pos('Error:', Line) <> 0) then
    TaskFailure(Line)
  else if (Pos('Wargint', Line) <> 0) then
      Log(vlWarnings, Line)
