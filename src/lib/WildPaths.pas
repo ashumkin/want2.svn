@@ -495,7 +495,7 @@ begin
     end;
 
     if j > High(B) then
-      Result := ''
+      Result := '.'
     else
       while  j <= High(B) do
       begin
