@@ -539,23 +539,26 @@ begin
     Log(vlDebug, '%s disabled', [TagName])
   else
   begin
-    with Attributes do
-    begin
-      for a := 0 to Count-1 do
-        SetDelphiProperty(Names[a], Evaluate(Values[Names[a]]) );
-    end;
-
     LastDir := CurrentDir;
-    ChangeDir(BasePath);
     try
-      ChangeDir(BasePath);
+      try
+        with Attributes do
+        begin
+          for a := 0 to Count-1 do
+            SetDelphiProperty(Names[a], Evaluate(Values[Names[a]]) );
+        end;
 
-      Self.Init;
+        ChangeDir(BasePath, false);
+        Self.Init;
+      except
+        on e :Exception do
+           WantError(Format('(%d:%d) could not configure <%s>:'#10'%s', [Line, Column, TagName, e.Message]));
+      end;
 
       for i := 0 to ChildCount-1 do
         Children[i].Configure;
     finally
-      ChangeDir(LastDir);
+      ChangeDir(LastDir, False);
     end;
   end;
 end;
@@ -743,7 +746,7 @@ end;
 
 procedure TScriptElement.AttributeRequiredError(AttName: string);
 begin
-  WantError(Format('(%d:%d) <%s>.%s attribute is required', [Line, Column, TagName,AttName]));
+  WantError(Format('%s attribute is required', [AttName]));
 end;
 
 procedure TScriptElement.RequireAttribute(Name: string);
@@ -1093,7 +1096,7 @@ begin
     EXIT;
   end;
 
-  Deps := StringToArray(Target.Depends);
+  Deps := StringToArray(Target.Depends,',', ttBoth);
   for i := Low(Deps) to High(Deps) do
      BuildSchedule(Deps[i], Sched);
 

@@ -48,7 +48,7 @@ type
     constructor Create;
     destructor  Destroy; override;
 
-    procedure LoadProject(Project :TProject; BuildFile: TPath);
+    procedure LoadProject(Project :TProject; BuildFile: TPath; SearchUp :boolean = false);
 
     procedure BuildProject(Project :TProject; Target: string = '');   overload;
     procedure BuildProject(Project :TProject; Targets: TStringArray); overload;
@@ -86,11 +86,11 @@ begin
   inherited Destroy;
 end;
 
-procedure TScriptRunner.LoadProject(Project :TProject; BuildFile: TPath);
+procedure TScriptRunner.LoadProject(Project :TProject; BuildFile: TPath; SearchUp :boolean);
 begin
   if not IsSystemIndependentPath(BuildFile) then
     BuildFile := ToPath(BuildFile);
-  BuildFile := FindBuildFile(BuildFile, False);
+  BuildFile := FindBuildFile(BuildFile, SearchUp);
 
   try
     TScriptParser.Parse(Project, BuildFile);
@@ -98,7 +98,7 @@ begin
   except
     on e :Exception do
     begin
-      Listener.BuildFailed(Project, e.Message);
+      //Listener.BuildFailed(Project, e.Message);
       raise;
     end;
   end;
@@ -365,6 +365,7 @@ begin
   if not PathIsFile(Result) then
      Result := DefaultBuildFileName;
 end;
+
 
 
 

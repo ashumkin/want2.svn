@@ -83,14 +83,19 @@ procedure TWantTask.Execute;
 var
   FRunner :TScriptRunner;
 begin
-  FRunner := TScriptRunner.Create;
   try
-    FRunner.Listener  := Self.Project.Listener;
-    ChangeDir(BasePath);
-    FRunner.LoadProject(FSubProject, buildfile);
-    FRunner.BuildProject(FSubProject, _target);
-  finally
-    FRunner.Free;
+    FRunner := TScriptRunner.Create;
+    try
+      FRunner.Listener  := Self.Project.Listener;
+      ChangeDir(BasePath);
+      FRunner.LoadProject(FSubProject, buildfile, false);
+      FRunner.BuildProject(FSubProject, _target);
+    finally
+      FRunner.Free;
+    end;
+  except
+    on e :Exception do
+      TaskError(e.Message, ExceptAddr);
   end;
 end;
 

@@ -82,7 +82,7 @@ begin
     else
       System.Rewrite(EchoFile);
     try
-      Write( EchoFile, msg);
+      Writeln(EchoFile, msg);
     finally
       System.Close(EchoFile);
     end;
