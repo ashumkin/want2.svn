@@ -5,6 +5,7 @@
          default="dist" >
 
   <property name="version" value="1.0.0" />
+  <property name="increment.build" value="false" />
 
   <property name="src"       value="${basedir}/src" />
   <property name="dist"      value="${basedir}/dist" />
@@ -53,9 +54,10 @@
         Compile started.
       </info>
     </log>
-    <!-- Delete dante.cfg first to get a reproducible build.
-         (Should this be automated?)
-    -->
+  
+    <incverrc rcfilename="${src}/dantever.rc" 
+	           increment="${increment.build}"
+	 />
 	 <echo message="Build number is '${build}'" />
 
     <!-- should use a brcc task, not written yet -->
@@ -66,8 +68,12 @@
 			-->
     <shell executable="brcc32" arguments=".\src\dantever.rc" />
 
+    <!-- Delete dante.cfg first to get a reproducible build.
+         (Should this be automated?)
+    -->
     <touch  file="${src}/dante.cfg"  />
     <delete file="${src}/dante.cfg" />
+
     <dcc basedir="${src}"
          source="dante.dpr"
          exes="${basedir}"
@@ -93,8 +99,6 @@
       <resource path="${res}" />
     </dcc>
   
-    <incverrc rcfilename="${src}/dantever.rc" />
-
     <log file="compile.log" >
       <info code="compile">
         Compile suceeded.
