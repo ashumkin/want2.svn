@@ -38,7 +38,8 @@ unit StandardTasks;
 interface
 uses
   ExecTasks,
-  DelphiTasks;
+  DelphiTasks,
+  FileTasks;
 
 implementation
 
