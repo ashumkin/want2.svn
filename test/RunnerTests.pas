@@ -79,7 +79,7 @@ begin
     '</project>                                                      '+ CR;
 
   WriteLn(FBuildFile, Content);
-  CloseFile(FBuildFile);                                   
+  CloseFile(FBuildFile);
 end;
 
 procedure TScriptRunnerTests.Setup;
@@ -114,10 +114,14 @@ begin
 
   { leaving CurrentDir is important for other tests depend on it, because
     TProject.FRootDir defaults to CurrentDir. }
-  CheckEquals(CurDir, GetCurrentDir, 'current dir not left intact');
+  { sometimes GetCurrentDir will return an uppercase drive letter
+    and sometimes a lower case one.
+    Use ToPath to avoid problems.
+  }
+  CheckEquals(ToPath(CurDir), ToPath(GetCurrentDir), 'current dir not left intact');
 
   Check(FileExists(FCopyOfFileName), 'copy doesn''t exist');
-  Check(not DirectoryExists(FNewDir), 'directory exists');
+  Check(not DirectoryExists(FNewDir), 'directory exists: ' + FNewDir);
   Check(FileExists(FCopyDir + '\copyofbuild.xml'), 'copy doesn''t exist');
 end;
 
