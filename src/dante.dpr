@@ -92,6 +92,7 @@ begin
     try
       ADante.DoBuild(BuildFile, Targets, VLevel);
     except
+      Halt(1);
     end;
   finally
     ADante.Free;
