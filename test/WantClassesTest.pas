@@ -438,10 +438,14 @@ procedure TTestDanteElement.TestDanteElementPaths;
 var
   AbsPath: string;
 begin
-  AbsPath := ExtractFilePath(ParamStr(0));
+  AbsPath := ExtractFileDir(ParamStr(0));
   CheckEquals(
     AbsPath,
-    FDanteElement.ToAbsolutePath(AbsPath),
+    WildPaths.ToSystemPath(FDanteElement.ToAbsolutePath(ToPath(AbsPath))),
+    'ToAbsolutePath');
+  CheckEquals(
+    '.',
+    FDanteElement.ToSystemPath(ToPath(AbsPath)),
     'ToAbsolutePath');
 end;
 
