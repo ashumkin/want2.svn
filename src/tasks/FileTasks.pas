@@ -28,6 +28,9 @@ uses
 
 type
   TFileTask = class(TTask)
+  protected
+    FDir :TPath;
+    property dir:TPath read FDir write FDir;
   end;
 
   TFileSetTask = class(TFileTask)
@@ -45,6 +48,7 @@ type
     procedure AddCommaSeparatedExcludes(Value: string);
 
     procedure DoFileset(Fileset: TFileSet); virtual;
+
   public
     constructor Create(Owner: TScriptElement); override;
 
@@ -59,13 +63,11 @@ type
   end;
 
   TMkDirTask = class(TFileTask)
-  protected
-    FDir :TPath;
   public
     procedure Init; override;
     procedure Execute;  override;
   published
-    property dir:TPath read FDir write FDir;
+    property dir;
   end;
 
   TTouchTask = class(TFileTask)
@@ -81,7 +83,6 @@ type
   TDeleteTask = class(TFileSetTask)
   protected
     FDeleteReadOnly: boolean;
-    FDir:  TPath;
     FFile: TPath;
 
     procedure AddDefaultPatterns; override;
@@ -92,7 +93,7 @@ type
   published
     property basedir;
     property _File: TPath  read FFile write SetFile stored True;
-    property dir  : TPath  read FDir write FDir;
+    property dir;
 
     property DeleteReadOnly: boolean read FDeleteReadOnly write FDeleteReadOnly;
   end;
@@ -208,6 +209,7 @@ begin
   begin
     if FFileSets[f] <> nil then
     begin
+      FFileSets[f].basedir := PathConcat(BasePath, FDir);
       if PathIsDir(FFileSets[f].BasePath) then
       begin
         ChangeDir(FFileSets[f].BasePath);
@@ -282,7 +284,6 @@ begin
   end
   else
   begin
-    Self.basedir := dir;
     inherited AddDefaultPatterns;
   end;
 end;

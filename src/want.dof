@@ -94,13 +94,13 @@ OutputDir=..\bin\ide
 UnitOutputDir=..\dcu\ide
 PackageDLLOutputDir=
 PackageDCPOutputDir=
-SearchPath=..\src\;..\src\tasks;..\src\elements;..\src\lib;..\src\jal\src;..\src\jal\lib\paszlib;..\src\win32;..\lib\jcl-1.12\source;..\lib\perlre-1.1;..\lib\dunit-7.0.3\src
+SearchPath=..\src\;..\src\tasks;..\src\elements;..\src\lib;..\src\jal\src;..\src\jal\lib\paszlib;..\src\win32;..\lib\jcl-1.12\source;..\lib\perlre-1.1;..\lib\dunit-7.2.0
 Packages=Vcl40;Vclx40;Vcldb40;vcldbx40;VclSmp40;Qrpt40;TeeUI40;teedb40;tee40;ibevnt40;nmfast40
 Conditionals=USE_JEDI_JCL;DUNIT_DLL
 DebugSourceDirs=
 UsePackages=0
 [Parameters]
-RunParams=test -buildfile c:\home\dunit\want.xml compile test
+RunParams=-buildfile c:\home\want\want.xml clean
 HostApplication=
 Launcher=
 UseLauncher=0
@@ -148,16 +148,19 @@ Item2=USE_JEDI_JCL;DUNIT_DLL;USE_TEXT_RUNNER
 Count=1
 Item0=WinTypes=Windows;WinProcs=Windows;DbiTypes=BDE;DbiProcs=BDE;DbiErrs=BDE;
 [HistoryLists\hlSearchPath]
-Count=9
-Item0=..\src\;..\src\tasks;..\src\elements;..\src\lib;..\src\jal\src;..\src\jal\lib\paszlib;..\src\win32;..\test;..\lib\jcl-1.12\source;..\lib\perlre-1.1;..\lib\dunit-7.0.3\src
-Item1=..\src\;..\src\tasks;..\src\elements;..\src\lib;..\src\jal\src;..\src\jal\lib\paszlib;..\src\win32;..\test;..\lib\jcl-1.12\source;..\lib\perlre-1.1;..\lib\dunit-7.0.4\src
-Item2=..\src\;..\src\lib;..\src\elements;..\src\tasks;..\src\win32;..\src\jal\src;..\src\jal\lib\paszlib;..\lib\jcl-1.12\source;..\lib\perlre-1.1;..\lib\dunit-7.0.3\src
-Item3=..\src\;..\src\tasks;..\src\elements;..\src\lib;..\src\jal\src;..\src\jal\lib\paszlib;..\src\win32;..\lib\jcl-1.12\source;..\lib\perlre-1.1;..\lib\dunit-7.0.3\src
-Item4=..\src\;..\src\tasks;..\src\elements;..\src\lib;..\src\jal\src;..\src\jal\lib\paszlib;..\src\win32;..\lib\jcl-1.12\jcl\source;..\lib\perlre-1.1\perlre;..\lib\dunit-7.0.3\src
-Item5=..\src\;..\src\tasks;..\src\elements;..\src\lib;..\src\jal\src;..\src\jal\lib\paszlib;..\src\win32;..\lib\jcl-1.12\jcl\source;..\lib\perlre-1.1\perlre
-Item6=..\src\;..\src\tasks;..\src\elements;..\src\lib;..\src\jal\src;..\src\jal\lib\paszlib;..\src\win32;..\test;..\lib\jcl-1.12\jcl\source;..\lib\perlre-1.1\perlre;..\lib\dunit-7.0.3\src
-Item7=..\src\;..\src\lib;..\src\elements;..\src\tasks;..\src\win32;..\src\jal\src;..\src\jal\lib\paszlib;..\lib\jcl-1.12\jcl\source;..\lib\perlre-1.1\perlre;..\lib\dunit-7.0.3\src
-Item8=..\src\;..\src\tasks;..\src\elements;..\src\lib;..\src\jal\src;..\lib\jcl\source;..\lib\perlre;..\src\jal\lib\paszlib;..\src\win32;..\lib\dunit;..\test
+Count=12
+Item0=..\src\;..\src\tasks;..\src\elements;..\src\lib;..\src\jal\src;..\src\jal\lib\paszlib;..\src\win32;..\test;..\lib\jcl-1.12\source;..\lib\perlre-1.1;..\lib\dunit-7.2.0
+Item1=..\src\;..\src\tasks;..\src\elements;..\src\lib;..\src\jal\src;..\src\jal\lib\paszlib;..\src\win32;..\lib\jcl-1.12\source;..\lib\perlre-1.1;..\lib\dunit-7.2.0
+Item2=..\src\;..\src\lib;..\src\elements;..\src\tasks;..\src\win32;..\src\jal\src;..\src\jal\lib\paszlib;..\lib\jcl-1.12\source;..\lib\perlre-1.1;..\lib\dunit-7.2.0
+Item3=..\src\;..\src\tasks;..\src\elements;..\src\lib;..\src\jal\src;..\src\jal\lib\paszlib;..\src\win32;..\test;..\lib\jcl-1.12\source;..\lib\perlre-1.1;..\lib\dunit-7.0.3\src
+Item4=..\src\;..\src\tasks;..\src\elements;..\src\lib;..\src\jal\src;..\src\jal\lib\paszlib;..\src\win32;..\test;..\lib\jcl-1.12\source;..\lib\perlre-1.1;..\lib\dunit-7.0.4\src
+Item5=..\src\;..\src\lib;..\src\elements;..\src\tasks;..\src\win32;..\src\jal\src;..\src\jal\lib\paszlib;..\lib\jcl-1.12\source;..\lib\perlre-1.1;..\lib\dunit-7.0.3\src
+Item6=..\src\;..\src\tasks;..\src\elements;..\src\lib;..\src\jal\src;..\src\jal\lib\paszlib;..\src\win32;..\lib\jcl-1.12\source;..\lib\perlre-1.1;..\lib\dunit-7.0.3\src
+Item7=..\src\;..\src\tasks;..\src\elements;..\src\lib;..\src\jal\src;..\src\jal\lib\paszlib;..\src\win32;..\lib\jcl-1.12\jcl\source;..\lib\perlre-1.1\perlre;..\lib\dunit-7.0.3\src
+Item8=..\src\;..\src\tasks;..\src\elements;..\src\lib;..\src\jal\src;..\src\jal\lib\paszlib;..\src\win32;..\lib\jcl-1.12\jcl\source;..\lib\perlre-1.1\perlre
+Item9=..\src\;..\src\tasks;..\src\elements;..\src\lib;..\src\jal\src;..\src\jal\lib\paszlib;..\src\win32;..\test;..\lib\jcl-1.12\jcl\source;..\lib\perlre-1.1\perlre;..\lib\dunit-7.0.3\src
+Item10=..\src\;..\src\lib;..\src\elements;..\src\tasks;..\src\win32;..\src\jal\src;..\src\jal\lib\paszlib;..\lib\jcl-1.12\jcl\source;..\lib\perlre-1.1\perlre;..\lib\dunit-7.0.3\src
+Item11=..\src\;..\src\tasks;..\src\elements;..\src\lib;..\src\jal\src;..\lib\jcl\source;..\lib\perlre;..\src\jal\lib\paszlib;..\src\win32;..\lib\dunit;..\test
 [HistoryLists\hlUnitOutputDirectory]
 Count=1
 Item0=..\dcu\ide
