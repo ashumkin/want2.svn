@@ -102,14 +102,32 @@ procedure TDante.DoBuild( const ABuildFileName: TPath;
 var
   t:    Integer;
 begin
-  Project.LoadXML(ABuildFileName);
-  if LogManager <> nil then
-    LogManager.Level := Level;
-  if Length(Targets) = 0 then
-    Build
-  else
-    for t := Low(Targets) to High(Targets) do
-      Build(Targets[t]);
+  Log('buildfile: ' + ToRelativePath(FindBuildFile(ABuildFileName, False)));
+  Log;
+
+  try
+    LoadXML(ABuildFileName);
+    if LogManager <> nil then
+      LogManager.Level := Level;
+    if Length(Targets) = 0 then
+      Build
+    else
+    begin
+      for t := Low(Targets) to High(Targets) do
+        Build(Targets[t]);
+    end;
+    
+    Log;
+    Log('Build complete.');
+  except
+    on e: Exception do
+    begin
+      Log(vlErrors, E.ClassName + ': ' + E.Message);
+      Log;
+      Log(vlErrors, 'BUILD FAILED');
+      raise;
+    end;
+  end;
 end;
 
 

@@ -218,7 +218,6 @@ type
 
     FLogManager :TLogManager;
     FOnLog      :TLogMethod;
-    FOnTaggedLog:TTaggedLogMethod;
 
     procedure InsertNotification(Child :TTree); override;
     procedure RemoveNotification(Child :TTree); override;
@@ -265,7 +264,6 @@ type
     function  Schedule(Target: string): TTargetArray;
     procedure Build(Target: string = '');      overload; virtual;
 
-    procedure Log(Msg: string = ''; Level: TLogLevel = vlNormal);  override;
     procedure Log(Tag: string; Msg: string; Level: TLogLevel = vlNormal);  override;
 
     property RootPath: TPath read FRootPath write SetRootPath;
@@ -290,7 +288,6 @@ type
     property Description:   string          read FDescription    write FDescription;
 
     property OnLog :TLogMethod read FOnLog write FOnLog;
-    property OnTaggedLog :TTaggedLogMethod read FOnTaggedLog write FOnTaggedLog;
   end;
 
 
@@ -314,7 +311,7 @@ type
     function TaskCount: Integer;
     procedure Build; virtual;
 
-    procedure Log(Msg: string = ''; Level: TLogLevel = vlNormal); override;
+    procedure Log(Msg: string = ''; Level: TLogLevel = vlNormal);          override;
 
     property Tasks[i: Integer]: TTask read GetTask; default;
   published
@@ -334,7 +331,7 @@ type
     function Target: TTarget;
 
     procedure Execute; virtual;
-    procedure Log(Msg: string = ''; Level: TLogLevel = vlNormal); override;
+    procedure Log(Tag: string; Msg: string; Level: TLogLevel = vlNormal);  override;
 
     property Name stored False;
   published
@@ -797,7 +794,7 @@ end;
 
 procedure TDanteElement.Log(Msg: string; Level: TLogLevel);
 begin
-  Project.Log(Msg, Level);
+  Log('', Msg, Level);
 end;
 
 procedure TDanteElement.Log(Level: TLogLevel; Msg: string);
@@ -1141,20 +1138,17 @@ begin
   end;
 end;
 
-procedure TProject.Log(Msg: string; Level: TLogLevel);
-begin
-  if Assigned(FOnLog) then
-    FOnLog(Msg, Level)
-  else if LogManager <> nil then
-    LogManager.Log(Msg, Level);
-end;
-
 procedure TProject.Log(Tag, Msg: string; Level: TLogLevel);
 begin
-  if Assigned(FOnTaggedLog) then
-    FOnTaggedLog(Tag, Msg, Level)
+  if Assigned(FOnLog) then
+    FOnLog(Tag, Msg, Level)
   else if LogManager <> nil then
-    LogManager.Log(Format('%14s ', [ '['+Tag+']' ]), Msg, Level);
+  begin
+    if Tag <> '' then
+      LogManager.Log(Format('%14s ', [ Tag ]), Msg, Level)
+    else
+      LogManager.Log(Msg, Level);
+  end;
 end;
 
 procedure TProject.Build(Target: string = '');
@@ -1166,35 +1160,24 @@ begin
   Log(vlDebug, 'runpath="%s"',  [RootPath]);
   Log(vlDebug, 'basepath="%s"', [BasePath]);
   Log(vlDebug, 'basedir="%s"',  [BaseDir]);
-  Sched := nil;
-  try
-    if Target = '' then
-    begin
-      if _Default <> '' then
-        Target := _Default
-      else
-        raise ENoDefaultTargetError.Create('No default target');
-    end;
 
-    Sched := Schedule(Target);
-    LastDir := CurrentDir;
-    for i := Low(Sched) to High(Sched) do
-    begin
-      try
-        Sched[i].Build;
-      finally
-        ChangeDir(LastDir);
-      end;
-    end;
-    Log;
-    Log('Build complete.');
-  except
-    on e: Exception do
-    begin
-      Log(vlErrors, E.ClassName + ': ' + E.Message);
-      Log;
-      Log(vlErrors, 'BUILD FAILED');
-      raise;
+  Sched := nil;
+  if Target = '' then
+  begin
+    if _Default <> '' then
+      Target := _Default
+    else
+      raise ENoDefaultTargetError.Create('No default target');
+  end;
+
+  Sched := Schedule(Target);
+  LastDir := CurrentDir;
+  for i := Low(Sched) to High(Sched) do
+  begin
+    try
+      Sched[i].Build;
+    finally
+      ChangeDir(LastDir);
     end;
   end;
 end;
@@ -1243,9 +1226,6 @@ begin
     if not FRootPathSet then
       RootPath := SuperPath(ToAbsolutePath(BuildFile));
     Log(vlDebug, 'Runpath="%s"', [ RootPath ] );
-
-    Log('buildfile: ' + ToRelativePath(BuildFile));
-    Log;
 
     LastDir := CurrentDir;
     try
@@ -1357,27 +1337,32 @@ function TProject.FindBuildFile(BuildFile: TPath; SearchUp: boolean): TPath;
 var
   Dir: TPath;
 begin
-  Result := PathConcat(BasePath, BuildFile);
-  Dir    := SuperPath(BuildFile);
-
-  Log(vlDebug, 'Looking for "%s', [Result]);
-  while not PathIsFile(Result)
-  and SearchUp
-  and (Dir <> '')
-  and (Dir <> SuperPath(Dir))
-  do
+  if BuildFile = '' then
+    Result := FindBuildFile(SearchUp)
+  else
   begin
-    if PathIsDir(Dir) then
-    begin
-      Result := PathConcat(Dir, BuildFile);
-      Dir    := SuperPath(Dir);
-    end
-    else
-      break;
-  end;
+    Result := PathConcat(BasePath, BuildFile);
+    Dir    := SuperPath(BuildFile);
 
-  if not PathIsFile(Result) then
-    Result := BuildFile;
+    Log(vlDebug, 'Looking for "%s', [Result]);
+    while not PathIsFile(Result)
+    and SearchUp
+    and (Dir <> '')
+    and (Dir <> SuperPath(Dir))
+    do
+    begin
+      if PathIsDir(Dir) then
+      begin
+        Result := PathConcat(Dir, BuildFile);
+        Dir    := SuperPath(Dir);
+      end
+      else
+        break;
+    end;
+
+    if not PathIsFile(Result) then
+      Result := BuildFile;
+  end;
 end;
 
 
@@ -1399,7 +1384,6 @@ procedure TTarget.Build;
 var
   i: Integer;
 begin
-  Project.Log;
   Log;
 
   Log(vlDebug, 'basepath="%s"', [BasePath]);
@@ -1472,9 +1456,9 @@ end;
 
 { TTask }
 
-procedure TTask.Log(Msg: string; Level: TLogLevel);
+procedure TTask.Log(Tag, Msg: string; Level: TLogLevel);
 begin
-  Log(TagName, Msg, Level);
+  inherited Log('['+TagName+']'+Tag, Msg, Level);
 end;
 
 function TTask.Target: TTarget;

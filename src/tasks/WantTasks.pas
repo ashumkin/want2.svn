@@ -97,7 +97,6 @@ begin
   FSubProject.RootPath := ToAbsolutePath(Project.RootPath);
   FSubProject.LogManager := Project.LogManager;
   FSubProject.OnLog := Self.Log;
-  FSubProject.OnTaggedLog := Self.Log;
 end;
 
 destructor TDanteTask.Destroy;

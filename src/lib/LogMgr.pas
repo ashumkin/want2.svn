@@ -41,8 +41,7 @@ const
                                                'Debug'       );
 
 type
-  TLogMethod = procedure(Msg :string; Level :TLogLevel) of object;
-  TTaggedLogMethod = procedure(Tag, Msg :string; Level :TLogLevel) of object;
+  TLogMethod = procedure(Tag, Msg :string; Level :TLogLevel) of object;
 
   TLogManager = class
     private
