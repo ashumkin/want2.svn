@@ -720,7 +720,14 @@ begin
   dcc.AddDefine(Name, Value);
 end;
 
-{ TPathElement }
+
+{ TPathSet }
+
+constructor TPathSet.Create(Owner: TScriptElement);
+begin
+  inherited Create(Owner);
+  AddDefaultPatterns;
+end;
 
 procedure TPathSet.SetPath(Value: string);
 var
@@ -732,14 +739,6 @@ begin
     Include(Pat);
     Pat := StrToken(Value, ',');
   end;
-end;
-
-{ TPathSet }
-
-constructor TPathSet.Create(Owner: TScriptElement);
-begin
-  inherited Create(Owner);
-  AddDefaultPatterns;
 end;
 
 { TOptionElement }

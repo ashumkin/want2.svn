@@ -1,5 +1,5 @@
 [Compiler]
-A=8
+A=1
 B=0
 C=1
 D=1
@@ -8,7 +8,7 @@ F=0
 G=1
 H=1
 I=1
-J=1
+J=0
 K=0
 L=1
 M=0
@@ -135,8 +135,6 @@ Count=2
 Item0=c:\home\dunit\bin\dunit.exe
 Item1=c:\home\dunit\bin\dunit.exe /nologo
 [HistoryLists\hlRunParameters]
-Count=4
-Item0=-buildfile "c:\home\lasalle\src\want.xml" test
-Item1=-buildfile "c:\home\lasalle\src\want.xml" dist
-Item2= /nologo WantAcceptTestLib
-Item3=WantAcceptTestLib
+Count=2
+Item0= /nologo WantAcceptTestLib
+Item1=WantAcceptTestLib
