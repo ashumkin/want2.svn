@@ -55,6 +55,7 @@ type
 
     function Getpath :TPath;
     procedure SetPath(Path :TPath);
+
   public
     procedure Init; override;
 
