@@ -65,6 +65,7 @@ var
   msg:      string;
   sysfile:  string;
 begin
+  inherited Execute;
   msg := _message + FormatText;
   if _file = '' then
     Log(msg, Level)
