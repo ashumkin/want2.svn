@@ -1,0 +1,168 @@
+[Compiler]
+A=1
+B=0
+C=1
+D=1
+E=0
+F=0
+G=1
+H=1
+I=1
+J=1
+K=0
+L=1
+M=0
+N=1
+O=0
+P=1
+Q=1
+R=1
+S=0
+T=0
+U=0
+V=1
+W=1
+X=1
+Y=1
+Z=1
+ShowHints=1
+ShowWarnings=1
+UnitAliases=WinTypes=Windows;WinProcs=Windows;DbiTypes=BDE;DbiProcs=BDE;DbiErrs=BDE;
+
+[Linker]
+MapFile=0
+OutputObjs=0
+ConsoleApp=0
+DebugInfo=0
+RemoteSymbols=0
+MinStackSize=16384
+MaxStackSize=1048576
+ImageBase=4194304
+ExeDescription=
+
+[Directories]
+OutputDir=c:\tmp
+UnitOutputDir=..\dcu
+PackageDLLOutputDir=
+PackageDCPOutputDir=
+SearchPath=$(DELPHI)\lib;.\lib;.\elements;.\tasks;.\paths;..\lib\xml;..\lib\paszlib;..\lib\paszlib\minizip;..\lib\perlre;c:\home\want\src\taks;c:\home\want\src\elements
+Packages=Vcl50;Vclx50;VclSmp50;Vcldb50;vclado50;ibevnt50;Vclbde50;vcldbx50;Qrpt50;TeeUI50;TeeDB50;Tee50;Dss50;TeeQR50;VCLIB50;Vclmid50;vclie50;Inetdb50;Inet50;NMFast50;webmid50;dclocx50;dclaxserver50;Indy50;OE;RxCtl5;RxBDE5;RxDB5;msxml;OpenXML_D5
+Conditionals=USE_JEDI_JCL
+DebugSourceDirs=
+UsePackages=0
+
+[Parameters]
+RunParams=-efr -buildfile \home\want\make\build.xml
+HostApplication=
+
+[Version Info]
+IncludeVerInfo=0
+AutoIncBuild=0
+MajorVer=1
+MinorVer=0
+Release=0
+Build=0
+Debug=0
+PreRelease=0
+Special=0
+Private=0
+DLL=0
+Locale=1033
+CodePage=1252
+
+[Version Info Keys]
+CompanyName=
+FileDescription=
+FileVersion=1.0.0.0
+InternalName=
+LegalCopyright=
+LegalTrademarks=
+OriginalFilename=
+ProductName=
+ProductVersion=1.0.0.0
+Comments=
+
+[Excluded Packages]
+$(DELPHI)\Bin\dcldb40.bpl=Borland Database Components
+$(DELPHI)\Bin\dclint40.bpl=Borland Resource DLL Wizard
+$(DELPHI)\Bin\dcltee40.bpl=Borland TeeChart Components
+$(DELPHI)\Bin\dclqrt40.bpl=QuickReport Components
+$(DELPHI)\Bin\dclocx40.bpl=Borland Sample Imported ActiveX Controls
+$(DELPHI)\Bin\dcl31w40.bpl=Delphi 1.0 Compatibility Components
+
+[HistoryLists\hlDebugSourcePath]
+Count=2
+Item0=..\src\
+Item1=..\src
+
+[HistoryLists\hlConditionals]
+Count=1
+Item0=USE_JEDI_JCL
+
+[HistoryLists\hlUnitAliases]
+Count=1
+Item0=WinTypes=Windows;WinProcs=Windows;DbiTypes=BDE;DbiProcs=BDE;DbiErrs=BDE;
+
+[HistoryLists\hlSearchPath]
+Count=18
+Item0=$(DELPHI)\lib;.\lib;.\elements;.\tasks;.\paths;..\lib\xml;..\lib\paszlib;..\lib\paszlib\minizip;..\lib\perlre;c:\home\want\src\taks;c:\home\want\src\elements
+Item1=$(DELPHI)\lib;.\lib;.\elements;.\tasks;.\paths;..\lib\xml;..\lib\paszlib;..\lib\paszlib\minizip;..\lib\perlre
+Item2=$(DELPHI)\lib;.\lib;.\elements;.\tasks;.\xml;.\paths;.\zip;..\lib\paszlib;..\lib\paszlib\minizip;..\lib\perlre
+Item3=$(DELPHI)\lib;.\elements;.\tasks;.\xml;.\paths;.\zip;..\lib\paszlib;..\lib\paszlib\minizip;..\lib\perlre
+Item4=$(DELPHI)\lib;.\elements;.\tasks;.\jcl\;.\xml;.\paths;.\zip;..\lib\paszlib;..\lib\paszlib\minizip
+Item5=$(DELPHI)\lib;.\tasks;.\jcl\;.\xml;.\paths;.\zip;..\lib\paszlib;..\lib\paszlib\minizip
+Item6=$(DELPHI)\lib;.\tasks;.\jcl\;.\xml;.\paths;..\lib\paszlib;..\lib\paszlib\minizip
+Item7=$(DELPHI)\lib;.\tasks;.\jcl\;.\xml;.\paths
+Item8=.\tasks;.\jcl\;.\xml;.\paths
+Item9=.\jcl\;.\xml;.\paths
+Item10=$(DELPHI)\Lib\Debug;..\src\;..\src\xml;..\src\tasks;..\src\jcl
+Item11=.\jcl\
+Item12=..\jcl\
+Item13=..\src\;..\src\xml;..\src\tasks;..\src\jcl
+Item14=..\src\;..\src\xml
+Item15=..\src\
+Item16=..\src
+Item17=..
+
+[HistoryLists\hlUnitOutputDirectory]
+Count=1
+Item0=..\dcu
+
+[HistoryLists\hlOutputDirectorry]
+Count=3
+Item0=c:\tmp
+Item1=c:\home\want\bin
+Item2=..\bin
+
+[HistoryLists\hlRunParameters]
+Count=30
+Item0=-efr -buildfile \home\want\make\build.xml
+Item1=-buildfile \home\want\make\build.xml
+Item2=-edit -buildfile \home\want\make\build.xml
+Item3=-verbose -buildfile \home\want\make\build.xml
+Item4=-buildfile \home\dunit\build.xml dist
+Item5=-buildfile \home\dunit\build.xml
+Item6=-buildfile \home\dunit\build.xml examples
+Item7=-buildfile \home\dante\make\build.xml test
+Item8=-verbose -buildfile \home\dante\make\build.xml test
+Item9=-verbose -buildfile \home\prj\sepa2k1\build.xml sx
+Item10=-verbose -buildfile \home\prj\sepa2k1\build.xml
+Item11=-verbose -buildfile \home\dante\make\build.xml
+Item12=-buildfile ..\make\build.xml
+Item13=-buildfile \home\prj\sepa2k1\build.xml versioninfo
+Item14=-buildfile \home\lasalle\src\build.xml versioninfo -color
+Item15=-buildfile \home\lasalle\src\build.xml versioninfo
+Item16=-buildfile \home\lasalle\prj\build.xml versioninfo
+Item17=-buildfile \home\dunit\build.xml dist -debug
+Item18=-buildfile ..\make\build.xml  changelog
+Item19=-buildfile \home\prj\dante\make\build.xml  dist acceptance_tests  -debug
+Item20=-buildfile \home\prj\dante\make\build.xml  dist acceptance_tests
+Item21=-buildfile \home\prj\dante\make\build.xml  dist acceptance_tests -debug
+Item22=-buildfile \home\prj\dante\make\build.xml  dist acceptance_tests
+Item23=-buildfile \home\prj\dante\make\build.xml  dist -debug acceptance_tests
+Item24=-buildfile ..\make\build.xml  dist -debug acceptance_tests
+Item25=-buildfile ..\make\build.xml  dist -debug
+Item26=-buildfile \home\prj\sepa2k1\build.xml -debug
+Item27=-buildfile \home\prj\sepa2k1\build.xml -verbose
+Item28=-buildfile \home\prj\sepa2k1\build.xml
+Item29=-buildfile ..\make\build.xml  dist -Dparam="hello, dude!" -debug

@@ -31,44 +31,47 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 --------------------------------------------------------------------------------
 }
 
-{$APPTYPE CONSOLE}
-program dante;
+{//APPTYPE CONSOLE}
+program want;
 
 uses
   SysUtils,
-  JclStrings,
-  clUtilConsole,
-  DanteBase,
-  DanteClasses,
-  DanteMain;
+  EditTasks in 'tasks\EditTasks.pas',
+  WantStandardTasks in 'tasks\WantStandardTasks.pas',
+  Attributes in 'elements\Attributes.pas',
+  DUnitTasks in 'tasks\DUnitTasks.pas',
+  ZipStreams in 'lib\ZipStreams.pas',
+  OwnedTrees in 'lib\OwnedTrees.pas',
+  WildPaths in 'lib\WildPaths.pas',
+  ConsoleLogMgr in 'lib\ConsoleLogMgr.pas',
+  DanteMain in 'DanteMain.pas',
+  DanteClasses in 'DanteClasses.pas',
+  DanteBase in 'DanteBase.pas',
+  ZipTasks in 'tasks\ZipTasks.pas',
+  DanteTasks in 'tasks\DanteTasks.pas',
+  DelphiTasks in 'tasks\DelphiTasks.pas',
+  EchoTasks in 'tasks\EchoTasks.pas',
+  ExecTasks in 'tasks\ExecTasks.pas',
+  FileTasks in 'tasks\FileTasks.pas',
+  LoggerTask in 'tasks\LoggerTask.pas',
+  StandardTasks in 'tasks\StandardTasks.pas',
+  VersionInfoTasks in 'tasks\VersionInfoTasks.pas',
+  VssTasks in 'tasks\VssTasks.pas',
+  CustomTasks in 'tasks\CustomTasks.pas',
+  TimeElements in 'elements\TimeElements.pas',
+  PatternSets in 'elements\PatternSets.pas',
+  Properties in 'elements\Properties.pas',
+  RegexpElements in 'elements\RegexpElements.pas',
+  StandardElements in 'elements\StandardElements.pas',
+  crt32 in 'lib\CRT32.pas',
+  LogMgr in 'lib\LogMgr.pas',
+  ScriptParser in 'lib\ScriptParser.pas',
+  ScriptFrm in 'forms\ScriptFrm.pas' {ScriptForm};
 
-{ this was ../bin/dantever.res, but bootstrap.bat on a clean machine didn't
-  leave dantever.res in the src directory, so the subsequent dcc32 call failed
-  -- Chrismo }
-{$R dantever.res}
-{$R license.res}
+{$R wantver.res}
 
 const
   SwitchChars = ['-', '/'];
-
-procedure ShowLicense;
-var
-  Output: string;
-  AConsoleMore: TConsoleMore;
-begin
-  Output := DanteHeader + #13#10 + License;
-  AConsoleMore := TConsoleMore.Create(Output);
-  try
-    while not AConsoleMore.Finished do
-    begin
-      WriteLn(AConsoleMore.CurrentPage);
-      ReadLn;
-      AConsoleMore.NextPage;
-    end;
-  finally
-    AConsoleMore.Free;
-  end;
-end;
 
 procedure Run;
 var
@@ -77,10 +80,9 @@ begin
   try
     ADante := TConsoleDante.Create;
     try
-      ADante.UseColor := False;
-      ADante.DoBuild;
+      ADante.Execute;
     finally
-      ADante.Free;
+      FreeAndNil(ADante);
     end;
   except
     Halt(1);
@@ -91,12 +93,14 @@ begin
   if FindCmdLineSwitch('?', SwitchChars, true) or
      FindCmdLineSwitch('h', SwitchChars, true) then
   begin
-    WriteLn(DanteBase.DanteHeader);
+    WriteLn(DanteHeader);
     Usage;
   end
   else if FindCmdLineSwitch('L', SwitchChars, false) then
   begin
-    ShowLicense;
+    // need to add More functionality ... going to add it in clUtilConsole
+    WriteLn(DanteHeader);
+    WriteLn(License);
   end
   else
     Run;
