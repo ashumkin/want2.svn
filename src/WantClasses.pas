@@ -872,7 +872,7 @@ type
         SubPropName := StrMid(Result, MacroStart+2, -2 + MacroEnd-MacroStart);
         Delete(Result, MacroStart, 3 + Length(SubPropName));
         Insert(MacroExpansion(SubPropName), Result, MacroStart);
-        MacroStart := StrSearch(StartPat, Result);
+        MacroStart := StrSearch(StartPat, Result, macroEnd+1);
       end;
     end;
   end;
@@ -1101,7 +1101,7 @@ var
   Sched:   TTargetArray;
   LastDir: TPath;
 begin
-  Log(vlDebug, 'runpath="%s"',  [RootPath]);
+  Log(vlDebug, 'rootpath="%s"',  [RootPath]);
   Log(vlDebug, 'basepath="%s"', [BasePath]);
   Log(vlDebug, 'basedir="%s"',  [BaseDir]);
 
@@ -1158,7 +1158,10 @@ end;
 
 function TProject.GetBaseDir: TPath;
 begin
-  Result := WildPaths.ToRelativePath(PropertyValue('basedir'), RootPath);
+  if not PropertyDefined('basedir') then
+    Result := ''
+  else
+    Result := WildPaths.ToRelativePath(PropertyValue('basedir'), RootPath);
 end;
 
 procedure TProject.SetRootPath(const Path: TPath);

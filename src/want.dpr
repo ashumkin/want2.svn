@@ -65,7 +65,8 @@ uses
   ScriptRunner in 'ScriptRunner.pas',
   WantBase in 'WantBase.pas',
   WantClasses in 'WantClasses.pas',
-  WantTasks in 'tasks\WantTasks.pas';
+  WantTasks in 'tasks\WantTasks.pas',
+  XPerlRE in 'lib\XPerlRE.pas';
 
 {$R wantver.res}
 
