@@ -33,85 +33,9 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 unit DelphiCompileTest;
 
 interface
-uses
-  WildPaths,
-  FileOps,
-  DanteClasses,
-  DelphiTasks,
-  TestFramework,
-  DanteClassesTest;
 
-type
-  TDelphiCompileTests = class(TProjectBaseCase)
-    FDelphiTask :TDelphiCompileTask;
-  protected
-    procedure BuildProject;
-    procedure SetUp;    override;
-    procedure TearDown; override;
-  published
-    procedure TestCompile;
-  end;
+{ unit deprecated -- see DelphiTasksTest.pas }
 
 implementation
 
-{ TDelphiCompileTests }
-
-procedure TDelphiCompileTests.BuildProject;
-var
-  T :TTarget;
-begin
-  with FProject do
-  begin
-    BaseDir := PathConcat(SuperPath(ToPath(ParamStr(0))), '..');
-    Name := 'delphi_compile';
-    Verbosity := vlDebug;
-
-    T := AddTarget('compile');
-    FDelphiTask := TDelphiCompileTask.Create(T);
-    with FDelphiTask do
-    begin
-      basedir := PathConcat(FProject.BasePath, 'src');
-      writeln(ToSystemPath(basedir));
-      writeln(CurrentDir);
-      source  := 'dante.dpr';
-      exes    := '/tmp';
-      dcus    := '/tmp';
-      build   := true;
-      quiet   := true;
-
-      AddUnitPath('jcl');
-      AddUnitPath('paths');
-      AddUnitPath('xml');
-      AddUnitPath('tasks');
-      AddUnitPath('zip');
-      AddUnitPath('../lib/paszlib');
-      AddUnitPath('../lib/paszlib/minizip');
-    end;
-  end;
-end;
-
-procedure TDelphiCompileTests.SetUp;
-begin
-  inherited SetUp;
-  BuildProject;
-end;
-
-procedure TDelphiCompileTests.TearDown;
-begin
-  FDelphiTask := nil;
-end;
-
-procedure TDelphiCompileTests.TestCompile;
-var
-  exe : string;
-begin
-  exe := PathConcat(FDelphiTask.exes, 'dante.exe');
-  if IsFile(exe) then
-    DeleteFile(exe);
-  FProject.Build('compile');
-  Check(IsFile(exe), 'dante exe not found');
-end;
-
-initialization
-  RegisterTests('dcc', [TDelphiCompileTests.Suite]);
 end.
