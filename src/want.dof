@@ -126,7 +126,5 @@ Item1=..\bin
 Count=1
 Item0=c:\home\dunit\bin\dunit.exe
 [HistoryLists\hlRunParameters]
-Count=3
-Item0=-buildfile c:\home\lasalle\src\want.xml -verbose
-Item1=c:\home\lasalle\src\want.xml -verbose
-Item2=WantAcceptTestLib
+Count=1
+Item0=WantAcceptTestLib

@@ -1,11 +1,3 @@
-#define JclResources_RsPeCantOpen 65328
-#define JclResources_RsPeNotPE 65329
-#define JclResources_RsPeNotResDir 65330
-#define JclResources_RsPeSectionNotFound 65331
-#define ComConst_SOleError 65332
-#define ComConst_SNoMethod 65333
-#define ComConst_SVarNotObject 65334
-#define WantResources_WantUsageText 65335
 #define Consts_SBitsIndexError 65344
 #define Consts_SInvalidRegType 65345
 #define Consts_SRegCreateFailed 65346
@@ -16,12 +8,12 @@
 #define Consts_SDockTreeRemoveError 65351
 #define Consts_SDockZoneNotFound 65352
 #define Consts_SDockZoneHasNoCtl 65353
-#define JclResources_RsWin32Prefix 65354
-#define JclResources_RsCannotCreateDir 65355
-#define JclResources_RsFileUtilsNoVersionInfo 65356
-#define JclResources_RsCreateFileMapping 65357
-#define JclResources_RsCreateFileMappingView 65358
-#define JclResources_RsFailedToObtainSize 65359
+#define JclResources_RsCannotCreateDir 65354
+#define JclResources_RsFileUtilsNoVersionInfo 65355
+#define ComConst_SOleError 65356
+#define ComConst_SNoMethod 65357
+#define ComConst_SVarNotObject 65358
+#define WantResources_WantUsageText 65359
 #define Consts_SmkcSpace 65360
 #define Consts_SmkcPgUp 65361
 #define Consts_SmkcPgDn 65362
@@ -200,14 +192,6 @@
 #define SysConst_SInvalidInput 65535
 STRINGTABLE
 BEGIN
-	JclResources_RsPeCantOpen,	"Cannot open file \"%s\""
-	JclResources_RsPeNotPE,	"This is not a PE format"
-	JclResources_RsPeNotResDir,	"Not a resource directory"
-	JclResources_RsPeSectionNotFound,	"Section \"%s\" not found"
-	ComConst_SOleError,	"OLE error %.8x"
-	ComConst_SNoMethod,	"Method '%s' not supported by automation object"
-	ComConst_SVarNotObject,	"Variant does not reference an automation object"
-	WantResources_WantUsageText,	"Usage:\r\n  want [options] [target]\r\n\r\nOptions:\r\n  -h, -H, -?          Displays this help text.\r\n  -L                  Displays licensing information.\r\n  -buildfile <file>   Specifies the build file. Default is want.xml\r\n  -Dname=value        Define property \"name\".\r\n  -quiet              Be very quiet. \r\n  -verbose            Be extra verbose.\r\n  -debug              Print debugging information.\r\n  -nocolor            Do not use color in console output.\r\n"
 	Consts_SBitsIndexError,	"Bits index out of range"
 	Consts_SInvalidRegType,	"Invalid data type for '%s'"
 	Consts_SRegCreateFailed,	"Failed to create key %s"
@@ -218,12 +202,12 @@ BEGIN
 	Consts_SDockTreeRemoveError,	"Error removing control from dock tree"
 	Consts_SDockZoneNotFound,	" - Dock zone not found"
 	Consts_SDockZoneHasNoCtl,	" - Dock zone has no control"
-	JclResources_RsWin32Prefix,	"Win32: %s (%u)"
 	JclResources_RsCannotCreateDir,	"Unable to create directory"
 	JclResources_RsFileUtilsNoVersionInfo,	"File contains no version information"
-	JclResources_RsCreateFileMapping,	"Failed to create FileMapping"
-	JclResources_RsCreateFileMappingView,	"Failed to create FileMappingView"
-	JclResources_RsFailedToObtainSize,	"Failed to obtain size of file"
+	ComConst_SOleError,	"OLE error %.8x"
+	ComConst_SNoMethod,	"Method '%s' not supported by automation object"
+	ComConst_SVarNotObject,	"Variant does not reference an automation object"
+	WantResources_WantUsageText,	"Usage:\r\n  want [options] [target]\r\n\r\nOptions:\r\n  -h, -H, -?          Displays this help text.\r\n  -L                  Displays licensing information.\r\n  -buildfile <file>   Specifies the build file. Default is want.xml\r\n  -Dname=value        Define property \"name\".\r\n  -quiet              Be very quiet. \r\n  -verbose            Be extra verbose.\r\n  -debug              Print debugging information.\r\n  -nocolor            Do not use color in console output.\r\n"
 	Consts_SmkcSpace,	"Space"
 	Consts_SmkcPgUp,	"PgUp"
 	Consts_SmkcPgDn,	"PgDn"

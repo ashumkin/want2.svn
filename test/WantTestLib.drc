@@ -1,26 +1,17 @@
-#define JclResources_RsPeCantOpen 65408
-#define JclResources_RsPeNotPE 65409
-#define JclResources_RsPeNotResDir 65410
-#define JclResources_RsPeSectionNotFound 65411
-#define ComConst_SOleError 65412
-#define ComConst_SNoMethod 65413
-#define ComConst_SVarNotObject 65414
-#define Consts_SListCountError 65424
-#define Consts_SSortedListError 65425
-#define Consts_SDuplicateString 65426
-#define Consts_SInvalidPropertyValue 65427
-#define Consts_SNoCanvasHandle 65428
-#define Consts_SIniFileWriteError 65429
-#define Consts_SInvalidRegType 65430
-#define Consts_SRegCreateFailed 65431
-#define Consts_SRegSetDataFailed 65432
-#define Consts_SRegGetDataFailed 65433
-#define JclResources_RsWin32Prefix 65434
-#define JclResources_RsCannotCreateDir 65435
-#define JclResources_RsFileUtilsNoVersionInfo 65436
-#define JclResources_RsCreateFileMapping 65437
-#define JclResources_RsCreateFileMappingView 65438
-#define JclResources_RsFailedToObtainSize 65439
+#define Consts_SSortedListError 65424
+#define Consts_SDuplicateString 65425
+#define Consts_SInvalidPropertyValue 65426
+#define Consts_SNoCanvasHandle 65427
+#define Consts_SIniFileWriteError 65428
+#define Consts_SInvalidRegType 65429
+#define Consts_SRegCreateFailed 65430
+#define Consts_SRegSetDataFailed 65431
+#define Consts_SRegGetDataFailed 65432
+#define JclResources_RsCannotCreateDir 65433
+#define JclResources_RsFileUtilsNoVersionInfo 65434
+#define ComConst_SOleError 65435
+#define ComConst_SNoMethod 65436
+#define ComConst_SVarNotObject 65437
 #define SysConst_SLongDayNameSun 65440
 #define SysConst_SLongDayNameMon 65441
 #define SysConst_SLongDayNameTue 65442
@@ -34,9 +25,9 @@
 #define Consts_SReadError 65450
 #define Consts_SWriteError 65451
 #define Consts_SMemoryStreamError 65452
-#define Consts_SCantWriteResourceStreamError 65453
-#define Consts_SListIndexError 65454
-#define Consts_SListCapacityError 65455
+#define Consts_SListIndexError 65453
+#define Consts_SListCapacityError 65454
+#define Consts_SListCountError 65455
 #define SysConst_SLongMonthNameApr 65456
 #define SysConst_SLongMonthNameMay 65457
 #define SysConst_SLongMonthNameJun 65458
@@ -119,14 +110,6 @@
 #define SysConst_SInvalidInput 65535
 STRINGTABLE
 BEGIN
-	JclResources_RsPeCantOpen,	"Cannot open file \"%s\""
-	JclResources_RsPeNotPE,	"This is not a PE format"
-	JclResources_RsPeNotResDir,	"Not a resource directory"
-	JclResources_RsPeSectionNotFound,	"Section \"%s\" not found"
-	ComConst_SOleError,	"OLE error %.8x"
-	ComConst_SNoMethod,	"Method '%s' not supported by automation object"
-	ComConst_SVarNotObject,	"Variant does not reference an automation object"
-	Consts_SListCountError,	"List count out of bounds (%d)"
 	Consts_SSortedListError,	"Operation not allowed on sorted string list"
 	Consts_SDuplicateString,	"String list does not allow duplicates"
 	Consts_SInvalidPropertyValue,	"Invalid property value"
@@ -136,12 +119,11 @@ BEGIN
 	Consts_SRegCreateFailed,	"Failed to create key %s"
 	Consts_SRegSetDataFailed,	"Failed to set data for '%s'"
 	Consts_SRegGetDataFailed,	"Failed to get data for '%s'"
-	JclResources_RsWin32Prefix,	"Win32: %s (%u)"
 	JclResources_RsCannotCreateDir,	"Unable to create directory"
 	JclResources_RsFileUtilsNoVersionInfo,	"File contains no version information"
-	JclResources_RsCreateFileMapping,	"Failed to create FileMapping"
-	JclResources_RsCreateFileMappingView,	"Failed to create FileMappingView"
-	JclResources_RsFailedToObtainSize,	"Failed to obtain size of file"
+	ComConst_SOleError,	"OLE error %.8x"
+	ComConst_SNoMethod,	"Method '%s' not supported by automation object"
+	ComConst_SVarNotObject,	"Variant does not reference an automation object"
 	SysConst_SLongDayNameSun,	"Sunday"
 	SysConst_SLongDayNameMon,	"Monday"
 	SysConst_SLongDayNameTue,	"Tuesday"
@@ -155,9 +137,9 @@ BEGIN
 	Consts_SReadError,	"Stream read error"
 	Consts_SWriteError,	"Stream write error"
 	Consts_SMemoryStreamError,	"Out of memory while expanding memory stream"
-	Consts_SCantWriteResourceStreamError,	"Can't write to a read-only resource stream"
 	Consts_SListIndexError,	"List index out of bounds (%d)"
 	Consts_SListCapacityError,	"List capacity out of bounds (%d)"
+	Consts_SListCountError,	"List count out of bounds (%d)"
 	SysConst_SLongMonthNameApr,	"April"
 	SysConst_SLongMonthNameMay,	"May"
 	SysConst_SLongMonthNameJun,	"June"

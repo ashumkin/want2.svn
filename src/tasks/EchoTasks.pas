@@ -66,7 +66,10 @@ begin
     Log(msg, Level)
   else
   begin
-    Log(SysUtils.Format('echo to "%s"', [ToRelativePath(_file)]));
+    if input = '' then
+      Log(SysUtils.Format('echo %s to "%s"', [ToRelativePath(_file)]))
+    else
+      Log(SysUtils.Format('echo "%s" to "%s"', [ToRelativePath(input), ToRelativePath(_file)]));
     AboutToScratchPath(_file);
 
     System.Assign(EchoFile, ToSystemPath(_file));
