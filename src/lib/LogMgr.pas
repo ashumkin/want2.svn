@@ -27,12 +27,14 @@ interface
 type
   TLogLevel = ( vlErrors,
                 vlWarnings,
-                vlVeryQuiet,
-                vlQuiet,
                 vlNormal,
                 vlVerbose,
                 vlDebug     );
+const
+  vlVeryQuiet = vlErrors;
+  vlQuiet     = vlWarnings;
 
+type
   TLogManager = class
     private
       FActive:           Boolean;
@@ -101,8 +103,6 @@ type
 const
   LogLevelText: array[TLogLevel] of String = ( 'Errors',
                                                'Warnings',
-                                               'Very Quiet',
-                                               'Quiet',
                                                'Normal',
                                                'Verbose',
                                                'Debug'       );
@@ -275,7 +275,7 @@ begin
         Msg := StringReplace(Msg, #10#13,'@@', [rfReplaceAll]);
         Msg := StringReplace(Msg, #13,'@@',    [rfReplaceAll]);
         Msg := StringReplace(Msg, #10,'@@',    [rfReplaceAll]);
-        JclStrings.StrToStrings(WrapText(Msg, '...@@... ', [' ',#13,#10,#9], RightMargin - Length(Header)),
+        JclStrings.StrToStrings(WrapText(Msg, '@@  ', [' ',#13,#10,#9], RightMargin - Length(Header)),
                                 '@@', Lines);
 
         for i := 0 to Pred(Lines.Count) do
