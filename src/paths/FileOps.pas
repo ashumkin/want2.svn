@@ -41,20 +41,21 @@ uses
   Math;
 
 procedure MakeDir(Path :TPath);
+procedure ChangeDir(Path :TPath);
 
 procedure CopyFile(Src, Dst :TPath);
 procedure CopyFiles(const Sources, Dests :TPaths);  overload;
 procedure CopyFiles(const Files :TPaths; FromPath, ToPath :TPath);  overload;
-procedure CopyFiles(Spec :TSpec; FromPath, ToPath :TPath); overload;
+procedure CopyFiles(Pattern :TPattern; FromPath, ToPath :TPath); overload;
 
 procedure MoveFile(Src, Dst :TPath);
 procedure MoveFiles(const Sources, Dests :TPaths);  overload;
 procedure MoveFiles(const Files :TPaths; FromPath, ToPath :TPath);  overload;
-procedure MoveFiles(Spec :TSpec; FromPath, ToPath :TPath); overload;
+procedure MoveFiles(Pattern :TPattern; FromPath, ToPath :TPath); overload;
 
 procedure DeleteFile(Path :TPath);
 procedure DeleteFiles(const Files :TPaths);  overload;
-procedure DeleteFiles(Spec :TPath; BasePath :TPath= '');  overload;
+procedure DeleteFiles(Pattern :TPath; BasePath :TPath= '');  overload;
 
 procedure TouchFile(Path :TPath; When :TDateTime = 0); overload;
 procedure TouchFile(Path :TPath; When :string); overload;
@@ -72,15 +73,20 @@ begin
   end;
 end;
 
+procedure ChangeDir(Path :TPath);
+begin
+  SetCurrentDir(ToSystemPath(Path));
+end;
+
 procedure CopyFile(Src, Dst :TPath);
 begin
    MakeDir(SuperPath(Dst));
    writeln('copy ',ToSystemPath(Src), '->', ToSystemPath(Dst));
 end;
 
-procedure CopyFiles(Spec :TSpec; FromPath, ToPath :TPath);
+procedure CopyFiles(Pattern :TPattern; FromPath, ToPath :TPath);
 begin
-  CopyFiles(Wild(Spec, FromPath), FromPath, ToPath);
+  CopyFiles(Wild(Pattern, FromPath), FromPath, ToPath);
 end;
 
 procedure CopyFiles(const Files :TPaths; FromPath, ToPath :TPath);
@@ -104,9 +110,9 @@ begin
    writeln('move ',ToSystemPath(Src), '->', ToSystemPath(Dst));
 end;
 
-procedure MoveFiles(Spec :TSpec; FromPath, ToPath :TPath);
+procedure MoveFiles(Pattern :TPattern; FromPath, ToPath :TPath);
 begin
-  MoveFiles(Wild(Spec, FromPath), FromPath, ToPath);
+  MoveFiles(Wild(Pattern, FromPath), FromPath, ToPath);
 end;
 
 procedure MoveFiles(const Files :TPaths; FromPath, ToPath :TPath);
@@ -132,9 +138,9 @@ begin
     writeln('rmdir ' + ToSystemPath(Path));
 end;
 
-procedure DeleteFiles(Spec :TPath; BasePath :TPath);
+procedure DeleteFiles(Pattern :TPath; BasePath :TPath);
 begin
-  DeleteFiles(Wild(Spec, BasePath));
+  DeleteFiles(Wild(Pattern, BasePath));
 end;
 
 procedure DeleteFiles(const Files :TPaths);

@@ -60,9 +60,9 @@ const
 
 type
   TPath  = string;
-  TSpec  = TPath;
+  TPattern  = TPath;
   TPaths = array of TPath;
-  TSpecs = TPaths;
+  TPatterns = TPaths;
 
   EWildPathsException = class(Exception);
   EWildPathsError     = class(EWildPathsException);
@@ -93,12 +93,12 @@ function FindPaths(Path: TPath; BasePath: string;
 function FindFiles(Path: TPath; BasePath: string = ''): TPaths;
 function FindDirs(Path: TPath; BasePath: string  = ''): TPaths;
 
-function  Wild(Spec :TPath; BasePath :string = ''):TPaths; overload;
-procedure Wild(Files :TStrings; Spec :TPath; BasePath :string = ''); overload;
+function  Wild(Pattern :TPath; BasePath :string = ''):TPaths; overload;
+procedure Wild(Files :TStrings; Pattern :TPath; BasePath :string = ''); overload;
 
 
-function IsMatch(Path, Spec :TPath):boolean; overload;
-function IsMatch(Paths :TPaths; Specs :TSpecs; p :Integer = 0; s :Integer = 0):boolean; overload;
+function IsMatch(Path, Pattern :TPath):boolean; overload;
+function IsMatch(Paths :TPaths; Patterns :TPatterns; p :Integer = 0; s :Integer = 0):boolean; overload;
 
 function  IsDir(Path :TPath):boolean;
 function  IsFile(Path :TPath):boolean;
@@ -107,7 +107,7 @@ function  SuperPath(Path :TPath) :TPath;
 
 implementation
 
-procedure Wild(Files :TStrings; Specs :TSpecs; BasePath: TPath = ''; Index :Integer = 0);
+procedure Wild(Files :TStrings; Patterns :TPatterns; BasePath: TPath = ''; Index :Integer = 0);
   overload; forward;
 
 
@@ -292,61 +292,62 @@ begin
   end;
 end;
 
-function Wild(Spec: TPath; BasePath: string):TPaths;
+function Wild(Pattern: TPath; BasePath: string):TPaths;
 var
   Files :TStringList;
 begin
   Files := TStringList.Create;
   try
     Files.Sorted := True;
-    Wild(Files, Spec, BasePath);
+    Wild(Files, Pattern, BasePath);
     Result := StringsToPaths(Files);
   finally
     Files.Free;
   end;
 end;
 
-procedure Wild(Files :TStrings; Spec :TPath; BasePath :string = '');
+procedure Wild(Files :TStrings; Pattern :TPath; BasePath :string = '');
 begin
-  ForceRelativePath(Spec, BasePath);
-  Wild(Files, SplitPath(Spec), BasePath);
+  ForceRelativePath(Pattern, BasePath);
+  Wild(Files, SplitPath(Pattern), BasePath);
 end;
 
-procedure Wild(Files :TStrings; Specs: TSpecs; BasePath: TPath; Index: Integer);
+procedure Wild(Files :TStrings; Patterns: TPatterns; BasePath: TPath; Index: Integer);
 var
   i       :Integer;
   Matches :TPaths;
 begin
-  if Index > High(Specs) then
+  if Index > High(Patterns) then
     EXIT;
-  // absorb all non-wildcard specs
-  while (Index < High(Specs))
-  and (LastDelimiter(WildChars, Specs[Index]) = 0) do
+  // absorb all non-wildcard patterns
+  while (Index < High(Patterns))
+  and (LastDelimiter(WildChars, Patterns[Index]) = 0) do
   begin
-    BasePath := PathConcat(BasePath, Specs[Index]);
+    BasePath := PathConcat(BasePath, Patterns[Index]);
     Inc(Index);
   end;
-  Assert(Index <= High(Specs));
-  if Index = High(Specs) then
+  Assert(Index <= High(Patterns));
+  if Index = High(Patterns) then
   begin // add files (works for '**' too)
-    Matches := FindPaths(Specs[Index], BasePath);
+    Matches := FindPaths(Patterns[Index], BasePath);
     for i := Low(Matches) to High(Matches) do
       Files.Add(PathConcat(BasePath, Matches[i]))
   end;
+  Matches := nil;
   // handle wildcards
-  if Specs[Index] = '**' then
+  if Patterns[Index] = '**' then
   begin // match anything and recurse
-    Wild(Files, Specs, BasePath, Index+1);
+    Wild(Files, Patterns, BasePath, Index+1);
     Matches := FindDirs('*', BasePath);
     // use same Index ('**') to recurse
     for i := Low(Matches) to High(Matches) do
-      Wild(Files, Specs, PathConcat(BasePath, Matches[i]), Index);
+      Wild(Files, Patterns, PathConcat(BasePath, Matches[i]), Index);
   end
-  else if Index < High(Specs) then
+  else if Index < High(Patterns) then
   begin // match directories
-    Matches := FindDirs(Specs[Index], BasePath);
+    Matches := FindDirs(Patterns[Index], BasePath);
     for i := Low(Matches) to High(Matches) do
-      Wild(Files, Specs, PathConcat(BasePath, Matches[i]), Index+1);
+      Wild(Files, Patterns, PathConcat(BasePath, Matches[i]), Index+1);
   end;
 end;
 
@@ -373,32 +374,32 @@ begin
     Result := False;
 end;
 
-function IsMatch(Paths :TPaths; Specs :TSpecs; p :Integer = 0; s :Integer = 0):boolean;
+function IsMatch(Paths :TPaths; Patterns :TPatterns; p :Integer = 0; s :Integer = 0):boolean;
 
 begin
   while (p <= High(Paths))
-  and   (s <= High(Specs))
-  and   (Specs[s] <> '**')
-  and   Matches(Paths[p], Specs[s]) do
+  and   (s <= High(Patterns))
+  and   (Patterns[s] <> '**')
+  and   Matches(Paths[p], Patterns[s]) do
   begin
     Inc(p);
     Inc(s);
   end;
-  if s > High(Specs) then
+  if s > High(Patterns) then
     Result := p > High(Paths)
   else if p > High(Paths) then
     Result := False
-  else if Specs[s] = '**' then
-    Result :=    IsMatch(Paths, Specs, p+1, s+1)
-              or IsMatch(Paths, Specs, p,   s+1)
-              or IsMatch(Paths, Specs, p+1, s)
+  else if Patterns[s] = '**' then
+    Result :=    IsMatch(Paths, Patterns, p+1, s+1)
+              or IsMatch(Paths, Patterns, p,   s+1)
+              or IsMatch(Paths, Patterns, p+1, s)
   else
     Result := False;
 end;
 
-function IsMatch(Path, Spec :TPath):boolean;
+function IsMatch(Path, Pattern :TPath):boolean;
 begin
-  Result := IsMatch(SplitPath(Path), SplitPath(Spec));
+  Result := IsMatch(SplitPath(Path), SplitPath(Pattern));
 end;
 
 function  IsDir(Path :TPath):boolean;
