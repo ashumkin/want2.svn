@@ -109,6 +109,9 @@ type
   TCreateElementMethod = function :TDanteElement of object;
 
 
+  // for implementing <property> elements
+  TPropertyElement = class;
+
   TDanteElement = class(TComponent)
   protected
     FName :string; // ditch TComponent.Name
@@ -132,7 +135,7 @@ type
     constructor Create(Owner: TDanteElement); reintroduce; overload; virtual;
 
     class function XMLTag :string; virtual;
-    
+
     procedure ParseXML(Node :MiniDom.IElement);               virtual;
     function  ParseXMLChild(Child :MiniDom.IElement):boolean; virtual;
     procedure ParseError(Msg :string; Line :Integer);
@@ -162,6 +165,8 @@ type
     property Project: TProject read GetProject;
     property Tag stored False;
   published
+    function CreateProperty :TPropertyElement;
+
     property Name : string read FName write FName stored True;
   end;
 
@@ -285,6 +290,18 @@ type
 
     property Name stored False;
   published
+  end;
+
+
+  TPropertyElement = class(TDanteElement)
+  protected
+    FName  :string;
+    FValue :string;
+  public
+    procedure Validate; override;
+  published
+    property name  :string read FName  write FName;
+    property value :string read FValue write FValue;
   end;
 
 
@@ -529,18 +546,7 @@ var
   Comp       :TDanteElement;
 begin
   Result := true;
-  if Child.Name = 'property' then
-  begin
-    {@TODO !!! Make property be an element of TDanteElement (procedure CreateProperty etc.): }
-    if Child.attribute('name') = nil then
-      ParseError('"name" attribute required', Child.LineNo)
-    else if Child.attribute('value') = nil then
-      ParseError('"value" attribute required', Child.LineNo)
-    else if Child.Attributes.Size <> 2 then
-      ParseError('only "name" and "value" attributes supported', Child.LineNo);
-    SetProperty(Child.attributeValue('name'), Child.attributeValue('value'))
-  end
-  else if Child.Name = 'echo' then
+  if Child.Name = 'echo' then
     Log('echo', ExpandMacros(Child.attributeValue('message')))
   else
   begin
@@ -739,6 +745,11 @@ procedure TDanteElement.RequireAttribute(Name, Value: string);
 begin
   if Value = '' then
     AttributeRequiredError(Name);
+end;
+
+function TDanteElement.CreateProperty: TPropertyElement;
+begin
+   Result := TPropertyElement.Create(Self);
 end;
 
 { TProject }
@@ -1273,6 +1284,17 @@ var
 begin
   for i := Low(TaskClasses) to High(TaskClasses) do
     RegisterTask(TaskClasses[i]);
+end;
+
+{ TPropertyElement }
+
+procedure TPropertyElement.Validate;
+begin
+  inherited Validate;
+  RequireAttribute('name',  name);
+  RequireAttribute('value', value);
+  
+  SetProperty(name, value);
 end;
 
 initialization
