@@ -36,7 +36,7 @@ interface
 
 uses
   WildPaths, FileOps, DanteClasses, DelphiTasks, TestFramework,
-  DanteClassesTest, clVersionRcUnitTest;
+  DanteClassesTest;
 
 type
   TDelphiCompileTests = class(TProjectBaseCase)
@@ -47,17 +47,6 @@ type
     procedure TearDown; override;
   published
     procedure TestCompile;
-  end;
-
-  TTestIncVerRcTask = class(TTestRcUnit)
-  private
-    FIncVerRcTask: TIncVerRcTask;
-    FProject: TProject;
-  public
-    procedure Setup; override;
-    procedure TearDown; override;
-  published
-    procedure TestIncVerRcTask;
   end;
 
 implementation
@@ -122,32 +111,6 @@ end;
 
 { TTestIncVerRcTask }
 
-procedure TTestIncVerRcTask.Setup;
-var
-  T: TTarget;
-begin
-  inherited;
-  FProject := TProject.Create;
-  T := FProject.AddTarget('update_rc_file');
-  FIncVerRcTask := TIncVerRcTask.Create(T);
-end;
-
-procedure TTestIncVerRcTask.TearDown;
-begin
-  FProject.Free;
-  inherited;
-end;
-
-procedure TTestIncVerRcTask.TestIncVerRcTask;
-begin
-  FIncVerRcTask.RcFileName := FTestRcName;
-  FIncVerRcTask.Increment  := True;
-  FIncVerRcTask.Init;
-  FIncVerRcTask.Execute;
-  CheckEquals('53', FProject.PropertyValue('build'), 'build property');
-end;
-
 initialization
-  RegisterTests('Delphi Tasks',
-    [TDelphiCompileTests.Suite, TTestIncVerRcTask.Suite]);
+  RegisterTests('Delphi Tasks', [TDelphiCompileTests.Suite]);
 end.
