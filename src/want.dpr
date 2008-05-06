@@ -39,7 +39,7 @@ uses
   DUnitTasks in 'tasks\DUnitTasks.pas',
   WildPaths in 'lib\WildPaths.pas',
   ZipTasks in 'tasks\ZipTasks.pas',
-  DelphiTasks in 'tasks\DelphiTasks.pas',
+  EurekaLogTasks in 'tasks\EurekaLogTasks.pas',
   EchoTasks in 'tasks\EchoTasks.pas',
   ExecTasks in 'tasks\ExecTasks.pas',
   FileTasks in 'tasks\FileTasks.pas',
@@ -63,7 +63,8 @@ uses
   StyleTasks in 'tasks\StyleTasks.pas',
   MSXMLEngineImpl in 'win32\MSXMLEngineImpl.pas',
   CVSTasks in 'tasks\CVSTasks.pas',
-  GZipTasks in 'tasks\GZipTasks.pas';
+  GZipTasks in 'tasks\GZipTasks.pas',
+  DelphiTasks in 'tasks\DelphiTasks.pas';
 
 {$APPTYPE CONSOLE}
 

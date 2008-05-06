@@ -25,6 +25,7 @@
     @author Ignacio J. Ortega
     @author Gerrit Jan Doornink
     @author Tobias Grimm <tobias.grimm@e-tobi.net>
+    @author Thomas Jund
 }
 { TODO -oGJD -cTODO : 
   Add handling of:
@@ -393,7 +394,7 @@ begin
     WantUtils.GetEnvironmentVar('delphi_version', V, true);
   end;
   if V = '' then begin
-     V := '10,9,8,7,6,5,4';
+     V := '11,10,9,8,7,6,5,4';
   end;
   vers := StringToArray(V);
   for i := 0 to High(vers) do
@@ -424,20 +425,25 @@ begin
 end;
 
 
-
-procedure TCustomDelphiTask.FindTool;
+procedure TCustomDelphiTask.FindTool();
+var
+  RecDelphiVersion : TDelphiVersion;
 begin
-  with FindDelphi(versions) do
-  begin
-    FVersionFound := Version;
-    FDelphiDir    := Directory;
-    FToolPath     := ToolPath;
+  // get Delphi version info
+  RecDelphiVersion := FindDelphi(versions);
+
+  if (RecDelphiVersion.ToolPath = '') then
+    // Path is empty - No Tool found -> Generate an error
+    TaskError('Could not find ' + ToolName + ' of Delphi version(s) ' + versions)
+  else begin
+    // Tool found
+    FVersionFound := RecDelphiVersion.Version;
+    FDelphiDir := RecDelphiVersion.Directory;
+    FToolPath := RecDelphiVersion.ToolPath;
     DecimalSeparator := '.';
-    FVersionNumber := StrToFloat(Version);
+    FVersionNumber := StrToFloat(RecDelphiVersion.Version);
     GetFormatSettings();
   end;
-  if FToolPath = '' then
-    TaskError('Could not find ' + ToolName);
 end;
 
 
@@ -468,7 +474,12 @@ begin
     RegRoot := CBuilderRegRoot;
   end
   else begin
-    if StrToIntDef(StrLeft(version, pos('.', version) -1), 0) > 8 then
+    if StrToIntDef(StrLeft(version, pos('.', version) -1), 0) = 11 then
+    begin
+      // Delphi 2007
+      RegRoot := BDSRegRoot;
+      version := '5.0';
+    end else if StrToIntDef(StrLeft(version, pos('.', version) -1), 0) > 8 then
     begin
       RegRoot := BDSRegRoot;
       version := '3.0'; // will this change for Delphi 10 or even before?
